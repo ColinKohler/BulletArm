@@ -11,12 +11,9 @@ from sensors.vision_sensor import VisionSensor
 from utils import vrep_utils
 from utils import transformations
 
-# Motion primatives
-PICK_PRIMATIVE = 0
-PLACE_PRIMATIVE = 1
-PUSH_PRIMATIVE = 2
+from base_env import BaseEnv
 
-class VrepEnv(object):
+class VrepEnv(BaseEnv):
   '''
   RL environment setup in a similar manner to OpenAI Gym envs (step, reset).
   This is the base VRep env which should be extended for different tasks.
@@ -28,21 +25,17 @@ class VrepEnv(object):
     - fast_mode: Teleport the arm when it doesn't interact with other objects.
   '''
   def __init__(self, seed, workspace, max_steps=10, heightmap_size=250,
-                     vrep_ip='127.0.0.1', vrep_port=19997, fast_mode=False):
-    # Setup workspace
-    self.workspace = workspace
-    self.workspace_size = np.linalg.norm(self.workspace[0,1] - self.workspace[0,0])
-    self.max_steps = max_steps
+                     vrep_port=19997, fast_mode=False):
+    super(VrepEnv, self).__init__(seed, workspace, max_steps, heightmap_size)
+
+    # Enable fast mode or not
     self.fast_mode = fast_mode
 
-    # Setup depth image parameters
+    # Setup camera
     self.cam_intrinsics = np.asarray([[618.62, 0, 320], [0, 618.62, 240], [0, 0, 1]])
-    self.heightmap_size = heightmap_size
-    self.heightmap_shape = (self.heightmap_size, self.heightmap_size, 1)
-    self.heightmap_resolution = self.workspace_size / self.heightmap_size
 
     # VRep simulator
-    self.vrep_ip = vrep_ip
+    self.vrep_ip = '127.0.0.1'
     self.vrep_port = vrep_port
 
     # Setup observation and action spaces
@@ -54,9 +47,6 @@ class VrepEnv(object):
     self.home_pose = transformations.euler_matrix(np.radians(90), 0, np.radians(90))
     self.home_pose[:2,-1] = (self.workspace[:2,1] + self.workspace[:2,0]) / 2.0
     self.home_pose[2,-1] = self.workspace[2,1] - 0.05
-
-    # Set random numpy seed
-    npr.seed(seed)
 
   def connectToVrep(self):
     '''
@@ -169,36 +159,6 @@ class VrepEnv(object):
     '''
     return False
 
-  def _getPrimativeHeight(self, motion_primative, x, y):
-    '''
-    Get the z position for the given action using the current heightmap.
-    Args:
-      - motion_primative: Pick/place motion primative
-      - x: X coordinate for action
-      - y: Y coordinate for action
-    Returns: Valid Z coordinate for the action
-    '''
-    x_pixel, y_pixel = self._getPixelsFromPos(x, y)
-    local_region = self.heightmap[max(y_pixel - 30, 0):min(y_pixel + 30, 250), \
-                                  max(x_pixel - 30, 0):min(x_pixel + 30, 250)]
-    safe_z_pos = np.max(local_region) + self.workspace[2][0]
-    safe_z_pos = safe_z_pos - 0.01 if motion_primative == PICK_PRIMATIVE else safe_z_pos + 0.01
-
-    return safe_z_pos
-
-  def _getPixelsFromPos(self, x, y):
-    '''
-    Get the x/y pixels on the heightmap for the given coordinates
-    Args:
-      - x: X coordinate
-      - y: Y coordinate
-    Returns: (x, y) in pixels corresponding to coordinates
-    '''
-    x_pixel = (x - self.workspace[0][0]) / self.heightmap_resolution
-    y_pixel = (y - self.workspace[1][0]) / self.heightmap_resolution
-
-    return int(x_pixel), int(y_pixel)
-
   # TODO: Fix this up.
   def _generateShapes(self, shape_type, num_shapes, size=None, min_distance=0.1, padding=0.2, sleep_time=0.5):
     '''
@@ -244,24 +204,3 @@ class VrepEnv(object):
 
     self.object_handles.extend(shape_handles)
     return True, shape_handles
-
-  def _getShapeName(self, shape_type):
-    ''' Get the shape name from the type (int) '''
-    if shape_type == 0: return 'cube'
-    elif shape_type == 1: return 'sphere'
-    elif shape_type == 2: return 'cylinder'
-    elif shape_type == 3: return 'cone'
-    else: return 'unknown'
-
-  def _isPointInWorkspace(self, p):
-    '''
-    Checks if the given point is within the workspace
-
-    Args:
-      - p: [x, y, z] point
-
-    Returns: True in point is within workspace, False otherwise
-    '''
-    return p[0] > self.workspace[0][0] - 0.1 and p[0] < self.workspace[0][1] + 0.1 and \
-           p[1] > self.workspace[1][0] - 0.1 and p[1] < self.workspace[1][1] + 0.1 and \
-           p[2] > self.workspace[2][0] and p[2] < self.workspace[2][1]
