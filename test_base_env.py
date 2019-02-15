@@ -1,18 +1,23 @@
+import time
 import pybullet as pb
 import pybullet_data
 import numpy as np
-from pybullet_toolkit.robots.ur5_rg2 import UR5_RG2
+import matplotlib.pyplot as plt
+import torch
 
-client = pb.connect(pb.GUI)
-pb.setAdditionalSearchPath(pybullet_data.getDataPath())
-pb.setTimeStep(1./240.)
-pb.setGravity(0, 0, -10)
+import env_factory
 
-table_id = pb.loadURDF('plane.urdf', [0,0,0])
-table_id = pb.loadURDF('cube_small.urdf', [0.5,0,0])
+workspace = np.asarray([[0.25, 0.75],
+                        [-0.25, 0.25],
+                        [0, 0.4]])
 
-ur5 = UR5_RG2()
-ur5.reset()
-print(ur5.grasp(np.array([0.5, 0.0, 0.23]), 0.05, dynamic=True))
+env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 250, 'fast_mode': False}
+envs = env_factory.createEnvs(1, 'pybullet', 'block_picking', env_config)
 
-input('end')
+states, obs = envs.reset()
+
+while True:
+  plt.imshow(obs[0], cmap='gray'); plt.show()
+  actions = torch.tensor([[0, 0.5, 0.0, 0.0]])
+  states_, obs_, rewards, dones = envs.step(actions)
+  import ipdb; ipdb.set_trace()

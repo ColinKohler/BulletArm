@@ -2,17 +2,6 @@ import numpy as np
 import numpy.random  as npr
 
 class BaseEnv(object):
-  # Motion primatives
-  PICK_PRIMATIVE = 0
-  PLACE_PRIMATIVE = 1
-  PUSH_PRIMATIVE = 2
-
-  # Shape types
-  CUBE = 0
-  SPHERE = 1
-  CYLINDER = 2
-  CONE = 3
-
   '''
   Base Arm RL environment.
   '''
@@ -30,12 +19,29 @@ class BaseEnv(object):
     self.heightmap_shape = (self.heightmap_size, self.heightmap_size, 1)
     self.heightmap_resolution = self.workspace_size / self.heightmap_size
 
+    # Setup observation and action spaces
+    self.obs_shape = self.heightmap_shape
+    self.action_space = np.concatenate((self.workspace[:2,:], np.array([[0.0], [2*np.pi]])), axis=1)
+    self.action_shape = 3
+
+    # Motion primatives
+    self.PICK_PRIMATIVE = 0
+    self.PLACE_PRIMATIVE = 1
+    self.PUSH_PRIMATIVE = 2
+
+    # Shape types
+    self.CUBE = 0
+    self.SPHERE = 1
+    self.CYLINDER = 2
+    self.CONE = 3
+
+
   def _getShapeName(self, shape_type):
     ''' Get the shape name from the type (int) '''
-    if shape_type == CUBE: return 'cube'
-    elif shape_type == SPHERE: return 'sphere'
-    elif shape_type == CYLINER: return 'cylinder'
-    elif shape_type == CONE: return 'cone'
+    if shape_type == self.CUBE: return 'cube'
+    elif shape_type == self.SPHERE: return 'sphere'
+    elif shape_type == self.CYLINER: return 'cylinder'
+    elif shape_type == self.CONE: return 'cone'
     else: return 'unknown'
 
   def _getPrimativeHeight(self, motion_primative, x, y, offset=0.01):
@@ -51,8 +57,8 @@ class BaseEnv(object):
     x_pixel, y_pixel = self._getPixelsFromPos(x, y)
     local_region = self.heightmap[max(y_pixel - 30, 0):min(y_pixel + 30, self.heightmap_size), \
                                   max(x_pixel - 30, 0):min(x_pixel + 30, self.heightmap_size)]
-    safe_z_pos = np.max(local_region) + self.workspace[2][0]
-    safe_z_pos = safe_z_pos - offset if motion_primative == PICK_PRIMATIVE else safe_z_pos + offset
+    safe_z_pos = np.max(local_region) + self.workspace[2][0] + 0.2
+    safe_z_pos = safe_z_pos - offset if motion_primative == self.PICK_PRIMATIVE else safe_z_pos + offset
 
     return safe_z_pos
 
@@ -69,7 +75,6 @@ class BaseEnv(object):
 
     return int(x_pixel), int(y_pixel)
 
-
   def _isPointInWorkspace(self, p):
     '''
     Checks if the given point is within the workspace
@@ -82,3 +87,11 @@ class BaseEnv(object):
     return p[0] > self.workspace[0][0] - 0.1 and p[0] < self.workspace[0][1] + 0.1 and \
            p[1] > self.workspace[1][0] - 0.1 and p[1] < self.workspace[1][1] + 0.1 and \
            p[2] > self.workspace[2][0] and p[2] < self.workspace[2][1]
+
+  def _checkTermination(self):
+    '''
+    Sub-envs should override this to set their own termination conditions
+    Returns: False
+    '''
+    return False
+

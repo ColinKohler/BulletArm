@@ -1,7 +1,7 @@
 import sys
 import numpy as np
 
-import vrep_arm_toolkit.utils.vrep_utils as utils
+import vrep_toolkit.utils.vrep_utils as utils
 
 class RG2(object):
   def __init__(self, sim_client,

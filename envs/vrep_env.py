@@ -4,14 +4,14 @@ import numpy as np
 import numpy.random as npr
 import scipy.misc
 
-from simulation import vrep
-from grippers.rg2 import RG2
-from robots.ur5 import UR5
-from sensors.vision_sensor import VisionSensor
-from utils import vrep_utils
-from utils import transformations
+from vrep_toolkit.simulation import vrep
+from vrep_toolkit.grippers.rg2 import RG2
+from vrep_toolkit.robots.ur5 import UR5
+from vrep_toolkit.sensors.vision_sensor import VisionSensor
+from vrep_toolkit.utils import vrep_utils
+from vrep_toolkit.utils import transformations
 
-from base_env import BaseEnv
+from envs.base_env import BaseEnv
 
 class VrepEnv(BaseEnv):
   '''
@@ -37,11 +37,6 @@ class VrepEnv(BaseEnv):
     # VRep simulator
     self.vrep_ip = '127.0.0.1'
     self.vrep_port = vrep_port
-
-    # Setup observation and action spaces
-    self.obs_shape = self.heightmap_shape
-    self.action_space = np.concatenate((self.workspace[:2,:], np.array([[0.0], [2*np.pi]])), axis=1)
-    self.action_shape = 3
 
     # Set default poses
     self.home_pose = transformations.euler_matrix(np.radians(90), 0, np.radians(90))
@@ -109,9 +104,9 @@ class VrepEnv(BaseEnv):
     T[2,3] = self._getPrimativeHeight(motion_primative, x, y)
 
     #  Execute action
-    if motion_primative == PICK_PRIMATIVE:
+    if motion_primative == self.PICK_PRIMATIVE:
       self.is_holding_object = self.ur5.pick(T, 0.05 if self.fast_mode else 0.25, fast_mode=self.fast_mode)
-    elif motion_primative == PLACE_PRIMATIVE:
+    elif motion_primative == self.PLACE_PRIMATIVE:
       self.ur5.place(T, 0.25, fast_mode=self.fast_mode)
       self.is_holding_object = False
 
@@ -151,13 +146,6 @@ class VrepEnv(BaseEnv):
     self.heightmap = depth_heightmap
 
     return (self.is_holding_object, depth_heightmap.reshape([self.heightmap_size, self.heightmap_size, 1]))
-
-  def _checkTermination(self):
-    '''
-    Sub-envs should override this to set their own termination conditions
-    Returns: False
-    '''
-    return False
 
   # TODO: Fix this up.
   def _generateShapes(self, shape_type, num_shapes, size=None, min_distance=0.1, padding=0.2, sleep_time=0.5):

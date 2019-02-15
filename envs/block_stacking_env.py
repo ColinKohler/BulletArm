@@ -1,13 +1,13 @@
-from vrep_env import VrepEnv
-from pybulet_env import PyBulletEnv
+from envs.vrep_env import VrepEnv
+from envs.pybullet_env import PyBulletEnv
 
 def createBlockStackingEnv(simulator_base_env, config):
   class BlockStackingEnv(simulator_base_env):
     ''''''
     def __init__(self, config):
-      if type(parent_env) is VrepEnv:
+      if parent_env is VrepEnv:
         super(BlockStackingEnv, self).__init__()
-      elif type(parent_env) is PyBulletEnv:
+      elif parent_env is PyBulletEnv:
         super(BlockStackingEnv, self).__init__()
       else:
         raise ValueError('Bad simulator base env specified.')

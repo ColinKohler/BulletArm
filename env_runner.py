@@ -13,7 +13,6 @@ def worker(remote, parent_remote, env_fn):
   '''
   parent_remote.close()
   env = env_fn()
-  env.connectToVrep()
   try:
     while True:
       cmd, data = remote.recv()
@@ -33,8 +32,7 @@ def worker(remote, parent_remote, env_fn):
         raise NotImplementerError
   except KeyboardInterrupt:
     print('EnvRunner worker: caught keyboard interrupt')
-  finally:
-    env.disconnectToVrep()
+  # finally:
 
 class EnvRunner(object):
   '''

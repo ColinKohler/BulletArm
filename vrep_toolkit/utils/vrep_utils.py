@@ -2,8 +2,8 @@ import os
 import time
 import numpy as np
 
-from vrep_arm_toolkit.utils import transformations
-from vrep_arm_toolkit.simulation import vrep
+from vrep_toolkit.utils import transformations
+from vrep_toolkit.simulation import vrep
 
 VREP_BLOCKING = vrep.simx_opmode_blocking
 VREP_ONESHOT = vrep.simx_opmode_oneshot_wait

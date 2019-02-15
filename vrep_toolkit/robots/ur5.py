@@ -3,9 +3,9 @@ import sys
 import time
 import numpy as np
 
-from vrep_arm_toolkit.simulation import vrep
-import vrep_arm_toolkit.utils.vrep_utils as utils
-from vrep_arm_toolkit.utils import transformations
+from vrep_toolkit.simulation import vrep
+import vrep_toolkit.utils.vrep_utils as utils
+from vrep_toolkit.utils import transformations
 
 class UR5(object):
   '''

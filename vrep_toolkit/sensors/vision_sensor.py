@@ -2,9 +2,9 @@ import sys
 import numpy as np
 import skimage
 
-from vrep_arm_toolkit.simulation import vrep
-import vrep_arm_toolkit.utils.vrep_utils as utils
-import vrep_arm_toolkit.utils.transformations as transformations
+from vrep_toolkit.simulation import vrep
+import vrep_toolkit.utils.vrep_utils as utils
+import vrep_toolkit.utils.transformations as transformations
 
 VREP_BLOCKING = vrep.simx_opmode_blocking
 

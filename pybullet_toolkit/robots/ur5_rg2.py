@@ -12,7 +12,8 @@ class UR5_RG2(object):
     # Setup arm and gripper variables
     self.max_velocity = 0.35
     self.max_force = 200
-    self.finger_force = 10
+    self.gripper_close_force = 10
+    self.gripper_open_force = 10
 
     self.end_effector_index = 6
     self.gripper_index = 19
@@ -35,7 +36,30 @@ class UR5_RG2(object):
         self.motor_names.append(str(joint_info[1]))
         self.motor_indices.append(i)
 
-  def grasp(self, pos, offset, dynamic=True):
+  def pick(self, pos, offset, dynamic=True):
+    ''''''
+    # Setup pre-grasp pos and default orientation
+    pre_pos = copy.copy(pos)
+    pre_pos[2] += offset
+    rot = pb.getQuaternionFromEuler([np.pi/2.,-np.pi,np.pi/2])
+
+    # Move to pre-grasp pose and then grasp pose
+    print('pre pos: {}'.format(pre_pos))
+    self.moveTo(pre_pos, rot, dynamic)
+    print('pos: {}'.format(pos))
+    self.moveTo(pos, rot, dynamic)
+
+    # Grasp object and lift up to pre pose
+    print('close')
+    gripper_fully_closed = self.closeGripper()
+    if gripper_fully_closed: self.openGripper()
+    print('pre pos: {}'.format(pre_pos))
+    self.moveTo(pre_pos, rot, dynamic)
+    print('done')
+
+    return not gripper_fully_closed
+
+  def place(self, pos, offset, dynamic=True):
     ''''''
     # Setup pre-grasp pos and default orientation
     pre_pos = copy.copy(pos)
@@ -46,30 +70,9 @@ class UR5_RG2(object):
     self.moveTo(pre_pos, rot, dynamic)
     self.moveTo(pos, rot, dynamic)
 
-    # Grasp
-    input('grasp')
-    p1 = pb.getJointState(self.ur5_id, 10)[0]
-    pb.setJointMotorControlArray(self.ur5_id, [10,12,14,15,17,19], pb.VELOCITY_CONTROL, targetVelocities=[1.0]*6, forces=[self.finger_force]*6)
-    gripper_fully_closed = True
-    while p1 < 0.4:
-      pb.stepSimulation()
-      p1_ = pb.getJointState(self.ur5_id, 10)[0]
-      print('{} >= {}'.format(p1, p1_))
-      if p1 >= p1_:
-        gripper_fully_closed = False
-        break
-      p1 = p1_
-
-    input('pick')
-    end_pos = copy.copy(pos)
-    end_pos[2] += 0.2
-    self.moveTo(end_pos, rot, dynamic)
-
-    return not gripper_fully_closed
-
-  def place(self, pos, offset, dynamic=True):
-    ''''''
-    pass
+    # Grasp object and lift up to pre pose
+    self.openGripper()
+    self.moveTo(pre_pos, rot, dynamic)
 
   def moveTo(self, pos, rot, dynamic=True):
     ''''''
@@ -79,11 +82,33 @@ class UR5_RG2(object):
       ee_pos = self._getEndEffectorPosition()
       self._sendPositionCommand(ik_solve)
       # TODO: When bug is fixed make this smaller
-      while not np.allclose(ee_pos, pos, atol=0.02):
+      while not np.allclose(ee_pos, pos, atol=0.03):
         pb.stepSimulation()
         ee_pos = self._getEndEffectorPosition()
     else:
       self._setJointPoses(ik_solve)
+
+  def closeGripper(self):
+    ''''''
+    p1 = pb.getJointState(self.ur5_id, 10)[0]
+    pb.setJointMotorControlArray(self.ur5_id, [10,12,14,15,17,19], pb.VELOCITY_CONTROL, targetVelocities=[1.0]*6, forces=[self.gripper_close_force]*6)
+    while p1 < 0.4:
+      pb.stepSimulation()
+      p1_ = pb.getJointState(self.ur5_id, 10)[0]
+      if p1 >= p1_:
+        return False
+      p1 = p1_
+
+    return True
+
+  def openGripper(self):
+    ''''''
+    p1 = pb.getJointState(self.ur5_id, 10)[0]
+    pb.setJointMotorControlArray(self.ur5_id, [10,12,14,15,17,19], pb.VELOCITY_CONTROL, targetVelocities=[-1.0]*6, forces=[self.gripper_open_force]*6)
+
+    while p1 > 0.0:
+      pb.stepSimulation()
+      p1 = pb.getJointState(self.ur5_id, 10)[0]
 
   def _getEndEffectorPosition(self):
     ''''''
