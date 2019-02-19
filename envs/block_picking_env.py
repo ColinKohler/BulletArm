@@ -18,12 +18,15 @@ def createBlockPickingEnv(simulator_base_env, config):
       ''''''
       super(BlockPickingEnv, self).reset()
 
-      self.blocks = self._generateShapes(0, 1)
+      self.block = self._generateShapes(0, 1)[0]
+
       return self._getObservation()
 
     def _checkTermination(self):
       ''''''
-      return False
+      block_position = self._getObjectPosition(self.block)
+      print('{} > {}'.format(block_position[2], self.rest_pose[0][2] - 0.25))
+      return block_position[2] > self.rest_pose[0][2] - 0.27
 
   def _thunk():
     return BlockPickingEnv(config)

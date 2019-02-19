@@ -31,6 +31,10 @@ class PyBulletEnv(BaseEnv):
     self.view_matrix = pb.computeViewMatrixFromYawPitchRoll([0.5, 0.0, 0], 1.0, 180, 0, 0, 1)
     self.proj_matrix = pb.computeProjectionMatrix(-0.25, 0.25, -0.25, 0.25, -1.0, 10.0)
 
+    # Rest pose for arm
+    rot = pb.getQuaternionFromEuler([np.pi/2.,-np.pi,np.pi/2])
+    self.rest_pose = [[0.5, 0.0, 0.5], rot]
+
   def reset(self):
     ''''''
     pb.resetSimulation()
@@ -56,14 +60,11 @@ class PyBulletEnv(BaseEnv):
     motion_primative, x, y, rot = action
 
     # Get transform for action
-    print(self._getPrimativeHeight(motion_primative, x, y))
     pos = [x, y, self._getPrimativeHeight(motion_primative, x, y)]
 
     # Take action specfied by motion primative
     if motion_primative == self.PICK_PRIMATIVE:
-      print('picking start')
       self.ur5.pick(pos, self.pick_offset, dynamic=self.dynamic)
-      print('picking end')
     elif motion_primative == self.PLACE_PRIMATIVE:
       self.ur5.place(pos, self.place_offset, dynamic=self.dynamic)
     elif motion_primative == self.PUSH_PRIMATIVE:
@@ -71,8 +72,7 @@ class PyBulletEnv(BaseEnv):
     else:
       raise ValueError('Bad motion primative supplied for action.')
 
-    rot = pb.getQuaternionFromEuler([np.pi/2.,-np.pi,np.pi/2])
-    self.ur5.moveTo([0.5, 0.0, 0.2], rot, dynamic=self.dynamic)
+    self.ur5.moveTo(self.rest_pose[0], self.rest_pose[1], dynamic=self.dynamic)
 
     # Check for termination and get reward
     obs = self._getObservation()
@@ -117,6 +117,7 @@ class PyBulletEnv(BaseEnv):
           is_position_valid = np.all(np.sum(np.abs(np.array(positions) - np.array(position[:-1])), axis=1) > min_distance)
         else:
           is_position_valid = True
+      position = [0.5, 0.0, 0.05]
       positions.append(position[:-1])
       orientation = [0., 0., 0., 1.0]
       scale = 1.0
@@ -125,4 +126,9 @@ class PyBulletEnv(BaseEnv):
       shape_handles.append(handle)
 
     self.object_handles.extend(shape_handles)
+    for _ in range(50):
+      pb.stepSimulation()
     return shape_handles
+
+  def _getObjectPosition(self, obj):
+    return pb_obj_generation.getObjectPosition(obj)

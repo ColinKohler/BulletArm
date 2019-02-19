@@ -4,6 +4,7 @@ import numpy.random as npr
 import copy
 import pybullet_data
 
+import time
 class UR5_RG2(object):
   '''
 
@@ -44,18 +45,18 @@ class UR5_RG2(object):
     rot = pb.getQuaternionFromEuler([np.pi/2.,-np.pi,np.pi/2])
 
     # Move to pre-grasp pose and then grasp pose
-    print('pre pos: {}'.format(pre_pos))
+    time.sleep(1)
     self.moveTo(pre_pos, rot, dynamic)
-    print('pos: {}'.format(pos))
+    time.sleep(1)
     self.moveTo(pos, rot, dynamic)
 
     # Grasp object and lift up to pre pose
-    print('close')
+    time.sleep(1)
     gripper_fully_closed = self.closeGripper()
+    time.sleep(1)
     if gripper_fully_closed: self.openGripper()
-    print('pre pos: {}'.format(pre_pos))
+    time.sleep(1)
     self.moveTo(pre_pos, rot, dynamic)
-    print('done')
 
     return not gripper_fully_closed
 
