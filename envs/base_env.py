@@ -57,7 +57,7 @@ class BaseEnv(object):
     x_pixel, y_pixel = self._getPixelsFromPos(x, y)
     local_region = self.heightmap[max(y_pixel - 30, 0):min(y_pixel + 30, self.heightmap_size), \
                                   max(x_pixel - 30, 0):min(x_pixel + 30, self.heightmap_size)]
-    safe_z_pos = np.max(local_region) + self.workspace[2][0] + 0.2
+    safe_z_pos = np.max(local_region) + self.workspace[2][0] + 0.1
     safe_z_pos = safe_z_pos - offset if motion_primative == self.PICK_PRIMATIVE else safe_z_pos + offset
 
     return safe_z_pos

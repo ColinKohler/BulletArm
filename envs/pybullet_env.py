@@ -32,7 +32,7 @@ class PyBulletEnv(BaseEnv):
     self.proj_matrix = pb.computeProjectionMatrix(-0.25, 0.25, -0.25, 0.25, -1.0, 10.0)
 
     # Rest pose for arm
-    rot = pb.getQuaternionFromEuler([np.pi/2.,-np.pi,np.pi/2])
+    rot = pb.getQuaternionFromEuler([0,np.pi,0])
     self.rest_pose = [[0.5, 0.0, 0.5], rot]
 
   def reset(self):
