@@ -5,9 +5,9 @@ import numpy.random as npr
 import pybullet as pb
 import pybullet_data
 
-from envs.base_env import BaseEnv
-from pybullet_toolkit.robots.ur5_rg2 import UR5_RG2
-import pybullet_toolkit.utils.object_generation as pb_obj_generation
+from helping_hands_rl_envs.envs.base_env import BaseEnv
+from helping_hands_rl_envs.pybullet_toolkit.robots.ur5_rg2 import UR5_RG2
+import helping_hands_rl_envs.pybullet_toolkit.utils.object_generation as pb_obj_generation
 
 class PyBulletEnv(BaseEnv):
   '''
@@ -28,12 +28,12 @@ class PyBulletEnv(BaseEnv):
     self.place_offset = 0.25
 
     # Setup camera parameters
-    self.view_matrix = pb.computeViewMatrixFromYawPitchRoll([0.5, 0.0, 0], 1.0, 180, 0, 0, 1)
+    self.view_matrix = pb.computeViewMatrixFromYawPitchRoll([0.5, 0.0, 0], 1.0, -90, -90, 0, 2)
     self.proj_matrix = pb.computeProjectionMatrix(-0.25, 0.25, -0.25, 0.25, -1.0, 10.0)
 
     # Rest pose for arm
     rot = pb.getQuaternionFromEuler([0,np.pi,0])
-    self.rest_pose = [[0.5, 0.0, 0.5], rot]
+    self.rest_pose = [[0.0, 0.5, 0.5], rot]
 
   def reset(self):
     ''''''
@@ -48,7 +48,8 @@ class PyBulletEnv(BaseEnv):
 
     # Reset episode vars
     self.object_handles = list()
-    self.current_episode_steps = 0
+    self.heightmap = None
+    self.current_episode_steps = 1
 
     # Step simulation
     pb.stepSimulation()
@@ -60,7 +61,7 @@ class PyBulletEnv(BaseEnv):
     motion_primative, x, y, rot = action
 
     # Get transform for action
-    pos = [x, y, self._getPrimativeHeight(motion_primative, x, y)]
+    pos = [x, y, self._getPrimativeHeight(motion_primative, x, y) + 0.15]
 
     # Take action specfied by motion primative
     if motion_primative == self.PICK_PRIMATIVE:
@@ -92,7 +93,7 @@ class PyBulletEnv(BaseEnv):
                                   viewMatrix=self.view_matrix, projectionMatrix=self.proj_matrix)
     self.heightmap = image_arr[3] - np.min(image_arr[3])
 
-    return False, self.heightmap
+    return self.getHoldingState(), self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
   def _generateShapes(self, shape_type, num_shapes, size=None, pos=None, rot=None,
                            min_distance=0.1, padding=0.2):
@@ -117,7 +118,7 @@ class PyBulletEnv(BaseEnv):
           is_position_valid = np.all(np.sum(np.abs(np.array(positions) - np.array(position[:-1])), axis=1) > min_distance)
         else:
           is_position_valid = True
-      position = [0.5, 0.0, 0.05]
+      position = [0.35, 0.0, 0.05]
       positions.append(position[:-1])
       orientation = [0., 0., 0., 1.0]
       scale = 1.0
@@ -132,3 +133,6 @@ class PyBulletEnv(BaseEnv):
 
   def _getObjectPosition(self, obj):
     return pb_obj_generation.getObjectPosition(obj)
+
+  def getHoldingState(self):
+    return self.ur5.is_holding

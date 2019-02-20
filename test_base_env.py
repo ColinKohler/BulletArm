@@ -17,7 +17,7 @@ envs = env_factory.createEnvs(1, 'pybullet', 'block_picking', env_config)
 states, obs = envs.reset()
 
 while True:
-  plt.imshow(obs[0], cmap='gray'); plt.show()
-  actions = torch.tensor([[0, 0.5, 0.0, 0.0]])
+  plt.imshow(np.squeeze(obs[0]), cmap='gray'); plt.show()
+  actions = torch.tensor([[0, 0.35, 0.0, 0.0]])
   states_, obs_, rewards, dones = envs.step(actions)
   import ipdb; ipdb.set_trace()

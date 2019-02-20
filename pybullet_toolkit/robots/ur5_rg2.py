@@ -1,21 +1,24 @@
-import pybullet as pb
+import os
+import copy
+import time
 import numpy as np
 import numpy.random as npr
-import copy
-import pybullet_data
 from collections import deque
 
-import time
+import pybullet as pb
+import pybullet_data
+
+import helping_hands_rl_envs
+
 class UR5_RG2(object):
   '''
 
   '''
   def __init__(self):
     # Setup arm and gripper variables
-    self.max_velocity = 0.35
     self.max_forces = [150, 150, 150, 28, 28, 28, 10, 10, 10, 10, 10, 10]
-    self.gripper_close_force = 10
-    self.gripper_open_force = 10
+    self.gripper_close_force = [25] * 6
+    self.gripper_open_force = [25] * 6
 
     self.end_effector_index = 9
     self.gripper_index = 19
@@ -23,9 +26,13 @@ class UR5_RG2(object):
     self.home_positions = [0., 0., -2.137, 1.432, -0.915, -1.591, 0.071, 0., 0., 0.,
                            0, 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]
 
+    self.root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
+
   def reset(self):
     ''''''
-    self.id = pb.loadURDF('urdf/ur5/ur5_w_robotiq_85_gripper.urdf', [0,0,0], [0,0,0,1])
+    ur5_urdf_filepath = os.path.join(self.root_dir, 'urdf/ur5/ur5_w_robotiq_85_gripper.urdf')
+    self.id = pb.loadURDF(ur5_urdf_filepath, [0,0,0], [0,0,0,1])
+    self.is_holding = False
     self.num_joints = pb.getNumJoints(self.id)
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
 
@@ -47,20 +54,20 @@ class UR5_RG2(object):
     rot = pb.getQuaternionFromEuler([0,np.pi,0])
 
     # Move to pre-grasp pose and then grasp pose
-    time.sleep(1)
+    # time.sleep(1)
     self.moveTo(pre_pos, rot, dynamic)
-    time.sleep(1)
+    # time.sleep(1)
     self.moveTo(pos, rot, dynamic)
 
     # Grasp object and lift up to pre pose
-    time.sleep(1)
+    # time.sleep(1)
     gripper_fully_closed = self.closeGripper()
-    time.sleep(1)
+    # time.sleep(1)
     if gripper_fully_closed: self.openGripper()
-    time.sleep(1)
+    # time.sleep(1)
     self.moveTo(pre_pos, rot, dynamic)
 
-    return not gripper_fully_closed
+    self.is_holding = not gripper_fully_closed
 
   def place(self, pos, offset, dynamic=True):
     ''''''
@@ -77,6 +84,8 @@ class UR5_RG2(object):
     self.openGripper()
     self.moveTo(pre_pos, rot, dynamic)
 
+    self.is_holding = False
+
   def moveTo(self, pos, rot, dynamic=True):
     ''''''
     ik_solve = pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)
@@ -85,7 +94,6 @@ class UR5_RG2(object):
     if dynamic:
       ee_pos = self._getEndEffectorPosition()
       self._sendPositionCommand(ik_solve)
-
       past_ee_pos = deque(maxlen=5)
       while not np.allclose(ee_pos, pos, atol=0.01):
         pb.stepSimulation()
@@ -102,7 +110,7 @@ class UR5_RG2(object):
   def closeGripper(self):
     ''''''
     p1 = pb.getJointState(self.id, 10)[0]
-    pb.setJointMotorControlArray(self.id, [10,12,14,15,17,19], pb.VELOCITY_CONTROL, targetVelocities=[1.0]*6, forces=[self.gripper_close_force]*6)
+    pb.setJointMotorControlArray(self.id, [10,12,14,15,17,19], pb.VELOCITY_CONTROL, targetVelocities=[1.0]*6, forces=self.gripper_close_force)
     while p1 < 0.4:
       pb.stepSimulation()
       p1_ = pb.getJointState(self.id, 10)[0]
@@ -115,7 +123,7 @@ class UR5_RG2(object):
   def openGripper(self):
     ''''''
     p1 = pb.getJointState(self.id, 10)[0]
-    pb.setJointMotorControlArray(self.id, [10,12,14,15,17,19], pb.VELOCITY_CONTROL, targetVelocities=[-1.0]*6, forces=[self.gripper_open_force]*6)
+    pb.setJointMotorControlArray(self.id, [10,12,14,15,17,19], pb.VELOCITY_CONTROL, targetVelocities=[-1.0]*6, forces=self.gripper_open_force)
 
     while p1 > 0.0:
       pb.stepSimulation()
@@ -130,7 +138,7 @@ class UR5_RG2(object):
     ''''''
     num_motors = len(self.motor_indices)
     pb.setJointMotorControlArray(self.id, self.motor_indices, pb.POSITION_CONTROL, commands,
-                                 [0.]*num_motors, self.max_forces, [0.03]*num_motors, [0.1]*num_motors)
+                                 [0.]*num_motors, self.max_forces, [0.01]*num_motors, [1]*num_motors)
 
   def _setJointPoses(self, q_poses):
     ''''''

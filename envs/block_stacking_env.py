@@ -1,5 +1,5 @@
-from envs.vrep_env import VrepEnv
-from envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.vrep_env import VrepEnv
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 
 def createBlockStackingEnv(simulator_base_env, config):
   class BlockStackingEnv(simulator_base_env):

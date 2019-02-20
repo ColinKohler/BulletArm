@@ -1,11 +1,11 @@
 import numpy as np
 import numpy.random as npr
 
-from envs.vrep_env import VrepEnv
-from envs.pybullet_env import PyBulletEnv
-from envs.block_picking_env import createBlockPickingEnv
-from envs.block_stacking_env import createBlockStackingEnv
-from env_runner import EnvRunner
+from helping_hands_rl_envs.envs.vrep_env import VrepEnv
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.block_picking_env import createBlockPickingEnv
+from helping_hands_rl_envs.envs.block_stacking_env import createBlockStackingEnv
+from helping_hands_rl_envs.env_runner import EnvRunner
 
 def createEnvs(num_processes, simulator, env_type, config):
   '''

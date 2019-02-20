@@ -1,5 +1,5 @@
-from envs.vrep_env import VrepEnv
-from envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.vrep_env import VrepEnv
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 
 def createBlockPickingEnv(simulator_base_env, config):
   class BlockPickingEnv(simulator_base_env):
@@ -25,7 +25,7 @@ def createBlockPickingEnv(simulator_base_env, config):
     def _checkTermination(self):
       ''''''
       block_position = self._getObjectPosition(self.block)
-      print('{} > {}'.format(block_position[2], self.rest_pose[0][2] - 0.25))
+      # print('{} > {}'.format(block_position[2], self.rest_pose[0][2] - 0.25))
       return block_position[2] > self.rest_pose[0][2] - 0.27
 
   def _thunk():

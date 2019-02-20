@@ -4,14 +4,14 @@ import numpy as np
 import numpy.random as npr
 import scipy.misc
 
-from vrep_toolkit.simulation import vrep
-from vrep_toolkit.grippers.rg2 import RG2
-from vrep_toolkit.robots.ur5 import UR5
-from vrep_toolkit.sensors.vision_sensor import VisionSensor
-from vrep_toolkit.utils import vrep_utils
-from vrep_toolkit.utils import transformations
+from helping_hands_rl_envs.vrep_toolkit.simulation import vrep
+from helping_hands_rl_envs.vrep_toolkit.grippers.rg2 import RG2
+from helping_hands_rl_envs.vrep_toolkit.robots.ur5 import UR5
+from helping_hands_rl_envs.vrep_toolkit.sensors.vision_sensor import VisionSensor
+from helping_hands_rl_envs.vrep_toolkit.utils import vrep_utils
+from helping_hands_rl_envs.vrep_toolkit.utils import transformations
 
-from envs.base_env import BaseEnv
+from helping_hands_rl_envs.envs.base_env import BaseEnv
 
 class VrepEnv(BaseEnv):
   '''
