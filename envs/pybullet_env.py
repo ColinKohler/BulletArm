@@ -13,11 +13,14 @@ class PyBulletEnv(BaseEnv):
   '''
   PyBullet Arm RL base class.
   '''
-  def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, fast_mode=False):
+  def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, fast_mode=False, render=False):
     super(PyBulletEnv, self).__init__(seed, workspace, max_steps, heightmap_size)
 
     # Connect to pybullet and add data files to path
-    self.client = pb.connect(pb.GUI)
+    if render:
+      self.client = pb.connect(pb.GUI)
+    else:
+      self.client = pb.connect(pb.DIRECT)
     pb.setAdditionalSearchPath(pybullet_data.getDataPath())
     self.dynamic = not fast_mode
 
@@ -61,7 +64,7 @@ class PyBulletEnv(BaseEnv):
     motion_primative, x, y, rot = action
 
     # Get transform for action
-    pos = [x, y, self._getPrimativeHeight(motion_primative, x, y) + 0.15]
+    pos = [x, y, self._getPrimativeHeight(motion_primative, x, y) + 0.125]
 
     # Take action specfied by motion primative
     if motion_primative == self.PICK_PRIMATIVE:
@@ -118,10 +121,10 @@ class PyBulletEnv(BaseEnv):
           is_position_valid = np.all(np.sum(np.abs(np.array(positions) - np.array(position[:-1])), axis=1) > min_distance)
         else:
           is_position_valid = True
-      position = [0.35, 0.0, 0.05]
+      # position = [0.35, 0.0, 0.05]
       positions.append(position[:-1])
       orientation = [0., 0., 0., 1.0]
-      scale = 1.0
+      scale = npr.uniform(0.5, 0.7)
 
       handle = pb_obj_generation.generateCube(position, orientation, scale)
       shape_handles.append(handle)

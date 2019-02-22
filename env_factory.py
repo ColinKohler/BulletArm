@@ -1,3 +1,4 @@
+import copy
 import numpy as np
 import numpy.random as npr
 
@@ -20,7 +21,7 @@ def createEnvs(num_processes, simulator, env_type, config):
   Returns: EnvRunner containing all environments
   '''
   # Clone env config and generate random seeds for the different processes
-  configs = [config] * num_processes
+  configs = [copy.copy(config) for _ in range(num_processes)]
   for config in configs:
     config['seed'] = npr.randint(100)
 

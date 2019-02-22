@@ -1,6 +1,5 @@
 import os
 import copy
-import time
 import numpy as np
 import numpy.random as npr
 from collections import deque
@@ -54,18 +53,13 @@ class UR5_RG2(object):
     rot = pb.getQuaternionFromEuler([0,np.pi,0])
 
     # Move to pre-grasp pose and then grasp pose
-    # time.sleep(1)
     self.moveTo(pre_pos, rot, dynamic)
-    # time.sleep(1)
     self.moveTo(pos, rot, dynamic)
 
     # Grasp object and lift up to pre pose
-    # time.sleep(1)
     gripper_fully_closed = self.closeGripper()
-    # time.sleep(1)
-    if gripper_fully_closed: self.openGripper()
-    # time.sleep(1)
     self.moveTo(pre_pos, rot, dynamic)
+    if gripper_fully_closed: self.openGripper()
 
     self.is_holding = not gripper_fully_closed
 

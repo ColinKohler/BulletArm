@@ -35,7 +35,6 @@ class BaseEnv(object):
     self.CYLINDER = 2
     self.CONE = 3
 
-
   def _getShapeName(self, shape_type):
     ''' Get the shape name from the type (int) '''
     if shape_type == self.CUBE: return 'cube'
