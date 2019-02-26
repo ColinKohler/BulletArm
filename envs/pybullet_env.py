@@ -65,10 +65,11 @@ class PyBulletEnv(BaseEnv):
 
     # Get transform for action
     pos = [x, y, self._getPrimativeHeight(motion_primative, x, y) + 0.125]
+    rot = pb.getQuaternionFromEuler([0, np.pi, rot])
 
     # Take action specfied by motion primative
     if motion_primative == self.PICK_PRIMATIVE:
-      self.ur5.pick(pos, self.pick_offset, dynamic=self.dynamic)
+      self.ur5.pick(pos, rot, self.pick_offset, dynamic=self.dynamic)
     elif motion_primative == self.PLACE_PRIMATIVE:
       self.ur5.place(pos, self.place_offset, dynamic=self.dynamic)
     elif motion_primative == self.PUSH_PRIMATIVE:
