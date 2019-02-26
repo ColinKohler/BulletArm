@@ -188,12 +188,12 @@ class VrepEnv(BaseEnv):
 
       handle = vrep_utils.generateShape(self.sim_client, name, shape_type, size, position, orientation, mass, color)
       if handle is None:
-        return False, None
+        return None
       shape_handles.append(handle)
       time.sleep(sleep_time )
 
     self.object_handles.extend(shape_handles)
-    return True, shape_handles
+    return shape_handles
 
   def _getObjectPosition(self, obj):
     sim_ret, pos = vrep_utils.getObjectPosition(self.sim_client, obj)

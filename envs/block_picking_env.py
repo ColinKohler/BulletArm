@@ -26,7 +26,7 @@ def createBlockPickingEnv(simulator_base_env, config):
       ''''''
       block_position = self._getObjectPosition(self.block)
       # print('{} > {}'.format(block_position[2], self.rest_pose[0][2] - 0.25))
-      return block_position[2] > self.rest_pose[0][2] - 0.27
+      return block_position[2] > self.rest_pose[2,-1] - 0.1
 
   def _thunk():
     return BlockPickingEnv(config)
