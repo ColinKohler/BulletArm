@@ -39,9 +39,11 @@ class VrepEnv(BaseEnv):
     self.vrep_port = vrep_port
 
     # Set default poses
-    self.home_pose = transformations.euler_matrix(np.radians(90), 0, np.radians(90))
-    self.home_pose[:2,-1] = (self.workspace[:2,1] + self.workspace[:2,0]) / 2.0
-    self.home_pose[2,-1] = self.workspace[2,1] - 0.05
+    self.rest_pose = transformations.euler_matrix(np.radians(90), 0, np.radians(90))
+    self.rest_pose[:2, -1] = (self.workspace[:2, 1] + self.workspace[:2, 0]) / 2.0
+    self.rest_pose[2, -1] = self.workspace[2, 1] - 0.05
+
+    self.connectToVrep()
 
   def connectToVrep(self):
     '''
@@ -78,7 +80,7 @@ class VrepEnv(BaseEnv):
     Reset the simulation to initial state
     '''
     vrep_utils.restartSimulation(self.sim_client)
-    self.ur5.moveTo(self.home_pose, single_step=self.fast_mode)
+    self.ur5.moveTo(self.rest_pose, single_step=self.fast_mode)
 
     self.current_episode_steps = 1
     self.height_map = None
@@ -112,9 +114,9 @@ class VrepEnv(BaseEnv):
 
     # Move to home position
     if self.is_holding_object:
-      self.ur5.moveTo(self.home_pose)
+      self.ur5.moveTo(self.rest_pose)
     else:
-      self.ur5.moveTo(self.home_pose, single_step=self.fast_mode)
+      self.ur5.moveTo(self.rest_pose, single_step=self.fast_mode)
 
     # Check for termination and get reward
     obs = self._getObservation()
@@ -192,3 +194,7 @@ class VrepEnv(BaseEnv):
 
     self.object_handles.extend(shape_handles)
     return True, shape_handles
+
+  def _getObjectPosition(self, obj):
+    sim_ret, pos = vrep_utils.getObjectPosition(self.sim_client, obj)
+    return pos
