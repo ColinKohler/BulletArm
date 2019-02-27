@@ -150,7 +150,7 @@ class VrepEnv(BaseEnv):
     return (self.is_holding_object, depth_heightmap.reshape([self.heightmap_size, self.heightmap_size, 1]))
 
   # TODO: Fix this up.
-  def _generateShapes(self, shape_type, num_shapes, size=None, min_distance=0.1, padding=0.2, sleep_time=0.5):
+  def _generateShapes(self, shape_type, num_shapes, size=None, min_distance=0.1, padding=0.2, sleep_time=0.5, random_orientation=False):
     '''
     Generate shapes at random positions in the workspace.
     Args:
@@ -184,7 +184,10 @@ class VrepEnv(BaseEnv):
       positions.append(position[:-1])
 
       # orientation = [2*np.pi*np.random.random_sample(), 2*np.pi*np.random.random_sample(), 2*np.pi*np.random.random_sample()]
-      orientation = [0., 0., 0.]
+      if random_orientation:
+        orientation = [0., 0., 2*np.pi*np.random.random_sample()]
+      else:
+        orientation = [0., 0., 0.]
 
       handle = vrep_utils.generateShape(self.sim_client, name, shape_type, size, position, orientation, mass, color)
       if handle is None:
