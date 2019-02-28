@@ -28,7 +28,7 @@ def createEnvs(num_processes, simulator, env_type, config):
   # Set the super environment and add details to the configs as needed
   if simulator == 'vrep':
     for i in range(num_processes):
-      configs[i]['port'] = 19997+i
+      configs[i]['port'] = configs[i]['port'] + i if configs[i]['port'] else 19997 + i
     parent_env = VrepEnv
   elif simulator == 'pybullet':
     parent_env = PyBulletEnv
