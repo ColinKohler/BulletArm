@@ -18,7 +18,7 @@ def createBlockPickingEnv(simulator_base_env, config):
       ''''''
       super(BlockPickingEnv, self).reset()
 
-      self.block = self._generateShapes(0, 1)[0]
+      self.block = self._generateShapes(0, 1, random_orientation=True)[0]
 
       return self._getObservation()
 
