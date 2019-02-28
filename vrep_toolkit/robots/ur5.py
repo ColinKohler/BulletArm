@@ -64,26 +64,36 @@ class UR5(object):
     move_step = move_step_size * move_direction / move_magnitude
     num_move_steps = int(np.ceil(move_magnitude / move_step_size))
 
-    # Calculate the rotation increments
-    rotation = np.asarray(transformations.euler_from_matrix(pose))
-    rotation_step = rotation - UR5_target_orientation
+    # calculate the final orientation base on world frame
+    orientation = np.asarray(transformations.euler_from_matrix(pose, 'rxyz'))
+    # create an anchor for rotation
+    sim_ret, anchor = vrep.simxCreateDummy(self.sim_client, 0.01, None, vrep.simx_opmode_blocking)
+    utils.setObjectOrientation(self.sim_client, anchor, UR5_target_orientation)
+    # calculate rotation base on the UR5_target own frame (not world frame)
+    oTnew = pose
+    oTpre = transformations.euler_matrix(UR5_target_orientation[0], UR5_target_orientation[1], UR5_target_orientation[2], 'rxyz')
+    preTnew = np.linalg.inv(oTpre).dot(oTnew)
+    # calculate rotation increments
+    rotation = np.asarray(transformations.euler_from_matrix(preTnew, 'rxyz'))
+    rotation_step = rotation.copy()
     rotation_step[rotation >= 0] = 0.1
     rotation_step[rotation < 0] = -0.1
-    num_rotation_steps = np.ceil((rotation - UR5_target_orientation) / rotation_step).astype(np.int)
+    num_rotation_steps = np.floor(rotation / rotation_step).astype(np.int)
 
     # Move and rotate to the target pose
     if not single_step:
       for i in range(max(num_move_steps, np.max(num_rotation_steps))):
         pos = UR5_target_position + move_step*min(i, num_move_steps)
-        rot = [UR5_target_orientation[0]+rotation_step[0]*min(i, num_rotation_steps[0]),
-               UR5_target_orientation[1]+rotation_step[1]*min(i, num_rotation_steps[1]),
-               UR5_target_orientation[2]+rotation_step[2]*min(i, num_rotation_steps[2])]
+        rot = [rotation_step[0] * min(i, num_rotation_steps[0]),
+               rotation_step[1] * min(i, num_rotation_steps[1]),
+               rotation_step[2] * min(i, num_rotation_steps[2])]
         utils.setObjectPosition(self.sim_client, self.UR5_target, pos)
-        utils.setObjectOrientation(self.sim_client, self.UR5_target, rot)
+        # set rotation base on anchor
+        vrep.simxSetObjectOrientation(self.sim_client, self.UR5_target, anchor, rot, vrep.simx_opmode_blocking)
 
     utils.setObjectPosition(self.sim_client, self.UR5_target, pose[:3,-1])
-    utils.setObjectOrientation(self.sim_client, self.UR5_target, rotation)
-
+    utils.setObjectOrientation(self.sim_client, self.UR5_target, orientation)
+    vrep.simxRemoveObject(self.sim_client, anchor, vrep.simx_opmode_blocking)
 
   def pick(self, grasp_pose, offset, fast_mode=False):
     '''

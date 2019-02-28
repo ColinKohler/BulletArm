@@ -39,7 +39,7 @@ class VrepEnv(BaseEnv):
     self.vrep_port = vrep_port
 
     # Set default poses
-    self.rest_pose = transformations.euler_matrix(np.radians(90), 0, np.radians(90))
+    self.rest_pose = transformations.euler_matrix(np.radians(90), 0, np.radians(90), 'rxyz')
     self.rest_pose[:2, -1] = (self.workspace[:2, 1] + self.workspace[:2, 0]) / 2.0
     self.rest_pose[2, -1] = self.workspace[2, 1] - 0.05
 
@@ -101,7 +101,7 @@ class VrepEnv(BaseEnv):
       - done: Boolean flag indicating if the episode is done
     '''
     motion_primative, x, y, rot = action
-    T = transformations.euler_matrix(np.radians(90), rot, np.radians(90))
+    T = transformations.euler_matrix(np.radians(90), rot, np.radians(90), 'rxyz')
     T[:2,3] = [x, y]
     T[2,3] = self._getPrimativeHeight(motion_primative, x, y)
 
