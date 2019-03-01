@@ -7,10 +7,12 @@ def createBlockPickingEnv(simulator_base_env, config):
     def __init__(self, config):
       if simulator_base_env is VrepEnv:
         super(BlockPickingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
-                                              config['obs_size'], config['port'], config['fast_mode'])
+                                              config['obs_size'], config['port'], config['fast_mode'],
+                                              config['action_sequence'])
       elif simulator_base_env is PyBulletEnv:
         super(BlockPickingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
-                                              config['obs_size'], config['fast_mode'], config['render'])
+                                              config['obs_size'], config['fast_mode'], config['render'],
+                                              config['action_sequence'])
       else:
         raise ValueError('Bad simulator base env specified.')
 
@@ -25,8 +27,9 @@ def createBlockPickingEnv(simulator_base_env, config):
     def _checkTermination(self):
       ''''''
       block_position = self._getObjectPosition(self.block)
+      rest_pose = self._getRestPoseMatrix()
       # print('{} > {}'.format(block_position[2], self.rest_pose[0][2] - 0.25))
-      return block_position[2] > self.rest_pose[2,-1] - 0.25
+      return block_position[2] > rest_pose[2,-1] - 0.25
 
   def _thunk():
     return BlockPickingEnv(config)
