@@ -2,6 +2,7 @@ import copy
 import numpy as np
 import numpy.random as npr
 
+from helping_hands_rl_envs.envs.numpy_env import NumpyEnv
 from helping_hands_rl_envs.envs.vrep_env import VrepEnv
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.envs.block_picking_env import createBlockPickingEnv
@@ -32,8 +33,10 @@ def createEnvs(num_processes, simulator, env_type, config):
     parent_env = VrepEnv
   elif simulator == 'pybullet':
     parent_env = PyBulletEnv
+  elif simulator == 'numpy':
+    parent_env = NumpyEnv
   else:
-    raise ValueError('Invalid simulator passed to factory. Valid simulators are: \'vrep\', \'pybullet\'.')
+    raise ValueError('Invalid simulator passed to factory. Valid simulators are: \'numpy\', \'vrep\', \'pybullet\'.')
 
   # Create the various environments
   if env_type == 'block_picking':

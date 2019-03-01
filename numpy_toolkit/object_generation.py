@@ -15,15 +15,15 @@ class Cube(object):
     self.y_min, self.y_max = int(pos[1]-size/2), int(pos[1]+size/2)
 
   def addToHeightmap(self, heightmap):
-    heightmap[self.x_min:self.x_max, self.y_min:self.y_max] += self.size
+    heightmap[self.y_min:self.y_max, self.x_min:self.x_max] += self.size
     return heightmap
 
   def removeFromHeightmap(self, heightmap):
-    heightmap[self.x_min:self.x_max, self.y_min:self.y_max] -= self.size
+    heightmap[self.y_min:self.y_max, self.x_min:self.x_max] -= self.size
     return heightmap
 
   def isGraspValid(self, grasp_pos, grasp_rot):
-    return np.allclose(grasp_pos[:-1], self.pos[:-1])
+    return np.allclose(grasp_pos, self.pos[:-1], atol=(self.size/2))
 
 #=================================================================================================#
 #                                         Generation                                              #

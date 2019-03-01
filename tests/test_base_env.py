@@ -11,7 +11,7 @@ workspace = np.asarray([[0.25, 0.75],
                         [-0.25, 0.25],
                         [0, 0.4]])
 
-env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 250, 'fast_mode': False}
+env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 250, 'fast_mode': False, 'render': True}
 envs = env_factory.createEnvs(1, 'pybullet', 'block_picking', env_config)
 
 states, obs = envs.reset()
