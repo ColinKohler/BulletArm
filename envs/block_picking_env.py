@@ -31,6 +31,10 @@ def createBlockPickingEnv(simulator_base_env, config):
       # print('{} > {}'.format(block_position[2], self.rest_pose[0][2] - 0.25))
       return block_position[2] > rest_pose[2,-1] - 0.25
 
+    def _getObservation(self):
+      state, obs = super(BlockPickingEnv, self)._getObservation()
+      return 0, obs
+
   def _thunk():
     return BlockPickingEnv(config)
 
