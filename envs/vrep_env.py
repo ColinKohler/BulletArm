@@ -23,10 +23,12 @@ class VrepEnv(BaseEnv):
     - vrep_ip: IP address of machine where VRep simulator is running
     - vrep_port: Port to communicate with VRep simulator over
     - fast_mode: Teleport the arm when it doesn't interact with other objects.
+    - action_sequence: the format of input action in each step. It is a sequence of 'pxyzr'. Must include 'x' and 'y'
+                       eg. action_sequence = 'pxyr' => motion_primative, x, y, rot = action
   '''
   def __init__(self, seed, workspace, max_steps=10, heightmap_size=250,
-                     vrep_port=19997, fast_mode=False):
-    super(VrepEnv, self).__init__(seed, workspace, max_steps, heightmap_size)
+                     vrep_port=19997, fast_mode=False, action_sequence='pxyr'):
+    super(VrepEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence)
 
     # Enable fast mode or not
     self.fast_mode = fast_mode
@@ -100,10 +102,9 @@ class VrepEnv(BaseEnv):
       - reward: Reward acheived at current timestep
       - done: Boolean flag indicating if the episode is done
     '''
-    motion_primative, x, y, rot = action
+    motion_primative, x, y, z, rot = self._getSpecificAction(action)
     T = transformations.euler_matrix(np.radians(90), rot, np.radians(90), 'rxyz')
-    T[:2,3] = [x, y]
-    T[2,3] = self._getPrimativeHeight(motion_primative, x, y)
+    T[:3,3] = [x, y, z]
 
     #  Execute action
     if motion_primative == self.PICK_PRIMATIVE:
@@ -201,3 +202,6 @@ class VrepEnv(BaseEnv):
   def _getObjectPosition(self, obj):
     sim_ret, pos = vrep_utils.getObjectPosition(self.sim_client, obj)
     return pos
+
+  def _getRestPoseMatrix(self):
+    return self.rest_pose
