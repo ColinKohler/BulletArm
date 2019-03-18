@@ -1,11 +1,17 @@
+from helping_hands_rl_envs.envs.numpy_env import NumpyEnv
 from helping_hands_rl_envs.envs.vrep_env import VrepEnv
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+
+VALID_SIMULATORS = [NumpyEnv, VrepEnv, PyBulletEnv]
 
 def createBlockPickingEnv(simulator_base_env, config):
   class BlockPickingEnv(simulator_base_env):
     ''''''
     def __init__(self, config):
-      if simulator_base_env is VrepEnv:
+      if simulator_base_env is NumpyEnv:
+        super(BlockPickingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
+                                              config['obs_size'], config['render'])
+      elif simulator_base_env is VrepEnv:
         super(BlockPickingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
                                               config['obs_size'], config['port'], config['fast_mode'],
                                               config['action_sequence'])
