@@ -15,6 +15,7 @@ class NumpyEnv(BaseEnv):
     self.held_object = None
     self.heightmap = np.zeros((self.heightmap_size, self.heightmap_size))
     self.current_episode_steps = 1
+    self.objects = list()
 
     return self._getObservation()
 
@@ -63,6 +64,8 @@ class NumpyEnv(BaseEnv):
 
   def _getObservation(self):
     ''''''
+    for o in self.objects:
+      o.addToHeightmap(self.heightmap)
     return self._isHolding(), self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
   def _generateShapes(self, object_type, num_objects, min_distance=5, padding=50, random_orientation=False):
@@ -92,7 +95,7 @@ class NumpyEnv(BaseEnv):
       size = npr.randint(self.heightmap_size/10, self.heightmap_size/7)
       position[2] = int(size / 2)
 
-      obj, self.heightmap = object_generation.generateCube(self.heightmap, position, rotation, size)
+      obj, heightmap = object_generation.generateCube(self.heightmap, position, rotation, size)
       self.objects.append(obj)
 
     return self.objects

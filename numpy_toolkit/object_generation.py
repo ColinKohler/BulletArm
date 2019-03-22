@@ -19,8 +19,8 @@ class Cube(object):
 
   def addToHeightmap(self, heightmap):
     self.mask = np.zeros_like(heightmap, dtype=np.int)
-    self.mask[self.x_min:self.x_max, self.y_min:self.y_max] = 1
-    self.mask = rotateImage(self.mask, np.rad2deg(self.rot), (self.pos[0], self.pos[1]))
+    self.mask[self.y_min:self.y_max, self.x_min:self.x_max] = 1
+    self.mask = rotateImage(self.mask, np.rad2deg(self.rot), (self.pos[1], self.pos[0]))
     self.mask = (self.mask == 1)
     heightmap[self.mask] += self.size
     return heightmap
@@ -32,8 +32,13 @@ class Cube(object):
   def isGraspValid(self, grasp_pos, grasp_rot):
     if grasp_rot > np.pi:
       grasp_rot -= np.pi
+    valid_rot1 = self.rot
+    if valid_rot1 < np.pi/2:
+      valid_rot2 = valid_rot1 + np.pi/2
+    else:
+      valid_rot2 = valid_rot1 - np.pi/2
     return np.allclose(grasp_pos[:-1], self.pos[:-1], atol=(self.size/2)) and \
-           np.abs(grasp_rot-self.rot) < np.pi/4 and \
+           (np.abs(grasp_rot-valid_rot1) < np.pi/8 or np.abs(grasp_rot-valid_rot2) < np.pi/8) and \
            grasp_pos[-1] < self.pos[-1]
 
 #=================================================================================================#
