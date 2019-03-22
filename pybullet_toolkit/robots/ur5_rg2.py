@@ -8,6 +8,7 @@ import pybullet as pb
 import pybullet_data
 
 import helping_hands_rl_envs
+import time
 
 class UR5_RG2(object):
   '''
@@ -15,21 +16,20 @@ class UR5_RG2(object):
   '''
   def __init__(self):
     # Setup arm and gripper variables
-    self.max_forces = [150, 150, 150, 28, 28, 28, 10, 10, 10, 10, 10, 10]
-    self.gripper_close_force = [25] * 6
-    self.gripper_open_force = [25] * 6
+    self.max_forces = [150, 150, 150, 28, 28, 28, 10, 10]
+    self.gripper_close_force = [25] * 2
+    self.gripper_open_force = [25] * 2
 
     self.end_effector_index = 9
-    self.gripper_index = 19
+    self.gripper_index = 10
 
-    self.home_positions = [0., 0., -2.137, 1.432, -0.915, -1.591, 0.071, 0., 0., 0.,
-                           0, 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]
+    self.home_positions = [0., 0., -2.137, 1.432, -0.915, -1.591, 0.071, 0., 0., 0., 0., 0., 0.]
 
     self.root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
 
   def reset(self):
     ''''''
-    ur5_urdf_filepath = os.path.join(self.root_dir, 'urdf/ur5/ur5_w_robotiq_85_gripper.urdf')
+    ur5_urdf_filepath = os.path.join(self.root_dir, 'urdf/ur5/ur5_w_simple_gripper.urdf')
     self.id = pb.loadURDF(ur5_urdf_filepath, [0,0,0], [0,0,0,1])
     self.is_holding = False
     self.num_joints = pb.getNumJoints(self.id)
@@ -54,12 +54,17 @@ class UR5_RG2(object):
 
     # Move to pre-grasp pose and then grasp pose
     self.moveTo(pre_pos, rot, dynamic)
+    time.sleep(2)
     self.moveTo(pos, rot, dynamic)
+    time.sleep(2)
 
     # Grasp object and lift up to pre pose
     gripper_fully_closed = self.closeGripper()
+    time.sleep(2)
     self.moveTo(pre_pos, rot, dynamic)
+    time.sleep(2)
     if gripper_fully_closed: self.openGripper()
+    time.sleep(2)
 
     self.is_holding = not gripper_fully_closed
 
@@ -84,7 +89,6 @@ class UR5_RG2(object):
     ''''''
     ik_solve = pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)
 
-
     if dynamic:
       ee_pos = self._getEndEffectorPosition()
       self._sendPositionCommand(ik_solve)
@@ -104,8 +108,8 @@ class UR5_RG2(object):
   def closeGripper(self):
     ''''''
     p1 = pb.getJointState(self.id, 10)[0]
-    pb.setJointMotorControlArray(self.id, [10,12,14,15,17,19], pb.VELOCITY_CONTROL, targetVelocities=[1.0]*6, forces=self.gripper_close_force)
-    while p1 < 0.4:
+    pb.setJointMotorControlArray(self.id, [10,11], pb.VELOCITY_CONTROL, targetVelocities=[1.0, 1.0], forces=self.gripper_close_force)
+    while p1 < 0.036:
       pb.stepSimulation()
       p1_ = pb.getJointState(self.id, 10)[0]
       if p1 >= p1_:
@@ -117,7 +121,7 @@ class UR5_RG2(object):
   def openGripper(self):
     ''''''
     p1 = pb.getJointState(self.id, 10)[0]
-    pb.setJointMotorControlArray(self.id, [10,12,14,15,17,19], pb.VELOCITY_CONTROL, targetVelocities=[-1.0]*6, forces=self.gripper_open_force)
+    pb.setJointMotorControlArray(self.id, [10,11], pb.VELOCITY_CONTROL, targetVelocities=[-1.0, -1.0], forces=self.gripper_open_force)
 
     while p1 > 0.0:
       pb.stepSimulation()

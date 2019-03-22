@@ -64,7 +64,7 @@ class PyBulletEnv(BaseEnv):
     motion_primative, x, y, rot = action
 
     # Get transform for action
-    pos = [x, y, self._getPrimativeHeight(motion_primative, x, y) + 0.125]
+    pos = [x, y, self._getPrimativeHeight(motion_primative, x, y) + 0.025]
 
     # Take action specfied by motion primative
     if motion_primative == self.PICK_PRIMATIVE:
@@ -98,7 +98,7 @@ class PyBulletEnv(BaseEnv):
 
     return self.getHoldingState(), self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
-  def _generateShapes(self, shape_type, num_shapes, size=None, pos=None, rot=None,
+  def _generateObjects(self, shape_type, num_shapes, size=None, pos=None, rot=None,
                            min_distance=0.1, padding=0.2):
     ''''''
     shape_handles = list()
@@ -123,6 +123,7 @@ class PyBulletEnv(BaseEnv):
           is_position_valid = True
       # position = [0.35, 0.0, 0.05]
       positions.append(position[:-1])
+      print(position)
       orientation = [0., 0., 0., 1.0]
       scale = npr.uniform(0.5, 0.7)
 

@@ -23,7 +23,7 @@ class Cube(object):
     return heightmap
 
   def isGraspValid(self, grasp_pos, grasp_rot):
-    return np.allclose(grasp_pos, self.pos[:-1], atol=(self.size/2))
+    return np.allclose(grasp_pos, self.pos[:-1], atol=2*(self.size/4))
 
 #=================================================================================================#
 #                                         Generation                                              #
