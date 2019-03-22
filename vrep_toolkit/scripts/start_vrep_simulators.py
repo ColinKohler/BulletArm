@@ -2,7 +2,7 @@ import os
 import subprocess
 import argparse
 
-VREP_DIR = '/home/colin/software/V-REP_PRO_EDU_V3_5_0_Linux/'
+VREP_DIR = '/home/ur5/Software/V-REP_PRO_EDU_V3_5_0_Linux/'
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
