@@ -1,0 +1,345 @@
+<?xml version="1.0" ?>
+<robot name="assembled_robot" xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- THE ROBOT -->
+  <link name="world"/>
+  <joint name="world_joint" type="fixed">
+    <parent link="world"/>
+    <child link="simple_arm_base_link"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </joint>
+  <link name="simple_arm_base_link">
+    <visual>
+      <geometry>
+        <mesh filename="ur5_meshes/base.dae"/>
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="ur5_meshes/base.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="4.0"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+      <inertia ixx="0.00443333156" ixy="0.0" ixz="0.0" iyy="0.00443333156" iyz="0.0" izz="0.0072"/>
+    </inertial>
+  </link>
+  <joint name="simple_arm_shoulder_pan_joint" type="revolute">
+    <parent link="simple_arm_base_link"/>
+    <child link="simple_arm_shoulder_link"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.089159"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="150.0" lower="-6.28318530718" upper="6.28318530718" velocity="3.15"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
+  <link name="simple_arm_shoulder_link">
+    <visual>
+      <geometry>
+        <mesh filename="ur5_meshes/shoulder.dae"/>
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="ur5_meshes/shoulder.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="3.7"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+      <inertia ixx="0.010267495893" ixy="0.0" ixz="0.0" iyy="0.010267495893" iyz="0.0" izz="0.00666"/>
+    </inertial>
+  </link>
+  <joint name="simple_arm_shoulder_lift_joint" type="revolute">
+    <parent link="simple_arm_shoulder_link"/>
+    <child link="simple_arm_upper_arm_link"/>
+    <origin rpy="0.0 1.57079632679 0.0" xyz="0.0 0.13585 0.0"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="150.0" lower="-6.28318530718" upper="6.28318530718" velocity="3.15"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
+  <link name="simple_arm_upper_arm_link">
+    <visual>
+      <geometry>
+        <mesh filename="ur5_meshes/upperarm.dae"/>
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="ur5_meshes/upperarm.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="8.393"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.28"/>
+      <inertia ixx="0.22689067591" ixy="0.0" ixz="0.0" iyy="0.22689067591" iyz="0.0" izz="0.0151074"/>
+    </inertial>
+  </link>
+  <joint name="simple_arm_elbow_joint" type="revolute">
+    <parent link="simple_arm_upper_arm_link"/>
+    <child link="simple_arm_forearm_link"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 -0.1197 0.425"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="150.0" lower="-3.14159265359" upper="3.14159265359" velocity="3.15"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
+  <link name="simple_arm_forearm_link">
+    <visual>
+      <geometry>
+        <mesh filename="ur5_meshes/forearm.dae"/>
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="ur5_meshes/forearm.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="2.275"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.25"/>
+      <inertia ixx="0.049443313556" ixy="0.0" ixz="0.0" iyy="0.049443313556" iyz="0.0" izz="0.004095"/>
+    </inertial>
+  </link>
+  <joint name="simple_arm_wrist_1_joint" type="revolute">
+    <parent link="simple_arm_forearm_link"/>
+    <child link="simple_arm_wrist_1_link"/>
+    <origin rpy="0.0 1.57079632679 0.0" xyz="0.0 0.0 0.39225"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="28.0" lower="-6.28318530718" upper="6.28318530718" velocity="3.2"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
+  <link name="simple_arm_wrist_1_link">
+    <visual>
+      <geometry>
+        <mesh filename="ur5_meshes/wrist1.dae"/>
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="ur5_meshes/wrist1.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.219"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+      <inertia ixx="0.111172755531" ixy="0.0" ixz="0.0" iyy="0.111172755531" iyz="0.0" izz="0.21942"/>
+    </inertial>
+  </link>
+  <joint name="simple_arm_wrist_2_joint" type="revolute">
+    <parent link="simple_arm_wrist_1_link"/>
+    <child link="simple_arm_wrist_2_link"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.093 0.0"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="28.0" lower="-6.28318530718" upper="6.28318530718" velocity="3.2"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
+  <link name="simple_arm_wrist_2_link">
+    <visual>
+      <geometry>
+        <mesh filename="ur5_meshes/wrist2.dae"/>
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="ur5_meshes/wrist2.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.219"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+      <inertia ixx="0.111172755531" ixy="0.0" ixz="0.0" iyy="0.111172755531" iyz="0.0" izz="0.21942"/>
+    </inertial>
+  </link>
+  <joint name="simple_arm_wrist_3_joint" type="revolute">
+    <parent link="simple_arm_wrist_2_link"/>
+    <child link="simple_arm_wrist_3_link"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.09465"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="28.0" lower="-6.28318530718" upper="6.28318530718" velocity="3.2"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
+  <link name="simple_arm_wrist_3_link">
+    <visual>
+      <geometry>
+        <mesh filename="ur5_meshes/wrist3.dae"/>
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="ur5_meshes/wrist3.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.1879"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+      <inertia ixx="0.0171364731454" ixy="0.0" ixz="0.0" iyy="0.0171364731454" iyz="0.0" izz="0.033822"/>
+    </inertial>
+  </link>
+  <joint name="simple_arm_ee_fixed_joint" type="fixed">
+    <parent link="simple_arm_wrist_3_link"/>
+    <child link="simple_arm_ee_link"/>
+    <origin rpy="0.0 0.0 1.57079632679" xyz="0.0 0.0823 0.0"/>
+  </joint>
+  <link name="simple_arm_ee_link">
+    <collision>
+      <geometry>
+        <box size="0.01 0.01 0.01"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="-0.01 0 0"/>
+    </collision>
+  </link>
+  <transmission name="simple_arm_shoulder_pan_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="simple_arm_shoulder_pan_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="simple_arm_shoulder_pan_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="simple_arm_shoulder_lift_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="simple_arm_shoulder_lift_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="simple_arm_shoulder_lift_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="simple_arm_elbow_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="simple_arm_elbow_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="simple_arm_elbow_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="simple_arm_wrist_1_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="simple_arm_wrist_1_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="simple_arm_wrist_1_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="simple_arm_wrist_2_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="simple_arm_wrist_2_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="simple_arm_wrist_2_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="simple_arm_wrist_3_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="simple_arm_wrist_3_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="simple_arm_wrist_3_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <!-- nothing to do here at the moment -->
+  <!-- ROS base_link to UR 'Base' Coordinates transform -->
+  <link name="simple_arm_base"/>
+  <joint name="simple_arm_base_link-base_fixed_joint" type="fixed">
+    <!-- NOTE: this rotation is only needed as long as base_link itself is
+                 not corrected wrt the real robot (ie: rotated over 180
+                 degrees)
+      -->
+    <origin rpy="0 0 -3.14159265359" xyz="0 0 0"/>
+    <parent link="simple_arm_base_link"/>
+    <child link="simple_arm_base"/>
+  </joint>
+  <!-- Frame coincident with all-zeros TCP on UR controller -->
+  <link name="simple_arm_tool0"/>
+  <joint name="simple_arm_wrist_3_link-tool0_fixed_joint" type="fixed">
+    <origin rpy="-1.57079632679 0 0" xyz="0 0.0823 0"/>
+    <parent link="simple_arm_wrist_3_link"/>
+    <child link="simple_arm_tool0"/>
+  </joint>
+  <!-- base -->
+  <joint name="simple_arm_tool0_simple_gripper_base_joint" type="fixed">
+    <origin rpy="0 0 1.5708" xyz="0 0 0.0025"/>
+    <parent link="simple_arm_tool0"/>
+    <child link="simple_gripper_base"/>
+  </joint>
+  <link name="simple_gripper_base">
+    <visual>
+      <geometry>
+        <box size="0.085 0.025 0.005"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.02"/>
+      <geometry>
+        <box size="0.005 0.0025 0.005"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- right finger -->
+  <joint name="simple_gripper_right_finger_joint" type="prismatic">
+    <origin rpy="0 0 0" xyz="0.04 0.0 0.0275"/>
+    <parent link="simple_gripper_base"/>
+    <child link="simple_gripper_right_finger"/>
+    <axis xyz="-1 0 0"/>
+    <limit effort="60" lower="0.0" upper="0.0360" velocity="0.02"/>
+  </joint>
+  <link name="simple_gripper_right_finger">
+    <visual>
+      <geometry>
+        <box size="0.005 0.025 0.06"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0.0"/>
+      <geometry>
+        <box size="0.005 0.005 0.0375"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- left finger -->
+  <joint name="simple_gripper_left_finger_joint" type="prismatic">
+    <origin rpy="0 0 0" xyz="-0.04 0.0 0.0275"/>
+    <parent link="simple_gripper_base"/>
+    <child link="simple_gripper_left_finger"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="60" lower="0.0" upper="0.0360" velocity="0.02"/>
+  </joint>
+  <link name="simple_gripper_left_finger">
+    <visual>
+      <geometry>
+        <box size="0.005 0.025 0.06"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0.0"/>
+      <geometry>
+        <box size="0.005 0.005 0.0375"/>
+      </geometry>
+    </collision>
+  </link>
+</robot>

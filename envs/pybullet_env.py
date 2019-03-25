@@ -129,6 +129,7 @@ class PyBulletEnv(BaseEnv):
       else:
         orientation = pb.getQuaternionFromEuler([0., 0., 0.])
       # orientation = [0., 0., 0., 1.0]
+
       scale = npr.uniform(0.5, 0.7)
 
       handle = pb_obj_generation.generateCube(position, orientation, scale)
