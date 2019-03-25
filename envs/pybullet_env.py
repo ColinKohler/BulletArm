@@ -150,3 +150,8 @@ class PyBulletEnv(BaseEnv):
     T[:3, :3] = np.array(pb.getMatrixFromQuaternion(self.rest_pose[1])).reshape((3, 3))
     T[:3, 3] = self.rest_pose[0]
     return T
+
+  def _isObjectHeld(self, obj):
+    block_position = self._getObjectPosition(obj)
+    rest_pose = self._getRestPoseMatrix()
+    return block_position[2] > rest_pose[2, -1] - 0.25

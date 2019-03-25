@@ -27,19 +27,16 @@ def createBlockPickingEnv(simulator_base_env, config):
       ''''''
       super(BlockPickingEnv, self).reset()
 
-      self.block = self._generateShapes(0, 1, random_orientation=True)[0]
+      self.blocks = self._generateShapes(0, 1, random_orientation=True)
 
       return self._getObservation()
 
     def _checkTermination(self):
       ''''''
-      if self.simulator_base_env is NumpyEnv:
-        return self._isHolding()
-      else:
-        block_position = self._getObjectPosition(self.block)
-        rest_pose = self._getRestPoseMatrix()
-        # print('{} > {}'.format(block_position[2], self.rest_pose[0][2] - 0.25))
-        return block_position[2] > rest_pose[2,-1] - 0.25
+      for obj in self.blocks:
+        if self._isObjectHeld(obj):
+          return True
+      return False
 
     def _getObservation(self):
       state, obs = super(BlockPickingEnv, self)._getObservation()

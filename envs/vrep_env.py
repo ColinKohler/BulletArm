@@ -213,3 +213,8 @@ class VrepEnv(BaseEnv):
 
   def _getRestPoseMatrix(self):
     return self.rest_pose
+
+  def _isObjectHeld(self, obj):
+    block_position = self._getObjectPosition(obj)
+    rest_pose = self._getRestPoseMatrix()
+    return block_position[2] > rest_pose[2, -1] - 0.25
