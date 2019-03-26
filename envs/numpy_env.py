@@ -78,10 +78,9 @@ class NumpyEnv(BaseEnv):
 
       is_position_valid = False
       while not is_position_valid:
-        # position = [int((x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2),
-        #             int((y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2),
-        #             0]
-        position = [100, 200, 0]
+        position = [int((x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2),
+                    int((y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2),
+                    0]
         if positions:
           is_position_valid = np.all(np.sum(np.abs(np.array(positions) - np.array(position)), axis=1) > min_distance)
         else:
@@ -89,8 +88,7 @@ class NumpyEnv(BaseEnv):
 
       positions.append(position)
       if random_orientation:
-        # rotation = np.pi*np.random.random_sample()
-        rotation = 0.0
+        rotation = np.pi*np.random.random_sample()
       else:
         rotation = 0.0
       size = npr.randint(self.heightmap_size/10, self.heightmap_size/7)
