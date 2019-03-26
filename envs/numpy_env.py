@@ -9,6 +9,7 @@ class NumpyEnv(BaseEnv):
     super(NumpyEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence)
 
     self.render = render
+    self.offset = self.heightmap_size/20
 
   def reset(self):
     ''''''
@@ -54,7 +55,6 @@ class NumpyEnv(BaseEnv):
     for obj in height_sorted_objects:
       if obj.isGraspValid([x,y,z], rot):
         obj.removeFromHeightmap(self.heightmap)
-        self.objects.remove(obj)
         return obj
 
     return None
@@ -78,9 +78,10 @@ class NumpyEnv(BaseEnv):
 
       is_position_valid = False
       while not is_position_valid:
-        position = [int((x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2),
-                    int((y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2),
-                    0]
+        # position = [int((x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2),
+        #             int((y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2),
+        #             0]
+        position = [100, 200, 0]
         if positions:
           is_position_valid = np.all(np.sum(np.abs(np.array(positions) - np.array(position)), axis=1) > min_distance)
         else:
@@ -88,7 +89,8 @@ class NumpyEnv(BaseEnv):
 
       positions.append(position)
       if random_orientation:
-        rotation = np.pi*np.random.random_sample()
+        # rotation = np.pi*np.random.random_sample()
+        rotation = 0.0
       else:
         rotation = 0.0
       size = npr.randint(self.heightmap_size/10, self.heightmap_size/7)
