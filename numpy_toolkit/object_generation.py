@@ -13,7 +13,6 @@ class Cube(object):
     self.size = size
 
     self.mask = None
-
     self.x_min, self.x_max = int(pos[0]-size/2), int(pos[0]+size/2)
     self.y_min, self.y_max = int(pos[1]-size/2), int(pos[1]+size/2)
 
@@ -37,9 +36,9 @@ class Cube(object):
       valid_rot2 = valid_rot1 + np.pi/2
     else:
       valid_rot2 = valid_rot1 - np.pi/2
-    return np.allclose(grasp_pos[:-1], self.pos[:-1], atol=(self.size/2)) and \
-           (np.abs(grasp_rot-valid_rot1) < np.pi/8 or np.abs(grasp_rot-valid_rot2) < np.pi/8) and \
-           grasp_pos[-1] < self.pos[-1]
+    return np.allclose(grasp_pos[:-1], self.pos[:-1], atol=3*(self.size/2)) and \
+           grasp_pos[-1] < (self.pos[-1] * 2)
+           # (np.abs(grasp_rot-valid_rot1) < np.pi/1 or np.abs(grasp_rot-valid_rot2) < np.pi/1) and \
 
 #=================================================================================================#
 #                                         Generation                                              #

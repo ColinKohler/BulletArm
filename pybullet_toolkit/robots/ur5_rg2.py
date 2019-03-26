@@ -16,7 +16,7 @@ class UR5_RG2(object):
   '''
   def __init__(self):
     # Setup arm and gripper variables
-    self.max_forces = [150, 150, 150, 28, 28, 28, 10, 10]
+    self.max_forces = [150, 150, 150, 28, 28, 28, 25, 25]
     self.gripper_close_force = [25] * 2
     self.gripper_open_force = [25] * 2
 
@@ -60,6 +60,7 @@ class UR5_RG2(object):
 
     # Grasp object and lift up to pre pose
     gripper_fully_closed = self.closeGripper()
+    print(gripper_fully_closed)
     self.moveTo(pre_pos, pre_rot, dynamic)
     time.sleep(2)
     if gripper_fully_closed: self.openGripper()
@@ -67,20 +68,25 @@ class UR5_RG2(object):
 
     self.is_holding = not gripper_fully_closed
 
-  def place(self, pos, offset, dynamic=True):
+  def place(self, pos, rot, offset, dynamic=True):
     ''''''
     # Setup pre-grasp pos and default orientation
     pre_pos = copy.copy(pos)
     pre_pos[2] += offset
-    rot = pb.getQuaternionFromEuler([np.pi/2.,-np.pi,np.pi/2])
+    pre_rot = pb.getQuaternionFromEuler([0, np.pi, 0])
 
     # Move to pre-grasp pose and then grasp pose
-    self.moveTo(pre_pos, rot, dynamic)
+    time.sleep(2)
+    self.moveTo(pre_pos, pre_rot, dynamic)
+    time.sleep(2)
     self.moveTo(pos, rot, dynamic)
+    time.sleep(2)
 
     # Grasp object and lift up to pre pose
     self.openGripper()
-    self.moveTo(pre_pos, rot, dynamic)
+    time.sleep(2)
+    self.moveTo(pre_pos, pre_rot, dynamic)
+    time.sleep(2)
 
     self.is_holding = False
 

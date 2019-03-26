@@ -54,7 +54,6 @@ class NumpyEnv(BaseEnv):
     for obj in height_sorted_objects:
       if obj.isGraspValid([x,y,z], rot):
         obj.removeFromHeightmap(self.heightmap)
-        self.objects.remove(obj)
         return obj
 
     return None
@@ -67,7 +66,7 @@ class NumpyEnv(BaseEnv):
     ''''''
     return self._isHolding(), self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
-  def _generateShapes(self, object_type, num_objects, min_distance=5, padding=50, random_orientation=False):
+  def _generateShapes(self, object_type, num_objects, min_distance=5, padding=5, random_orientation=False):
     ''''''
     self.objects = list()
     positions = list()
@@ -91,10 +90,10 @@ class NumpyEnv(BaseEnv):
         rotation = np.pi*np.random.random_sample()
       else:
         rotation = 0.0
-      size = npr.randint(self.heightmap_size/10, self.heightmap_size/7)
+      size = npr.randint(self.heightmap_size/6, self.heightmap_size/4)
       position[2] = int(size / 2)
 
-      obj, heightmap = object_generation.generateCube(self.heightmap, position, rotation, size)
+      obj, self.heightmap = object_generation.generateCube(self.heightmap, position, rotation, size)
       self.objects.append(obj)
 
     return self.objects
