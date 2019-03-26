@@ -5,7 +5,18 @@ class BaseEnv(object):
   '''
   Base Arm RL environment.
   '''
-  def __init__(self, seed, workspace, max_steps, heightmap_size):
+  def __init__(self, seed, workspace, max_steps, heightmap_size, action_sequence='pxyr'):
+    """
+    constructor of BaseEnv
+    Args:
+      seed: random seed used in this environment
+      workspace: workspace of the arm
+      max_steps: maximum number of steps in an episode
+      heightmap_size: size of observation heightmap
+      action_sequence: the format of input action in each step. It is a sequence of 'pxyzr'. Must include 'x' and 'y'
+                       eg: action_sequence = 'pxyr' => motion_primative, x, y, rot = action
+
+    """
     # Set random numpy seed
     npr.seed(seed)
 
@@ -34,6 +45,27 @@ class BaseEnv(object):
     self.SPHERE = 1
     self.CYLINDER = 2
     self.CONE = 3
+
+    assert action_sequence.find('x') != -1
+    assert action_sequence.find('y') != -1
+    self.action_sequence = action_sequence
+
+  def _getSpecificAction(self, action):
+    """
+    decode input action base on self.action_sequence
+    Args:
+      action: action tensor
+
+    Returns: motion_primative, x, y, z, rot
+
+    """
+    primative_idx, x_idx, y_idx, z_idx, rot_idx = map(lambda a: self.action_sequence.find(a), ['p', 'x', 'y', 'z', 'r'])
+    motion_primative = action[primative_idx] if primative_idx != -1 else 0
+    x = action[x_idx]
+    y = action[y_idx]
+    z = action[z_idx] if z_idx != -1 else self._getPrimativeHeight(motion_primative, x, y)
+    rot = action[rot_idx] if rot_idx != -1 else 0
+    return motion_primative, x, y, z, rot
 
   def _getShapeName(self, shape_type):
     ''' Get the shape name from the type (int) '''

@@ -13,8 +13,8 @@ class PyBulletEnv(BaseEnv):
   '''
   PyBullet Arm RL base class.
   '''
-  def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, fast_mode=False, render=False):
-    super(PyBulletEnv, self).__init__(seed, workspace, max_steps, heightmap_size)
+  def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, fast_mode=False, render=False, action_sequence='pxyr'):
+    super(PyBulletEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence)
 
     # Connect to pybullet and add data files to path
     if render:
@@ -61,14 +61,15 @@ class PyBulletEnv(BaseEnv):
 
   def step(self, action):
     ''''''
-    motion_primative, x, y, rot = action
+    motion_primative, x, y, z, rot = self._getSpecificAction(action)
 
     # Get transform for action
-    pos = [x, y, self._getPrimativeHeight(motion_primative, x, y) + 0.025]
+    pos = [x, y, z + 0.125]
+    rot = pb.getQuaternionFromEuler([0, np.pi, rot])
 
     # Take action specfied by motion primative
     if motion_primative == self.PICK_PRIMATIVE:
-      self.ur5.pick(pos, self.pick_offset, dynamic=self.dynamic)
+      self.ur5.pick(pos, rot, self.pick_offset, dynamic=self.dynamic)
     elif motion_primative == self.PLACE_PRIMATIVE:
       self.ur5.place(pos, self.place_offset, dynamic=self.dynamic)
     elif motion_primative == self.PUSH_PRIMATIVE:
@@ -98,8 +99,8 @@ class PyBulletEnv(BaseEnv):
 
     return self.getHoldingState(), self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
-  def _generateObjects(self, shape_type, num_shapes, size=None, pos=None, rot=None,
-                           min_distance=0.1, padding=0.2):
+  def _generateShapes(self, shape_type, num_shapes, size=None, pos=None, rot=None,
+                           min_distance=0.1, padding=0.2, random_orientation=False):
     ''''''
     shape_handles = list()
     positions = list()
@@ -123,8 +124,12 @@ class PyBulletEnv(BaseEnv):
           is_position_valid = True
       # position = [0.35, 0.0, 0.05]
       positions.append(position[:-1])
-      print(position)
-      orientation = [0., 0., 0., 1.0]
+      if random_orientation:
+        orientation = pb.getQuaternionFromEuler([0., 0., 2*np.pi*np.random.random_sample()])
+      else:
+        orientation = pb.getQuaternionFromEuler([0., 0., 0.])
+      # orientation = [0., 0., 0., 1.0]
+
       scale = npr.uniform(0.5, 0.7)
 
       handle = pb_obj_generation.generateCube(position, orientation, scale)
@@ -140,3 +145,14 @@ class PyBulletEnv(BaseEnv):
 
   def getHoldingState(self):
     return self.ur5.is_holding
+
+  def _getRestPoseMatrix(self):
+    T = np.eye(4)
+    T[:3, :3] = np.array(pb.getMatrixFromQuaternion(self.rest_pose[1])).reshape((3, 3))
+    T[:3, 3] = self.rest_pose[0]
+    return T
+
+  def _isObjectHeld(self, obj):
+    block_position = self._getObjectPosition(obj)
+    rest_pose = self._getRestPoseMatrix()
+    return block_position[2] > rest_pose[2, -1] - 0.25

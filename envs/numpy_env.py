@@ -5,8 +5,8 @@ from helping_hands_rl_envs.envs.base_env import BaseEnv
 from helping_hands_rl_envs.numpy_toolkit import object_generation
 
 class NumpyEnv(BaseEnv):
-  def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, render=False):
-    super(NumpyEnv, self).__init__(seed, workspace, max_steps, heightmap_size)
+  def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, render=False, action_sequence='pxyr'):
+    super(NumpyEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence)
 
     self.render = render
 
@@ -15,17 +15,18 @@ class NumpyEnv(BaseEnv):
     self.held_object = None
     self.heightmap = np.zeros((self.heightmap_size, self.heightmap_size))
     self.current_episode_steps = 1
+    self.objects = list()
 
     return self._getObservation()
 
   def step(self, action):
     ''''''
-    motion_primative, x, y, rot = action
+    motion_primative, x, y, z, rot = self._getSpecificAction(action)
 
     if motion_primative == self.PICK_PRIMATIVE:
-      self.held_object = self._pick(x, y, rot)
+      self.held_object = self._pick(x, y, z, rot)
     elif motion_primative == self.PLACE_PRIMATIVE:
-      self._place(x, y, rot)
+      self._place(x, y, z, rot)
       self.is_holding = None
     elif  motion_primative == self.PUSH_PRIMATIVE:
       pass
@@ -44,20 +45,21 @@ class NumpyEnv(BaseEnv):
 
     return obs, reward, done
 
-  def _pick(self, x, y, rot):
+  def _pick(self, x, y, z, rot):
     ''''''
     if self._isHolding():
       return self.held_object
 
     height_sorted_objects = sorted(self.objects, key=lambda x: x.pos[-1], reverse=True)
     for obj in height_sorted_objects:
-      if obj.isGraspValid([x,y], rot):
+      if obj.isGraspValid([x,y,z], rot):
         obj.removeFromHeightmap(self.heightmap)
+        self.objects.remove(obj)
         return obj
 
     return None
 
-  def _place(self, x, y, rot):
+  def _place(self, x, y, z, rot):
     ''''''
     pass
 
@@ -65,7 +67,7 @@ class NumpyEnv(BaseEnv):
     ''''''
     return self._isHolding(), self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
-  def _generateObjects(self, object_type, num_objects, min_distance=5, padding=10):
+  def _generateShapes(self, object_type, num_objects, min_distance=5, padding=50, random_orientation=False):
     ''''''
     self.objects = list()
     positions = list()
@@ -85,11 +87,14 @@ class NumpyEnv(BaseEnv):
           is_position_valid = True
 
       positions.append(position)
-      rotation = 0.0
-      size = npr.randint(5, 10)
+      if random_orientation:
+        rotation = np.pi*np.random.random_sample()
+      else:
+        rotation = 0.0
+      size = npr.randint(self.heightmap_size/10, self.heightmap_size/7)
       position[2] = int(size / 2)
 
-      obj, self.heightmap = object_generation.generateCube(self.heightmap, position, rotation, size)
+      obj, heightmap = object_generation.generateCube(self.heightmap, position, rotation, size)
       self.objects.append(obj)
 
     return self.objects

@@ -23,10 +23,12 @@ class VrepEnv(BaseEnv):
     - vrep_ip: IP address of machine where VRep simulator is running
     - vrep_port: Port to communicate with VRep simulator over
     - fast_mode: Teleport the arm when it doesn't interact with other objects.
+    - action_sequence: the format of input action in each step. It is a sequence of 'pxyzr'. Must include 'x' and 'y'
+                       eg. action_sequence = 'pxyr' => motion_primative, x, y, rot = action
   '''
   def __init__(self, seed, workspace, max_steps=10, heightmap_size=250,
-                     vrep_port=19997, fast_mode=False):
-    super(VrepEnv, self).__init__(seed, workspace, max_steps, heightmap_size)
+                     vrep_port=19997, fast_mode=False, action_sequence='pxyr'):
+    super(VrepEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence)
 
     # Enable fast mode or not
     self.fast_mode = fast_mode
@@ -39,9 +41,15 @@ class VrepEnv(BaseEnv):
     self.vrep_port = vrep_port
 
     # Set default poses
-    self.home_pose = transformations.euler_matrix(np.radians(90), 0, np.radians(90))
-    self.home_pose[:2,-1] = (self.workspace[:2,1] + self.workspace[:2,0]) / 2.0
-    self.home_pose[2,-1] = self.workspace[2,1] - 0.05
+    self.rest_pose = transformations.euler_matrix(np.radians(90), 0, np.radians(90), 'rxyz')
+    self.rest_pose[:2, -1] = (self.workspace[:2, 1] + self.workspace[:2, 0]) / 2.0
+    self.rest_pose[2, -1] = self.workspace[2, 1] - 0.05
+
+    self.connectToVrep()
+
+    vrep_utils.restartSimulation(self.sim_client)
+
+    self.object_handles = list()
 
   def connectToVrep(self):
     '''
@@ -77,8 +85,11 @@ class VrepEnv(BaseEnv):
     '''
     Reset the simulation to initial state
     '''
-    vrep_utils.restartSimulation(self.sim_client)
-    self.ur5.moveTo(self.home_pose, single_step=self.fast_mode)
+    # vrep_utils.restartSimulation(self.sim_client)
+    for obj in self.object_handles:
+      vrep.simxRemoveObject(self.sim_client, obj, vrep.simx_opmode_blocking)
+
+    self.ur5.moveTo(self.rest_pose, single_step=self.fast_mode)
 
     self.current_episode_steps = 1
     self.height_map = None
@@ -98,10 +109,9 @@ class VrepEnv(BaseEnv):
       - reward: Reward acheived at current timestep
       - done: Boolean flag indicating if the episode is done
     '''
-    motion_primative, x, y, rot = action
-    T = transformations.euler_matrix(np.radians(90), rot, np.radians(90))
-    T[:2,3] = [x, y]
-    T[2,3] = self._getPrimativeHeight(motion_primative, x, y)
+    motion_primative, x, y, z, rot = self._getSpecificAction(action)
+    T = transformations.euler_matrix(np.radians(90), rot, np.radians(90), 'rxyz')
+    T[:3,3] = [x, y, z]
 
     #  Execute action
     if motion_primative == self.PICK_PRIMATIVE:
@@ -112,9 +122,9 @@ class VrepEnv(BaseEnv):
 
     # Move to home position
     if self.is_holding_object:
-      self.ur5.moveTo(self.home_pose)
+      self.ur5.moveTo(self.rest_pose, 0.05)
     else:
-      self.ur5.moveTo(self.home_pose, single_step=self.fast_mode)
+      self.ur5.moveTo(self.rest_pose, single_step=self.fast_mode)
 
     # Check for termination and get reward
     obs = self._getObservation()
@@ -128,6 +138,7 @@ class VrepEnv(BaseEnv):
 
     # Check to see if sim is valid and reset otherwise
     if not done and not self.isSimValid():
+      vrep_utils.restartSimulation(self.sim_client)
       done = True
 
     return obs, reward, done
@@ -148,7 +159,7 @@ class VrepEnv(BaseEnv):
     return (self.is_holding_object, depth_heightmap.reshape([self.heightmap_size, self.heightmap_size, 1]))
 
   # TODO: Fix this up.
-  def _generateShapes(self, shape_type, num_shapes, size=None, min_distance=0.1, padding=0.2, sleep_time=0.5):
+  def _generateShapes(self, shape_type, num_shapes, size=None, min_distance=0.1, padding=0.2, sleep_time=0.2, random_orientation=False):
     '''
     Generate shapes at random positions in the workspace.
     Args:
@@ -182,13 +193,28 @@ class VrepEnv(BaseEnv):
       positions.append(position[:-1])
 
       # orientation = [2*np.pi*np.random.random_sample(), 2*np.pi*np.random.random_sample(), 2*np.pi*np.random.random_sample()]
-      orientation = [0., 0., 0.]
+      if random_orientation:
+        orientation = [0., 0., 2*np.pi*np.random.random_sample()]
+      else:
+        orientation = [0., 0., 0.]
 
       handle = vrep_utils.generateShape(self.sim_client, name, shape_type, size, position, orientation, mass, color)
       if handle is None:
-        return False, None
+        return None
       shape_handles.append(handle)
       time.sleep(sleep_time )
 
     self.object_handles.extend(shape_handles)
-    return True, shape_handles
+    return shape_handles
+
+  def _getObjectPosition(self, obj):
+    sim_ret, pos = vrep_utils.getObjectPosition(self.sim_client, obj)
+    return pos
+
+  def _getRestPoseMatrix(self):
+    return self.rest_pose
+
+  def _isObjectHeld(self, obj):
+    block_position = self._getObjectPosition(obj)
+    rest_pose = self._getRestPoseMatrix()
+    return block_position[2] > rest_pose[2, -1] - 0.25

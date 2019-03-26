@@ -107,7 +107,7 @@ def getObjectPose(sim_client, obj_handle):
   sim_ret, obj_position = getObjectPosition(sim_client, obj_handle)
   sim_ret, obj_orientation = getObjectOrientation(sim_client, obj_handle)
 
-  obj_pose = transformations.euler_matrix(obj_orientation[0], obj_orientation[1], obj_orientation[2])
+  obj_pose = transformations.euler_matrix(obj_orientation[0], obj_orientation[1], obj_orientation[2], 'rxyz')
   obj_pose[:3,-1] = np.asarray(obj_position)
 
   return sim_ret, obj_pose

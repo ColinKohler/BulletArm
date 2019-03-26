@@ -44,24 +44,23 @@ class UR5_RG2(object):
         self.motor_names.append(str(joint_info[1]))
         self.motor_indices.append(i)
 
-  def pick(self, pos, offset, dynamic=True):
+  def pick(self, pos, rot, offset, dynamic=True):
     ''''''
     # Setup pre-grasp pos and default orientation
     pre_pos = copy.copy(pos)
     pre_pos[2] += offset
     # rot = pb.getQuaternionFromEuler([np.pi/2.,-np.pi,np.pi/2])
-    rot = pb.getQuaternionFromEuler([0,np.pi,0])
+    pre_rot = pb.getQuaternionFromEuler([0,np.pi,0])
 
     # Move to pre-grasp pose and then grasp pose
-    self.moveTo(pre_pos, rot, dynamic)
+    self.moveTo(pre_pos, pre_rot, dynamic)
     time.sleep(2)
     self.moveTo(pos, rot, dynamic)
     time.sleep(2)
 
     # Grasp object and lift up to pre pose
     gripper_fully_closed = self.closeGripper()
-    time.sleep(2)
-    self.moveTo(pre_pos, rot, dynamic)
+    self.moveTo(pre_pos, pre_rot, dynamic)
     time.sleep(2)
     if gripper_fully_closed: self.openGripper()
     time.sleep(2)

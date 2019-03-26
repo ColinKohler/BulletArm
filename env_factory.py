@@ -21,6 +21,9 @@ def createEnvs(num_processes, simulator, env_type, config):
 
   Returns: EnvRunner containing all environments
   '''
+  if 'action_sequence' not in config:
+    config['action_sequence'] = 'pxyr'
+
   # Clone env config and generate random seeds for the different processes
   configs = [copy.copy(config) for _ in range(num_processes)]
   for config in configs:
@@ -29,7 +32,10 @@ def createEnvs(num_processes, simulator, env_type, config):
   # Set the super environment and add details to the configs as needed
   if simulator == 'vrep':
     for i in range(num_processes):
-      configs[i]['port'] = 19997+i
+      if 'port' in configs[i]:
+        configs[i]['port'] += i
+      else:
+        configs[i]['port'] = 19997+i
     parent_env = VrepEnv
   elif simulator == 'pybullet':
     parent_env = PyBulletEnv

@@ -10,27 +10,37 @@ def createBlockPickingEnv(simulator_base_env, config):
     def __init__(self, config):
       if simulator_base_env is NumpyEnv:
         super(BlockPickingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
-                                              config['obs_size'], config['render'])
+                                              config['obs_size'], config['render'], config['action_sequence'])
       elif simulator_base_env is VrepEnv:
         super(BlockPickingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
-                                              config['obs_size'], config['port'], config['fast_mode'])
+                                              config['obs_size'], config['port'], config['fast_mode'],
+                                              config['action_sequence'])
       elif simulator_base_env is PyBulletEnv:
         super(BlockPickingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
-                                              config['obs_size'], config['fast_mode'], config['render'])
+                                              config['obs_size'], config['fast_mode'], config['render'],
+                                              config['action_sequence'])
       else:
         raise ValueError('Bad simulator base env specified.')
+      self.simulator_base_env = simulator_base_env
 
     def reset(self):
       ''''''
       super(BlockPickingEnv, self).reset()
 
-      self.block = self._generateObjects(0, 1)[0]
+      self.blocks = self._generateShapes(0, 1, random_orientation=True)
 
       return self._getObservation()
 
     def _checkTermination(self):
       ''''''
-      return self._isObjectHeld(self.block)
+      for obj in self.blocks:
+        if self._isObjectHeld(obj):
+          return True
+      return False
+
+    def _getObservation(self):
+      state, obs = super(BlockPickingEnv, self)._getObservation()
+      return 0, obs
 
   def _thunk():
     return BlockPickingEnv(config)
