@@ -39,7 +39,7 @@ class Cube(object):
       valid_rot2 = valid_rot1 - np.pi/2
     return np.allclose(grasp_pos[:-1], self.pos[:-1], atol=(self.size/2)) and \
            (np.abs(grasp_rot-valid_rot1) < np.pi/8 or np.abs(grasp_rot-valid_rot2) < np.pi/8) and \
-           grasp_pos[-1] < self.pos[-1]
+           grasp_pos[-1] < self.size
 
 #=================================================================================================#
 #                                         Generation                                              #
