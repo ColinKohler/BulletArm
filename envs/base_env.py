@@ -32,7 +32,7 @@ class BaseEnv(object):
 
     # Setup observation and action spaces
     self.obs_shape = self.heightmap_shape
-    self.action_space = np.concatenate((self.workspace[:2,:], np.array([[0.0], [2*np.pi]])), axis=1)
+    self.action_space = np.concatenate((self.workspace[:2,:].T, np.array([[0.0], [0.0]])), axis=1)
     self.action_shape = 3
 
     # Motion primatives
