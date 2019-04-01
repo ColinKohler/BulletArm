@@ -16,14 +16,12 @@ class UR5_RG2(object):
   '''
   def __init__(self):
     # Setup arm and gripper variables
-    self.max_forces = [150, 150, 150, 28, 28, 28, 25, 25]
-    self.gripper_close_force = [25] * 2
-    self.gripper_open_force = [25] * 2
+    self.max_forces = [150, 150, 150, 28, 28, 28, 500, 500]
+    self.gripper_close_force = [500] * 2
+    self.gripper_open_force = [500] * 2
+    self.end_effector_index = 12
 
-    self.end_effector_index = 9
-    self.gripper_index = 10
-
-    self.home_positions = [0., 0., -2.137, 1.432, -0.915, -1.591, 0.071, 0., 0., 0., 0., 0., 0.]
+    self.home_positions = [0., 0., -2.137, 1.432, -0.915, -1.591, 0.071, 0., 0., 0., 0., 0., 0., 0.]
 
     self.root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
 
@@ -50,21 +48,16 @@ class UR5_RG2(object):
     pre_pos = copy.copy(pos)
     pre_pos[2] += offset
     # rot = pb.getQuaternionFromEuler([np.pi/2.,-np.pi,np.pi/2])
-    pre_rot = pb.getQuaternionFromEuler([0,np.pi,0])
+    pre_rot = pb.getQuaternionFromEuler([0, np.pi, 0])
 
     # Move to pre-grasp pose and then grasp pose
     self.moveTo(pre_pos, pre_rot, dynamic)
-    time.sleep(2)
     self.moveTo(pos, rot, dynamic)
-    time.sleep(2)
 
     # Grasp object and lift up to pre pose
     gripper_fully_closed = self.closeGripper()
-    print(gripper_fully_closed)
     self.moveTo(pre_pos, pre_rot, dynamic)
-    time.sleep(2)
     if gripper_fully_closed: self.openGripper()
-    time.sleep(2)
 
     self.is_holding = not gripper_fully_closed
 
@@ -76,17 +69,12 @@ class UR5_RG2(object):
     pre_rot = pb.getQuaternionFromEuler([0, np.pi, 0])
 
     # Move to pre-grasp pose and then grasp pose
-    time.sleep(2)
     self.moveTo(pre_pos, pre_rot, dynamic)
-    time.sleep(2)
     self.moveTo(pos, rot, dynamic)
-    time.sleep(2)
 
     # Grasp object and lift up to pre pose
     self.openGripper()
-    time.sleep(2)
     self.moveTo(pre_pos, pre_rot, dynamic)
-    time.sleep(2)
 
     self.is_holding = False
 
@@ -99,6 +87,7 @@ class UR5_RG2(object):
       self._sendPositionCommand(ik_solve)
       past_ee_pos = deque(maxlen=5)
       while not np.allclose(ee_pos, pos, atol=0.01):
+        time.sleep(0.005)
         pb.stepSimulation()
 
         # Check to see if the arm can't move any close to the desired position
@@ -141,7 +130,7 @@ class UR5_RG2(object):
     ''''''
     num_motors = len(self.motor_indices)
     pb.setJointMotorControlArray(self.id, self.motor_indices, pb.POSITION_CONTROL, commands,
-                                 [0.]*num_motors, self.max_forces, [0.01]*num_motors, [1]*num_motors)
+                                 [0.]*num_motors, self.max_forces, [0.01]*num_motors, [1.0]*num_motors)
 
   def _setJointPoses(self, q_poses):
     ''''''

@@ -66,7 +66,7 @@ class NumpyEnv(BaseEnv):
     ''''''
     return self._isHolding(), self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
-  def _generateShapes(self, object_type, num_objects, min_distance=5, padding=5, random_orientation=False):
+  def _generateShapes(self, object_type, num_objects, min_distance=5, padding=10, random_orientation=False):
     ''''''
     self.objects = list()
     positions = list()
