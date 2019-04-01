@@ -99,6 +99,11 @@ class NumpyEnv(BaseEnv):
 
     return self.objects
 
+  def _removeObject(self, obj):
+    if obj == self.held_object:
+      self.held_object = None
+    self.objects.remove(obj)
+
   def _isHolding(self):
     return not (self.held_object is None)
 
