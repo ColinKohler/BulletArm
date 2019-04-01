@@ -64,14 +64,14 @@ class PyBulletEnv(BaseEnv):
     motion_primative, x, y, z, rot = self._getSpecificAction(action)
 
     # Get transform for action
-    pos = [x, y, z + 0.125]
+    pos = [x, y, z + 0.025]
     rot = pb.getQuaternionFromEuler([0, np.pi, rot])
 
     # Take action specfied by motion primative
     if motion_primative == self.PICK_PRIMATIVE:
       self.ur5.pick(pos, rot, self.pick_offset, dynamic=self.dynamic)
     elif motion_primative == self.PLACE_PRIMATIVE:
-      self.ur5.place(pos, self.place_offset, dynamic=self.dynamic)
+      self.ur5.place(pos, rot, self.place_offset, dynamic=self.dynamic)
     elif motion_primative == self.PUSH_PRIMATIVE:
       pass
     else:
@@ -122,18 +122,17 @@ class PyBulletEnv(BaseEnv):
           is_position_valid = np.all(np.sum(np.abs(np.array(positions) - np.array(position[:-1])), axis=1) > min_distance)
         else:
           is_position_valid = True
-      # position = [0.35, 0.0, 0.05]
       positions.append(position[:-1])
       if random_orientation:
         orientation = pb.getQuaternionFromEuler([0., 0., 2*np.pi*np.random.random_sample()])
       else:
         orientation = pb.getQuaternionFromEuler([0., 0., 0.])
-      # orientation = [0., 0., 0., 1.0]
 
       scale = npr.uniform(0.5, 0.7)
 
       handle = pb_obj_generation.generateCube(position, orientation, scale)
       shape_handles.append(handle)
+      print(position)
 
     self.object_handles.extend(shape_handles)
     for _ in range(50):

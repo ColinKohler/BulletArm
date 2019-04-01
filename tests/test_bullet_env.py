@@ -9,7 +9,7 @@ from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 workspace = np.asarray([[0.25, 0.75],
                         [-0.25, 0.25],
                         [0, 0.50]])
-env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 50, 'render': True, 'fast_mode': False, 'seed': 1}
+env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 50, 'render': True, 'fast_mode': False, 'seed': 1, 'action_sequence': 'pxyr'}
 env = createBlockPickingEnv(PyBulletEnv, env_config)()
 
 states, obs = env.reset()

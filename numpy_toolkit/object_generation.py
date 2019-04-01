@@ -13,7 +13,6 @@ class Cube(object):
     self.size = size
 
     self.mask = None
-
     self.x_min, self.x_max = int(pos[0]-size/2), int(pos[0]+size/2)
     self.y_min, self.y_max = int(pos[1]-size/2), int(pos[1]+size/2)
 

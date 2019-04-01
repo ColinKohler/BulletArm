@@ -299,6 +299,11 @@
         <box size="0.005 0.0025 0.005"/>
       </geometry>
     </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.1" ixy="0.1" ixz="0.1" iyy="0.1" iyz="0.1" izz="0.1"/>
+    </inertial>
   </link>
   <!-- right finger -->
   <joint name="simple_gripper_right_finger_joint" type="prismatic">
@@ -320,6 +325,16 @@
         <box size="0.005 0.005 0.0375"/>
       </geometry>
     </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+      <mass value="0.5"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+    <contact>
+      <lateral_friction value="1.0"/>
+      <spinning_friction value="1.0"/>
+      <rolling_friction value="1.0"/>
+    </contact>
   </link>
   <!-- left finger -->
   <joint name="simple_gripper_left_finger_joint" type="prismatic">
@@ -341,5 +356,15 @@
         <box size="0.005 0.005 0.0375"/>
       </geometry>
     </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+      <mass value="0.5"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+    <contact>
+      <lateral_friction value="1.0"/>
+      <spinning_friction value="1.0"/>
+      <rolling_friction value="1.0"/>
+    </contact>
   </link>
 </robot>
