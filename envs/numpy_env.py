@@ -35,9 +35,10 @@ class NumpyEnv(BaseEnv):
       raise ValueError('Bad motion primative supplied for action.')
 
     # Check for termination and get reward
+    reward = 1.0 if self._isHolding() else 0.0
     obs = self._getObservation()
     done = self._checkTermination()
-    reward = 1.0 if done else 0.0
+    # reward = 1.0 if done else 0.0
 
     # Check to see if we are at the max step
     if not done:
@@ -81,6 +82,7 @@ class NumpyEnv(BaseEnv):
         position = [int((x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2),
                     int((y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2),
                     0]
+        # position = [(i+1) * 50, (i+1) * 50, 0]
         if positions:
           is_position_valid = np.all(np.sum(np.abs(np.array(positions) - np.array(position)), axis=1) > min_distance)
         else:
@@ -89,6 +91,7 @@ class NumpyEnv(BaseEnv):
       positions.append(position)
       if random_orientation:
         rotation = np.pi*np.random.random_sample()
+        # rotation = 0.0
       else:
         rotation = 0.0
       size = npr.randint(self.heightmap_size/10, self.heightmap_size/7)
