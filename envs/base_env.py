@@ -50,6 +50,8 @@ class BaseEnv(object):
     assert action_sequence.find('y') != -1
     self.action_sequence = action_sequence
 
+    self.offset = 0.01
+
   def _getSpecificAction(self, action):
     """
     decode input action base on self.action_sequence
@@ -75,7 +77,7 @@ class BaseEnv(object):
     elif shape_type == self.CONE: return 'cone'
     else: return 'unknown'
 
-  def _getPrimativeHeight(self, motion_primative, x, y, offset=0.01):
+  def _getPrimativeHeight(self, motion_primative, x, y):
     '''
     Get the z position for the given action using the current heightmap.
     Args:
@@ -89,7 +91,7 @@ class BaseEnv(object):
     local_region = self.heightmap[max(y_pixel - 30, 0):min(y_pixel + 30, self.heightmap_size), \
                                   max(x_pixel - 30, 0):min(x_pixel + 30, self.heightmap_size)]
     safe_z_pos = np.max(local_region) + self.workspace[2][0]
-    safe_z_pos = safe_z_pos - offset if motion_primative == self.PICK_PRIMATIVE else safe_z_pos + offset
+    safe_z_pos = safe_z_pos - self.offset if motion_primative == self.PICK_PRIMATIVE else safe_z_pos + self.offset
 
     return safe_z_pos
 
