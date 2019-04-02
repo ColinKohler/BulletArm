@@ -25,7 +25,7 @@ class PyBulletEnv(BaseEnv):
     self.dynamic = not fast_mode
 
     # Environment specific variables
-    self._timestep = 1. / 240.
+    self._timestep = 1. / 360.
     self.ur5 = UR5_RG2()
     self.pick_offset = 0.25
     self.place_offset = 0.25
@@ -64,7 +64,7 @@ class PyBulletEnv(BaseEnv):
     motion_primative, x, y, z, rot = self._getSpecificAction(action)
 
     # Get transform for action
-    pos = [x, y, z + 0.025]
+    pos = [x, y, z]
     rot = pb.getQuaternionFromEuler([0, np.pi, rot])
 
     # Take action specfied by motion primative
