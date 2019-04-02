@@ -14,6 +14,6 @@ env = createBlockPickingEnv(PyBulletEnv, env_config)()
 
 states, obs = env.reset()
 while True:
-  env.step((0, 0.475, 0.066, 0))
-  env.step((1, 0.475, 0.066, 0))
+  env.step((0, 0.475, 0.066, 45))
+  env.step((1, 0.475, 0.066, 45))
   import ipdb; ipdb.set_trace()

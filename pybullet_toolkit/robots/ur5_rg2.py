@@ -16,9 +16,9 @@ class UR5_RG2(object):
   '''
   def __init__(self):
     # Setup arm and gripper variables
-    self.max_forces = [150, 150, 150, 28, 28, 28, 500, 500]
-    self.gripper_close_force = [500] * 2
-    self.gripper_open_force = [500] * 2
+    self.max_forces = [150, 150, 150, 28, 28, 28, 100, 100]
+    self.gripper_close_force = [100] * 2
+    self.gripper_open_force = [100] * 2
     self.end_effector_index = 12
 
     self.home_positions = [0., 0., -2.137, 1.432, -0.915, -1.591, 0.071, 0., 0., 0., 0., 0., 0., 0.]
@@ -87,7 +87,7 @@ class UR5_RG2(object):
       self._sendPositionCommand(ik_solve)
       past_ee_pos = deque(maxlen=5)
       while not np.allclose(ee_pos, pos, atol=0.01):
-        time.sleep(0.005)
+        # time.sleep(0.005)
         pb.stepSimulation()
 
         # Check to see if the arm can't move any close to the desired position
