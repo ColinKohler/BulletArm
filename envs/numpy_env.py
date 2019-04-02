@@ -9,6 +9,7 @@ class NumpyEnv(BaseEnv):
     super(NumpyEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence)
 
     self.render = render
+    self.offset = self.heightmap_size/20
 
   def reset(self):
     ''''''

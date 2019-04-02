@@ -15,7 +15,7 @@ envs = env_factory.createEnvs(1, 'numpy', 'block_picking', env_config)
 for i in range(100):
   states, obs = envs.reset()
   plt.imshow(obs.squeeze(), cmap='gray')
-  actions = torch.tensor([[100, 200, i * 10, i * np.pi/8]])
+  actions = torch.tensor([[100, 200, i * np.pi/8]])
   plt.show()
   states_, obs_, rewards, dones = envs.step(actions)
   pass
