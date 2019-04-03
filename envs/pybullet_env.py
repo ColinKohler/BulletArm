@@ -25,7 +25,7 @@ class PyBulletEnv(BaseEnv):
     self.dynamic = not fast_mode
 
     # Environment specific variables
-    self._timestep = 1. / 360.
+    self._timestep = 1. / 240.
     self.ur5 = UR5_RG2()
     self.pick_offset = 0.25
     self.place_offset = 0.25
@@ -128,7 +128,7 @@ class PyBulletEnv(BaseEnv):
       else:
         orientation = pb.getQuaternionFromEuler([0., 0., 0.])
 
-      scale = npr.uniform(0.5, 0.7)
+      scale = npr.uniform(0.7, 1.0)
 
       handle = pb_obj_generation.generateCube(position, orientation, scale)
       shape_handles.append(handle)

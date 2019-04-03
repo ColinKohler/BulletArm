@@ -48,7 +48,7 @@ class UR5_RG2(object):
     pre_pos = copy.copy(pos)
     pre_pos[2] += offset
     # rot = pb.getQuaternionFromEuler([np.pi/2.,-np.pi,np.pi/2])
-    pre_rot = pb.getQuaternionFromEuler([0, np.pi, 0])
+    pre_rot = rot
 
     # Move to pre-grasp pose and then grasp pose
     self.moveTo(pre_pos, pre_rot, dynamic)
