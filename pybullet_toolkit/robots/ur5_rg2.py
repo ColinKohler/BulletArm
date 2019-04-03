@@ -80,24 +80,66 @@ class UR5_RG2(object):
 
   def moveTo(self, pos, rot, dynamic=True):
     ''''''
-    ik_solve = pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)
+    closeEnough = False
+    it = 0
+    threshold = 1e-3
+    max_iteration = 100
 
-    if dynamic:
-      ee_pos = self._getEndEffectorPosition()
-      self._sendPositionCommand(ik_solve)
-      past_ee_pos = deque(maxlen=5)
-      while not np.allclose(ee_pos, pos, atol=0.01):
-        # time.sleep(0.005)
-        pb.stepSimulation()
+    while not closeEnough and it < max_iteration:
+      ik_solve = pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)
+      if dynamic:
+        self._sendPositionCommand(ik_solve)
+        past_joint_pos = deque(maxlen=5)
+        joint_state = pb.getJointStates(self.id, self.motor_indices)
+        joint_pos = list(zip(*joint_state))[0]
+        while not np.allclose(joint_pos, ik_solve, atol=1e-2):
+          pb.stepSimulation()
+          # Check to see if the arm can't move any close to the desired joint position
+          if len(past_joint_pos) == 5 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=1e-3):
+            break
+          past_joint_pos.append(joint_pos)
+          joint_state = pb.getJointStates(self.id, self.motor_indices)
+          joint_pos = list(zip(*joint_state))[0]
+      else:
+        self._setJointPoses(ik_solve)
 
-        # Check to see if the arm can't move any close to the desired position
-        if len(past_ee_pos) == 5 and np.allclose(past_ee_pos[0], past_ee_pos):
-          break
+      ls = pb.getLinkState(self.id, self.end_effector_index)
+      new_pos = list(ls[4])
+      new_rot = list(ls[5])
+      diff = np.array(new_pos + new_rot) - np.array(list(pos) + list(rot))
+      diff = np.abs(diff).mean()
+      closeEnough = (diff < threshold)
+      it += 1
+    pass
 
-        past_ee_pos.append(ee_pos)
-        ee_pos = self._getEndEffectorPosition()
-    else:
-      self._setJointPoses(ik_solve)
+    # # ik_solve = pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)
+    # ik_solve = self.accurateCalculateInverseKinematics(pos, rot, 1e-4, 1000)
+    # if dynamic:
+    #   ee_pos = self._getEndEffectorPosition()
+    #   ee_rot = self._getEndEffectorRotation()
+    #   self._sendPositionCommand(ik_solve)
+    #   past_ee_pos = deque(maxlen=5)
+    #   past_ee_rot = deque(maxlen=5)
+    #   while not (np.allclose(ee_pos, pos, atol=0.01) and np.allclose(ee_rot, rot, atol=0.01)):
+    #     # time.sleep(0.005)
+    #     pb.stepSimulation()
+    #
+    #     # Check to see if the arm can't move any close to the desired position
+    #     if len(past_ee_pos) == 5 and np.allclose(past_ee_pos[0], past_ee_pos, 1e-3) \
+    #         and len(past_ee_rot) == 5 and np.allclose(past_ee_rot[0], past_ee_rot, 1e-3):
+    #     # if len(past_ee_pos) == 5 and np.allclose(past_ee_pos[0], past_ee_pos):
+    #       js = pb.getJointStates(self.id, self.motor_indices)
+    #       jp = list(zip(*js))[0]
+    #       error = np.array(ik_solve) - jp
+    #       print(max(error))
+    #       break
+    #
+    #     past_ee_pos.append(ee_pos)
+    #     past_ee_rot.append(ee_rot)
+    #     ee_pos = self._getEndEffectorPosition()
+    #     ee_rot = self._getEndEffectorRotation()
+    # else:
+    #   self._setJointPoses(ik_solve)
 
   def closeGripper(self):
     ''''''
@@ -125,6 +167,10 @@ class UR5_RG2(object):
     ''''''
     state = pb.getLinkState(self.id, self.end_effector_index)
     return np.array(state[4])
+
+  def _getEndEffectorRotation(self):
+    state = pb.getLinkState(self.id, self.end_effector_index)
+    return np.array(state[5])
 
   def _sendPositionCommand(self, commands):
     ''''''
