@@ -30,6 +30,7 @@ class UR5_RG2(object):
     ur5_urdf_filepath = os.path.join(self.root_dir, 'urdf/ur5/ur5_w_simple_gripper.urdf')
     self.id = pb.loadURDF(ur5_urdf_filepath, [0,0,0], [0,0,0,1])
     self.is_holding = False
+    self.gripper_closed = False
     self.num_joints = pb.getNumJoints(self.id)
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
 
@@ -145,6 +146,7 @@ class UR5_RG2(object):
     ''''''
     p1 = pb.getJointState(self.id, 10)[0]
     pb.setJointMotorControlArray(self.id, [10,11], pb.VELOCITY_CONTROL, targetVelocities=[1.0, 1.0], forces=self.gripper_close_force)
+    self.gripper_closed = True
     while p1 < 0.036:
       pb.stepSimulation()
       p1_ = pb.getJointState(self.id, 10)[0]
@@ -158,7 +160,7 @@ class UR5_RG2(object):
     ''''''
     p1 = pb.getJointState(self.id, 10)[0]
     pb.setJointMotorControlArray(self.id, [10,11], pb.VELOCITY_CONTROL, targetVelocities=[-1.0, -1.0], forces=self.gripper_open_force)
-
+    self.gripper_closed = False
     while p1 > 0.0:
       pb.stepSimulation()
       p1 = pb.getJointState(self.id, 10)[0]
@@ -177,6 +179,8 @@ class UR5_RG2(object):
     num_motors = len(self.motor_indices)
     pb.setJointMotorControlArray(self.id, self.motor_indices, pb.POSITION_CONTROL, commands,
                                  [0.]*num_motors, self.max_forces, [0.01]*num_motors, [1.0]*num_motors)
+    if self.gripper_closed:
+      self.closeGripper()
 
   def _setJointPoses(self, q_poses):
     ''''''
