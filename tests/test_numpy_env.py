@@ -1,4 +1,5 @@
 import time
+from copy import deepcopy
 import numpy as np
 import matplotlib.pyplot as plt
 import torch
@@ -10,15 +11,26 @@ workspace = np.asarray([[0, 250],
                         [0, 500]])
 
 env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 250, 'render': True, 'action_sequence': 'xy',
-              'num_objects': 3}
+              'num_objects': 2}
 envs = env_factory.createEnvs(1, 'numpy', 'block_picking', env_config)
 
 states, obs = envs.reset()
-for i in range(1, 5):
+for i in range(1, 3):
   plt.imshow(obs.squeeze(), cmap='gray')
   plt.show()
   actions = torch.tensor([[i * 50, i * 50]])
   states_, obs_, rewards, dones = envs.step(actions)
+
+  obs = obs_
+  pass
+
+states, obs = envs.reset()
+for i in range(1, 3):
+  plt.imshow(obs.squeeze(), cmap='gray')
+  plt.show()
+  actions = torch.tensor([[i * 50, i * 50]])
+  states_, obs_, rewards, dones = envs.step(actions)
+
   obs = obs_
   pass
 
