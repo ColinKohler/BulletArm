@@ -16,9 +16,9 @@ class UR5_RG2(object):
   '''
   def __init__(self):
     # Setup arm and gripper variables
-    self.max_forces = [150, 150, 150, 28, 28, 28, 100, 100]
-    self.gripper_close_force = [100] * 2
-    self.gripper_open_force = [100] * 2
+    self.max_forces = [150, 150, 150, 28, 28, 28, 500, 500]
+    self.gripper_close_force = [500] * 2
+    self.gripper_open_force = [500] * 2
     self.end_effector_index = 12
 
     self.home_positions = [0., 0., -2.137, 1.432, -0.915, -1.591, 0.071, 0., 0., 0., 0., 0., 0., 0.]
@@ -39,7 +39,8 @@ class UR5_RG2(object):
     for i in range (self.num_joints):
       joint_info = pb.getJointInfo(self.id, i)
       q_index = joint_info[3]
-      if q_index > -1:
+      if i in range(1, 7):
+      # if q_index > -1:
         self.motor_names.append(str(joint_info[1]))
         self.motor_indices.append(i)
 
@@ -87,7 +88,7 @@ class UR5_RG2(object):
     max_iteration = 100
 
     while not closeEnough and it < max_iteration:
-      ik_solve = pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)
+      ik_solve = pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)[:-2]
       if dynamic:
         self._sendPositionCommand(ik_solve)
         past_joint_pos = deque(maxlen=5)
@@ -145,15 +146,23 @@ class UR5_RG2(object):
   def closeGripper(self):
     ''''''
     p1 = pb.getJointState(self.id, 10)[0]
-    pb.setJointMotorControlArray(self.id, [10,11], pb.VELOCITY_CONTROL, targetVelocities=[1.0, 1.0], forces=self.gripper_close_force)
+    p2 = pb.getJointState(self.id, 11)[0]
+    limit = 0.036
+    self._sendGripperCloseCommand()
     self.gripper_closed = True
-    while p1 < 0.036:
+    it = 0
+    while (limit-p1) + (limit-p2) > 0.001:
+    # while p1 < 0.036:
       pb.stepSimulation()
+      it += 1
+      if it > 100:
+        return False
       p1_ = pb.getJointState(self.id, 10)[0]
-      if p1 >= p1_:
+      p2_ = pb.getJointState(self.id, 11)[0]
+      if p1 >= p1_ and p2 >= p2_:
         return False
       p1 = p1_
-
+      p2 = p2_
     return True
 
   def openGripper(self):
@@ -178,9 +187,12 @@ class UR5_RG2(object):
     ''''''
     num_motors = len(self.motor_indices)
     pb.setJointMotorControlArray(self.id, self.motor_indices, pb.POSITION_CONTROL, commands,
-                                 [0.]*num_motors, self.max_forces, [0.01]*num_motors, [1.0]*num_motors)
+                                 [0.]*num_motors, self.max_forces[:-2], [0.01]*num_motors, [1.0]*num_motors)
     if self.gripper_closed:
-      self.closeGripper()
+      self._sendGripperCloseCommand()
+
+  def _sendGripperCloseCommand(self):
+    pb.setJointMotorControlArray(self.id, [10,11], pb.VELOCITY_CONTROL, targetVelocities=[1.0, 1.0], forces=self.gripper_close_force)
 
   def _setJointPoses(self, q_poses):
     ''''''
