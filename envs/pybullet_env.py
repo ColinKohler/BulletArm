@@ -25,7 +25,7 @@ class PyBulletEnv(BaseEnv):
     self.dynamic = not fast_mode
 
     # Environment specific variables
-    self._timestep = 1. / 360.
+    self._timestep = 1. / 240.
     self.ur5 = UR5_RG2()
     self.pick_offset = 0.25
     self.place_offset = 0.25
