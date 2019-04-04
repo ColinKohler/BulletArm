@@ -31,6 +31,9 @@ def createBlockPickingEnv(simulator_base_env, config):
 
       return self._getObservation()
 
+    def getObjectPosition(self):
+      return list(map(self._getObjectPosition, self.blocks))
+
     def _checkTermination(self):
       ''''''
       for obj in self.blocks:
