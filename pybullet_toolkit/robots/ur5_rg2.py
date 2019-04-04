@@ -82,12 +82,12 @@ class UR5_RG2(object):
 
   def moveTo(self, pos, rot, dynamic=True):
     ''''''
-    closeEnough = False
+    close_enough = False
     it = 0
     threshold = 1e-3
     max_iteration = 100
 
-    while not closeEnough and it < max_iteration:
+    while not close_enough and it < max_iteration:
       ik_solve = pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)[:-2]
       if dynamic:
         self._sendPositionCommand(ik_solve)
@@ -108,9 +108,7 @@ class UR5_RG2(object):
       ls = pb.getLinkState(self.id, self.end_effector_index)
       new_pos = list(ls[4])
       new_rot = list(ls[5])
-      diff = np.array(new_pos + new_rot) - np.array(list(pos) + list(rot))
-      diff = np.abs(diff).mean()
-      closeEnough = (diff < threshold)
+      close_enough = np.allclose(np.array(new_pos + new_rot), np.array(list(pos) + list(rot)), atol=threshold)
       it += 1
     pass
 
