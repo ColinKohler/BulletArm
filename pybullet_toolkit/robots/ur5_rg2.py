@@ -36,11 +36,15 @@ class UR5_RG2(object):
 
     self.motor_names = list()
     self.motor_indices = list()
+    self.arm_joint_names = list()
+    self.arm_joint_indices = list()
     for i in range (self.num_joints):
       joint_info = pb.getJointInfo(self.id, i)
       q_index = joint_info[3]
       if i in range(1, 7):
-      # if q_index > -1:
+        self.arm_joint_names.append(str(joint_info[1]))
+        self.arm_joint_indices.append(i)
+      if q_index > -1:
         self.motor_names.append(str(joint_info[1]))
         self.motor_indices.append(i)
 
@@ -92,7 +96,7 @@ class UR5_RG2(object):
       if dynamic:
         self._sendPositionCommand(ik_solve)
         past_joint_pos = deque(maxlen=5)
-        joint_state = pb.getJointStates(self.id, self.motor_indices)
+        joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
         joint_pos = list(zip(*joint_state))[0]
         while not np.allclose(joint_pos, ik_solve, atol=1e-2):
           pb.stepSimulation()
@@ -100,7 +104,7 @@ class UR5_RG2(object):
           if len(past_joint_pos) == 5 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=1e-3):
             break
           past_joint_pos.append(joint_pos)
-          joint_state = pb.getJointStates(self.id, self.motor_indices)
+          joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
           joint_pos = list(zip(*joint_state))[0]
       else:
         self._setJointPoses(ik_solve)
@@ -183,8 +187,8 @@ class UR5_RG2(object):
 
   def _sendPositionCommand(self, commands):
     ''''''
-    num_motors = len(self.motor_indices)
-    pb.setJointMotorControlArray(self.id, self.motor_indices, pb.POSITION_CONTROL, commands,
+    num_motors = len(self.arm_joint_indices)
+    pb.setJointMotorControlArray(self.id, self.arm_joint_indices, pb.POSITION_CONTROL, commands,
                                  [0.]*num_motors, self.max_forces[:-2], [0.01]*num_motors, [1.0]*num_motors)
     if self.gripper_closed:
       self._sendGripperCloseCommand()
