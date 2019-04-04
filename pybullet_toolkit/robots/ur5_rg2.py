@@ -34,19 +34,18 @@ class UR5_RG2(object):
     self.num_joints = pb.getNumJoints(self.id)
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
 
-    self.motor_names = list()
-    self.motor_indices = list()
+    self.gripper_joint_names = list()
+    self.gripper_joint_indices = list()
     self.arm_joint_names = list()
     self.arm_joint_indices = list()
     for i in range (self.num_joints):
       joint_info = pb.getJointInfo(self.id, i)
-      q_index = joint_info[3]
       if i in range(1, 7):
         self.arm_joint_names.append(str(joint_info[1]))
         self.arm_joint_indices.append(i)
-      if q_index > -1:
-        self.motor_names.append(str(joint_info[1]))
-        self.motor_indices.append(i)
+      elif i in range(7, 9):
+        self.gripper_joint_names.append(str(joint_info[1]))
+        self.gripper_joint_indices.append(i)
 
   def pick(self, pos, rot, offset, dynamic=True):
     ''''''
@@ -168,6 +167,7 @@ class UR5_RG2(object):
 
   def _setJointPoses(self, q_poses):
     ''''''
+    motor_indices = self.arm_joint_indices + self.gripper_joint_indices
     for i in range(len(q_poses)):
-      motor = self.motor_indices[i]
+      motor = motor_indices[i]
       pb.resetJointState(self.id, motor, q_poses[i])
