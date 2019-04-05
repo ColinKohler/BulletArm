@@ -75,8 +75,6 @@ class PyBulletEnv(BaseEnv):
         pb.removeBody(obj)
       pb.restoreState(self.initial_state_id)
 
-    self.saveState()
-
     return self._getObservation()
 
   def step(self, action):
