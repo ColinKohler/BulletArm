@@ -38,19 +38,14 @@ class PyBulletEnv(BaseEnv):
     rot = pb.getQuaternionFromEuler([0,np.pi,0])
     self.rest_pose = [[0.0, 0.5, 0.5], rot]
 
-  def saveState(self):
-    self.state_id = pb.saveState()
+    self.initialized = False
 
-  def restoreState(self):
-    pb.restoreState(self.state_id)
-
-  def reset(self):
-    ''''''
+  def setup(self):
     pb.resetSimulation()
     pb.setTimeStep(self._timestep)
 
     pb.setGravity(0, 0, -10)
-    self.table_id = pb.loadURDF('plane.urdf', [0,0,0])
+    self.table_id = pb.loadURDF('plane.urdf', [0, 0, 0])
 
     # Load the UR5 and set it to the home positions
     self.ur5.reset()
@@ -62,6 +57,24 @@ class PyBulletEnv(BaseEnv):
 
     # Step simulation
     pb.stepSimulation()
+    self.initial_state_id = pb.saveState()
+    self.initialized = True
+
+  def saveState(self):
+    self.state_id = pb.saveState()
+
+  def restoreState(self):
+    pb.restoreState(self.state_id)
+
+  def reset(self):
+    ''''''
+    if not self.initialized:
+      self.setup()
+    else:
+      for obj in self.object_handles:
+        pb.removeBody(obj)
+      pb.restoreState(self.initial_state_id)
+
     self.saveState()
 
     return self._getObservation()
