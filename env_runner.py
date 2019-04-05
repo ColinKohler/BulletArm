@@ -23,6 +23,10 @@ def worker(remote, parent_remote, env_fn):
       elif cmd == 'reset':
         obs = env.reset()
         remote.send(obs)
+      elif cmd == 'save':
+        env.saveState()
+      elif cmd == 'restore':
+        env.restoreState()
       elif cmd == 'close':
         remote.close()
         break
@@ -131,3 +135,11 @@ class EnvRunner(object):
       [remote.recv() for remote in self.remotes]
     [remote.send(('close', None)) for remote in self.remotes]
     [process.join() for process in self.processes]
+
+  def save(self):
+    for remote in self.remotes:
+      remote.send(('save', None))
+
+  def restore(self):
+    for remote in self.remotes:
+      remote.send(('restore', None))

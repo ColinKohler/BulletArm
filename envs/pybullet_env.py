@@ -38,6 +38,12 @@ class PyBulletEnv(BaseEnv):
     rot = pb.getQuaternionFromEuler([0,np.pi,0])
     self.rest_pose = [[0.0, 0.5, 0.5], rot]
 
+  def saveState(self):
+    self.state_id = pb.saveState()
+
+  def restoreState(self):
+    pb.restoreState(self.state_id)
+
   def reset(self):
     ''''''
     pb.resetSimulation()
@@ -56,6 +62,7 @@ class PyBulletEnv(BaseEnv):
 
     # Step simulation
     pb.stepSimulation()
+    self.saveState()
 
     return self._getObservation()
 
