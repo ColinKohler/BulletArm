@@ -68,12 +68,13 @@ class PyBulletEnv(BaseEnv):
 
   def reset(self):
     ''''''
-    if not self.initialized:
-      self.setup()
-    else:
-      for obj in self.object_handles:
-        pb.removeBody(obj)
-      pb.restoreState(self.initial_state_id)
+    # if not self.initialized:
+    #   self.setup()
+    # else:
+    #   for obj in self.object_handles:
+    #     pb.removeBody(obj)
+    #   pb.restoreState(self.initial_state_id)
+    self.setup()
 
     return self._getObservation()
 
@@ -95,7 +96,10 @@ class PyBulletEnv(BaseEnv):
     else:
       raise ValueError('Bad motion primative supplied for action.')
 
-    self.ur5.moveTo(self.rest_pose[0], self.rest_pose[1], dynamic=self.dynamic)
+    if self.ur5.is_holding:
+      self.ur5.moveTo(self.rest_pose[0], self.rest_pose[1], dynamic=True)
+    else:
+      self.ur5.moveTo(self.rest_pose[0], self.rest_pose[1], dynamic=self.dynamic)
 
     # Check for termination and get reward
     obs = self._getObservation()
@@ -150,7 +154,6 @@ class PyBulletEnv(BaseEnv):
 
       handle = pb_obj_generation.generateCube(position, orientation, scale)
       shape_handles.append(handle)
-      print(position)
 
     self.object_handles.extend(shape_handles)
     for _ in range(50):

@@ -61,7 +61,10 @@ class UR5_RG2(object):
 
     # Grasp object and lift up to pre pose
     gripper_fully_closed = self.closeGripper()
-    self.moveTo(pre_pos, pre_rot, dynamic)
+    if gripper_fully_closed:
+      self.moveTo(pre_pos, pre_rot, dynamic)
+    else:
+      self.moveTo(pre_pos, pre_rot, dynamic=True)
     if gripper_fully_closed: self.openGripper()
 
     self.is_holding = not gripper_fully_closed
