@@ -18,11 +18,18 @@ def worker(remote, parent_remote, env_fn):
       cmd, data = remote.recv()
       if cmd == 'step':
         obs, reward, done = env.step(data)
+        remote.send((obs, reward, done))
+      elif cmd == 'step_auto_reset':
+        obs, reward, done = env.step(data)
         if done: obs = env.reset()
         remote.send((obs, reward, done))
       elif cmd == 'reset':
         obs = env.reset()
         remote.send(obs)
+      elif cmd == 'save':
+        env.saveState()
+      elif cmd == 'restore':
+        env.restoreState()
       elif cmd == 'close':
         remote.close()
         break
@@ -63,17 +70,17 @@ class EnvRunner(object):
     self.remotes[0].send(('get_spaces', None))
     self.obs_shape, self.action_space, self.action_shape = self.remotes[0].recv()
 
-  def step(self, actions):
+  def step(self, actions, auto_reset=True):
     '''
     Step the environments synchronously.
 
     Args:
       - actions: PyTorch variable of environment actions
     '''
-    self._stepAsync(actions)
+    self._stepAsync(actions, auto_reset)
     return self._stepWait()
 
-  def _stepAsync(self, actions):
+  def _stepAsync(self, actions, auto_reset=True):
     '''
     Step each environment in a async fashion
 
@@ -82,7 +89,10 @@ class EnvRunner(object):
     '''
     actions = actions.squeeze(1).numpy()
     for remote, action in zip(self.remotes, actions):
-      remote.send(('step', action))
+      if auto_reset:
+        remote.send(('step_auto_reset', action))
+      else:
+        remote.send(('step', action))
     self.waiting = True
 
   def _stepWait(self):
@@ -133,6 +143,14 @@ class EnvRunner(object):
       [remote.recv() for remote in self.remotes]
     [remote.send(('close', None)) for remote in self.remotes]
     [process.join() for process in self.processes]
+
+  def save(self):
+    for remote in self.remotes:
+      remote.send(('save', None))
+
+  def restore(self):
+    for remote in self.remotes:
+      remote.send(('restore', None))
 
   def getObjPosition(self):
     for remote in self.remotes:

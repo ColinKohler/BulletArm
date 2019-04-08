@@ -59,6 +59,12 @@ class PyBulletEnv(BaseEnv):
 
     return self._getObservation()
 
+  def saveState(self):
+    self.state_id = pb.saveState()
+
+  def restoreState(self):
+    pb.restoreState(self.state_id)
+
   def step(self, action):
     ''''''
     motion_primative, x, y, z, rot = self._getSpecificAction(action)
@@ -77,7 +83,10 @@ class PyBulletEnv(BaseEnv):
     else:
       raise ValueError('Bad motion primative supplied for action.')
 
-    self.ur5.moveTo(self.rest_pose[0], self.rest_pose[1], dynamic=self.dynamic)
+    if self.ur5.is_holding:
+      self.ur5.moveTo(self.rest_pose[0], self.rest_pose[1], dynamic=True)
+    else:
+      self.ur5.moveTo(self.rest_pose[0], self.rest_pose[1], dynamic=self.dynamic)
 
     # Check for termination and get reward
     obs = self._getObservation()
@@ -96,6 +105,7 @@ class PyBulletEnv(BaseEnv):
     image_arr = pb.getCameraImage(width=self.heightmap_size, height=self.heightmap_size,
                                   viewMatrix=self.view_matrix, projectionMatrix=self.proj_matrix)
     self.heightmap = image_arr[3] - np.min(image_arr[3])
+    self.heightmap = self.heightmap.T
 
     return self.getHoldingState(), self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
@@ -132,7 +142,6 @@ class PyBulletEnv(BaseEnv):
 
       handle = pb_obj_generation.generateCube(position, orientation, scale)
       shape_handles.append(handle)
-      print(position)
 
     self.object_handles.extend(shape_handles)
     for _ in range(50):
