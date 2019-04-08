@@ -23,11 +23,8 @@ def createBlockPickingEnv(simulator_base_env, config):
         raise ValueError('Bad simulator base env specified.')
       self.simulator_base_env = simulator_base_env
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
+      self.num_obj = config['num_objects'] if 'num_objects' in config else 1
       self.obj_grasped = 0
-      if 'num_objects' in config:
-        self.num_obj = config['num_objects']
-      else:
-        self.num_obj = 1
 
     def reset(self):
       ''''''
