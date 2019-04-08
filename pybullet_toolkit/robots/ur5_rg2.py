@@ -174,6 +174,8 @@ class UR5_RG2(object):
   def _setJointPoses(self, q_poses):
     ''''''
     motor_indices = self.arm_joint_indices + self.gripper_joint_indices
+    pb.setJointMotorControlArray(self.id, motor_indices, pb.VELOCITY_CONTROL,
+                                 targetVelocities=[0.0 for _ in range(len(motor_indices))], forces=self.max_forces)
     for i in range(len(q_poses)):
       motor = motor_indices[i]
       pb.resetJointState(self.id, motor, q_poses[i])
