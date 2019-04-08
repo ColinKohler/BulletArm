@@ -23,13 +23,17 @@ def createBlockPickingEnv(simulator_base_env, config):
         raise ValueError('Bad simulator base env specified.')
       self.simulator_base_env = simulator_base_env
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
+      self.obj_grasped = 0
+      if 'num_objects' in config:
+        self.num_obj = config['num_objects']
+      else:
+        self.num_obj = 1
 
     def reset(self):
       ''''''
       super(BlockPickingEnv, self).reset()
-
-      self.blocks = self._generateShapes(0, 1, random_orientation=self.random_orientation)
-
+      self.blocks = self._generateShapes(0, self.num_obj, random_orientation=self.random_orientation)
+      self.obj_grasped = 0
       return self._getObservation()
 
     def getObjectPosition(self):
@@ -39,7 +43,11 @@ def createBlockPickingEnv(simulator_base_env, config):
       ''''''
       for obj in self.blocks:
         if self._isObjectHeld(obj):
-          return True
+          self.obj_grasped += 1
+          self._removeObject(obj)
+          if self.obj_grasped == self.num_obj:
+            return True
+          return False
       return False
 
     def _getObservation(self):
