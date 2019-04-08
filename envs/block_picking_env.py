@@ -22,14 +22,18 @@ def createBlockPickingEnv(simulator_base_env, config):
       else:
         raise ValueError('Bad simulator base env specified.')
       self.simulator_base_env = simulator_base_env
+      self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
 
     def reset(self):
       ''''''
       super(BlockPickingEnv, self).reset()
 
-      self.blocks = self._generateShapes(0, 1, random_orientation=False)
+      self.blocks = self._generateShapes(0, 1, random_orientation=self.random_orientation)
 
       return self._getObservation()
+
+    def getObjectPosition(self):
+      return list(map(self._getObjectPosition, self.blocks))
 
     def _checkTermination(self):
       ''''''
@@ -37,6 +41,10 @@ def createBlockPickingEnv(simulator_base_env, config):
         if self._isObjectHeld(obj):
           return True
       return False
+
+    def _getObservation(self):
+      state, obs = super(BlockPickingEnv, self)._getObservation()
+      return 0, obs
 
   def _thunk():
     return BlockPickingEnv(config)
