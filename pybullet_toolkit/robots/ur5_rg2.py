@@ -89,19 +89,22 @@ class UR5_RG2(object):
   def moveTo(self, pos, rot, dynamic=True):
     ''''''
     close_enough = False
-    it = 0
+    outer_it = 0
     threshold = 1e-3
-    max_iteration = 100
+    max_outer_it = 100
+    max_inner_it = 1000
 
-    while not close_enough and it < max_iteration:
+    while not close_enough and outer_it < max_outer_it:
       ik_solve = pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)[:-2]
       if dynamic:
         self._sendPositionCommand(ik_solve)
         past_joint_pos = deque(maxlen=5)
         joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
         joint_pos = list(zip(*joint_state))[0]
-        while not np.allclose(joint_pos, ik_solve, atol=1e-2):
+        inner_it = 0
+        while not np.allclose(joint_pos, ik_solve, atol=1e-2) and inner_it < max_inner_it:
           pb.stepSimulation()
+          inner_it += 1
           # Check to see if the arm can't move any close to the desired joint position
           if len(past_joint_pos) == 5 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=1e-3):
             break
@@ -115,7 +118,7 @@ class UR5_RG2(object):
       new_pos = list(ls[4])
       new_rot = list(ls[5])
       close_enough = np.allclose(np.array(new_pos + new_rot), np.array(list(pos) + list(rot)), atol=threshold)
-      it += 1
+      outer_it += 1
 
   def closeGripper(self):
     ''''''
