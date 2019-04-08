@@ -145,7 +145,7 @@ class UR5_RG2(object):
   def openGripper(self):
     ''''''
     p1 = pb.getJointState(self.id, 10)[0]
-    pb.setJointMotorControlArray(self.id, [10,11], pb.VELOCITY_CONTROL, targetVelocities=[-1.0, -1.0], forces=self.gripper_open_force)
+    self._sendGripperOpenCommand()
     self.gripper_closed = False
     while p1 > 0.0:
       pb.stepSimulation()
@@ -167,9 +167,14 @@ class UR5_RG2(object):
                                  [0.]*num_motors, self.max_forces[:-2], [0.01]*num_motors, [1.0]*num_motors)
     if self.gripper_closed:
       self._sendGripperCloseCommand()
+    else:
+      self._sendGripperOpenCommand()
 
   def _sendGripperCloseCommand(self):
     pb.setJointMotorControlArray(self.id, [10,11], pb.VELOCITY_CONTROL, targetVelocities=[1.0, 1.0], forces=self.gripper_close_force)
+
+  def _sendGripperOpenCommand(self):
+    pb.setJointMotorControlArray(self.id, [10,11], pb.VELOCITY_CONTROL, targetVelocities=[-1.0, -1.0], forces=self.gripper_open_force)
 
   def _setJointPoses(self, q_poses):
     ''''''
