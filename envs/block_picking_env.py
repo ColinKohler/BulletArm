@@ -1,3 +1,4 @@
+from copy import deepcopy
 from helping_hands_rl_envs.envs.numpy_env import NumpyEnv
 from helping_hands_rl_envs.envs.vrep_env import VrepEnv
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
@@ -32,6 +33,15 @@ def createBlockPickingEnv(simulator_base_env, config):
       self.blocks = self._generateShapes(0, self.num_obj, random_orientation=self.random_orientation)
       self.obj_grasped = 0
       return self._getObservation()
+
+    def saveState(self):
+      super(BlockPickingEnv, self).saveState()
+      self.picking_state = {'obj_grasped': deepcopy(self.obj_grasped)}
+
+    def restoreState(self):
+      super(BlockPickingEnv, self).restoreState()
+      self.blocks = self.objects
+      self.obj_grasped = self.picking_state['obj_grasped']
 
     def getObjectPosition(self):
       return list(map(self._getObjectPosition, self.blocks))

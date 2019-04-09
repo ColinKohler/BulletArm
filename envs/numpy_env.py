@@ -1,3 +1,4 @@
+from copy import deepcopy
 import numpy as np
 import numpy.random as npr
 
@@ -20,6 +21,18 @@ class NumpyEnv(BaseEnv):
     self.objects = list()
 
     return self._getObservation()
+
+  def saveState(self):
+    self.state = {'held_object': deepcopy(self.held_object),
+                  'heightmap': deepcopy(self.heightmap),
+                  'current_episode_steps': deepcopy(self.current_episode_steps),
+                  'objects': deepcopy(self.objects)}
+
+  def restoreState(self):
+    self.held_object = self.state['held_object']
+    self.heightmap = self.state['heightmap']
+    self.current_episode_steps = self.state['current_episode_steps']
+    self.objects = self.state['objects']
 
   def step(self, action):
     ''''''

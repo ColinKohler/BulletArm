@@ -29,6 +29,13 @@ def createBlockStackingEnv(simulator_base_env, config):
       self.blocks = self._generateShapes(0, self.num_obj, random_orientation=self.random_orientation)
       return self._getObservation()
 
+    def saveState(self):
+      super(BlockStackingEnv, self).saveState()
+
+    def restoreState(self):
+      super(BlockStackingEnv, self).restoreState()
+      self.blocks = self.objects
+
     def _checkTermination(self):
       ''''''
       top_block = self.blocks[0]
