@@ -19,6 +19,7 @@ class NumpyEnv(BaseEnv):
     self.heightmap = np.zeros((self.heightmap_size, self.heightmap_size))
     self.current_episode_steps = 1
     self.objects = list()
+    self.valid = True
 
     return self._getObservation()
 
@@ -26,13 +27,15 @@ class NumpyEnv(BaseEnv):
     self.state = {'held_object': deepcopy(self.held_object),
                   'heightmap': deepcopy(self.heightmap),
                   'current_episode_steps': deepcopy(self.current_episode_steps),
-                  'objects': deepcopy(self.objects)}
+                  'objects': deepcopy(self.objects),
+                  'valid': deepcopy(self.valid)}
 
   def restoreState(self):
     self.held_object = self.state['held_object']
     self.heightmap = self.state['heightmap']
     self.current_episode_steps = self.state['current_episode_steps']
     self.objects = self.state['objects']
+    self.valid = self.state['valid']
 
   def step(self, action):
     ''''''
@@ -100,7 +103,7 @@ class NumpyEnv(BaseEnv):
   def _generateShapes(self, object_type, num_objects, min_distance=None, padding=None, random_orientation=False):
     ''''''
     if min_distance is None:
-      min_distance = self.heightmap_size/7
+      min_distance = np.sqrt(2) * self.heightmap_size/7
     if padding is None:
       padding = self.heightmap_size/5
     self.objects = list()
