@@ -10,6 +10,7 @@ class NumpyEnv(BaseEnv):
 
     self.render = render
     self.offset = self.heightmap_size/20
+    self.valid = True
 
   def reset(self):
     ''''''
@@ -27,9 +28,10 @@ class NumpyEnv(BaseEnv):
     if motion_primative == self.PICK_PRIMATIVE:
       self.held_object = self._pick(x, y, z, rot)
     elif motion_primative == self.PLACE_PRIMATIVE:
-      self._place(x, y, z, rot)
-      self.is_holding = None
-    elif  motion_primative == self.PUSH_PRIMATIVE:
+      if self.held_object:
+        self._place(x, y, z, rot)
+        self.held_object = None
+    elif motion_primative == self.PUSH_PRIMATIVE:
       pass
     else:
       raise ValueError('Bad motion primative supplied for action.')
@@ -42,7 +44,7 @@ class NumpyEnv(BaseEnv):
 
     # Check to see if we are at the max step
     if not done:
-      done = self.current_episode_steps >= self.max_steps
+      done = self.current_episode_steps >= self.max_steps or not self.valid
     self.current_episode_steps += 1
 
     return obs, reward, done
@@ -62,7 +64,21 @@ class NumpyEnv(BaseEnv):
 
   def _place(self, x, y, z, rot):
     ''''''
-    pass
+    if self.held_object is None:
+      return
+    for i, obj in enumerate(self.objects):
+      if self.held_object is obj:
+        continue
+      if self.held_object.isStackValid([x, y, z], rot, obj):
+        self.held_object.stackOnPose(self.heightmap, [x, y, z], rot, obj)
+        return
+      else:
+        distance = np.linalg.norm(np.array([x, y]) - (obj.pos[:-1]))
+        min_distance = np.sqrt(2)/2 * (self.held_object.size + obj.size)
+        if distance < min_distance:
+          self.valid = False
+          return
+    self.held_object.stackOnPose(self.heightmap, [x, y, z], rot)
 
   def _getObservation(self):
     ''''''
