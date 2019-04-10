@@ -27,6 +27,15 @@ plt.imshow(obs_.squeeze()); plt.show()
 action = torch.tensor([0, 150, 150])
 (states_, obs_), rewards, dones = env.step(action)
 plt.imshow(obs_.squeeze()); plt.show()
+
+env.saveState()
+
+action = torch.tensor([1, 100, 100])
+(states_, obs_), rewards, dones = env.step(action)
+plt.imshow(obs_.squeeze()); plt.show()
+
+env.restoreState()
+
 action = torch.tensor([1, 100, 100])
 (states_, obs_), rewards, dones = env.step(action)
 plt.imshow(obs_.squeeze()); plt.show()

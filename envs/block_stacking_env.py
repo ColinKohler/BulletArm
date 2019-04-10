@@ -38,15 +38,7 @@ def createBlockStackingEnv(simulator_base_env, config):
 
     def _checkTermination(self):
       ''''''
-      top_block = self.blocks[0]
-      for obj in self.blocks:
-        if obj.on_top:
-          top_block = obj
-      count = 1
-      while top_block.cube_below:
-        count += 1
-        top_block = top_block.cube_below
-      return count == self.num_obj
+      return self._getNumTopBlock() == 1
 
   def _thunk():
     return BlockStackingEnv(config)

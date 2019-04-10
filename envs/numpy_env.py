@@ -86,7 +86,8 @@ class NumpyEnv(BaseEnv):
       if self.held_object is obj:
         continue
       if self.held_object.isStackValid([x, y, z], rot, obj):
-        self.held_object.stackOnPose(self.heightmap, [x, y, z], rot, obj)
+        self.held_object.addToHeightmap(self.heightmap, [x, y, z], rot)
+        self._fixTopBlocks()
         return
       else:
         distance = np.linalg.norm(np.array([x, y]) - (obj.pos[:-1]))
@@ -94,7 +95,22 @@ class NumpyEnv(BaseEnv):
         if distance < min_distance:
           self.valid = False
           return
-    self.held_object.stackOnPose(self.heightmap, [x, y, z], rot)
+    self.held_object.addToHeightmap(self.heightmap, [x, y, z], rot)
+    self._fixTopBlocks()
+
+  def _fixTopBlocks(self):
+    for obj in self.objects:
+      if self.heightmap[obj.mask].mean() > obj.pos[-1]:
+        obj.on_top = False
+      else:
+        obj.on_top = True
+
+  def _getNumTopBlock(self):
+    count = 0
+    for obj in self.objects:
+      if obj.on_top:
+        count += 1
+    return count
 
   def _getObservation(self):
     ''''''
