@@ -161,6 +161,14 @@ class PyBulletEnv(BaseEnv):
     return T
 
   def _isObjectHeld(self, obj):
-    block_position = self._getObjectPosition(obj)
-    rest_pose = self._getRestPoseMatrix()
-    return block_position[2] > rest_pose[2, -1] - 0.25
+    if obj in self.object_handles:
+      block_position = self._getObjectPosition(obj)
+      rest_pose = self._getRestPoseMatrix()
+      return block_position[2] > rest_pose[2, -1] - 0.25
+    return False
+
+  def _removeObject(self, obj):
+    if obj in self.object_handles:
+      pb.removeBody(obj)
+      self.ur5.openGripper()
+      self.object_handles.remove(obj)

@@ -35,6 +35,7 @@ class NumpyEnv(BaseEnv):
       raise ValueError('Bad motion primative supplied for action.')
 
     # Check for termination and get reward
+    # reward = 1.0 if self._isHolding() else 0.0
     obs = self._getObservation()
     done = self._checkTermination()
     reward = 1.0 if done else 0.0
@@ -67,8 +68,12 @@ class NumpyEnv(BaseEnv):
     ''''''
     return self._isHolding(), self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
-  def _generateShapes(self, object_type, num_objects, min_distance=5, padding=10, random_orientation=False):
+  def _generateShapes(self, object_type, num_objects, min_distance=None, padding=None, random_orientation=False):
     ''''''
+    if min_distance is None:
+      min_distance = self.heightmap_size/7
+    if padding is None:
+      padding = self.heightmap_size/5
     self.objects = list()
     positions = list()
     for i in range(num_objects):
@@ -91,13 +96,18 @@ class NumpyEnv(BaseEnv):
         rotation = np.pi*np.random.random_sample()
       else:
         rotation = 0.0
-      size = npr.randint(self.heightmap_size/6, self.heightmap_size/4)
+      size = npr.randint(self.heightmap_size/10, self.heightmap_size/7)
       position[2] = int(size / 2)
 
       obj, self.heightmap = object_generation.generateCube(self.heightmap, position, rotation, size)
       self.objects.append(obj)
 
     return self.objects
+
+  def _removeObject(self, obj):
+    if obj == self.held_object:
+      self.held_object = None
+    self.objects.remove(obj)
 
   def _isHolding(self):
     return not (self.held_object is None)
