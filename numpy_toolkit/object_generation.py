@@ -29,7 +29,7 @@ class Cube(object):
     return heightmap
 
   def stackOnPose(self, heightmap, pos, rot, bottom_block=None):
-    self.pos = pos
+    self.pos = list(map(int, pos))
     self.rot = rot
     self.x_min, self.x_max = int(pos[0] - self.size / 2), int(pos[0] + self.size / 2)
     self.y_min, self.y_max = int(pos[1] - self.size / 2), int(pos[1] + self.size / 2)
