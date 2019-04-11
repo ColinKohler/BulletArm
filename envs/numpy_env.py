@@ -24,7 +24,7 @@ class NumpyEnv(BaseEnv):
     return self._getObservation()
 
   def saveState(self):
-    self.state = {'held_object_idx': self.objects.index(self.held_object),
+    self.state = {'held_object_idx': self.objects.index(self.held_object) if self.objects and self.held_object else None,
                   'heightmap': deepcopy(self.heightmap),
                   'current_episode_steps': deepcopy(self.current_episode_steps),
                   'objects': deepcopy(self.objects),
@@ -36,7 +36,7 @@ class NumpyEnv(BaseEnv):
     self.objects = self.state['objects']
     self.valid = self.state['valid']
     held_object_idx = self.state['held_object_idx']
-    self.held_object = self.objects[held_object_idx]
+    self.held_object = self.objects[held_object_idx] if held_object_idx is not None else None
 
   def step(self, action):
     ''''''
@@ -135,6 +135,7 @@ class NumpyEnv(BaseEnv):
         position = [int((x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2),
                     int((y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2),
                     0]
+        position = [50 * (i+1), 50 * (i+1), 0]
         if positions:
           is_position_valid = np.all(np.sum(np.abs(np.array(positions) - np.array(position)), axis=1) > min_distance)
         else:
@@ -143,6 +144,7 @@ class NumpyEnv(BaseEnv):
       positions.append(position)
       if random_orientation:
         rotation = np.pi*np.random.random_sample()
+        rotation = 0.
       else:
         rotation = 0.0
       size = npr.randint(self.heightmap_size/10, self.heightmap_size/7)
