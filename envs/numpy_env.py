@@ -24,18 +24,19 @@ class NumpyEnv(BaseEnv):
     return self._getObservation()
 
   def saveState(self):
-    self.state = {'held_object': deepcopy(self.held_object),
+    self.state = {'held_object_idx': self.objects.index(self.held_object),
                   'heightmap': deepcopy(self.heightmap),
                   'current_episode_steps': deepcopy(self.current_episode_steps),
                   'objects': deepcopy(self.objects),
                   'valid': deepcopy(self.valid)}
 
   def restoreState(self):
-    self.held_object = self.state['held_object']
     self.heightmap = self.state['heightmap']
     self.current_episode_steps = self.state['current_episode_steps']
     self.objects = self.state['objects']
     self.valid = self.state['valid']
+    held_object_idx = self.state['held_object_idx']
+    self.held_object = self.objects[held_object_idx]
 
   def step(self, action):
     ''''''
