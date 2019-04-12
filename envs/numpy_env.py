@@ -54,7 +54,6 @@ class NumpyEnv(BaseEnv):
       raise ValueError('Bad motion primative supplied for action.')
 
     # Check for termination and get reward
-    # reward = 1.0 if self._isHolding() else 0.0
     obs = self._getObservation()
     done = self._checkTermination()
     reward = 1.0 if done else 0.0

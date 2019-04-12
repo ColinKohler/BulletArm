@@ -25,7 +25,15 @@ def createBlockPickingEnv(simulator_base_env, config):
       self.simulator_base_env = simulator_base_env
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
+      self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
       self.obj_grasped = 0
+
+    def step(self, action):
+      pre_obj_grasped = self.obj_grasped
+      obs, reward, done = super(BlockPickingEnv, self).step(action)
+      if self.reward_type == 'dense':
+        reward = 1.0 if self.obj_grasped > pre_obj_grasped else 0.0
+      return obs, reward, done
 
     def reset(self):
       ''''''
