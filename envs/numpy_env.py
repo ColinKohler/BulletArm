@@ -119,7 +119,7 @@ class NumpyEnv(BaseEnv):
   def _generateShapes(self, object_type, num_objects, min_distance=None, padding=None, random_orientation=False):
     ''''''
     if min_distance is None:
-      min_distance = np.sqrt(2) * self.heightmap_size/7
+      min_distance = 2 * self.heightmap_size/7
     if padding is None:
       padding = self.heightmap_size/5
     self.objects = list()

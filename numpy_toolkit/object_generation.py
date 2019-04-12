@@ -58,8 +58,9 @@ class Cube(object):
     valid_rot3 = valid_rot1 + np.pi
     valid_rot4 = valid_rot2 + np.pi
     valid_rots = np.array([valid_rot1, valid_rot2, valid_rot3, valid_rot4])
+    angle = np.pi - np.abs(np.abs(valid_rots - grasp_rot) - np.pi)
     return np.allclose(grasp_pos[:-1], self.pos[:-1], atol=(self.size/2)) and \
-           np.any(np.abs(valid_rots - grasp_rot) < np.pi/7) and \
+           np.any(angle < np.pi/7) and \
            grasp_pos[-1] < self.pos[-1] and \
            self.on_top
 
