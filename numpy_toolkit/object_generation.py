@@ -83,12 +83,12 @@ def rotateImage(img, angle, pivot):
   img_2x = ndimage.zoom(img_recenter, zoom=2, order=0)
   img_r_2x = ndimage.rotate(img_2x, angle, reshape=False)
   img_r = img_r_2x[::2, ::2]
-  if pad_y[1] != 0 and pad_x[1]!= 0:
-    result = img_r[pad_y[0]: -pad_y[1], pad_x[0]: -pad_x[1]]
+  if pad_y[1] == 0 and pad_x[1]== 0:
+    result = img_r[pad_y[0]:, pad_x[0]:]
   elif pad_y[1] == 0:
     result = img_r[pad_y[0]:, pad_x[0]: -pad_x[1]]
   elif pad_x[1] == 0:
     result = img_r[pad_y[0]: -pad_y[1], pad_x[0]:]
   else:
-    result = img_r[pad_y[0]:, pad_x[0]:]
+    result = img_r[pad_y[0]: -pad_y[1], pad_x[0]: -pad_x[1]]
   return result
