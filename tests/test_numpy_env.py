@@ -5,18 +5,20 @@ import torch
 
 import helping_hands_rl_envs.env_factory as env_factory
 
-workspace = np.asarray([[0, 50],
-                        [0, 50],
-                        [0, 50]])
+workspace = np.asarray([[0, 100],
+                        [0, 100],
+                        [0, 500]])
 
-env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 50, 'render': True, 'action_sequence': 'xyzr'}
+env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 100, 'render': True, 'action_sequence': 'xy',
+              'num_objects': 1}
 envs = env_factory.createEnvs(1, 'numpy', 'block_picking', env_config)
 
-for i in range(100):
-  states, obs = envs.reset()
+states, obs = envs.reset()
+for i in range(1, 3):
   plt.imshow(obs.squeeze(), cmap='gray')
-  actions = torch.tensor([[100, 200, i * np.pi/8]])
   plt.show()
+  actions = torch.tensor([[i * 10, i * 10]])
   states_, obs_, rewards, dones = envs.step(actions)
-  pass
 
+  obs = obs_
+  pass

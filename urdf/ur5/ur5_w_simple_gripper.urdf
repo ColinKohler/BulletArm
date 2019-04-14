@@ -322,7 +322,8 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0.0"/>
       <geometry>
-        <box size="0.005 0.005 0.0375"/>
+        <!--<box size="0.005 0.005 0.0375"/>-->
+        <box size="0.005 0.025 0.06"/>
       </geometry>
     </collision>
     <inertial>
@@ -353,7 +354,8 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0.0"/>
       <geometry>
-        <box size="0.005 0.005 0.0375"/>
+        <!--<box size="0.005 0.005 0.0375"/>-->
+        <box size="0.005 0.025 0.06"/>
       </geometry>
     </collision>
     <inertial>

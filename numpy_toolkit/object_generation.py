@@ -13,6 +13,7 @@ class Cube(object):
     self.size = size
 
     self.mask = None
+
     self.x_min, self.x_max = int(pos[0]-size/2), int(pos[0]+size/2)
     self.y_min, self.y_max = int(pos[1]-size/2), int(pos[1]+size/2)
 
@@ -50,8 +51,11 @@ def generateCube(heightmap, pos, rot, size):
   return cube, cube.addToHeightmap(heightmap)
 
 def rotateImage(img, angle, pivot):
-  padX = [img.shape[1] - pivot[1], pivot[1]]
-  padY = [img.shape[0] - pivot[0], pivot[0]]
-  imgP = np.pad(img, [padY, padX], 'constant')
-  imgR = ndimage.rotate(imgP, angle, reshape=False)
-  return imgR[padY[0]: -padY[1], padX[0]: -padX[1]]
+  pad_x = [img.shape[1] - pivot[1], pivot[1]]
+  pad_y = [img.shape[0] - pivot[0], pivot[0]]
+  img_recenter = np.pad(img, [pad_y, pad_x], 'constant')
+  img_2x = ndimage.zoom(img_recenter, zoom=2, order=0)
+  img_r_2x = ndimage.rotate(img_2x, angle, reshape=False)
+  img_r = img_r_2x[::2, ::2]
+  result = img_r[pad_y[0]: -pad_y[1], pad_x[0]: -pad_x[1]]
+  return result
