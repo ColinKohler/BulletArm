@@ -1,4 +1,5 @@
 import time
+from copy import deepcopy
 import numpy as np
 import numpy.random as npr
 
@@ -50,7 +51,7 @@ class PyBulletEnv(BaseEnv):
     self.ur5.reset()
 
     # Reset episode vars
-    self.object_handles = list()
+    self.objects = list()
     self.heightmap = None
     self.current_episode_steps = 1
 
@@ -60,10 +61,14 @@ class PyBulletEnv(BaseEnv):
     return self._getObservation()
 
   def saveState(self):
-    self.state_id = pb.saveState()
+    self.state = {'current_episode_steps': deepcopy(self.current_episode_steps),
+                  'objects': deepcopy(self.objects),
+                  'env_state': pb.saveState()}
 
   def restoreState(self):
-    pb.restoreState(self.state_id)
+    self.current_episode_steps = self.state['current_episode_steps']
+    self.objects = self.state['objects']
+    pb.restoreState(self.state['env_state'])
 
   def step(self, action):
     ''''''
@@ -143,7 +148,7 @@ class PyBulletEnv(BaseEnv):
       handle = pb_obj_generation.generateCube(position, orientation, scale)
       shape_handles.append(handle)
 
-    self.object_handles.extend(shape_handles)
+    self.objects.extend(shape_handles)
     for _ in range(50):
       pb.stepSimulation()
     return shape_handles
@@ -161,14 +166,19 @@ class PyBulletEnv(BaseEnv):
     return T
 
   def _isObjectHeld(self, obj):
-    if obj in self.object_handles:
+    if obj in self.objects:
       block_position = self._getObjectPosition(obj)
       rest_pose = self._getRestPoseMatrix()
       return block_position[2] > rest_pose[2, -1] - 0.25
     return False
 
   def _removeObject(self, obj):
-    if obj in self.object_handles:
-      pb.removeBody(obj)
+    if obj in self.objects:
+      # pb.removeBody(obj)
+      self._moveObjectOutWorkspace(obj)
       self.ur5.openGripper()
-      self.object_handles.remove(obj)
+      self.objects.remove(obj)
+
+  def _moveObjectOutWorkspace(self, obj):
+    pos = [-0.50, 0, 0.25]
+    pb.resetBasePositionAndOrientation(obj, pos, pb.getQuaternionFromEuler([0., 0., 0.]))
