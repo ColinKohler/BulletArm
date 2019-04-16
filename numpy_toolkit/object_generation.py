@@ -66,7 +66,7 @@ class Cube(object):
   def isStackValid(self, stack_pos, stack_rot, bottom_block):
     if bottom_block == self or not bottom_block.on_top:
       return False
-    if np.allclose(stack_pos[:-1], bottom_block.pos[:-1], atol=(bottom_block.size / 4)):
+    if np.allclose(stack_pos[:-1], bottom_block.pos[:-1], atol=(bottom_block.size / 2)):
       return True
     return False
 
