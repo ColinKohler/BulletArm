@@ -34,8 +34,7 @@ class Cube(object):
       self.mask[self.y_min:self.y_max, self.x_min:self.x_max] = 1
       self.mask = rotateImage(self.mask, np.rad2deg(self.rot), (self.pos[1], self.pos[0]))
       self.mask = (self.mask == 1)
-      # base_h = heightmap[self.pos[1], self.pos[0]]
-      base_h = heightmap[self.mask].max()
+      base_h = heightmap[self.mask].max() if self.mask.sum() > 0 else 0
       self.pos[-1] = self.height + base_h
 
     self.chunk_before = heightmap[self.mask]
