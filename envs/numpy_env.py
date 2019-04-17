@@ -80,6 +80,12 @@ class NumpyEnv(BaseEnv):
 
   def _place(self, x, y, z, rot):
     ''''''
+    padding = self.heightmap_size / 10
+    x = max(x, padding)
+    x = min(x, self.heightmap_size - padding)
+    y = max(y, padding)
+    y = min(y, self.heightmap_size - padding)
+
     if self.held_object is None:
       return
     for i, obj in enumerate(self.objects):
