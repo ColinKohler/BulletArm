@@ -77,8 +77,8 @@ class UR5_RG2(object):
     pre_rot = pb.getQuaternionFromEuler([0, np.pi, 0])
 
     # Move to pre-grasp pose and then grasp pose
-    self.moveTo(pre_pos, pre_rot, dynamic)
-    self.moveTo(pos, rot, dynamic)
+    self.moveTo(pre_pos, pre_rot, True)
+    self.moveTo(pos, rot, True)
 
     # Grasp object and lift up to pre pose
     self.openGripper()

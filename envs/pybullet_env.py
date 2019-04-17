@@ -30,6 +30,8 @@ class PyBulletEnv(BaseEnv):
     self.ur5 = UR5_RG2()
     self.pick_offset = 0.25
     self.place_offset = 0.25
+    self.block_original_size = 0.05
+    self.block_scale_range = (0.5, 0.7)
 
     # Setup camera parameters
     self.view_matrix = pb.computeViewMatrixFromYawPitchRoll([0.5, 0.0, 0], 1.0, -90, -90, 0, 2)
@@ -82,7 +84,8 @@ class PyBulletEnv(BaseEnv):
     if motion_primative == self.PICK_PRIMATIVE:
       self.ur5.pick(pos, rot, self.pick_offset, dynamic=self.dynamic)
     elif motion_primative == self.PLACE_PRIMATIVE:
-      self.ur5.place(pos, rot, self.place_offset, dynamic=self.dynamic)
+      if self.ur5.is_holding:
+        self.ur5.place(pos, rot, self.place_offset, dynamic=self.dynamic)
     elif motion_primative == self.PUSH_PRIMATIVE:
       pass
     else:
@@ -92,6 +95,9 @@ class PyBulletEnv(BaseEnv):
       self.ur5.moveTo(self.rest_pose[0], self.rest_pose[1], dynamic=True)
     else:
       self.ur5.moveTo(self.rest_pose[0], self.rest_pose[1], dynamic=self.dynamic)
+
+    for _ in range(100):
+      pb.stepSimulation()
 
     # Check for termination and get reward
     obs = self._getObservation()
@@ -143,7 +149,7 @@ class PyBulletEnv(BaseEnv):
       else:
         orientation = pb.getQuaternionFromEuler([0., 0., 0.])
 
-      scale = npr.uniform(0.5, 0.7)
+      scale = npr.uniform(self.block_scale_range[0], self.block_scale_range[1])
 
       handle = pb_obj_generation.generateCube(position, orientation, scale)
       shape_handles.append(handle)
@@ -182,3 +188,19 @@ class PyBulletEnv(BaseEnv):
   def _moveObjectOutWorkspace(self, obj):
     pos = [-0.50, 0, 0.25]
     pb.resetBasePositionAndOrientation(obj, pos, pb.getQuaternionFromEuler([0., 0., 0.]))
+
+  def _getNumTopBlock(self):
+    cluster_pos = []
+    for obj in self.objects:
+      if self._isObjectHeld(obj):
+        return -1
+      block_position = self._getObjectPosition(obj)
+      cluster_flag = False
+      for cluster in cluster_pos:
+        if np.allclose(block_position[:-1], cluster, atol=self.block_original_size*self.block_scale_range[0]/2):
+          cluster.append(block_position[:-1])
+          cluster_flag = True
+          break
+      if not cluster_flag:
+        cluster_pos.append([block_position[:-1]])
+    return len(cluster_pos)
