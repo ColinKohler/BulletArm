@@ -89,7 +89,7 @@ class NumpyEnv(BaseEnv):
     if self.held_object is None:
       return
     for i, obj in enumerate(self.objects):
-      if self.held_object is obj:
+      if self.held_object is obj or not obj.on_top:
         continue
       if self.held_object.isStackValid([x, y, z], rot, obj):
         self.held_object.addToHeightmap(self.heightmap, [x, y, z], rot)
