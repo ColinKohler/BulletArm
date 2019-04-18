@@ -41,13 +41,14 @@ class PyBulletEnv(BaseEnv):
     rot = pb.getQuaternionFromEuler([0,np.pi,0])
     self.rest_pose = [[0.0, 0.5, 0.5], rot]
 
-  def reset(self):
-    ''''''
+    self.initialized = False
+
+  def setup(self):
     pb.resetSimulation()
     pb.setTimeStep(self._timestep)
 
     pb.setGravity(0, 0, -10)
-    self.table_id = pb.loadURDF('plane.urdf', [0,0,0])
+    self.table_id = pb.loadURDF('plane.urdf', [0, 0, 0])
 
     # Load the UR5 and set it to the home positions
     self.ur5.reset()
@@ -59,18 +60,35 @@ class PyBulletEnv(BaseEnv):
 
     # Step simulation
     pb.stepSimulation()
-
-    return self._getObservation()
+    self.initial_state_id = pb.saveState()
+    self.initialized = True
 
   def saveState(self):
     self.state = {'current_episode_steps': deepcopy(self.current_episode_steps),
                   'objects': deepcopy(self.objects),
-                  'env_state': pb.saveState()}
+                  'env_state': pb.saveState()
+                  }
+    self.ur5.saveState()
 
   def restoreState(self):
     self.current_episode_steps = self.state['current_episode_steps']
     self.objects = self.state['objects']
     pb.restoreState(self.state['env_state'])
+    self.ur5.restoreState()
+
+  def reset(self):
+    ''''''
+    if not self.initialized:
+      self.setup()
+    else:
+      for obj in self.objects:
+        pb.removeBody(obj)
+      self.objects = list()
+      self.heightmap = None
+      self.current_episode_steps = 1
+      pb.restoreState(self.initial_state_id)
+
+    return self._getObservation()
 
   def step(self, action):
     ''''''
@@ -183,7 +201,7 @@ class PyBulletEnv(BaseEnv):
       # pb.removeBody(obj)
       self._moveObjectOutWorkspace(obj)
       self.ur5.openGripper()
-      self.objects.remove(obj)
+      # self.objects.remove(obj)
 
   def _moveObjectOutWorkspace(self, obj):
     pos = [-0.50, 0, 0.25]

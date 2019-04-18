@@ -16,9 +16,9 @@ class UR5_RG2(object):
   '''
   def __init__(self):
     # Setup arm and gripper variables
-    self.max_forces = [150, 150, 150, 28, 28, 28, 100, 100]
-    self.gripper_close_force = [100] * 2
-    self.gripper_open_force = [100] * 2
+    self.max_forces = [150, 150, 150, 28, 28, 28, 30, 30]
+    self.gripper_close_force = [30] * 2
+    self.gripper_open_force = [30] * 2
     self.end_effector_index = 12
 
     self.home_positions = [0., 0., -2.137, 1.432, -0.915, -1.591, 0.071, 0., 0., 0., 0., 0., 0., 0.]
@@ -46,6 +46,20 @@ class UR5_RG2(object):
       elif i in range(7, 9):
         self.gripper_joint_names.append(str(joint_info[1]))
         self.gripper_joint_indices.append(i)
+
+  def saveState(self):
+    self.state = {
+      'is_holding': self.is_holding,
+      'gripper_closed': self.gripper_closed
+    }
+
+  def restoreState(self):
+    self.is_holding = self.state['is_holding']
+    self.gripper_closed = self.state['gripper_closed']
+    if self.gripper_closed:
+      self._sendGripperCloseCommand()
+    else:
+      self._sendGripperOpenCommand()
 
   def pick(self, pos, rot, offset, dynamic=True):
     ''''''
