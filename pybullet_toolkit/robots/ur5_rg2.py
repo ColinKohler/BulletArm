@@ -156,6 +156,15 @@ class UR5_RG2(object):
       p2 = p2_
     return True
 
+  def checkGripperClosed(self):
+    limit = 0.036
+    p1 = pb.getJointState(self.id, 10)[0]
+    p2 = pb.getJointState(self.id, 11)[0]
+    if (limit - p1) + (limit - p2) > 0.001:
+      self.is_holding = True
+    else:
+      self.is_holding = False
+
   def openGripper(self):
     ''''''
     p1 = pb.getJointState(self.id, 10)[0]

@@ -96,6 +96,7 @@ class PyBulletEnv(BaseEnv):
 
     if self.ur5.is_holding:
       self.ur5.moveTo(self.rest_pose[0], self.rest_pose[1], dynamic=True)
+      self.ur5.checkGripperClosed()
     else:
       self.ur5.moveTo(self.rest_pose[0], self.rest_pose[1], dynamic=self.dynamic)
 
@@ -112,7 +113,17 @@ class PyBulletEnv(BaseEnv):
       done = self.current_episode_steps >= self.max_steps
     self.current_episode_steps += 1
 
+    if not done and not self.isSimValid():
+      done = True
+
     return obs, reward, done
+
+  def isSimValid(self):
+    for obj in self.objects:
+      p = pb_obj_generation.getObjectPosition(obj)
+      if not self._isObjectHeld(obj) and not self._isPointInWorkspace(p):
+        return False
+    return True
 
   def _getObservation(self):
     ''''''
@@ -186,7 +197,7 @@ class PyBulletEnv(BaseEnv):
       # pb.removeBody(obj)
       self._moveObjectOutWorkspace(obj)
       self.ur5.openGripper()
-      # self.objects.remove(obj)
+      self.objects.remove(obj)
 
   def _moveObjectOutWorkspace(self, obj):
     pos = [-0.50, 0, 0.25]
