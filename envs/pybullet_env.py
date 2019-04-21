@@ -34,7 +34,7 @@ class PyBulletEnv(BaseEnv):
     self.block_scale_range = (0.5, 0.7)
 
     # Setup camera parameters
-    self.view_matrix = pb.computeViewMatrixFromYawPitchRoll([0.5, 0.0, 0], 1.0, -90, -90, 0, 2)
+    self.view_matrix = pb.computeViewMatrixFromYawPitchRoll([workspace[0].mean(), workspace[1].mean(), 0], 1.0, -90, -90, 0, 2)
     self.proj_matrix = pb.computeProjectionMatrix(-0.25, 0.25, -0.25, 0.25, -1.0, 10.0)
 
     # Rest pose for arm
