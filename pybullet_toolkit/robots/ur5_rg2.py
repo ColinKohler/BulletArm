@@ -64,6 +64,7 @@ class UR5_RG2(object):
   def pick(self, pos, rot, offset, dynamic=True):
     ''''''
     # Setup pre-grasp pos and default orientation
+    self.openGripper()
     pre_pos = copy.copy(pos)
     pre_pos[2] += offset
     # rot = pb.getQuaternionFromEuler([np.pi/2.,-np.pi,np.pi/2])
