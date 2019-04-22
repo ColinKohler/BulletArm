@@ -101,6 +101,26 @@ class UR5_RG2(object):
 
     self.is_holding = False
 
+  def moveToJointPose(self, target_pose, dynamic=True, max_it=1000):
+    if dynamic:
+      self._sendPositionCommand(target_pose)
+      past_joint_pos = deque(maxlen=5)
+      joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
+      joint_pos = list(zip(*joint_state))[0]
+      n_it = 0
+      while not np.allclose(joint_pos, target_pose, atol=1e-2) and n_it < max_it:
+        pb.stepSimulation()
+        n_it += 1
+        # Check to see if the arm can't move any close to the desired joint position
+        if len(past_joint_pos) == 5 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=1e-3):
+          break
+        past_joint_pos.append(joint_pos)
+        joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
+        joint_pos = list(zip(*joint_state))[0]
+
+    else:
+      self._setJointPoses(target_pose)
+
   def moveTo(self, pos, rot, dynamic=True):
     ''''''
     close_enough = False
@@ -111,23 +131,7 @@ class UR5_RG2(object):
 
     while not close_enough and outer_it < max_outer_it:
       ik_solve = pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)[:-2]
-      if dynamic:
-        self._sendPositionCommand(ik_solve)
-        past_joint_pos = deque(maxlen=5)
-        joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
-        joint_pos = list(zip(*joint_state))[0]
-        inner_it = 0
-        while not np.allclose(joint_pos, ik_solve, atol=1e-2) and inner_it < max_inner_it:
-          pb.stepSimulation()
-          inner_it += 1
-          # Check to see if the arm can't move any close to the desired joint position
-          if len(past_joint_pos) == 5 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=1e-3):
-            break
-          past_joint_pos.append(joint_pos)
-          joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
-          joint_pos = list(zip(*joint_state))[0]
-      else:
-        self._setJointPoses(ik_solve)
+      self.moveToJointPose(ik_solve, dynamic, max_inner_it)
 
       ls = pb.getLinkState(self.id, self.end_effector_index)
       new_pos = list(ls[4])

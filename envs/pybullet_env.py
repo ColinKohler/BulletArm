@@ -95,9 +95,11 @@ class PyBulletEnv(BaseEnv):
       raise ValueError('Bad motion primative supplied for action.')
 
     if self.ur5.is_holding:
+      self.ur5.moveToJointPose(self.ur5.home_positions[1:7], True)
       self.ur5.moveTo(self.rest_pose[0], self.rest_pose[1], dynamic=True)
       self.ur5.checkGripperClosed()
     else:
+      self.ur5.moveToJointPose(self.ur5.home_positions[1:7], self.dynamic)
       self.ur5.moveTo(self.rest_pose[0], self.rest_pose[1], dynamic=self.dynamic)
 
     for _ in range(100):
@@ -112,6 +114,12 @@ class PyBulletEnv(BaseEnv):
     if not done:
       done = self.current_episode_steps >= self.max_steps
     self.current_episode_steps += 1
+
+    if not done:
+      if self.ur5.is_holding:
+        self.ur5.moveToJointPose(self.ur5.home_positions[1:7], True)
+      else:
+        self.ur5.moveToJointPose(self.ur5.home_positions[1:7], self.dynamic)
 
     if not done and not self.isSimValid():
       done = True
@@ -171,7 +179,7 @@ class PyBulletEnv(BaseEnv):
     self.objects.extend(shape_handles)
     for _ in range(50):
       pb.stepSimulation()
-    return shape_handles
+    return self.objects
 
   def _getObjectPosition(self, obj):
     return pb_obj_generation.getObjectPosition(obj)
