@@ -96,11 +96,9 @@ class PyBulletEnv(BaseEnv):
 
     if self.ur5.is_holding:
       self.ur5.moveToJointPose(self.ur5.home_positions[1:7], True)
-      self.ur5.moveTo(self.rest_pose[0], self.rest_pose[1], dynamic=True)
       self.ur5.checkGripperClosed()
     else:
       self.ur5.moveToJointPose(self.ur5.home_positions[1:7], self.dynamic)
-      self.ur5.moveTo(self.rest_pose[0], self.rest_pose[1], dynamic=self.dynamic)
 
     for _ in range(100):
       pb.stepSimulation()
@@ -115,12 +113,6 @@ class PyBulletEnv(BaseEnv):
       done = self.current_episode_steps >= self.max_steps
     self.current_episode_steps += 1
 
-    if not done:
-      if self.ur5.is_holding:
-        self.ur5.moveToJointPose(self.ur5.home_positions[1:7], True)
-      else:
-        self.ur5.moveToJointPose(self.ur5.home_positions[1:7], self.dynamic)
-
     if not done and not self.isSimValid():
       done = True
 
@@ -132,6 +124,19 @@ class PyBulletEnv(BaseEnv):
       if not self._isObjectHeld(obj) and not self._isPointInWorkspace(p):
         return False
     return True
+
+  def _isPointInWorkspace(self, p):
+    '''
+    Checks if the given point is within the workspace
+
+    Args:
+      - p: [x, y, z] point
+
+    Returns: True in point is within workspace, False otherwise
+    '''
+    return self.workspace[0][0] < p[0] < self.workspace[0][1] and \
+           self.workspace[1][0] < p[1] < self.workspace[1][1] and \
+           self.workspace[2][0] < p[2] < self.workspace[2][1]
 
   def _getObservation(self):
     ''''''
@@ -219,7 +224,7 @@ class PyBulletEnv(BaseEnv):
       block_position = self._getObjectPosition(obj)
       cluster_flag = False
       for cluster in cluster_pos:
-        if np.allclose(block_position[:-1], cluster, atol=self.block_original_size*self.block_scale_range[0]/2):
+        if np.allclose(block_position[:-1], cluster, atol=self.block_original_size*self.block_scale_range[0]*2/3):
           cluster.append(block_position[:-1])
           cluster_flag = True
           break
