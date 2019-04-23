@@ -25,6 +25,8 @@ class UR5_RG2(object):
 
     self.root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
 
+    self.gripper_joint_limit = [0, 0.036]
+
   def reset(self):
     ''''''
     ur5_urdf_filepath = os.path.join(self.root_dir, 'urdf/ur5/ur5_w_simple_gripper.urdf')
@@ -143,7 +145,7 @@ class UR5_RG2(object):
     ''''''
     p1 = pb.getJointState(self.id, 10)[0]
     p2 = pb.getJointState(self.id, 11)[0]
-    limit = 0.036
+    limit = self.gripper_joint_limit[1]
     self._sendGripperCloseCommand()
     self.gripper_closed = True
     it = 0
@@ -162,7 +164,7 @@ class UR5_RG2(object):
     return True
 
   def checkGripperClosed(self):
-    limit = 0.036
+    limit = self.gripper_joint_limit[1]
     p1 = pb.getJointState(self.id, 10)[0]
     p2 = pb.getJointState(self.id, 11)[0]
     if (limit - p1) + (limit - p2) > 0.001:
@@ -199,12 +201,14 @@ class UR5_RG2(object):
                                  [0.]*num_motors, self.max_forces[:-2], [0.01]*num_motors, [1.0]*num_motors)
 
   def _sendGripperCloseCommand(self):
-    pb.setJointMotorControl2(self.id, 10, pb.POSITION_CONTROL, targetPosition=0.037, force=self.gripper_close_force[0])
-    pb.setJointMotorControl2(self.id, 11, pb.POSITION_CONTROL, targetPosition=0.037, force=self.gripper_close_force[1])
+    target_pos = self.gripper_joint_limit[1] + 0.01
+    pb.setJointMotorControlArray(self.id, [10, 11], pb.POSITION_CONTROL,
+                                 targetPositions=[target_pos, target_pos], forces=self.gripper_close_force)
 
   def _sendGripperOpenCommand(self):
-    pb.setJointMotorControl2(self.id, 10, pb.POSITION_CONTROL, targetPosition=-0.01, force=self.gripper_close_force[0])
-    pb.setJointMotorControl2(self.id, 11, pb.POSITION_CONTROL, targetPosition=-0.01, force=self.gripper_close_force[1])
+    target_pos = self.gripper_joint_limit[0] - 0.01
+    pb.setJointMotorControlArray(self.id, [10, 11], pb.POSITION_CONTROL,
+                                 targetPositions=[target_pos, target_pos], forces=self.gripper_open_force)
 
   def _setJointPoses(self, q_poses):
     ''''''
