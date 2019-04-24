@@ -45,7 +45,7 @@ class UR5_RG2(object):
       if i in range(1, 7):
         self.arm_joint_names.append(str(joint_info[1]))
         self.arm_joint_indices.append(i)
-      elif i in range(7, 9):
+      elif i in range(10, 12):
         self.gripper_joint_names.append(str(joint_info[1]))
         self.gripper_joint_indices.append(i)
 
@@ -143,8 +143,7 @@ class UR5_RG2(object):
 
   def closeGripper(self):
     ''''''
-    p1 = pb.getJointState(self.id, 10)[0]
-    p2 = pb.getJointState(self.id, 11)[0]
+    p1, p2 = self._getGripperJointPosition()
     limit = self.gripper_joint_limit[1]
     self._sendGripperCloseCommand()
     self.gripper_closed = True
@@ -155,8 +154,7 @@ class UR5_RG2(object):
       it += 1
       if it > 100:
         return False
-      p1_ = pb.getJointState(self.id, 10)[0]
-      p2_ = pb.getJointState(self.id, 11)[0]
+      p1_, p2_ = self._getGripperJointPosition()
       if p1 >= p1_ and p2 >= p2_:
         return False
       p1 = p1_
@@ -165,8 +163,7 @@ class UR5_RG2(object):
 
   def checkGripperClosed(self):
     limit = self.gripper_joint_limit[1]
-    p1 = pb.getJointState(self.id, 10)[0]
-    p2 = pb.getJointState(self.id, 11)[0]
+    p1, p2 = self._getGripperJointPosition()
     if (limit - p1) + (limit - p2) > 0.001:
       self.is_holding = True
     else:
@@ -174,7 +171,7 @@ class UR5_RG2(object):
 
   def openGripper(self):
     ''''''
-    p1 = pb.getJointState(self.id, 10)[0]
+    p1, p2 = self._getGripperJointPosition()
     self._sendGripperOpenCommand()
     self.gripper_closed = False
     it = 0
@@ -183,7 +180,7 @@ class UR5_RG2(object):
       it += 1
       if it > 100:
         return False
-      p1 = pb.getJointState(self.id, 10)[0]
+      p1, p2 = self._getGripperJointPosition()
 
   def _getEndEffectorPosition(self):
     ''''''
@@ -194,6 +191,11 @@ class UR5_RG2(object):
     state = pb.getLinkState(self.id, self.end_effector_index)
     return np.array(state[5])
 
+  def _getGripperJointPosition(self):
+    p1 = pb.getJointState(self.id, self.gripper_joint_indices[0])[0]
+    p2 = pb.getJointState(self.id, self.gripper_joint_indices[1])[0]
+    return p1, p2
+
   def _sendPositionCommand(self, commands):
     ''''''
     num_motors = len(self.arm_joint_indices)
@@ -202,12 +204,12 @@ class UR5_RG2(object):
 
   def _sendGripperCloseCommand(self):
     target_pos = self.gripper_joint_limit[1] + 0.01
-    pb.setJointMotorControlArray(self.id, [10, 11], pb.POSITION_CONTROL,
+    pb.setJointMotorControlArray(self.id, self.gripper_joint_indices, pb.POSITION_CONTROL,
                                  targetPositions=[target_pos, target_pos], forces=self.gripper_close_force)
 
   def _sendGripperOpenCommand(self):
     target_pos = self.gripper_joint_limit[0] - 0.01
-    pb.setJointMotorControlArray(self.id, [10, 11], pb.POSITION_CONTROL,
+    pb.setJointMotorControlArray(self.id, self.gripper_joint_indices, pb.POSITION_CONTROL,
                                  targetPositions=[target_pos, target_pos], forces=self.gripper_open_force)
 
   def _setJointPoses(self, q_poses):
