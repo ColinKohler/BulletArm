@@ -1,3 +1,4 @@
+from copy import deepcopy
 import numpy as np
 import numpy.random as npr
 
@@ -10,6 +11,7 @@ class NumpyEnv(BaseEnv):
 
     self.render = render
     self.offset = self.heightmap_size/20
+    self.valid = True
 
   def reset(self):
     ''''''
@@ -17,35 +19,44 @@ class NumpyEnv(BaseEnv):
     self.heightmap = np.zeros((self.heightmap_size, self.heightmap_size))
     self.current_episode_steps = 1
     self.objects = list()
+    self.valid = True
 
     return self._getObservation()
 
-  def step(self, action):
-    ''''''
+  def saveState(self):
+    self.state = {'held_object_idx': self.objects.index(self.held_object) if self.objects and self.held_object else None,
+                  'heightmap': deepcopy(self.heightmap),
+                  'current_episode_steps': deepcopy(self.current_episode_steps),
+                  'objects': deepcopy(self.objects),
+                  'valid': deepcopy(self.valid)}
+
+  def restoreState(self):
+    self.heightmap = self.state['heightmap']
+    self.current_episode_steps = self.state['current_episode_steps']
+    self.objects = self.state['objects']
+    self.valid = self.state['valid']
+    held_object_idx = self.state['held_object_idx']
+    self.held_object = self.objects[held_object_idx] if held_object_idx is not None else None
+
+  def takeAction(self, action):
     motion_primative, x, y, z, rot = self._getSpecificAction(action)
 
     if motion_primative == self.PICK_PRIMATIVE:
       self.held_object = self._pick(x, y, z, rot)
     elif motion_primative == self.PLACE_PRIMATIVE:
-      self._place(x, y, z, rot)
-      self.is_holding = None
-    elif  motion_primative == self.PUSH_PRIMATIVE:
+      if self.held_object:
+        self._place(x, y, z, rot)
+        self.held_object = None
+    elif motion_primative == self.PUSH_PRIMATIVE:
       pass
     else:
       raise ValueError('Bad motion primative supplied for action.')
 
-    # Check for termination and get reward
-    # reward = 1.0 if self._isHolding() else 0.0
-    obs = self._getObservation()
-    done = self._checkTermination()
-    reward = 1.0 if done else 0.0
+  def wait(self, iteration):
+    pass
 
-    # Check to see if we are at the max step
-    if not done:
-      done = self.current_episode_steps >= self.max_steps
-    self.current_episode_steps += 1
-
-    return obs, reward, done
+  def isSimValid(self):
+    return self.valid
 
   def _pick(self, x, y, z, rot):
     ''''''
@@ -62,7 +73,43 @@ class NumpyEnv(BaseEnv):
 
   def _place(self, x, y, z, rot):
     ''''''
-    pass
+    padding = self.heightmap_size / 10
+    x = max(x, padding)
+    x = min(x, self.heightmap_size - padding)
+    y = max(y, padding)
+    y = min(y, self.heightmap_size - padding)
+
+    if self.held_object is None:
+      return
+    for i, obj in enumerate(self.objects):
+      if self.held_object is obj or not obj.on_top:
+        continue
+      if self.held_object.isStackValid([x, y, z], rot, obj):
+        self.held_object.addToHeightmap(self.heightmap, [x, y, z], rot)
+        self._fixTopBlocks()
+        return
+      else:
+        distance = np.linalg.norm(np.array([x, y]) - (obj.pos[:-1]))
+        min_distance = np.sqrt(2)/2 * (self.held_object.size + obj.size)
+        if distance < min_distance:
+          self.valid = False
+          return
+    self.held_object.addToHeightmap(self.heightmap, [x, y, z], rot)
+    self._fixTopBlocks()
+
+  def _fixTopBlocks(self):
+    for obj in self.objects:
+      if self.heightmap[obj.mask].mean() > obj.pos[-1]:
+        obj.on_top = False
+      else:
+        obj.on_top = True
+
+  def _getNumTopBlock(self):
+    count = 0
+    for obj in self.objects:
+      if obj.on_top:
+        count += 1
+    return count
 
   def _getObservation(self):
     ''''''
@@ -71,7 +118,7 @@ class NumpyEnv(BaseEnv):
   def _generateShapes(self, object_type, num_objects, min_distance=None, padding=None, random_orientation=False):
     ''''''
     if min_distance is None:
-      min_distance = self.heightmap_size/7
+      min_distance = 2 * self.heightmap_size/7
     if padding is None:
       padding = self.heightmap_size/5
     self.objects = list()

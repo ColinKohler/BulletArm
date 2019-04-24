@@ -7,26 +7,43 @@ import numpy.random as npr
 #=================================================================================================#
 
 class Cube(object):
-  def __init__(self, pos, rot, size):
+  def __init__(self, pos, rot, size, heightmap):
     self.pos = pos
     self.rot = rot
     self.size = size
+    self.height = pos[-1]
 
-    self.mask = None
-
-    self.x_min, self.x_max = int(pos[0]-size/2), int(pos[0]+size/2)
-    self.y_min, self.y_max = int(pos[1]-size/2), int(pos[1]+size/2)
-
-  def addToHeightmap(self, heightmap):
+    self.x_min, self.x_max = max(0, int(pos[0] - size / 2)), min(heightmap.shape[0], int(pos[0] + size / 2))
+    self.y_min, self.y_max = max(0, int(pos[1] - size / 2)), min(heightmap.shape[1], int(pos[1] + size / 2))
     self.mask = np.zeros_like(heightmap, dtype=np.int)
     self.mask[self.y_min:self.y_max, self.x_min:self.x_max] = 1
     self.mask = rotateImage(self.mask, np.rad2deg(self.rot), (self.pos[1], self.pos[0]))
     self.mask = (self.mask == 1)
-    heightmap[self.mask] += self.size
+
+    self.chunk_before = None
+    self.on_top = True
+
+  def addToHeightmap(self, heightmap, pos=None, rot=None):
+    if rot is not None:
+      self.rot = rot
+    if pos is not None:
+      self.pos = list(map(int, pos))
+      self.x_min, self.x_max = max(0, int(pos[0] - self.size / 2)), min(heightmap.shape[0], int(pos[0] + self.size / 2))
+      self.y_min, self.y_max = max(0, int(pos[1] - self.size / 2)), min(heightmap.shape[1], int(pos[1] + self.size / 2))
+      self.mask = np.zeros_like(heightmap, dtype=np.int)
+      self.mask[self.y_min:self.y_max, self.x_min:self.x_max] = 1
+      self.mask = rotateImage(self.mask, np.rad2deg(self.rot), (self.pos[1], self.pos[0]))
+      self.mask = (self.mask == 1)
+      base_h = heightmap[self.mask].max() if self.mask.sum() > 0 else 0
+      self.pos[-1] = self.height + base_h
+
+    self.chunk_before = heightmap[self.mask]
+    heightmap[self.mask] = self.pos[-1]
+
     return heightmap
 
   def removeFromHeightmap(self, heightmap):
-    heightmap[self.mask] -= self.size
+    heightmap[self.mask] = self.chunk_before
     return heightmap
 
   def isGraspValid(self, grasp_pos, grasp_rot):
@@ -37,9 +54,22 @@ class Cube(object):
       valid_rot2 = valid_rot1 + np.pi/2
     else:
       valid_rot2 = valid_rot1 - np.pi/2
+    valid_rot3 = valid_rot1 + np.pi
+    valid_rot4 = valid_rot2 + np.pi
+    valid_rots = np.array([valid_rot1, valid_rot2, valid_rot3, valid_rot4])
+    angle = np.pi - np.abs(np.abs(valid_rots - grasp_rot) - np.pi)
     return np.allclose(grasp_pos[:-1], self.pos[:-1], atol=(self.size/2)) and \
-           (np.abs(grasp_rot-valid_rot1) < np.pi/8 or np.abs(grasp_rot-valid_rot2) < np.pi/8) and \
-           grasp_pos[-1] < self.size
+           np.any(angle < np.pi/7) and \
+           grasp_pos[-1] < self.pos[-1] and \
+           self.on_top
+
+  def isStackValid(self, stack_pos, stack_rot, bottom_block):
+    if bottom_block == self or not bottom_block.on_top:
+      return False
+    if np.allclose(stack_pos[:-1], bottom_block.pos[:-1], atol=(bottom_block.size / 2)) and \
+        bottom_block.pos[-1]<=stack_pos[-1]:
+      return True
+    return False
 
 #=================================================================================================#
 #                                         Generation                                              #
@@ -47,7 +77,7 @@ class Cube(object):
 
 def generateCube(heightmap, pos, rot, size):
   ''''''
-  cube = Cube(pos, rot, size)
+  cube = Cube(pos, rot, size, heightmap)
   return cube, cube.addToHeightmap(heightmap)
 
 def rotateImage(img, angle, pivot):
@@ -57,5 +87,12 @@ def rotateImage(img, angle, pivot):
   img_2x = ndimage.zoom(img_recenter, zoom=2, order=0)
   img_r_2x = ndimage.rotate(img_2x, angle, reshape=False)
   img_r = img_r_2x[::2, ::2]
-  result = img_r[pad_y[0]: -pad_y[1], pad_x[0]: -pad_x[1]]
+  if pad_y[1] == 0 and pad_x[1]== 0:
+    result = img_r[pad_y[0]:, pad_x[0]:]
+  elif pad_y[1] == 0:
+    result = img_r[pad_y[0]:, pad_x[0]: -pad_x[1]]
+  elif pad_x[1] == 0:
+    result = img_r[pad_y[0]: -pad_y[1], pad_x[0]:]
+  else:
+    result = img_r[pad_y[0]: -pad_y[1], pad_x[0]: -pad_x[1]]
   return result

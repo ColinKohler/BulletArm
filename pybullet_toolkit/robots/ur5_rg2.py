@@ -16,14 +16,16 @@ class UR5_RG2(object):
   '''
   def __init__(self):
     # Setup arm and gripper variables
-    self.max_forces = [150, 150, 150, 28, 28, 28, 100, 100]
-    self.gripper_close_force = [100] * 2
-    self.gripper_open_force = [100] * 2
+    self.max_forces = [150, 150, 150, 28, 28, 28, 30, 30]
+    self.gripper_close_force = [30] * 2
+    self.gripper_open_force = [30] * 2
     self.end_effector_index = 12
 
     self.home_positions = [0., 0., -2.137, 1.432, -0.915, -1.591, 0.071, 0., 0., 0., 0., 0., 0., 0.]
 
     self.root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
+
+    self.gripper_joint_limit = [0, 0.036]
 
   def reset(self):
     ''''''
@@ -43,13 +45,28 @@ class UR5_RG2(object):
       if i in range(1, 7):
         self.arm_joint_names.append(str(joint_info[1]))
         self.arm_joint_indices.append(i)
-      elif i in range(7, 9):
+      elif i in range(10, 12):
         self.gripper_joint_names.append(str(joint_info[1]))
         self.gripper_joint_indices.append(i)
+
+  def saveState(self):
+    self.state = {
+      'is_holding': self.is_holding,
+      'gripper_closed': self.gripper_closed
+    }
+
+  def restoreState(self):
+    self.is_holding = self.state['is_holding']
+    self.gripper_closed = self.state['gripper_closed']
+    if self.gripper_closed:
+      self._sendGripperCloseCommand()
+    else:
+      self._sendGripperOpenCommand()
 
   def pick(self, pos, rot, offset, dynamic=True):
     ''''''
     # Setup pre-grasp pos and default orientation
+    self.openGripper()
     pre_pos = copy.copy(pos)
     pre_pos[2] += offset
     # rot = pb.getQuaternionFromEuler([np.pi/2.,-np.pi,np.pi/2])
@@ -77,14 +94,34 @@ class UR5_RG2(object):
     pre_rot = pb.getQuaternionFromEuler([0, np.pi, 0])
 
     # Move to pre-grasp pose and then grasp pose
-    self.moveTo(pre_pos, pre_rot, dynamic)
-    self.moveTo(pos, rot, dynamic)
+    self.moveTo(pre_pos, pre_rot, True)
+    self.moveTo(pos, rot, True)
 
     # Grasp object and lift up to pre pose
     self.openGripper()
     self.moveTo(pre_pos, pre_rot, dynamic)
 
     self.is_holding = False
+
+  def moveToJointPose(self, target_pose, dynamic=True, max_it=1000):
+    if dynamic:
+      self._sendPositionCommand(target_pose)
+      past_joint_pos = deque(maxlen=5)
+      joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
+      joint_pos = list(zip(*joint_state))[0]
+      n_it = 0
+      while not np.allclose(joint_pos, target_pose, atol=1e-2) and n_it < max_it:
+        pb.stepSimulation()
+        n_it += 1
+        # Check to see if the arm can't move any close to the desired joint position
+        if len(past_joint_pos) == 5 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=1e-3):
+          break
+        past_joint_pos.append(joint_pos)
+        joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
+        joint_pos = list(zip(*joint_state))[0]
+
+    else:
+      self._setJointPoses(target_pose)
 
   def moveTo(self, pos, rot, dynamic=True):
     ''''''
@@ -96,23 +133,7 @@ class UR5_RG2(object):
 
     while not close_enough and outer_it < max_outer_it:
       ik_solve = pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)[:-2]
-      if dynamic:
-        self._sendPositionCommand(ik_solve)
-        past_joint_pos = deque(maxlen=5)
-        joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
-        joint_pos = list(zip(*joint_state))[0]
-        inner_it = 0
-        while not np.allclose(joint_pos, ik_solve, atol=1e-2) and inner_it < max_inner_it:
-          pb.stepSimulation()
-          inner_it += 1
-          # Check to see if the arm can't move any close to the desired joint position
-          if len(past_joint_pos) == 5 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=1e-3):
-            break
-          past_joint_pos.append(joint_pos)
-          joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
-          joint_pos = list(zip(*joint_state))[0]
-      else:
-        self._setJointPoses(ik_solve)
+      self.moveToJointPose(ik_solve, dynamic, max_inner_it)
 
       ls = pb.getLinkState(self.id, self.end_effector_index)
       new_pos = list(ls[4])
@@ -122,9 +143,8 @@ class UR5_RG2(object):
 
   def closeGripper(self):
     ''''''
-    p1 = pb.getJointState(self.id, 10)[0]
-    p2 = pb.getJointState(self.id, 11)[0]
-    limit = 0.036
+    p1, p2 = self._getGripperJointPosition()
+    limit = self.gripper_joint_limit[1]
     self._sendGripperCloseCommand()
     self.gripper_closed = True
     it = 0
@@ -134,22 +154,33 @@ class UR5_RG2(object):
       it += 1
       if it > 100:
         return False
-      p1_ = pb.getJointState(self.id, 10)[0]
-      p2_ = pb.getJointState(self.id, 11)[0]
+      p1_, p2_ = self._getGripperJointPosition()
       if p1 >= p1_ and p2 >= p2_:
         return False
       p1 = p1_
       p2 = p2_
     return True
 
+  def checkGripperClosed(self):
+    limit = self.gripper_joint_limit[1]
+    p1, p2 = self._getGripperJointPosition()
+    if (limit - p1) + (limit - p2) > 0.001:
+      self.is_holding = True
+    else:
+      self.is_holding = False
+
   def openGripper(self):
     ''''''
-    p1 = pb.getJointState(self.id, 10)[0]
+    p1, p2 = self._getGripperJointPosition()
     self._sendGripperOpenCommand()
     self.gripper_closed = False
+    it = 0
     while p1 > 0.0:
       pb.stepSimulation()
-      p1 = pb.getJointState(self.id, 10)[0]
+      it += 1
+      if it > 100:
+        return False
+      p1, p2 = self._getGripperJointPosition()
 
   def _getEndEffectorPosition(self):
     ''''''
@@ -160,27 +191,31 @@ class UR5_RG2(object):
     state = pb.getLinkState(self.id, self.end_effector_index)
     return np.array(state[5])
 
+  def _getGripperJointPosition(self):
+    p1 = pb.getJointState(self.id, self.gripper_joint_indices[0])[0]
+    p2 = pb.getJointState(self.id, self.gripper_joint_indices[1])[0]
+    return p1, p2
+
   def _sendPositionCommand(self, commands):
     ''''''
     num_motors = len(self.arm_joint_indices)
     pb.setJointMotorControlArray(self.id, self.arm_joint_indices, pb.POSITION_CONTROL, commands,
                                  [0.]*num_motors, self.max_forces[:-2], [0.01]*num_motors, [1.0]*num_motors)
-    if self.gripper_closed:
-      self._sendGripperCloseCommand()
-    else:
-      self._sendGripperOpenCommand()
 
   def _sendGripperCloseCommand(self):
-    pb.setJointMotorControlArray(self.id, [10,11], pb.VELOCITY_CONTROL, targetVelocities=[1.0, 1.0], forces=self.gripper_close_force)
+    target_pos = self.gripper_joint_limit[1] + 0.01
+    pb.setJointMotorControlArray(self.id, self.gripper_joint_indices, pb.POSITION_CONTROL,
+                                 targetPositions=[target_pos, target_pos], forces=self.gripper_close_force)
 
   def _sendGripperOpenCommand(self):
-    pb.setJointMotorControlArray(self.id, [10,11], pb.VELOCITY_CONTROL, targetVelocities=[-1.0, -1.0], forces=self.gripper_open_force)
+    target_pos = self.gripper_joint_limit[0] - 0.01
+    pb.setJointMotorControlArray(self.id, self.gripper_joint_indices, pb.POSITION_CONTROL,
+                                 targetPositions=[target_pos, target_pos], forces=self.gripper_open_force)
 
   def _setJointPoses(self, q_poses):
     ''''''
-    motor_indices = self.arm_joint_indices + self.gripper_joint_indices
-    pb.setJointMotorControlArray(self.id, motor_indices, pb.VELOCITY_CONTROL,
-                                 targetVelocities=[0.0 for _ in range(len(motor_indices))], forces=self.max_forces)
     for i in range(len(q_poses)):
-      motor = motor_indices[i]
+      motor = self.arm_joint_indices[i]
       pb.resetJointState(self.id, motor, q_poses[i])
+
+    self._sendPositionCommand(q_poses)

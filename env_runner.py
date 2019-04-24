@@ -154,7 +154,7 @@ class EnvRunner(object):
 
   def getObjPosition(self):
     for remote in self.remotes:
-      remote.send('get_obj_position')
+      remote.send(('get_obj_position', None))
 
     position = [remote.recv() for remote in self.remotes]
     return position
