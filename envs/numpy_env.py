@@ -38,8 +38,7 @@ class NumpyEnv(BaseEnv):
     held_object_idx = self.state['held_object_idx']
     self.held_object = self.objects[held_object_idx] if held_object_idx is not None else None
 
-  def step(self, action):
-    ''''''
+  def takeAction(self, action):
     motion_primative, x, y, z, rot = self._getSpecificAction(action)
 
     if motion_primative == self.PICK_PRIMATIVE:
@@ -53,17 +52,11 @@ class NumpyEnv(BaseEnv):
     else:
       raise ValueError('Bad motion primative supplied for action.')
 
-    # Check for termination and get reward
-    obs = self._getObservation()
-    done = self._checkTermination()
-    reward = 1.0 if done else 0.0
+  def wait(self, iteration):
+    pass
 
-    # Check to see if we are at the max step
-    if not done:
-      done = self.current_episode_steps >= self.max_steps or not self.valid
-    self.current_episode_steps += 1
-
-    return obs, reward, done
+  def isSimValid(self):
+    return self.valid
 
   def _pick(self, x, y, z, rot):
     ''''''

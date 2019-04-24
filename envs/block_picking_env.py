@@ -30,9 +30,19 @@ def createBlockPickingEnv(simulator_base_env, config):
 
     def step(self, action):
       pre_obj_grasped = self.obj_grasped
-      obs, reward, done = super(BlockPickingEnv, self).step(action)
+      self.takeAction(action)
+      self.wait(100)
+      obs = self._getObservation()
+      done = self._checkTermination()
       if self.reward_type == 'dense':
         reward = 1.0 if self.obj_grasped > pre_obj_grasped else 0.0
+      else:
+        reward = 1.0 if done else 0.0
+
+      if not done:
+        done = self.current_episode_steps >= self.max_steps or not self.isSimValid()
+      self.current_episode_steps += 1
+
       return obs, reward, done
 
     def reset(self):

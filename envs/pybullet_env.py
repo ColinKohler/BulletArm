@@ -75,8 +75,7 @@ class PyBulletEnv(BaseEnv):
     pb.restoreState(self.state['env_state'])
     self.ur5.restoreState()
 
-  def step(self, action):
-    ''''''
+  def takeAction(self, action):
     motion_primative, x, y, z, rot = self._getSpecificAction(action)
 
     # Get transform for action
@@ -100,30 +99,16 @@ class PyBulletEnv(BaseEnv):
     else:
       self.ur5.moveToJointPose(self.ur5.home_positions[1:7], self.dynamic)
 
-    for _ in range(100):
-      pb.stepSimulation()
-
-    # Check for termination and get reward
-    obs = self._getObservation()
-    done = self._checkTermination()
-    reward = 1.0 if done else 0.0
-
-    # Check to see if we are at the max steps
-    if not done:
-      done = self.current_episode_steps >= self.max_steps
-    self.current_episode_steps += 1
-
-    if not done and not self.isSimValid():
-      done = True
-
-    return obs, reward, done
-
   def isSimValid(self):
     for obj in self.objects:
       p = pb_obj_generation.getObjectPosition(obj)
       if not self._isObjectHeld(obj) and not self._isPointInWorkspace(p):
         return False
     return True
+
+  def wait(self, iteration):
+    for _ in range(iteration):
+      pb.stepSimulation()
 
   def _isPointInWorkspace(self, p):
     '''

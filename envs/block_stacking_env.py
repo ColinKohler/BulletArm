@@ -23,6 +23,19 @@ def createBlockStackingEnv(simulator_base_env, config):
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
 
+    def step(self, action):
+      self.takeAction(action)
+      self.wait(100)
+      obs = self._getObservation()
+      done = self._checkTermination()
+      reward = 1.0 if done else 0.0
+
+      if not done:
+        done = self.current_episode_steps >= self.max_steps or not self.isSimValid()
+      self.current_episode_steps += 1
+
+      return obs, reward, done
+
     def reset(self):
       ''''''
       super(BlockStackingEnv, self).reset()
