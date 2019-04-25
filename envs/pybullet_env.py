@@ -1,4 +1,5 @@
 import time
+import copy
 from copy import deepcopy
 import numpy as np
 import numpy.random as npr
@@ -84,20 +85,14 @@ class PyBulletEnv(BaseEnv):
 
     # Take action specfied by motion primative
     if motion_primative == self.PICK_PRIMATIVE:
-      self.ur5.pick(pos, rot, self.pick_offset, dynamic=self.dynamic)
+      self.ur5.pick(pos, rot, self.pick_offset, dynamic=self.dynamic, objects=self.objects)
     elif motion_primative == self.PLACE_PRIMATIVE:
-      if self.ur5.is_holding:
+      if self.ur5.holding_obj is not None:
         self.ur5.place(pos, rot, self.place_offset, dynamic=self.dynamic)
     elif motion_primative == self.PUSH_PRIMATIVE:
       pass
     else:
       raise ValueError('Bad motion primative supplied for action.')
-
-    if self.ur5.is_holding:
-      self.ur5.moveToJointPose(self.ur5.home_positions[1:7], True)
-      self.ur5.checkGripperClosed()
-    else:
-      self.ur5.moveToJointPose(self.ur5.home_positions[1:7], self.dynamic)
 
   def isSimValid(self):
     for obj in self.objects:
@@ -175,7 +170,7 @@ class PyBulletEnv(BaseEnv):
     return pb_obj_generation.getObjectPosition(obj)
 
   def getHoldingState(self):
-    return self.ur5.is_holding
+    return self.ur5.holding_obj is not None
 
   def _getRestPoseMatrix(self):
     T = np.eye(4)
