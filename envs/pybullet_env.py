@@ -127,7 +127,7 @@ class PyBulletEnv(BaseEnv):
 
     return self.getHoldingState(), self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
-  def _generateShapes(self, shape_type, num_shapes, size=None, pos=None, rot=None,
+  def _generateShapes(self, shape_type=0, num_shapes=1, size=None, pos=None, rot=None,
                            min_distance=0.1, padding=0.2, random_orientation=False):
     ''''''
     shape_handles = list()
@@ -158,13 +158,18 @@ class PyBulletEnv(BaseEnv):
 
       scale = npr.uniform(self.block_scale_range[0], self.block_scale_range[1])
 
-      handle = pb_obj_generation.generateCube(position, orientation, scale)
+      if shape_type == self.CUBE:
+        handle = pb_obj_generation.generateCube(position, orientation, scale)
+      elif shape_type == self.BRICK:
+        handle = pb_obj_generation.generateBrick(position, orientation, scale)
+      else:
+        raise NotImplementedError
       shape_handles.append(handle)
 
     self.objects.extend(shape_handles)
     for _ in range(50):
       pb.stepSimulation()
-    return self.objects
+    return shape_handles
 
   def _getObjectPosition(self, obj):
     return pb_obj_generation.getObjectPosition(obj)
@@ -211,3 +216,18 @@ class PyBulletEnv(BaseEnv):
       if not cluster_flag:
         cluster_pos.append([block_position[:-1]])
     return len(cluster_pos)
+
+  def _checkOnTop(self, bottom_obj, top_obj):
+    # bottom_position = self._getObjectPosition(bottom_obj)
+    # top_position = self._getObjectPosition(top_obj)
+    # return np.linalg.norm(np.array(bottom_position) - top_position) < 1.8*self.block_scale_range[0]*self.block_original_size and \
+    #        top_position[-1] - bottom_position[-1] > 0.9*self.block_scale_range[0]*self.block_original_size
+    bottom_position = self._getObjectPosition(bottom_obj)
+    top_position = self._getObjectPosition(top_obj)
+    if top_position[-1] - bottom_position[-1] < 0.9 * self.block_scale_range[0] * self.block_original_size:
+      return False
+    contact_points = pb.getContactPoints(top_obj)
+    for p in contact_points:
+      if p[2] != bottom_obj:
+        return False
+    return True

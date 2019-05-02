@@ -45,6 +45,7 @@ class BaseEnv(object):
     self.SPHERE = 1
     self.CYLINDER = 2
     self.CONE = 3
+    self.BRICK = 4
 
     assert action_sequence.find('x') != -1
     assert action_sequence.find('y') != -1
@@ -73,8 +74,9 @@ class BaseEnv(object):
     ''' Get the shape name from the type (int) '''
     if shape_type == self.CUBE: return 'cube'
     elif shape_type == self.SPHERE: return 'sphere'
-    elif shape_type == self.CYLINER: return 'cylinder'
+    elif shape_type == self.CYLINDER: return 'cylinder'
     elif shape_type == self.CONE: return 'cone'
+    elif shape_type == self.BRICK: return 'brick'
     else: return 'unknown'
 
   def _getPrimativeHeight(self, motion_primative, x, y):
