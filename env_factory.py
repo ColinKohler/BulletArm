@@ -8,6 +8,7 @@ from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.envs.block_picking_env import createBlockPickingEnv
 from helping_hands_rl_envs.envs.block_stacking_env import createBlockStackingEnv
 from helping_hands_rl_envs.envs.brick_stacking_env import createBrickStackingEnv
+from helping_hands_rl_envs.envs.block_cylinder_stacking_env import createBlockCylinderStackingEnv
 from helping_hands_rl_envs.env_runner import EnvRunner
 
 def createEnvs(num_processes, simulator, env_type, config):
@@ -52,6 +53,8 @@ def createEnvs(num_processes, simulator, env_type, config):
     envs = [createBlockStackingEnv(parent_env, configs[i]) for i in range(num_processes)]
   elif env_type == 'brick_stacking':
     envs = [createBrickStackingEnv(parent_env, configs[i]) for i in range(num_processes)]
+  elif env_type == 'block_cylinder_stacking':
+    envs = [createBlockCylinderStackingEnv(parent_env, configs[i]) for i in range(num_processes)]
   else:
     raise ValueError('Invalid environment type passed to factory. Valid types are: \'block_picking\', \'block_stacking\'.')
 

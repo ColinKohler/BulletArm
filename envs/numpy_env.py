@@ -106,7 +106,14 @@ class NumpyEnv(BaseEnv):
 
   def _getNumTopBlock(self):
     count = 0
-    for obj in self.objects:
+    for obj in self._getBlocks():
+      if obj.on_top:
+        count += 1
+    return count
+
+  def _getNumTopCylinder(self):
+    count = 0
+    for obj in self._getCylinders():
       if obj.on_top:
         count += 1
     return count
@@ -121,8 +128,10 @@ class NumpyEnv(BaseEnv):
       min_distance = 2 * self.heightmap_size/7
     if padding is None:
       padding = self.heightmap_size/5
-    self.objects = list()
-    positions = list()
+    objects = list()
+    positions = deepcopy(list(map(lambda o: o.pos, self.objects)))
+    for p in positions:
+      p[2] = 0
     for i in range(num_objects):
       # Generate random drop config
       x_extents = self.workspace[0][1] - self.workspace[0][0]
@@ -146,10 +155,15 @@ class NumpyEnv(BaseEnv):
       size = npr.randint(self.heightmap_size/10, self.heightmap_size/7)
       position[2] = int(size / 2)
 
-      obj, self.heightmap = object_generation.generateCube(self.heightmap, position, rotation, size)
-      self.objects.append(obj)
-
-    return self.objects
+      if object_type is self.CUBE:
+        obj, self.heightmap = object_generation.generateCube(self.heightmap, position, rotation, size)
+      elif object_type is self.CYLINDER:
+        obj, self.heightmap = object_generation.generateCylinder(self.heightmap, position, rotation, size)
+      else:
+        raise NotImplementedError
+      objects.append(obj)
+    self.objects.extend(objects)
+    return objects
 
   def _removeObject(self, obj):
     if obj == self.held_object:
@@ -165,3 +179,9 @@ class NumpyEnv(BaseEnv):
   def _getObjectPosition(self, obj):
     ''''''
     return obj.pos
+
+  def _getBlocks(self):
+    return list(filter(lambda o: type(o) is object_generation.Cube, self.objects))
+
+  def _getCylinders(self):
+    return list(filter(lambda o: type(o) is object_generation.Cylinder, self.objects))
