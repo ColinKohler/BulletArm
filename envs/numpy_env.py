@@ -143,7 +143,7 @@ class NumpyEnv(BaseEnv):
                     int((y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2),
                     0]
         if positions:
-          is_position_valid = np.all(np.sum(np.abs(np.array(positions) - np.array(position)), axis=1) > min_distance)
+          is_position_valid = np.all(np.sum(np.abs(np.array(positions)[:, :2] - np.array(position)[:2]), axis=1) > min_distance)
         else:
           is_position_valid = True
 

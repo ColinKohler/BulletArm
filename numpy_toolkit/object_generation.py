@@ -34,7 +34,7 @@ class Cylinder(object):
     y, x = np.ogrid[-self.pos[0]:self.heightmap_size-self.pos[0], -self.pos[1]:self.heightmap_size-self.pos[1]]
     region = x*x + y*y <= self.radius*self.radius
     self.mask = np.zeros((self.heightmap_size, self.heightmap_size), dtype=np.int)
-    self.mask[region] = 1
+    self.mask[region.T] = 1
     self.mask = (self.mask == 1)
 
   def removeFromHeightmap(self, heightmap):
