@@ -28,8 +28,8 @@ def createEnvs(num_processes, simulator, env_type, config):
 
   # Clone env config and generate random seeds for the different processes
   configs = [copy.copy(config) for _ in range(num_processes)]
-  for config in configs:
-    config['seed'] = npr.randint(100)
+  for i, config in enumerate(configs):
+    config['seed'] = config['seed'] + i if config['seed'] else npr.randint(100)
 
   # Set the super environment and add details to the configs as needed
   if simulator == 'vrep':
