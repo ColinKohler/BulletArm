@@ -76,7 +76,7 @@ class UR5_RG2(object):
     else:
       self._sendGripperOpenCommand()
 
-  def pick(self, pos, rot, offset, dynamic=True, objects=None):
+  def pick(self, pos, rot, offset, dynamic=True, objects=None, simulate_grasp=True):
     ''''''
     # Setup pre-grasp pos and default orientation
     self.openGripper()
@@ -90,12 +90,16 @@ class UR5_RG2(object):
     self.moveTo(pos, rot, dynamic)
 
     # Grasp object and lift up to pre pose
-    gripper_fully_closed = self.closeGripper()
-    if gripper_fully_closed:
-      self.openGripper()
-      self.moveTo(pre_pos, pre_rot, dynamic)
+    if simulate_grasp:
+      gripper_fully_closed = self.closeGripper()
+      if gripper_fully_closed:
+        self.openGripper()
+        self.moveTo(pre_pos, pre_rot, dynamic)
+      else:
+        self.moveTo(pre_pos, pre_rot, True)
+        self.holding_obj = self.getPickedObj(objects)
+
     else:
-      self.moveTo(pre_pos, pre_rot, True)
       self.holding_obj = self.getPickedObj(objects)
 
     self.moveToJ(self.home_positions[1:7], dynamic)
@@ -135,11 +139,11 @@ class UR5_RG2(object):
       return None
     end_pos = self._getEndEffectorPosition()
     sorted_obj = sorted(objects, key=lambda o: np.linalg.norm(end_pos-object_generation.getObjectPosition(o)))
-    # if np.linalg.norm(end_pos-object_generation.getObjectPosition(sorted_obj[0])) < 0.03:
-    #   return sorted_obj[0]
-    # return None
-    if object_generation.getObjectPosition(sorted_obj[0])[-1] > 0.25:
+    obj_pos = object_generation.getObjectPosition(sorted_obj[0])
+    if np.linalg.norm(end_pos[:-1]-obj_pos[:-1]) < 0.05 and np.abs(end_pos[-1]-obj_pos[-1]) < 0.02:
       return sorted_obj[0]
+    # if object_generation.getObjectPosition(sorted_obj[0])[-1] > 0.25:
+    #   return sorted_obj[0]
     return None
 
   def closeGripper(self):

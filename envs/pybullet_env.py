@@ -15,7 +15,7 @@ class PyBulletEnv(BaseEnv):
   '''
   PyBullet Arm RL base class.
   '''
-  def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, fast_mode=False, render=False, action_sequence='pxyr'):
+  def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, fast_mode=False, render=False, action_sequence='pxyr', simulate_grasp=True):
     super(PyBulletEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence)
 
     # Connect to pybullet and add data files to path
@@ -41,6 +41,8 @@ class PyBulletEnv(BaseEnv):
     # Rest pose for arm
     rot = pb.getQuaternionFromEuler([0,np.pi,0])
     self.rest_pose = [[0.0, 0.5, 0.5], rot]
+
+    self.simulate_grasp = simulate_grasp
 
   def reset(self):
     ''''''
@@ -85,7 +87,7 @@ class PyBulletEnv(BaseEnv):
 
     # Take action specfied by motion primative
     if motion_primative == self.PICK_PRIMATIVE:
-      self.ur5.pick(pos, rot, self.pick_offset, dynamic=self.dynamic, objects=self.objects)
+      self.ur5.pick(pos, rot, self.pick_offset, dynamic=self.dynamic, objects=self.objects, simulate_grasp=self.simulate_grasp)
     elif motion_primative == self.PLACE_PRIMATIVE:
       if self.ur5.holding_obj is not None:
         self.ur5.place(pos, rot, self.place_offset, dynamic=self.dynamic)
@@ -101,7 +103,9 @@ class PyBulletEnv(BaseEnv):
         return False
     return True
 
-  def wait(self, iteration):
+  def wait(self, iteration, primitive=0):
+    if not self.simulate_grasp and primitive==0:
+      return
     for _ in range(iteration):
       pb.stepSimulation()
 

@@ -7,17 +7,11 @@ def createBrickStackingEnv(simulator_base_env, config):
   class BlockStackingEnv(simulator_base_env):
     ''''''
     def __init__(self, config):
-      if simulator_base_env is NumpyEnv:
-        super(BlockStackingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
-                                               config['obs_size'], config['render'], config['action_sequence'])
-      elif simulator_base_env is VrepEnv:
-        super(BlockStackingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
-                                               config['obs_size'], config['port'], config['fast_mode'],
-                                               config['action_sequence'])
-      elif simulator_base_env is PyBulletEnv:
+      if simulator_base_env is PyBulletEnv:
+        simulate_grasp = config['simulate_grasp'] if 'simulate_grasp' in config else True
         super(BlockStackingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
                                                config['obs_size'], config['fast_mode'], config['render'],
-                                               config['action_sequence'])
+                                               config['action_sequence'], simulate_grasp)
       else:
         raise ValueError('Bad simulator base env specified.')
       self.simulator_base_env = simulator_base_env
@@ -27,7 +21,9 @@ def createBrickStackingEnv(simulator_base_env, config):
 
     def step(self, action):
       self.takeAction(action)
-      self.wait(100)
+      primitive_id = self.action_sequence.find('p')
+      motion_primitive = action[primitive_id] if primitive_id != -1 else 0
+      self.wait(100, motion_primitive)
       obs = self._getObservation()
       done = self._checkTermination()
       reward = 1.0 if done else 0.0
