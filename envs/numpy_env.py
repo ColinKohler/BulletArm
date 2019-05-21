@@ -6,12 +6,13 @@ from helping_hands_rl_envs.envs.base_env import BaseEnv
 from helping_hands_rl_envs.numpy_toolkit import object_generation
 
 class NumpyEnv(BaseEnv):
-  def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, render=False, action_sequence='pxyr'):
+  def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, render=False, action_sequence='pxyr', pos_candidate=None):
     super(NumpyEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence)
 
     self.render = render
     self.offset = self.heightmap_size/20
     self.valid = True
+    self.pos_candidate = pos_candidate
 
   def reset(self):
     ''''''
@@ -142,6 +143,12 @@ class NumpyEnv(BaseEnv):
         position = [int((x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2),
                     int((y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2),
                     0]
+        if self.pos_candidate is None:
+          pass
+        else:
+          position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0]-position[0]).argmin()]
+          position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1]-position[1]).argmin()]
+
         if positions:
           is_position_valid = np.all(np.sum(np.abs(np.array(positions)[:, :2] - np.array(position)[:2]), axis=1) > min_distance)
         else:
