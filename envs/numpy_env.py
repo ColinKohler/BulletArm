@@ -146,8 +146,8 @@ class NumpyEnv(BaseEnv):
         if self.pos_candidate is None:
           pass
         else:
-          position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0]-position[0]).argmin()]
-          position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1]-position[1]).argmin()]
+          position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0]-position[0]).argmin()] + npr.randint(-self.heightmap_size/20+1, self.heightmap_size/20)
+          position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1]-position[1]).argmin()] + npr.randint(-self.heightmap_size/20+1, self.heightmap_size/20)
 
         if positions:
           is_position_valid = np.all(np.sum(np.abs(np.array(positions)[:, :2] - np.array(position)[:2]), axis=1) > min_distance)
