@@ -98,9 +98,14 @@ class PyBulletEnv(BaseEnv):
 
   def isSimValid(self):
     for obj in self.objects:
+      if self._isObjectHeld(obj):
+        continue
       p = pb_obj_generation.getObjectPosition(obj)
-      if not self._isObjectHeld(obj) and not self._isPointInWorkspace(p):
+      if not self._isPointInWorkspace(p):
         return False
+      if self.pos_candidate is not None:
+        if np.abs(self.pos_candidate[0] - p[0]).min() > 0.01 or np.abs(self.pos_candidate[1] - p[1]).min() > 0.01:
+          return False
     return True
 
   def wait(self, iteration, primitive=0):
@@ -154,8 +159,8 @@ class PyBulletEnv(BaseEnv):
                     0.05]
 
         if self.pos_candidate is not None:
-          position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0] - position[0]).argmin()] + 0.02 * np.random.random() - 0.01
-          position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1] - position[1]).argmin()] + 0.02 * np.random.random() - 0.01
+          position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0] - position[0]).argmin()]
+          position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1] - position[1]).argmin()]
 
         if positions:
           is_position_valid = np.all(np.sum(np.abs(np.array(positions) - np.array(position[:-1])), axis=1) > min_distance)
