@@ -7,12 +7,15 @@ from helping_hands_rl_envs.numpy_toolkit import object_generation
 
 class NumpyEnv(BaseEnv):
   def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, render=False, action_sequence='pxyr', pos_candidate=None):
-    super(NumpyEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence)
+    super(NumpyEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence, pos_candidate)
 
     self.render = render
     self.offset = self.heightmap_size/20
     self.valid = True
-    self.pos_candidate = pos_candidate
+
+  def setPosCandidate(self, pos_candidate):
+    super().setPosCandidate(pos_candidate)
+    self.pos_candidate = self.pos_candidate.astype(np.int)
 
   def reset(self):
     ''''''
@@ -126,7 +129,7 @@ class NumpyEnv(BaseEnv):
   def _generateShapes(self, object_type, num_objects, min_distance=None, padding=None, random_orientation=False):
     ''''''
     if min_distance is None:
-      min_distance = 2 * self.heightmap_size/7
+      min_distance = 1.5 * self.heightmap_size/7
     if padding is None:
       padding = self.heightmap_size/5
     objects = list()
@@ -143,9 +146,7 @@ class NumpyEnv(BaseEnv):
         position = [int((x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2),
                     int((y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2),
                     0]
-        if self.pos_candidate is None:
-          pass
-        else:
+        if self.pos_candidate is not None:
           position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0]-position[0]).argmin()]
           position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1]-position[1]).argmin()]
 

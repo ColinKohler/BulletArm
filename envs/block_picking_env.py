@@ -11,8 +11,7 @@ def createBlockPickingEnv(simulator_base_env, config):
     def __init__(self, config):
       if simulator_base_env is NumpyEnv:
         super(BlockPickingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
-                                              config['obs_size'], config['render'], config['action_sequence'],
-                                              config['pos_candidate'])
+                                              config['obs_size'], config['render'], config['action_sequence'])
       elif simulator_base_env is VrepEnv:
         super(BlockPickingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
                                               config['obs_size'], config['port'], config['fast_mode'],
@@ -20,7 +19,7 @@ def createBlockPickingEnv(simulator_base_env, config):
       elif simulator_base_env is PyBulletEnv:
         super(BlockPickingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
                                               config['obs_size'], config['fast_mode'], config['render'],
-                                              config['action_sequence'], config['pos_candidate'])
+                                              config['action_sequence'], config['simulate_grasp'])
 
       else:
         raise ValueError('Bad simulator base env specified.')

@@ -27,6 +27,8 @@ def createEnvs(num_processes, simulator, env_type, config):
     config['action_sequence'] = 'pxyr'
   if 'pos_candidate' not in config:
     config['pos_candidate'] = None
+  if 'simulate_grasp' not in config:
+    config['simulate_grasp'] = True
 
   # Clone env config and generate random seeds for the different processes
   configs = [copy.copy(config) for _ in range(num_processes)]

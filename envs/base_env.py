@@ -5,7 +5,7 @@ class BaseEnv(object):
   '''
   Base Arm RL environment.
   '''
-  def __init__(self, seed, workspace, max_steps, heightmap_size, action_sequence='pxyr'):
+  def __init__(self, seed, workspace, max_steps, heightmap_size, action_sequence='pxyr', pos_candidate=None):
     """
     constructor of BaseEnv
     Args:
@@ -52,6 +52,13 @@ class BaseEnv(object):
     self.action_sequence = action_sequence
 
     self.offset = 0.01
+
+    self.pos_candidate = pos_candidate
+
+  def setPosCandidate(self, pos_candidate):
+    self.pos_candidate = pos_candidate*self.heightmap_resolution
+    self.pos_candidate[0] += self.workspace[0, 0]
+    self.pos_candidate[1] += self.workspace[1, 0]
 
   def _getSpecificAction(self, action):
     """

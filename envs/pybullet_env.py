@@ -15,8 +15,8 @@ class PyBulletEnv(BaseEnv):
   '''
   PyBullet Arm RL base class.
   '''
-  def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, fast_mode=False, render=False, action_sequence='pxyr', simulate_grasp=True):
-    super(PyBulletEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence)
+  def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, fast_mode=False, render=False, action_sequence='pxyr', simulate_grasp=True, pos_candidate=None):
+    super(PyBulletEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence, pos_candidate)
 
     # Connect to pybullet and add data files to path
     if render:
@@ -134,6 +134,8 @@ class PyBulletEnv(BaseEnv):
   def _generateShapes(self, shape_type=0, num_shapes=1, size=None, pos=None, rot=None,
                            min_distance=0.1, padding=0.2, random_orientation=False):
     ''''''
+    if shape_type == self.CUBE:
+      min_distance = 0.05
     shape_handles = list()
     positions = list()
 
@@ -150,6 +152,11 @@ class PyBulletEnv(BaseEnv):
         position = [(x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2,
                     (y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2,
                     0.05]
+
+        if self.pos_candidate is not None:
+          position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0] - position[0]).argmin()] + 0.02 * np.random.random() - 0.01
+          position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1] - position[1]).argmin()] + 0.02 * np.random.random() - 0.01
+
         if positions:
           is_position_valid = np.all(np.sum(np.abs(np.array(positions) - np.array(position[:-1])), axis=1) > min_distance)
         else:

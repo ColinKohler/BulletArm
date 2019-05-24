@@ -37,6 +37,8 @@ def worker(remote, parent_remote, env_fn):
         remote.send((env.obs_shape, env.action_space, env.action_shape))
       elif cmd == 'get_obj_position':
         remote.send(env.getObjectPosition())
+      elif cmd == 'set_pos_candidate':
+        env.setPosCandidate(data)
       else:
         raise NotImplementerError
   except KeyboardInterrupt:
@@ -158,3 +160,7 @@ class EnvRunner(object):
 
     position = [remote.recv() for remote in self.remotes]
     return position
+
+  def setPosCandidate(self, pos_candidate):
+    for remote in self.remotes:
+      remote.send(('set_pos_candidate', pos_candidate))

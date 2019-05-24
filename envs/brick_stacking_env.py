@@ -8,10 +8,9 @@ def createBrickStackingEnv(simulator_base_env, config):
     ''''''
     def __init__(self, config):
       if simulator_base_env is PyBulletEnv:
-        simulate_grasp = config['simulate_grasp'] if 'simulate_grasp' in config else True
         super(BlockStackingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
                                                config['obs_size'], config['fast_mode'], config['render'],
-                                               config['action_sequence'], simulate_grasp)
+                                               config['action_sequence'], config['simulate_grasp'])
       else:
         raise ValueError('Bad simulator base env specified.')
       self.simulator_base_env = simulator_base_env
