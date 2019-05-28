@@ -104,12 +104,12 @@ class PyBulletEnv(BaseEnv):
       if not self._isPointInWorkspace(p):
         return False
       if self.pos_candidate is not None:
-        if np.abs(self.pos_candidate[0] - p[0]).min() > 0.01 or np.abs(self.pos_candidate[1] - p[1]).min() > 0.01:
+        if np.abs(self.pos_candidate[0] - p[0]).min() > 0.02 or np.abs(self.pos_candidate[1] - p[1]).min() > 0.02:
           return False
     return True
 
-  def wait(self, iteration, primitive=0):
-    if not self.simulate_grasp and primitive==0:
+  def wait(self, iteration):
+    if not self.simulate_grasp and self.getHoldingState():
       return
     for _ in range(iteration):
       pb.stepSimulation()
