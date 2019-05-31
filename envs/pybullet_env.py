@@ -104,7 +104,7 @@ class PyBulletEnv(BaseEnv):
       if not self._isPointInWorkspace(p):
         return False
       if self.pos_candidate is not None:
-        if np.abs(self.pos_candidate[0] - p[0]).min() > 0.02 or np.abs(self.pos_candidate[1] - p[1]).min() > 0.02:
+        if np.abs(self.pos_candidate[0] - p[0]).min() > 0.01 or np.abs(self.pos_candidate[1] - p[1]).min() > 0.01:
           return False
     return True
 
