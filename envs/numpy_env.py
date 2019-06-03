@@ -115,6 +115,9 @@ class NumpyEnv(BaseEnv):
         count += 1
     return count
 
+  def _checkStack(self):
+    return self._getNumTopBlock() == 1
+
   def _getNumTopCylinder(self):
     count = 0
     for obj in self._getCylinders():

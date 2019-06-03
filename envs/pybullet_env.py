@@ -233,6 +233,18 @@ class PyBulletEnv(BaseEnv):
         cluster_pos.append([block_position[:-1]])
     return len(cluster_pos)
 
+  def _checkStack(self):
+    for obj in self.objects:
+      if self._isObjectHeld(obj):
+        return False
+
+    heights = list(map(lambda o: self._getObjectPosition(o)[-1], self.objects))
+    heights.sort()
+    for i in range(1, len(heights)):
+      if heights[i] - heights[i-1] < 0.9*self.block_scale_range[0]*self.block_original_size:
+        return False
+    return True
+
   def _checkOnTop(self, bottom_obj, top_obj):
     # bottom_position = self._getObjectPosition(bottom_obj)
     # top_position = self._getObjectPosition(top_obj)

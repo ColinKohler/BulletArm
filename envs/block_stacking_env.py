@@ -65,7 +65,8 @@ def createBlockStackingEnv(simulator_base_env, config):
 
     def _checkTermination(self):
       ''''''
-      return self._getNumTopBlock() == 1
+      # return self._getNumTopBlock() == 1
+      return self._checkStack()
 
     def getObjectPosition(self):
       return list(map(self._getObjectPosition, self.blocks))
