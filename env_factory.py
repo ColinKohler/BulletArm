@@ -25,8 +25,6 @@ def createEnvs(num_processes, simulator, env_type, config):
   '''
   if 'action_sequence' not in config:
     config['action_sequence'] = 'pxyr'
-  if 'pos_candidate' not in config:
-    config['pos_candidate'] = None
   if 'simulate_grasp' not in config:
     config['simulate_grasp'] = True
 
@@ -61,6 +59,7 @@ def createEnvs(num_processes, simulator, env_type, config):
     envs = [createBlockCylinderStackingEnv(parent_env, configs[i]) for i in range(num_processes)]
   else:
     raise ValueError('Invalid environment type passed to factory. Valid types are: \'block_picking\', \'block_stacking\'.')
-
   envs = EnvRunner(envs)
+  if 'pos_candidate' in config:
+    envs.setPosCandidate(config['pos_candidate'])
   return envs
