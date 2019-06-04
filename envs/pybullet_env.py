@@ -90,7 +90,7 @@ class PyBulletEnv(BaseEnv):
       self.ur5.pick(pos, rot, self.pick_offset, dynamic=self.dynamic, objects=self.objects, simulate_grasp=self.simulate_grasp)
     elif motion_primative == self.PLACE_PRIMATIVE:
       if self.ur5.holding_obj is not None:
-        self.ur5.place(pos, rot, self.place_offset, dynamic=self.dynamic)
+        self.ur5.place(pos, rot, self.place_offset, dynamic=self.dynamic, simulate_grasp=self.simulate_grasp)
     elif motion_primative == self.PUSH_PRIMATIVE:
       pass
     else:
