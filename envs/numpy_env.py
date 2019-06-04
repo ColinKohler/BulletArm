@@ -6,12 +6,16 @@ from helping_hands_rl_envs.envs.base_env import BaseEnv
 from helping_hands_rl_envs.numpy_toolkit import object_generation
 
 class NumpyEnv(BaseEnv):
-  def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, render=False, action_sequence='pxyr'):
-    super(NumpyEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence)
+  def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, render=False, action_sequence='pxyr', pos_candidate=None):
+    super(NumpyEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence, pos_candidate)
 
     self.render = render
     self.offset = self.heightmap_size/20
     self.valid = True
+
+  def setPosCandidate(self, pos_candidate):
+    super().setPosCandidate(pos_candidate)
+    self.pos_candidate = self.pos_candidate.astype(np.int)
 
   def reset(self):
     ''''''
@@ -106,7 +110,17 @@ class NumpyEnv(BaseEnv):
 
   def _getNumTopBlock(self):
     count = 0
-    for obj in self.objects:
+    for obj in self._getBlocks():
+      if obj.on_top:
+        count += 1
+    return count
+
+  def _checkStack(self):
+    return self._getNumTopBlock() == 1
+
+  def _getNumTopCylinder(self):
+    count = 0
+    for obj in self._getCylinders():
       if obj.on_top:
         count += 1
     return count
@@ -118,11 +132,13 @@ class NumpyEnv(BaseEnv):
   def _generateShapes(self, object_type, num_objects, min_distance=None, padding=None, random_orientation=False):
     ''''''
     if min_distance is None:
-      min_distance = 2 * self.heightmap_size/7
+      min_distance = 1.5 * self.heightmap_size/7
     if padding is None:
       padding = self.heightmap_size/5
-    self.objects = list()
-    positions = list()
+    objects = list()
+    positions = deepcopy(list(map(lambda o: o.pos, self.objects)))
+    for p in positions:
+      p[2] = 0
     for i in range(num_objects):
       # Generate random drop config
       x_extents = self.workspace[0][1] - self.workspace[0][0]
@@ -133,8 +149,12 @@ class NumpyEnv(BaseEnv):
         position = [int((x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2),
                     int((y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2),
                     0]
+        if self.pos_candidate is not None:
+          position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0]-position[0]).argmin()]
+          position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1]-position[1]).argmin()]
+
         if positions:
-          is_position_valid = np.all(np.sum(np.abs(np.array(positions) - np.array(position)), axis=1) > min_distance)
+          is_position_valid = np.all(np.sum(np.abs(np.array(positions)[:, :2] - np.array(position)[:2]), axis=1) > min_distance)
         else:
           is_position_valid = True
 
@@ -146,10 +166,15 @@ class NumpyEnv(BaseEnv):
       size = npr.randint(self.heightmap_size/10, self.heightmap_size/7)
       position[2] = int(size / 2)
 
-      obj, self.heightmap = object_generation.generateCube(self.heightmap, position, rotation, size)
-      self.objects.append(obj)
-
-    return self.objects
+      if object_type is self.CUBE:
+        obj, self.heightmap = object_generation.generateCube(self.heightmap, position, rotation, size)
+      elif object_type is self.CYLINDER:
+        obj, self.heightmap = object_generation.generateCylinder(self.heightmap, position, rotation, size)
+      else:
+        raise NotImplementedError
+      objects.append(obj)
+    self.objects.extend(objects)
+    return objects
 
   def _removeObject(self, obj):
     if obj == self.held_object:
@@ -165,3 +190,9 @@ class NumpyEnv(BaseEnv):
   def _getObjectPosition(self, obj):
     ''''''
     return obj.pos
+
+  def _getBlocks(self):
+    return list(filter(lambda o: type(o) is object_generation.Cube, self.objects))
+
+  def _getCylinders(self):
+    return list(filter(lambda o: type(o) is object_generation.Cylinder, self.objects))

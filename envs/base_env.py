@@ -5,7 +5,7 @@ class BaseEnv(object):
   '''
   Base Arm RL environment.
   '''
-  def __init__(self, seed, workspace, max_steps, heightmap_size, action_sequence='pxyr'):
+  def __init__(self, seed, workspace, max_steps, heightmap_size, action_sequence='pxyr', pos_candidate=None):
     """
     constructor of BaseEnv
     Args:
@@ -45,12 +45,20 @@ class BaseEnv(object):
     self.SPHERE = 1
     self.CYLINDER = 2
     self.CONE = 3
+    self.BRICK = 4
 
     assert action_sequence.find('x') != -1
     assert action_sequence.find('y') != -1
     self.action_sequence = action_sequence
 
     self.offset = 0.01
+
+    self.pos_candidate = pos_candidate
+
+  def setPosCandidate(self, pos_candidate):
+    self.pos_candidate = pos_candidate*self.heightmap_resolution
+    self.pos_candidate[0] += self.workspace[0, 0]
+    self.pos_candidate[1] += self.workspace[1, 0]
 
   def _getSpecificAction(self, action):
     """
@@ -73,8 +81,9 @@ class BaseEnv(object):
     ''' Get the shape name from the type (int) '''
     if shape_type == self.CUBE: return 'cube'
     elif shape_type == self.SPHERE: return 'sphere'
-    elif shape_type == self.CYLINER: return 'cylinder'
+    elif shape_type == self.CYLINDER: return 'cylinder'
     elif shape_type == self.CONE: return 'cone'
+    elif shape_type == self.BRICK: return 'brick'
     else: return 'unknown'
 
   def _getPrimativeHeight(self, motion_primative, x, y):

@@ -19,7 +19,8 @@ def createBlockPickingEnv(simulator_base_env, config):
       elif simulator_base_env is PyBulletEnv:
         super(BlockPickingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
                                               config['obs_size'], config['fast_mode'], config['render'],
-                                              config['action_sequence'])
+                                              config['action_sequence'], config['simulate_grasp'])
+
       else:
         raise ValueError('Bad simulator base env specified.')
       self.simulator_base_env = simulator_base_env

@@ -6,6 +6,55 @@ import numpy.random as npr
 #                                           Objects                                               #
 #=================================================================================================#
 
+class Cylinder(object):
+  def __init__(self, pos, rot, size, heightmap):
+    self.pos = pos
+    self.size = size
+    self.radius = size/2
+    self.height = pos[-1]
+    self.heightmap_size = heightmap.shape[0]
+    self.mask = None
+    self.getMask()
+    self.chunk_before = None
+    self.on_top = True
+
+  def addToHeightmap(self, heightmap, pos=None, rot=None):
+    if pos is not None:
+      self.pos = list(map(int, pos))
+      self.getMask()
+      base_h = heightmap[self.mask].max() if self.mask.sum() > 0 else 0
+      self.pos[-1] = self.height + base_h
+
+    self.chunk_before = heightmap[self.mask]
+    heightmap[self.mask] = self.pos[-1]
+
+    return heightmap
+
+  def getMask(self):
+    y, x = np.ogrid[-self.pos[0]:self.heightmap_size-self.pos[0], -self.pos[1]:self.heightmap_size-self.pos[1]]
+    region = x*x + y*y <= self.radius*self.radius
+    self.mask = np.zeros((self.heightmap_size, self.heightmap_size), dtype=np.int)
+    self.mask[region.T] = 1
+    self.mask = (self.mask == 1)
+
+  def removeFromHeightmap(self, heightmap):
+    heightmap[self.mask] = self.chunk_before
+    return heightmap
+
+  def isGraspValid(self, grasp_pos, grasp_rot):
+    return np.allclose(grasp_pos[:-1], self.pos[:-1], atol=(self.size/2)) and \
+           grasp_pos[-1] < self.pos[-1] and \
+           self.on_top
+
+  def isStackValid(self, stack_pos, stack_rot, bottom_object):
+    if bottom_object == self or not bottom_object.on_top or type(bottom_object) is not Cylinder:
+      return False
+    if np.allclose(stack_pos[:-1], bottom_object.pos[:-1], atol=(bottom_object.size / 2)) and \
+        bottom_object.pos[-1]<=stack_pos[-1]:
+      return True
+    return False
+
+
 class Cube(object):
   def __init__(self, pos, rot, size, heightmap):
     self.pos = pos
@@ -64,7 +113,7 @@ class Cube(object):
            self.on_top
 
   def isStackValid(self, stack_pos, stack_rot, bottom_block):
-    if bottom_block == self or not bottom_block.on_top:
+    if bottom_block == self or not bottom_block.on_top or type(bottom_block) is not Cube:
       return False
     if np.allclose(stack_pos[:-1], bottom_block.pos[:-1], atol=(bottom_block.size / 2)) and \
         bottom_block.pos[-1]<=stack_pos[-1]:
@@ -79,6 +128,10 @@ def generateCube(heightmap, pos, rot, size):
   ''''''
   cube = Cube(pos, rot, size, heightmap)
   return cube, cube.addToHeightmap(heightmap)
+
+def generateCylinder(heightmap, pos, rot, size):
+  circle = Cylinder(pos, rot, size, heightmap)
+  return circle, circle.addToHeightmap(heightmap)
 
 def rotateImage(img, angle, pivot):
   pad_x = [img.shape[1] - pivot[1], pivot[1]]

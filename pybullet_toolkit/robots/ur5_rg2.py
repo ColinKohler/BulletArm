@@ -10,6 +10,10 @@ import pybullet_data
 import helping_hands_rl_envs
 import time
 
+from helping_hands_rl_envs.pybullet_toolkit.utils import pybullet_util
+from helping_hands_rl_envs.pybullet_toolkit.utils import object_generation
+from helping_hands_rl_envs.pybullet_toolkit.utils import transformations
+
 class UR5_RG2(object):
   '''
 
@@ -27,12 +31,21 @@ class UR5_RG2(object):
 
     self.gripper_joint_limit = [0, 0.036]
 
+    self.holding_obj = None
+    self.gripper_closed = False
+    self.state = {
+      'holding_obj': self.holding_obj,
+      'gripper_closed': self.gripper_closed
+    }
+
+
   def reset(self):
     ''''''
     ur5_urdf_filepath = os.path.join(self.root_dir, 'urdf/ur5/ur5_w_simple_gripper.urdf')
     self.id = pb.loadURDF(ur5_urdf_filepath, [0,0,0], [0,0,0,1])
-    self.is_holding = False
+    # self.is_holding = False
     self.gripper_closed = False
+    self.holding_obj = None
     self.num_joints = pb.getNumJoints(self.id)
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
 
@@ -51,19 +64,19 @@ class UR5_RG2(object):
 
   def saveState(self):
     self.state = {
-      'is_holding': self.is_holding,
+      'holding_obj': self.holding_obj,
       'gripper_closed': self.gripper_closed
     }
 
   def restoreState(self):
-    self.is_holding = self.state['is_holding']
+    self.holding_obj = self.state['holding_obj']
     self.gripper_closed = self.state['gripper_closed']
     if self.gripper_closed:
       self._sendGripperCloseCommand()
     else:
       self._sendGripperOpenCommand()
 
-  def pick(self, pos, rot, offset, dynamic=True):
+  def pick(self, pos, rot, offset, dynamic=True, objects=None, simulate_grasp=True):
     ''''''
     # Setup pre-grasp pos and default orientation
     self.openGripper()
@@ -77,69 +90,61 @@ class UR5_RG2(object):
     self.moveTo(pos, rot, dynamic)
 
     # Grasp object and lift up to pre pose
-    gripper_fully_closed = self.closeGripper()
-    if gripper_fully_closed:
-      self.moveTo(pre_pos, pre_rot, dynamic)
-    else:
-      self.moveTo(pre_pos, pre_rot, dynamic=True)
-    if gripper_fully_closed: self.openGripper()
+    if simulate_grasp:
+      gripper_fully_closed = self.closeGripper()
+      if gripper_fully_closed:
+        self.openGripper()
+        self.moveTo(pre_pos, pre_rot, dynamic)
+      else:
+        self.moveTo(pre_pos, pre_rot, True)
+        self.holding_obj = self.getPickedObj(objects)
 
-    self.is_holding = not gripper_fully_closed
+    else:
+      self.holding_obj = self.getPickedObj(objects)
+
+    self.moveToJ(self.home_positions[1:7], dynamic)
+    self.checkGripperClosed()
 
   def place(self, pos, rot, offset, dynamic=True):
     ''''''
     # Setup pre-grasp pos and default orientation
     pre_pos = copy.copy(pos)
     pre_pos[2] += offset
-    pre_rot = pb.getQuaternionFromEuler([0, np.pi, 0])
+    pre_rot = rot
 
     # Move to pre-grasp pose and then grasp pose
-    self.moveTo(pre_pos, pre_rot, True)
-    self.moveTo(pos, rot, True)
+    self.moveTo(pre_pos, pre_rot, dynamic)
+    self.moveTo(pos, rot, dynamic)
 
     # Grasp object and lift up to pre pose
     self.openGripper()
+    self.holding_obj = None
     self.moveTo(pre_pos, pre_rot, dynamic)
-
-    self.is_holding = False
-
-  def moveToJointPose(self, target_pose, dynamic=True, max_it=1000):
-    if dynamic:
-      self._sendPositionCommand(target_pose)
-      past_joint_pos = deque(maxlen=5)
-      joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
-      joint_pos = list(zip(*joint_state))[0]
-      n_it = 0
-      while not np.allclose(joint_pos, target_pose, atol=1e-2) and n_it < max_it:
-        pb.stepSimulation()
-        n_it += 1
-        # Check to see if the arm can't move any close to the desired joint position
-        if len(past_joint_pos) == 5 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=1e-3):
-          break
-        past_joint_pos.append(joint_pos)
-        joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
-        joint_pos = list(zip(*joint_state))[0]
-
-    else:
-      self._setJointPoses(target_pose)
+    self.moveToJ(self.home_positions[1:7], dynamic)
 
   def moveTo(self, pos, rot, dynamic=True):
-    ''''''
-    close_enough = False
-    outer_it = 0
-    threshold = 1e-3
-    max_outer_it = 100
-    max_inner_it = 1000
+    if dynamic or not self.holding_obj:
+      self._moveToCartesianPose(pos, rot, dynamic)
+    else:
+      self._teleportArmWithObj(pos, rot)
 
-    while not close_enough and outer_it < max_outer_it:
-      ik_solve = pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)[:-2]
-      self.moveToJointPose(ik_solve, dynamic, max_inner_it)
+  def moveToJ(self, pose, dynamic=True):
+    if dynamic or not self.holding_obj:
+      self._moveToJointPose(pose, dynamic)
+    else:
+      self._teleportArmWithObjJointPose(pose)
 
-      ls = pb.getLinkState(self.id, self.end_effector_index)
-      new_pos = list(ls[4])
-      new_rot = list(ls[5])
-      close_enough = np.allclose(np.array(new_pos + new_rot), np.array(list(pos) + list(rot)), atol=threshold)
-      outer_it += 1
+  def getPickedObj(self, objects):
+    if not objects:
+      return None
+    end_pos = self._getEndEffectorPosition()
+    sorted_obj = sorted(objects, key=lambda o: np.linalg.norm(end_pos-object_generation.getObjectPosition(o)))
+    obj_pos = object_generation.getObjectPosition(sorted_obj[0])
+    if np.linalg.norm(end_pos[:-1]-obj_pos[:-1]) < 0.05 and np.abs(end_pos[-1]-obj_pos[-1]) < 0.02:
+      return sorted_obj[0]
+    # if object_generation.getObjectPosition(sorted_obj[0])[-1] > 0.25:
+    #   return sorted_obj[0]
+    return None
 
   def closeGripper(self):
     ''''''
@@ -165,15 +170,16 @@ class UR5_RG2(object):
     limit = self.gripper_joint_limit[1]
     p1, p2 = self._getGripperJointPosition()
     if (limit - p1) + (limit - p2) > 0.001:
-      self.is_holding = True
+      return
     else:
-      self.is_holding = False
+      self.holding_obj = None
 
   def openGripper(self):
     ''''''
     p1, p2 = self._getGripperJointPosition()
     self._sendGripperOpenCommand()
     self.gripper_closed = False
+    self.holding_obj = None
     it = 0
     while p1 > 0.0:
       pb.stepSimulation()
@@ -181,6 +187,88 @@ class UR5_RG2(object):
       if it > 100:
         return False
       p1, p2 = self._getGripperJointPosition()
+    return True
+
+  def _moveToJointPose(self, target_pose, dynamic=True, max_it=1000):
+    if dynamic:
+      self._sendPositionCommand(target_pose)
+      past_joint_pos = deque(maxlen=5)
+      joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
+      joint_pos = list(zip(*joint_state))[0]
+      n_it = 0
+      while not np.allclose(joint_pos, target_pose, atol=1e-2) and n_it < max_it:
+        pb.stepSimulation()
+        n_it += 1
+        # Check to see if the arm can't move any close to the desired joint position
+        if len(past_joint_pos) == 5 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=1e-3):
+          break
+        past_joint_pos.append(joint_pos)
+        joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
+        joint_pos = list(zip(*joint_state))[0]
+
+    else:
+      self._setJointPoses(target_pose)
+
+  def _moveToCartesianPose(self, pos, rot, dynamic=True):
+    close_enough = False
+    outer_it = 0
+    threshold = 1e-3
+    max_outer_it = 100
+    max_inner_it = 1000
+
+    while not close_enough and outer_it < max_outer_it:
+      ik_solve = pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)[:-2]
+      self._moveToJointPose(ik_solve, dynamic, max_inner_it)
+
+      ls = pb.getLinkState(self.id, self.end_effector_index)
+      new_pos = list(ls[4])
+      new_rot = list(ls[5])
+      close_enough = np.allclose(np.array(new_pos + new_rot), np.array(list(pos) + list(rot)), atol=threshold)
+      outer_it += 1
+
+  def _teleportArmWithObj(self, pos, rot):
+    if not self.holding_obj:
+      self._moveToCartesianPose(pos, rot, False)
+      return
+
+    end_pos = self._getEndEffectorPosition()
+    end_rot = self._getEndEffectorRotation()
+    obj_pos, obj_rot = object_generation.getObjectPose(self.holding_obj)
+    oTend = pybullet_util.getMatrix(end_pos, end_rot)
+    oTobj = pybullet_util.getMatrix(obj_pos, obj_rot)
+    endTobj = np.linalg.inv(oTend).dot(oTobj)
+
+    self._moveToCartesianPose(pos, rot, False)
+    end_pos_ = self._getEndEffectorPosition()
+    end_rot_ = self._getEndEffectorRotation()
+    oTend_ = pybullet_util.getMatrix(end_pos_, end_rot_)
+    oTobj_ = oTend_.dot(endTobj)
+    obj_pos_ = oTobj_[:3, -1]
+    obj_rot_ = transformations.quaternion_from_matrix(oTobj_)
+
+    pb.resetBasePositionAndOrientation(self.holding_obj, obj_pos_, obj_rot_)
+
+  def _teleportArmWithObjJointPose(self, joint_pose):
+    if not self.holding_obj:
+      self._moveToJointPose(joint_pose, False)
+      return
+
+    end_pos = self._getEndEffectorPosition()
+    end_rot = self._getEndEffectorRotation()
+    obj_pos, obj_rot = object_generation.getObjectPose(self.holding_obj)
+    oTend = pybullet_util.getMatrix(end_pos, end_rot)
+    oTobj = pybullet_util.getMatrix(obj_pos, obj_rot)
+    endTobj = np.linalg.inv(oTend).dot(oTobj)
+
+    self._moveToJointPose(joint_pose, False)
+    end_pos_ = self._getEndEffectorPosition()
+    end_rot_ = self._getEndEffectorRotation()
+    oTend_ = pybullet_util.getMatrix(end_pos_, end_rot_)
+    oTobj_ = oTend_.dot(endTobj)
+    obj_pos_ = oTobj_[:3, -1]
+    obj_rot_ = transformations.quaternion_from_matrix(oTobj_)
+
+    pb.resetBasePositionAndOrientation(self.holding_obj, obj_pos_, obj_rot_)
 
   def _getEndEffectorPosition(self):
     ''''''

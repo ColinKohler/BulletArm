@@ -1,4 +1,5 @@
 import time
+import copy
 from copy import deepcopy
 import numpy as np
 import numpy.random as npr
@@ -14,8 +15,8 @@ class PyBulletEnv(BaseEnv):
   '''
   PyBullet Arm RL base class.
   '''
-  def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, fast_mode=False, render=False, action_sequence='pxyr'):
-    super(PyBulletEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence)
+  def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, fast_mode=False, render=False, action_sequence='pxyr', simulate_grasp=True, pos_candidate=None):
+    super(PyBulletEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence, pos_candidate)
 
     # Connect to pybullet and add data files to path
     if render:
@@ -40,6 +41,8 @@ class PyBulletEnv(BaseEnv):
     # Rest pose for arm
     rot = pb.getQuaternionFromEuler([0,np.pi,0])
     self.rest_pose = [[0.0, 0.5, 0.5], rot]
+
+    self.simulate_grasp = simulate_grasp
 
   def reset(self):
     ''''''
@@ -84,29 +87,30 @@ class PyBulletEnv(BaseEnv):
 
     # Take action specfied by motion primative
     if motion_primative == self.PICK_PRIMATIVE:
-      self.ur5.pick(pos, rot, self.pick_offset, dynamic=self.dynamic)
+      self.ur5.pick(pos, rot, self.pick_offset, dynamic=self.dynamic, objects=self.objects, simulate_grasp=self.simulate_grasp)
     elif motion_primative == self.PLACE_PRIMATIVE:
-      if self.ur5.is_holding:
+      if self.ur5.holding_obj is not None:
         self.ur5.place(pos, rot, self.place_offset, dynamic=self.dynamic)
     elif motion_primative == self.PUSH_PRIMATIVE:
       pass
     else:
       raise ValueError('Bad motion primative supplied for action.')
 
-    if self.ur5.is_holding:
-      self.ur5.moveToJointPose(self.ur5.home_positions[1:7], True)
-      self.ur5.checkGripperClosed()
-    else:
-      self.ur5.moveToJointPose(self.ur5.home_positions[1:7], self.dynamic)
-
   def isSimValid(self):
     for obj in self.objects:
+      if self._isObjectHeld(obj):
+        continue
       p = pb_obj_generation.getObjectPosition(obj)
-      if not self._isObjectHeld(obj) and not self._isPointInWorkspace(p):
+      if not self._isPointInWorkspace(p):
         return False
+      if self.pos_candidate is not None:
+        if np.abs(self.pos_candidate[0] - p[0]).min() > 0.01 or np.abs(self.pos_candidate[1] - p[1]).min() > 0.01:
+          return False
     return True
 
   def wait(self, iteration):
+    if not self.simulate_grasp and self.getHoldingState():
+      return
     for _ in range(iteration):
       pb.stepSimulation()
 
@@ -132,9 +136,11 @@ class PyBulletEnv(BaseEnv):
 
     return self.getHoldingState(), self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
-  def _generateShapes(self, shape_type, num_shapes, size=None, pos=None, rot=None,
+  def _generateShapes(self, shape_type=0, num_shapes=1, size=None, pos=None, rot=None,
                            min_distance=0.1, padding=0.2, random_orientation=False):
     ''''''
+    if shape_type == self.CUBE:
+      min_distance = 0.05
     shape_handles = list()
     positions = list()
 
@@ -151,6 +157,11 @@ class PyBulletEnv(BaseEnv):
         position = [(x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2,
                     (y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2,
                     0.05]
+
+        if self.pos_candidate is not None:
+          position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0] - position[0]).argmin()]
+          position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1] - position[1]).argmin()]
+
         if positions:
           is_position_valid = np.all(np.sum(np.abs(np.array(positions) - np.array(position[:-1])), axis=1) > min_distance)
         else:
@@ -163,19 +174,24 @@ class PyBulletEnv(BaseEnv):
 
       scale = npr.uniform(self.block_scale_range[0], self.block_scale_range[1])
 
-      handle = pb_obj_generation.generateCube(position, orientation, scale)
+      if shape_type == self.CUBE:
+        handle = pb_obj_generation.generateCube(position, orientation, scale)
+      elif shape_type == self.BRICK:
+        handle = pb_obj_generation.generateBrick(position, orientation, scale)
+      else:
+        raise NotImplementedError
       shape_handles.append(handle)
 
     self.objects.extend(shape_handles)
     for _ in range(50):
       pb.stepSimulation()
-    return self.objects
+    return shape_handles
 
   def _getObjectPosition(self, obj):
     return pb_obj_generation.getObjectPosition(obj)
 
   def getHoldingState(self):
-    return self.ur5.is_holding
+    return self.ur5.holding_obj is not None
 
   def _getRestPoseMatrix(self):
     T = np.eye(4)
@@ -216,3 +232,30 @@ class PyBulletEnv(BaseEnv):
       if not cluster_flag:
         cluster_pos.append([block_position[:-1]])
     return len(cluster_pos)
+
+  def _checkStack(self):
+    for obj in self.objects:
+      if self._isObjectHeld(obj):
+        return False
+
+    heights = list(map(lambda o: self._getObjectPosition(o)[-1], self.objects))
+    heights.sort()
+    for i in range(1, len(heights)):
+      if heights[i] - heights[i-1] < 0.9*self.block_scale_range[0]*self.block_original_size:
+        return False
+    return True
+
+  def _checkOnTop(self, bottom_obj, top_obj):
+    # bottom_position = self._getObjectPosition(bottom_obj)
+    # top_position = self._getObjectPosition(top_obj)
+    # return np.linalg.norm(np.array(bottom_position) - top_position) < 1.8*self.block_scale_range[0]*self.block_original_size and \
+    #        top_position[-1] - bottom_position[-1] > 0.9*self.block_scale_range[0]*self.block_original_size
+    bottom_position = self._getObjectPosition(bottom_obj)
+    top_position = self._getObjectPosition(top_obj)
+    if top_position[-1] - bottom_position[-1] < 0.9 * self.block_scale_range[0] * self.block_original_size:
+      return False
+    contact_points = pb.getContactPoints(top_obj)
+    for p in contact_points:
+      if p[2] != bottom_obj:
+        return False
+    return True
