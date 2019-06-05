@@ -115,7 +115,21 @@ class Cube(object):
   def isStackValid(self, stack_pos, stack_rot, bottom_block):
     if bottom_block == self or not bottom_block.on_top or type(bottom_block) is not Cube:
       return False
+
+    if stack_rot > np.pi:
+      stack_rot -= np.pi
+    valid_rot1 = bottom_block.rot
+    if valid_rot1 < np.pi/2:
+      valid_rot2 = valid_rot1 + np.pi/2
+    else:
+      valid_rot2 = valid_rot1 - np.pi/2
+    valid_rot3 = valid_rot1 + np.pi
+    valid_rot4 = valid_rot2 + np.pi
+    valid_rots = np.array([valid_rot1, valid_rot2, valid_rot3, valid_rot4])
+    angle = np.pi - np.abs(np.abs(valid_rots - stack_rot) - np.pi)
+
     if np.allclose(stack_pos[:-1], bottom_block.pos[:-1], atol=(bottom_block.size / 2)) and \
+        np.any(angle < np.pi / 7) and \
         bottom_block.pos[-1]<=stack_pos[-1]:
       return True
     return False
