@@ -70,6 +70,9 @@ class NumpyEnv(BaseEnv):
     height_sorted_objects = sorted(self.objects, key=lambda x: x.pos[-1], reverse=True)
     for obj in height_sorted_objects:
       if obj.isGraspValid([x,y,z], rot):
+        obj.rot -= rot
+        if obj.rot < 0:
+          obj.rot += np.pi
         obj.removeFromHeightmap(self.heightmap)
         return obj
 
