@@ -87,10 +87,9 @@ class UR5_RG2(object):
 
     # Move to pre-grasp pose and then grasp pose
     self.moveTo(pre_pos, pre_rot, dynamic)
-    self.moveTo(pos, rot, dynamic)
-
-    # Grasp object and lift up to pre pose
     if simulate_grasp:
+      self.moveTo(pos, rot, True)
+      # Grasp object and lift up to pre pose
       gripper_fully_closed = self.closeGripper()
       if gripper_fully_closed:
         self.openGripper()
@@ -100,6 +99,7 @@ class UR5_RG2(object):
         self.holding_obj = self.getPickedObj(objects)
 
     else:
+      self.moveTo(pos, rot, dynamic)
       self.holding_obj = self.getPickedObj(objects)
 
     self.moveToJ(self.home_positions[1:7], dynamic)
