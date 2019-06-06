@@ -74,7 +74,9 @@ class Cube(object):
 
   def addToHeightmap(self, heightmap, pos=None, rot=None):
     if rot is not None:
-      self.rot = rot
+      self.rot += rot
+      while self.rot > np.pi:
+        self.rot -= np.pi
     if pos is not None:
       self.pos = list(map(int, pos))
       self.x_min, self.x_max = max(0, int(pos[0] - self.size / 2)), min(heightmap.shape[0], int(pos[0] + self.size / 2))
@@ -95,43 +97,52 @@ class Cube(object):
     heightmap[self.mask] = self.chunk_before
     return heightmap
 
-  def isGraspValid(self, grasp_pos, grasp_rot):
-    if grasp_rot > np.pi:
-      grasp_rot -= np.pi
-    valid_rot1 = self.rot
-    if valid_rot1 < np.pi/2:
-      valid_rot2 = valid_rot1 + np.pi/2
-    else:
-      valid_rot2 = valid_rot1 - np.pi/2
-    valid_rot3 = valid_rot1 + np.pi
-    valid_rot4 = valid_rot2 + np.pi
-    valid_rots = np.array([valid_rot1, valid_rot2, valid_rot3, valid_rot4])
-    angle = np.pi - np.abs(np.abs(valid_rots - grasp_rot) - np.pi)
-    return np.allclose(grasp_pos[:-1], self.pos[:-1], atol=(self.size/2)) and \
-           np.any(angle < np.pi/7) and \
-           grasp_pos[-1] < self.pos[-1] and \
-           self.on_top
+  def isGraspValid(self, grasp_pos, grasp_rot, check_rot=True):
+    # check position, height, and on top
+    if np.allclose(grasp_pos[:-1], self.pos[:-1], atol=(self.size/2)) and \
+        grasp_pos[-1] < self.pos[-1] and self.on_top:
+      if not check_rot:
+        return True
+      else:
+        # check rotation
+        if grasp_rot > np.pi:
+          grasp_rot -= np.pi
+        valid_rot1 = self.rot
+        if valid_rot1 < np.pi/2:
+          valid_rot2 = valid_rot1 + np.pi/2
+        else:
+          valid_rot2 = valid_rot1 - np.pi/2
+        valid_rot3 = valid_rot1 + np.pi
+        valid_rot4 = valid_rot2 + np.pi
+        valid_rots = np.array([valid_rot1, valid_rot2, valid_rot3, valid_rot4])
+        angle = np.pi - np.abs(np.abs(valid_rots - grasp_rot) - np.pi)
+        return np.any(angle < np.pi/7)
+    return False
 
-  def isStackValid(self, stack_pos, stack_rot, bottom_block):
+  def isStackValid(self, stack_pos, stack_rot, bottom_block, check_rot=False):
+    # check bottom block on top, type
     if bottom_block == self or not bottom_block.on_top or type(bottom_block) is not Cube:
       return False
-
-    if stack_rot > np.pi:
-      stack_rot -= np.pi
-    valid_rot1 = bottom_block.rot
-    if valid_rot1 < np.pi/2:
-      valid_rot2 = valid_rot1 + np.pi/2
-    else:
-      valid_rot2 = valid_rot1 - np.pi/2
-    valid_rot3 = valid_rot1 + np.pi
-    valid_rot4 = valid_rot2 + np.pi
-    valid_rots = np.array([valid_rot1, valid_rot2, valid_rot3, valid_rot4])
-    angle = np.pi - np.abs(np.abs(valid_rots - stack_rot) - np.pi)
-
+    # check position, height
     if np.allclose(stack_pos[:-1], bottom_block.pos[:-1], atol=(bottom_block.size / 2)) and \
-        np.any(angle < np.pi / 7) and \
         bottom_block.pos[-1]<=stack_pos[-1]:
-      return True
+      if not check_rot:
+        return True
+      else:
+        # check rot
+        stack_rot += self.rot
+        while stack_rot > np.pi:
+          stack_rot -= np.pi
+        valid_rot1 = bottom_block.rot
+        if valid_rot1 < np.pi/2:
+          valid_rot2 = valid_rot1 + np.pi/2
+        else:
+          valid_rot2 = valid_rot1 - np.pi/2
+        valid_rot3 = valid_rot1 + np.pi
+        valid_rot4 = valid_rot2 + np.pi
+        valid_rots = np.array([valid_rot1, valid_rot2, valid_rot3, valid_rot4])
+        angle = np.pi - np.abs(np.abs(valid_rots - stack_rot) - np.pi)
+        return np.any(angle < np.pi/7)
     return False
 
 #=================================================================================================#

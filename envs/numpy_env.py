@@ -6,12 +6,15 @@ from helping_hands_rl_envs.envs.base_env import BaseEnv
 from helping_hands_rl_envs.numpy_toolkit import object_generation
 
 class NumpyEnv(BaseEnv):
-  def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, render=False, action_sequence='pxyr', pos_candidate=None):
+  def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, render=False, action_sequence='pxyr',
+               pick_rot=True, place_rot=False, pos_candidate=None):
     super(NumpyEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence, pos_candidate)
 
     self.render = render
     self.offset = self.heightmap_size/20
     self.valid = True
+    self.pick_rot = pick_rot
+    self.place_rot = place_rot
 
   def setPosCandidate(self, pos_candidate):
     super().setPosCandidate(pos_candidate)
@@ -69,7 +72,10 @@ class NumpyEnv(BaseEnv):
 
     height_sorted_objects = sorted(self.objects, key=lambda x: x.pos[-1], reverse=True)
     for obj in height_sorted_objects:
-      if obj.isGraspValid([x,y,z], rot):
+      if obj.isGraspValid([x,y,z], rot, self.pick_rot):
+        obj.rot -= rot
+        if obj.rot < 0:
+          obj.rot += np.pi
         obj.removeFromHeightmap(self.heightmap)
         return obj
 
@@ -88,7 +94,7 @@ class NumpyEnv(BaseEnv):
     for i, obj in enumerate(self.objects):
       if self.held_object is obj or not obj.on_top:
         continue
-      if self.held_object.isStackValid([x, y, z], rot, obj):
+      if self.held_object.isStackValid([x, y, z], rot, obj, self.place_rot):
         self.held_object.addToHeightmap(self.heightmap, [x, y, z], rot)
         self._fixTopBlocks()
         return
