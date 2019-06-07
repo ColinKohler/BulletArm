@@ -15,7 +15,8 @@ class PyBulletEnv(BaseEnv):
   '''
   PyBullet Arm RL base class.
   '''
-  def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, fast_mode=False, render=False, action_sequence='pxyr', simulate_grasp=True, pos_candidate=None):
+  def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, fast_mode=False, render=False,
+               action_sequence='pxyr', simulate_grasp=True, pos_candidate=None, perfect_grasp=True):
     super(PyBulletEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence, pos_candidate)
 
     # Connect to pybullet and add data files to path
@@ -32,7 +33,7 @@ class PyBulletEnv(BaseEnv):
     self.pick_offset = 0.25
     self.place_offset = 0.25
     self.block_original_size = 0.05
-    self.block_scale_range = (0.5, 0.7)
+    self.block_scale_range = (0.6, 0.7)
 
     # Setup camera parameters
     self.view_matrix = pb.computeViewMatrixFromYawPitchRoll([workspace[0].mean(), workspace[1].mean(), 0], 1.0, -90, -90, 0, 2)
@@ -43,6 +44,7 @@ class PyBulletEnv(BaseEnv):
     self.rest_pose = [[0.0, 0.5, 0.5], rot]
 
     self.simulate_grasp = simulate_grasp
+    self.perfect_grasp = perfect_grasp
 
   def reset(self):
     ''''''
@@ -87,7 +89,8 @@ class PyBulletEnv(BaseEnv):
 
     # Take action specfied by motion primative
     if motion_primative == self.PICK_PRIMATIVE:
-      self.ur5.pick(pos, rot, self.pick_offset, dynamic=self.dynamic, objects=self.objects, simulate_grasp=self.simulate_grasp)
+      self.ur5.pick(pos, rot, self.pick_offset, dynamic=self.dynamic, objects=self.objects,
+                    simulate_grasp=self.simulate_grasp, perfect_grasp=self.perfect_grasp)
     elif motion_primative == self.PLACE_PRIMATIVE:
       if self.ur5.holding_obj is not None:
         self.ur5.place(pos, rot, self.place_offset, dynamic=self.dynamic, simulate_grasp=self.simulate_grasp)

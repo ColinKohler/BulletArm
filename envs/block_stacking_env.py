@@ -20,9 +20,12 @@ def createBlockStackingEnv(simulator_base_env, config):
                                                config['obs_size'], config['port'], config['fast_mode'],
                                                config['action_sequence'])
       elif simulator_base_env is PyBulletEnv:
+        if 'perfect_grasp' not in config:
+          config['perfect_grasp'] = False
         super(BlockStackingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
                                                config['obs_size'], config['fast_mode'], config['render'],
-                                               config['action_sequence'], config['simulate_grasp'])
+                                               config['action_sequence'], config['simulate_grasp'],
+                                               perfect_grasp=config['perfect_grasp'])
       else:
         raise ValueError('Bad simulator base env specified.')
       self.simulator_base_env = simulator_base_env
