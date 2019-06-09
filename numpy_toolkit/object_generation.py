@@ -41,12 +41,12 @@ class Cylinder(object):
     heightmap[self.mask] = self.chunk_before
     return heightmap
 
-  def isGraspValid(self, grasp_pos, grasp_rot):
+  def isGraspValid(self, grasp_pos, grasp_rot, check_rot=True):
     return np.allclose(grasp_pos[:-1], self.pos[:-1], atol=(self.size/2)) and \
            grasp_pos[-1] < self.pos[-1] and \
            self.on_top
 
-  def isStackValid(self, stack_pos, stack_rot, bottom_object):
+  def isStackValid(self, stack_pos, stack_rot, bottom_object, check_rot=False):
     if bottom_object == self or not bottom_object.on_top or type(bottom_object) is not Cylinder:
       return False
     if np.allclose(stack_pos[:-1], bottom_object.pos[:-1], atol=(bottom_object.size / 2)) and \
