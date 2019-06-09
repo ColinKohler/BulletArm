@@ -9,6 +9,7 @@ import numpy.random as npr
 class Cylinder(object):
   def __init__(self, pos, rot, size, heightmap):
     self.pos = pos
+    self.rot = rot
     self.size = size
     self.radius = size/2
     self.height = pos[-1]
