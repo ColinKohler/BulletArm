@@ -96,7 +96,7 @@ class NumpyEnv(BaseEnv):
         continue
       if self.held_object.isStackValid([x, y, z], rot, obj, self.place_rot):
         self.held_object.addToHeightmap(self.heightmap, [x, y, z], rot)
-        self._fixTopBlocks()
+        self._fixTopObjects()
         return
       else:
         distance = np.linalg.norm(np.array([x, y]) - (obj.pos[:-1]))
@@ -105,9 +105,9 @@ class NumpyEnv(BaseEnv):
           self.valid = False
           return
     self.held_object.addToHeightmap(self.heightmap, [x, y, z], rot)
-    self._fixTopBlocks()
+    self._fixTopObjects()
 
-  def _fixTopBlocks(self):
+  def _fixTopObjects(self):
     for obj in self.objects:
       if self.heightmap[obj.mask].mean() > obj.pos[-1]:
         obj.on_top = False
@@ -117,6 +117,8 @@ class NumpyEnv(BaseEnv):
   def _getNumTopBlock(self):
     count = 0
     for obj in self._getBlocks():
+      if self.held_object == obj:
+        return -1
       if obj.on_top:
         count += 1
     return count
@@ -127,6 +129,8 @@ class NumpyEnv(BaseEnv):
   def _getNumTopCylinder(self):
     count = 0
     for obj in self._getCylinders():
+      if self.held_object == obj:
+        return -1
       if obj.on_top:
         count += 1
     return count
@@ -138,7 +142,7 @@ class NumpyEnv(BaseEnv):
   def _generateShapes(self, object_type, num_objects, min_distance=None, padding=None, random_orientation=False):
     ''''''
     if min_distance is None:
-      min_distance = 1.5 * self.heightmap_size/7
+      min_distance = 2 * self.heightmap_size/7
     if padding is None:
       padding = self.heightmap_size/5
     objects = list()
