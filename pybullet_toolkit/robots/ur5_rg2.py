@@ -295,7 +295,7 @@ class UR5_RG2(object):
     ''''''
     num_motors = len(self.arm_joint_indices)
     pb.setJointMotorControlArray(self.id, self.arm_joint_indices, pb.POSITION_CONTROL, commands,
-                                 [0.]*num_motors, self.max_forces[:-2], [0.01]*num_motors, [1.0]*num_motors)
+                                 [0.]*num_motors, self.max_forces[:-2], [0.05]*num_motors, [1.0]*num_motors)
 
   def _sendGripperCloseCommand(self):
     target_pos = self.gripper_joint_limit[1] + 0.01
