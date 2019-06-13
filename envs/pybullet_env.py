@@ -46,13 +46,15 @@ class PyBulletEnv(BaseEnv):
     self.simulate_grasp = simulate_grasp
     self.perfect_grasp = perfect_grasp
 
-  def reset(self):
-    ''''''
+    self.initialized = False
+    self.reset_count = 0
+
+  def setup(self):
     pb.resetSimulation()
     pb.setTimeStep(self._timestep)
 
     pb.setGravity(0, 0, -10)
-    self.table_id = pb.loadURDF('plane.urdf', [0,0,0])
+    self.table_id = pb.loadURDF('plane.urdf', [0, 0, 0])
 
     # Load the UR5 and set it to the home positions
     self.ur5.reset()
@@ -64,8 +66,9 @@ class PyBulletEnv(BaseEnv):
 
     # Step simulation
     pb.stepSimulation()
-
-    return self._getObservation()
+    self.initial_state_id = pb.saveState()
+    self.initialized = True
+    self.reset_count = 0
 
   def saveState(self):
     self.state = {'current_episode_steps': deepcopy(self.current_episode_steps),
@@ -79,6 +82,22 @@ class PyBulletEnv(BaseEnv):
     self.objects = self.state['objects']
     pb.restoreState(self.state['env_state'])
     self.ur5.restoreState()
+
+  def reset(self):
+    ''''''
+    if not self.initialized or self.reset_count > 100:
+      self.setup()
+    else:
+      for obj in self.objects:
+        pb.removeBody(obj)
+      self.objects = list()
+      self.heightmap = None
+      self.current_episode_steps = 1
+      pb.restoreState(self.initial_state_id)
+      pb.stepSimulation()
+      self.reset_count += 1
+
+    return self._getObservation()
 
   def takeAction(self, action):
     motion_primative, x, y, z, rot = self._getSpecificAction(action)
