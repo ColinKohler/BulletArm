@@ -147,7 +147,7 @@ class UR5_RG2(object):
     end_pos = self._getEndEffectorPosition()
     sorted_obj = sorted(objects, key=lambda o: np.linalg.norm(end_pos-object_generation.getObjectPosition(o)))
     obj_pos = object_generation.getObjectPosition(sorted_obj[0])
-    if np.linalg.norm(end_pos[:-1]-obj_pos[:-1]) < 0.05 and np.abs(end_pos[-1]-obj_pos[-1]) < 0.02:
+    if np.linalg.norm(end_pos[:-1]-obj_pos[:-1]) < 0.05 and np.abs(end_pos[-1]-obj_pos[-1]) < 0.025:
       return sorted_obj[0]
     # if object_generation.getObjectPosition(sorted_obj[0])[-1] > 0.25:
     #   return sorted_obj[0]
