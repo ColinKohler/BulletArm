@@ -327,5 +327,5 @@ class UR5_RG2(object):
     while angle > np.pi/2:
       angle -= np.pi/2
     angle = min(angle, np.pi/2-angle)
-    return angle < np.pi/16
+    return angle < np.pi/15
 
