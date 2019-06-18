@@ -37,7 +37,9 @@ class PyBulletEnv(BaseEnv):
 
     # Setup camera parameters
     self.view_matrix = pb.computeViewMatrixFromYawPitchRoll([workspace[0].mean(), workspace[1].mean(), 0], 1.0, -90, -90, 0, 2)
-    self.proj_matrix = pb.computeProjectionMatrix(-0.25, 0.25, -0.25, 0.25, -1.0, 10.0)
+    workspace_x_offset = (workspace[0][1] - workspace[0][0])/2
+    workspace_y_offset = (workspace[1][1] - workspace[1][0])/2
+    self.proj_matrix = pb.computeProjectionMatrix(-workspace_x_offset, workspace_x_offset, -workspace_y_offset, workspace_y_offset, -1.0, 10.0)
 
     # Rest pose for arm
     rot = pb.getQuaternionFromEuler([0,np.pi,0])
