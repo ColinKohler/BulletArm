@@ -167,9 +167,14 @@ class PyBulletEnv(BaseEnv):
         if self.pos_candidate is not None:
           position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0] - position[0]).argmin()]
           position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1] - position[1]).argmin()]
+          if not (self.workspace[0][0]+padding/2 < position[0] < self.workspace[0][1]-padding/2 and
+                  self.workspace[1][0]+padding/2 < position[1] < self.workspace[1][1]-padding/2):
+            continue
 
         if positions:
-          is_position_valid = np.all(np.sum(np.abs(np.array(positions) - np.array(position[:-1])), axis=1) > min_distance)
+          distances = np.array(list(map(lambda p: np.linalg.norm(np.array(p)-position[:-1]), positions)))
+          is_position_valid = np.all(distances > min_distance)
+          # is_position_valid = np.all(np.sum(np.abs(np.array(positions) - np.array(position[:-1])), axis=1) > min_distance)
         else:
           is_position_valid = True
       positions.append(position[:-1])
