@@ -204,3 +204,25 @@ class NumpyEnv(BaseEnv):
 
   def _getCylinders(self):
     return list(filter(lambda o: type(o) is object_generation.Cylinder, self.objects))
+
+  def planBlockStacking(self):
+    # pick
+    if self.held_object is None:
+      height_sorted_objects = sorted(self.objects, key=lambda x: x.pos[-1])
+      for obj in height_sorted_objects:
+        if not obj.on_top:
+          continue
+        return np.array([self.PICK_PRIMATIVE, obj.pos[0], obj.pos[1], obj.pos[2]-2, obj.rot])
+
+    # place
+    else:
+      reverse_height_sorted_objects = sorted(self.objects, key=lambda x: x.pos[-1], reverse=True)
+      for obj in reverse_height_sorted_objects:
+        if obj is self.held_object:
+          continue
+        rot = obj.rot - self.held_object.rot
+        while rot < 0:
+          rot += np.pi
+        while rot > np.pi:
+          rot -= np.pi
+        return np.array([self.PLACE_PRIMATIVE, obj.pos[0], obj.pos[1], obj.pos[2]+2, rot])

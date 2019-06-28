@@ -85,6 +85,9 @@ def createBlockStackingEnv(simulator_base_env, config):
     def getObjectPosition(self):
       return list(map(self._getObjectPosition, self.blocks))
 
+    def getPlan(self):
+      return self.planBlockStacking()
+
 
   def _thunk():
     return BlockStackingEnv(config)
