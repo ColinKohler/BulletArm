@@ -58,6 +58,7 @@ class NumpyEnv(BaseEnv):
       pass
     else:
       raise ValueError('Bad motion primative supplied for action.')
+    self._fixTopObjects()
 
   def wait(self, iteration):
     pass
@@ -105,7 +106,6 @@ class NumpyEnv(BaseEnv):
           self.valid = False
           return
     self.held_object.addToHeightmap(self.heightmap, [x, y, z], rot)
-    self._fixTopObjects()
 
   def _fixTopObjects(self):
     for obj in self.objects:
@@ -117,9 +117,7 @@ class NumpyEnv(BaseEnv):
   def _getNumTopBlock(self):
     count = 0
     for obj in self._getBlocks():
-      if self.held_object == obj:
-        return -1
-      if obj.on_top:
+      if self.held_object == obj or obj.on_top:
         count += 1
     return count
 

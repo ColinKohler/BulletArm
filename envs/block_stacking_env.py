@@ -46,6 +46,12 @@ def createBlockStackingEnv(simulator_base_env, config):
           self.min_top = curr_num_top
         else:
           reward = 0.0
+      elif self.reward_type == 'step_left':
+        reward = 2*(self._getNumTopBlock()-1)
+        primitive_id = self.action_sequence.find('p')
+        motion_primitive = action[primitive_id] if primitive_id != -1 else 0
+        if motion_primitive == self.PICK_PRIMATIVE and obs[0]:
+          reward -= 1
       else:
         reward = 1.0 if done else 0.0
 
