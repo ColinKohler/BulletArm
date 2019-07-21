@@ -82,6 +82,13 @@ def createBlockStackingEnv(simulator_base_env, config):
       # return self._getNumTopBlock() == 1
       return self._checkStack()
 
+    def _estimateIfXPossible(self, primitive, x, y):
+      z = self.self._getPrimativeHeight(primitive, x, y)
+      if primitive == self.PICK_PRIMATIVE:
+        return self._checkPickValid(x, y, z, 0, False)
+      else:
+        return self._checkPlaceValid(x, y, z, 0, False)
+
     def getObjectPosition(self):
       return list(map(self._getObjectPosition, self.blocks))
 

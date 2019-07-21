@@ -66,6 +66,36 @@ class NumpyEnv(BaseEnv):
   def isSimValid(self):
     return self.valid
 
+  def _checkPickValid(self, x, y, z, rot, check_rot):
+    if self._isHolding():
+      return False
+
+    height_sorted_objects = sorted(self.objects, key=lambda x: x.pos[-1], reverse=True)
+    for obj in height_sorted_objects:
+      if obj.isGraspValid([x,y,z], rot, check_rot):
+        return True
+    return False
+
+  def _checkPlaceValid(self, x, y, z, rot, check_rot):
+    padding = self.heightmap_size / 10
+    x = max(x, padding)
+    x = min(x, self.heightmap_size - padding)
+    y = max(y, padding)
+    y = min(y, self.heightmap_size - padding)
+
+    if self.held_object is None:
+      return False
+    for i, obj in enumerate(self.objects):
+      if self.held_object is obj or not obj.on_top:
+        continue
+      if self.held_object.isStackValid([x, y, z], rot, obj, check_rot):
+        return True
+      else:
+        distance = np.linalg.norm(np.array([x, y]) - (obj.pos[:-1]))
+        min_distance = np.sqrt(2)/2 * (self.held_object.size + obj.size)
+        if distance < min_distance:
+          return False
+
   def _pick(self, x, y, z, rot):
     ''''''
     if self._isHolding():
