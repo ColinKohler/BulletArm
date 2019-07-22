@@ -95,6 +95,7 @@ class NumpyEnv(BaseEnv):
         min_distance = np.sqrt(2)/2 * (self.held_object.size + obj.size)
         if distance < min_distance:
           return False
+    return False
 
   def _pick(self, x, y, z, rot):
     ''''''

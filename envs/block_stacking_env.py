@@ -35,6 +35,10 @@ def createBlockStackingEnv(simulator_base_env, config):
       self.min_top = self.num_obj
 
     def step(self, action):
+      pre_step_left = self.getStepLeft()
+      motion_primitive, x, y, z, rot = self._getSpecificAction(action)
+      X_possible = int(self._estimateIfXPossible(motion_primitive, x, y))
+
       self.takeAction(action)
       self.wait(100)
       obs = self._getObservation()
@@ -47,11 +51,10 @@ def createBlockStackingEnv(simulator_base_env, config):
         else:
           reward = 0.0
       elif self.reward_type == 'step_left':
-        reward = 2*(self._getNumTopBlock()-1)
-        primitive_id = self.action_sequence.find('p')
-        motion_primitive = action[primitive_id] if primitive_id != -1 else 0
-        if motion_primitive == self.PICK_PRIMATIVE and obs[0]:
-          reward -= 1
+        reward = self.getStepLeft()
+      elif self.reward_type == 'step_left_optimal':
+        step_left = self.getStepLeft()
+        reward = step_left, X_possible*(pre_step_left-X_possible)+(1-X_possible)*step_left, X_possible
       else:
         reward = 1.0 if done else 0.0
 
@@ -83,7 +86,7 @@ def createBlockStackingEnv(simulator_base_env, config):
       return self._checkStack()
 
     def _estimateIfXPossible(self, primitive, x, y):
-      z = self.self._getPrimativeHeight(primitive, x, y)
+      z = self._getPrimativeHeight(primitive, x, y)
       if primitive == self.PICK_PRIMATIVE:
         return self._checkPickValid(x, y, z, 0, False)
       else:
@@ -94,6 +97,12 @@ def createBlockStackingEnv(simulator_base_env, config):
 
     def getPlan(self):
       return self.planBlockStacking()
+
+    def getStepLeft(self):
+      step_left = 2 * (self._getNumTopBlock() - 1)
+      if self._isHolding():
+        step_left -= 1
+      return step_left
 
 
   def _thunk():
