@@ -243,7 +243,7 @@ class NumpyEnv(BaseEnv):
       for obj in height_sorted_objects:
         if not obj.on_top:
           continue
-        return np.array([self.PICK_PRIMATIVE, obj.pos[0], obj.pos[1], obj.pos[2]-2, obj.rot])
+        return self._encodeAction(self.PICK_PRIMATIVE, obj.pos[0], obj.pos[1], obj.pos[2]-2, obj.rot)
 
     # place
     else:
@@ -256,7 +256,7 @@ class NumpyEnv(BaseEnv):
           rot += np.pi
         while rot > np.pi:
           rot -= np.pi
-        return np.array([self.PLACE_PRIMATIVE, obj.pos[0], obj.pos[1], obj.pos[2]+2, rot])
+        return self._encodeAction(self.PLACE_PRIMATIVE, obj.pos[0], obj.pos[1], obj.pos[2]+2, rot)
 
   def planBlockStackingWithX(self, primitive, x, y):
     # pick
@@ -265,7 +265,7 @@ class NumpyEnv(BaseEnv):
       for obj in sorted_objects:
         if not obj.on_top:
           continue
-        return np.array([self.PICK_PRIMATIVE, x, y, obj.pos[2]-2, obj.rot])
+        return self._encodeAction(self.PICK_PRIMATIVE, x, y, obj.pos[2]-2, obj.rot)
 
     # place
     else:
@@ -278,4 +278,4 @@ class NumpyEnv(BaseEnv):
           rot += np.pi
         while rot > np.pi:
           rot -= np.pi
-        return np.array([self.PLACE_PRIMATIVE, x, y, obj.pos[2]+2, rot])
+        return self._encodeAction(self.PLACE_PRIMATIVE, x, y, obj.pos[2]+2, rot)

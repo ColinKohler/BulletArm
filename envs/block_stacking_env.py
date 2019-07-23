@@ -40,7 +40,6 @@ def createBlockStackingEnv(simulator_base_env, config):
         self.saveState()
         motion_primitive, x, y, z, rot = self._getSpecificAction(action)
         optimal_action = self.planBlockStackingWithX(motion_primitive, x, y)
-        optimal_action = np.concatenate([optimal_action[1:], optimal_action[0:1]])
         self.takeAction(optimal_action)
         self.wait(100)
         optimal_step_left = self.getStepLeft()
