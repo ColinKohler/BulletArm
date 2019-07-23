@@ -62,6 +62,8 @@ def createBlockStackingEnv(simulator_base_env, config):
         reward = self.getStepLeft()
       elif self.reward_type == 'step_left_optimal':
         step_left = self.getStepLeft()
+        if optimal_step_left > step_left:
+          optimal_step_left = step_left
         reward = step_left, optimal_step_left
       else:
         reward = 1.0 if done else 0.0
@@ -107,6 +109,8 @@ def createBlockStackingEnv(simulator_base_env, config):
       return self.planBlockStacking()
 
     def getStepLeft(self):
+      if not self.isSimValid():
+        return 100
       step_left = 2 * (self._getNumTopBlock() - 1)
       if self._isHolding():
         step_left -= 1
