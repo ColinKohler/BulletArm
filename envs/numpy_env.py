@@ -257,3 +257,25 @@ class NumpyEnv(BaseEnv):
         while rot > np.pi:
           rot -= np.pi
         return np.array([self.PLACE_PRIMATIVE, obj.pos[0], obj.pos[1], obj.pos[2]+2, rot])
+
+  def planBlockStackingWithX(self, primitive, x, y):
+    # pick
+    if primitive == self.PICK_PRIMATIVE:
+      sorted_objects = sorted(self.objects, key=lambda o: np.linalg.norm(np.array(o.pos[:2]) - np.array([x, y])))
+      for obj in sorted_objects:
+        if not obj.on_top:
+          continue
+        return np.array([self.PICK_PRIMATIVE, x, y, obj.pos[2]-2, obj.rot])
+
+    # place
+    else:
+      sorted_objects = sorted(self.objects, key=lambda o: np.linalg.norm(np.array(o.pos[:2]) - np.array([x, y])))
+      for obj in sorted_objects:
+        if obj is self.held_object or not obj.on_top:
+          continue
+        rot = obj.rot - self.held_object.rot
+        while rot < 0:
+          rot += np.pi
+        while rot > np.pi:
+          rot -= np.pi
+        return np.array([self.PLACE_PRIMATIVE, x, y, obj.pos[2]+2, rot])

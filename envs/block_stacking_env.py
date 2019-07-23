@@ -1,4 +1,5 @@
 from copy import deepcopy
+import numpy as np
 from helping_hands_rl_envs.envs.numpy_env import NumpyEnv
 from helping_hands_rl_envs.envs.vrep_env import VrepEnv
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
@@ -35,9 +36,17 @@ def createBlockStackingEnv(simulator_base_env, config):
       self.min_top = self.num_obj
 
     def step(self, action):
-      pre_step_left = self.getStepLeft()
-      motion_primitive, x, y, z, rot = self._getSpecificAction(action)
-      X_possible = int(self._estimateIfXPossible(motion_primitive, x, y))
+      if self.reward_type == 'step_left_optimal':
+        self.saveState()
+        motion_primitive, x, y, z, rot = self._getSpecificAction(action)
+        optimal_action = self.planBlockStackingWithX(motion_primitive, x, y)
+        optimal_action = np.concatenate([optimal_action[1:], optimal_action[0:1]])
+        self.takeAction(optimal_action)
+        self.wait(100)
+        optimal_step_left = self.getStepLeft()
+        self.restoreState()
+      else:
+        optimal_step_left = 0
 
       self.takeAction(action)
       self.wait(100)
@@ -54,7 +63,7 @@ def createBlockStackingEnv(simulator_base_env, config):
         reward = self.getStepLeft()
       elif self.reward_type == 'step_left_optimal':
         step_left = self.getStepLeft()
-        reward = step_left, X_possible*(pre_step_left-X_possible)+(1-X_possible)*step_left, X_possible
+        reward = step_left, optimal_step_left
       else:
         reward = 1.0 if done else 0.0
 
