@@ -97,8 +97,8 @@ class BaseEnv(object):
     Returns: Valid Z coordinate for the action
     '''
     x_pixel, y_pixel = self._getPixelsFromPos(x, y)
-    local_region = self.heightmap[max(y_pixel - 30, 0):min(y_pixel + 30, self.heightmap_size), \
-                                  max(x_pixel - 30, 0):min(x_pixel + 30, self.heightmap_size)]
+    local_region = self.heightmap[int(max(y_pixel - self.heightmap_size/20, 0)):int(min(y_pixel + self.heightmap_size/20, self.heightmap_size)), \
+                                  int(max(x_pixel - self.heightmap_size/20, 0)):int(min(x_pixel + self.heightmap_size/20, self.heightmap_size))]
     safe_z_pos = np.max(local_region) + self.workspace[2][0]
     safe_z_pos = safe_z_pos - self.offset if motion_primative == self.PICK_PRIMATIVE else safe_z_pos + self.offset
 
