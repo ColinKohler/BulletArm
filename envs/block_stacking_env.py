@@ -37,6 +37,7 @@ def createBlockStackingEnv(simulator_base_env, config):
 
     def step(self, action):
       if self.reward_type == 'step_left_optimal':
+        pre_step_left = self.getStepLeft()
         self.saveState()
         motion_primitive, x, y, z, rot = self._getSpecificAction(action)
         optimal_action = self.planBlockStackingWithX(motion_primitive, x, y)
@@ -45,6 +46,7 @@ def createBlockStackingEnv(simulator_base_env, config):
         optimal_step_left = self.getStepLeft()
         self.restoreState()
       else:
+        pre_step_left = 0
         optimal_step_left = 0
 
       self.takeAction(action)
@@ -62,8 +64,8 @@ def createBlockStackingEnv(simulator_base_env, config):
         reward = self.getStepLeft()
       elif self.reward_type == 'step_left_optimal':
         step_left = self.getStepLeft()
-        if optimal_step_left > step_left:
-          optimal_step_left = step_left
+        if optimal_step_left > pre_step_left:
+          optimal_step_left = pre_step_left
         reward = step_left, optimal_step_left
       else:
         reward = 1.0 if done else 0.0

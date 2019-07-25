@@ -270,3 +270,23 @@ class PyBulletEnv(BaseEnv):
       if p[2] != bottom_obj:
         return False
     return True
+
+  def _getPrimativeHeight(self, motion_primative, x, y):
+    '''
+    Get the z position for the given action using the current heightmap.
+    Args:
+      - motion_primative: Pick/place motion primative
+      - x: X coordinate for action
+      - y: Y coordinate for action
+      - offset: How much to offset the action along approach vector
+    Returns: Valid Z coordinate for the action
+    '''
+    x_pixel, y_pixel = self._getPixelsFromPos(x, y)
+    local_region = self.heightmap[int(max(y_pixel - self.heightmap_size/20, 0)):int(min(y_pixel + self.heightmap_size/20, self.heightmap_size)), \
+                                  int(max(x_pixel - self.heightmap_size/20, 0)):int(min(x_pixel + self.heightmap_size/20, self.heightmap_size))]
+    safe_z_pos = np.max(local_region) + self.workspace[2][0]
+    if motion_primative == self.PICK_PRIMATIVE:
+      safe_z_pos -= 0.005
+    else:
+      safe_z_pos += 0.03
+    return safe_z_pos
