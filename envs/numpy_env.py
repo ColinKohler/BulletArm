@@ -7,11 +7,12 @@ from helping_hands_rl_envs.numpy_toolkit import object_generation
 
 class NumpyEnv(BaseEnv):
   def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, render=False, action_sequence='pxyr',
-               pick_rot=True, place_rot=False, pos_candidate=None):
+               pick_rot=True, place_rot=False, pos_candidate=None, scale=1.):
     super(NumpyEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence, pos_candidate)
 
+    self.scale = scale
     self.render = render
-    self.offset = self.heightmap_size/20
+    self.offset = self.scale*self.heightmap_size/20
     self.valid = True
     self.pick_rot = pick_rot
     self.place_rot = place_rot
@@ -77,7 +78,7 @@ class NumpyEnv(BaseEnv):
     return False
 
   def _checkPlaceValid(self, x, y, z, rot, check_rot):
-    padding = self.heightmap_size / 10
+    padding = self.scale * self.heightmap_size / 10
     x = max(x, padding)
     x = min(x, self.heightmap_size - padding)
     y = max(y, padding)
@@ -115,7 +116,7 @@ class NumpyEnv(BaseEnv):
 
   def _place(self, x, y, z, rot):
     ''''''
-    padding = self.heightmap_size / 10
+    padding = self.scale * self.heightmap_size / 10
     x = max(x, padding)
     x = min(x, self.heightmap_size - padding)
     y = max(y, padding)
@@ -171,9 +172,9 @@ class NumpyEnv(BaseEnv):
   def _generateShapes(self, object_type, num_objects, min_distance=None, padding=None, random_orientation=False):
     ''''''
     if min_distance is None:
-      min_distance = 2 * self.heightmap_size/7
+      min_distance = 2 * self.scale*self.heightmap_size/7
     if padding is None:
-      padding = self.heightmap_size/5
+      padding = self.scale*self.heightmap_size/5
     objects = list()
     positions = deepcopy(list(map(lambda o: o.pos, self.objects)))
     for p in positions:
@@ -202,7 +203,7 @@ class NumpyEnv(BaseEnv):
         rotation = np.pi*np.random.random_sample()
       else:
         rotation = 0.0
-      size = npr.randint(self.heightmap_size/10, self.heightmap_size/7)
+      size = npr.randint(self.scale*self.heightmap_size/10, self.scale*self.heightmap_size/7)
       position[2] = int(size / 2)
 
       if object_type is self.CUBE:

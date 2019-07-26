@@ -13,9 +13,12 @@ def createBlockStackingEnv(simulator_base_env, config):
           config['pick_rot'] = True
         if 'place_rot' not in config:
           config['place_rot'] = False
+        if 'scale' not in config:
+          config['scale'] = 1.
         super(BlockStackingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
                                                config['obs_size'], config['render'], config['action_sequence'],
-                                               pick_rot=config['pick_rot'], place_rot=config['place_rot'])
+                                               pick_rot=config['pick_rot'], place_rot=config['place_rot'],
+                                               scale=config['scale'])
       elif simulator_base_env is VrepEnv:
         super(BlockStackingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
                                                config['obs_size'], config['port'], config['fast_mode'],
