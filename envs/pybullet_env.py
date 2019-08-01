@@ -114,7 +114,7 @@ class PyBulletEnv(BaseEnv):
     return True
 
   def wait(self, iteration):
-    if not self.simulate_grasp and self.getHoldingState():
+    if not self.simulate_grasp and self._isHolding():
       return
     for _ in range(iteration):
       pb.stepSimulation()
@@ -139,7 +139,7 @@ class PyBulletEnv(BaseEnv):
     self.heightmap = image_arr[3] - np.min(image_arr[3])
     self.heightmap = self.heightmap.T
 
-    return self.getHoldingState(), self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
+    return self._isHolding(), self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
   def _generateShapes(self, shape_type=0, num_shapes=1, size=None, pos=None, rot=None,
                            min_distance=0.1, padding=0.2, random_orientation=False):
@@ -201,7 +201,7 @@ class PyBulletEnv(BaseEnv):
   def _getObjectPosition(self, obj):
     return pb_obj_generation.getObjectPosition(obj)
 
-  def getHoldingState(self):
+  def _isHolding(self):
     return self.ur5.holding_obj is not None
 
   def _getRestPoseMatrix(self):
@@ -232,7 +232,7 @@ class PyBulletEnv(BaseEnv):
     cluster_pos = []
     for obj in self.objects:
       if self._isObjectHeld(obj):
-        return -1
+        continue
       block_position = self._getObjectPosition(obj)
       cluster_flag = False
       for cluster in cluster_pos:
@@ -242,7 +242,7 @@ class PyBulletEnv(BaseEnv):
           break
       if not cluster_flag:
         cluster_pos.append([block_position[:-1]])
-    return len(cluster_pos)
+    return len(cluster_pos) + self._isHolding()
 
   def _checkStack(self):
     for obj in self.objects:
