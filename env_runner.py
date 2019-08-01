@@ -116,7 +116,9 @@ class EnvRunner(object):
 
     states = torch.from_numpy(np.stack(states).astype(float)).float()
     depths = torch.from_numpy(np.stack(depths)).float()
-    rewards = torch.from_numpy(np.stack(rewards)).unsqueeze(dim=1).float()
+    rewards = torch.from_numpy(np.stack(rewards)).float()
+    if len(rewards.shape) == 1:
+      rewards = rewards.unsqueeze(1)
     dones = torch.from_numpy(np.stack(dones).astype(np.float32)).float()
 
     return states, depths, rewards, dones

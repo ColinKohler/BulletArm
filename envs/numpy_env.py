@@ -7,11 +7,12 @@ from helping_hands_rl_envs.numpy_toolkit import object_generation
 
 class NumpyEnv(BaseEnv):
   def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, render=False, action_sequence='pxyr',
-               pick_rot=True, place_rot=False, pos_candidate=None):
+               pick_rot=True, place_rot=False, pos_candidate=None, scale=1.):
     super(NumpyEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence, pos_candidate)
 
+    self.scale = scale
     self.render = render
-    self.offset = self.heightmap_size/20
+    self.offset = self.scale*self.heightmap_size/20
     self.valid = True
     self.pick_rot = pick_rot
     self.place_rot = place_rot
@@ -66,6 +67,37 @@ class NumpyEnv(BaseEnv):
   def isSimValid(self):
     return self.valid
 
+  def _checkPickValid(self, x, y, z, rot, check_rot):
+    if self._isHolding():
+      return False
+
+    height_sorted_objects = sorted(self.objects, key=lambda x: x.pos[-1], reverse=True)
+    for obj in height_sorted_objects:
+      if obj.isGraspValid([x,y,z], rot, check_rot):
+        return True
+    return False
+
+  def _checkPlaceValid(self, x, y, z, rot, check_rot):
+    padding = self.scale * self.heightmap_size / 10
+    x = max(x, padding)
+    x = min(x, self.heightmap_size - padding)
+    y = max(y, padding)
+    y = min(y, self.heightmap_size - padding)
+
+    if self.held_object is None:
+      return False
+    for i, obj in enumerate(self.objects):
+      if self.held_object is obj or not obj.on_top:
+        continue
+      if self.held_object.isStackValid([x, y, z], rot, obj, check_rot):
+        return True
+      else:
+        distance = np.linalg.norm(np.array([x, y]) - (obj.pos[:-1]))
+        min_distance = np.sqrt(2)/2 * (self.held_object.size + obj.size)
+        if distance < min_distance:
+          return False
+    return False
+
   def _pick(self, x, y, z, rot):
     ''''''
     if self._isHolding():
@@ -84,7 +116,7 @@ class NumpyEnv(BaseEnv):
 
   def _place(self, x, y, z, rot):
     ''''''
-    padding = self.heightmap_size / 10
+    padding = self.scale * self.heightmap_size / 10
     x = max(x, padding)
     x = min(x, self.heightmap_size - padding)
     y = max(y, padding)
@@ -140,9 +172,9 @@ class NumpyEnv(BaseEnv):
   def _generateShapes(self, object_type, num_objects, min_distance=None, padding=None, random_orientation=False):
     ''''''
     if min_distance is None:
-      min_distance = 2 * self.heightmap_size/7
+      min_distance = 2 * self.scale*self.heightmap_size/7
     if padding is None:
-      padding = self.heightmap_size/5
+      padding = self.scale*self.heightmap_size/5
     objects = list()
     positions = deepcopy(list(map(lambda o: o.pos, self.objects)))
     for p in positions:
@@ -171,7 +203,7 @@ class NumpyEnv(BaseEnv):
         rotation = np.pi*np.random.random_sample()
       else:
         rotation = 0.0
-      size = npr.randint(self.heightmap_size/10, self.heightmap_size/7)
+      size = npr.randint(self.scale*self.heightmap_size/10, self.scale*self.heightmap_size/7)
       position[2] = int(size / 2)
 
       if object_type is self.CUBE:
@@ -212,7 +244,7 @@ class NumpyEnv(BaseEnv):
       for obj in height_sorted_objects:
         if not obj.on_top:
           continue
-        return np.array([self.PICK_PRIMATIVE, obj.pos[0], obj.pos[1], obj.pos[2]-2, obj.rot])
+        return self._encodeAction(self.PICK_PRIMATIVE, obj.pos[0], obj.pos[1], obj.pos[2]-2, obj.rot)
 
     # place
     else:
@@ -225,4 +257,26 @@ class NumpyEnv(BaseEnv):
           rot += np.pi
         while rot > np.pi:
           rot -= np.pi
-        return np.array([self.PLACE_PRIMATIVE, obj.pos[0], obj.pos[1], obj.pos[2]+2, rot])
+        return self._encodeAction(self.PLACE_PRIMATIVE, obj.pos[0], obj.pos[1], obj.pos[2]+2, rot)
+
+  def planBlockStackingWithX(self, primitive, x, y):
+    # pick
+    if primitive == self.PICK_PRIMATIVE:
+      sorted_objects = sorted(self.objects, key=lambda o: np.linalg.norm(np.array(o.pos[:2]) - np.array([x, y])))
+      for obj in sorted_objects:
+        if not obj.on_top:
+          continue
+        return self._encodeAction(self.PICK_PRIMATIVE, x, y, obj.pos[2]-2, obj.rot)
+
+    # place
+    else:
+      sorted_objects = sorted(self.objects, key=lambda o: np.linalg.norm(np.array(o.pos[:2]) - np.array([x, y])))
+      for obj in sorted_objects:
+        if obj is self.held_object or not obj.on_top:
+          continue
+        rot = obj.rot - self.held_object.rot
+        while rot < 0:
+          rot += np.pi
+        while rot > np.pi:
+          rot -= np.pi
+        return self._encodeAction(self.PLACE_PRIMATIVE, x, y, obj.pos[2]+2, rot)
