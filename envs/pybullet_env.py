@@ -30,8 +30,10 @@ class PyBulletEnv(BaseEnv):
     # Environment specific variables
     self._timestep = 1. / 240.
     self.ur5 = UR5_RG2()
-    self.pick_offset = 0.25
-    self.place_offset = 0.25
+    self.pick_pre_offset = 0.25
+    self.pick_offset = 0.005
+    self.place_pre_offset = 0.25
+    self.place_offset = 0.03
     self.block_original_size = 0.05
     self.block_scale_range = (0.6, 0.7)
 
@@ -91,11 +93,11 @@ class PyBulletEnv(BaseEnv):
 
     # Take action specfied by motion primative
     if motion_primative == self.PICK_PRIMATIVE:
-      self.ur5.pick(pos, rot, self.pick_offset, dynamic=self.dynamic, objects=self.objects,
+      self.ur5.pick(pos, rot, self.pick_pre_offset, dynamic=self.dynamic, objects=self.objects,
                     simulate_grasp=self.simulate_grasp, perfect_grasp=self.perfect_grasp)
     elif motion_primative == self.PLACE_PRIMATIVE:
       if self.ur5.holding_obj is not None:
-        self.ur5.place(pos, rot, self.place_offset, dynamic=self.dynamic, simulate_grasp=self.simulate_grasp)
+        self.ur5.place(pos, rot, self.place_pre_offset, dynamic=self.dynamic, simulate_grasp=self.simulate_grasp)
     elif motion_primative == self.PUSH_PRIMATIVE:
       pass
     else:
@@ -118,6 +120,43 @@ class PyBulletEnv(BaseEnv):
       return
     for _ in range(iteration):
       pb.stepSimulation()
+
+  def planBlockStacking(self):
+    obj_poses = []
+    for obj in self.objects:
+      pos, rot = pb_obj_generation.getObjectPose(obj)
+      rot = pb.getEulerFromQuaternion(rot)
+      obj_poses.append((obj, pos, rot))
+    # pick
+    if not self._isHolding():
+      obj_poses.sort(key=lambda x: x[1][-1])
+      for op in obj_poses:
+        if not self._isObjOnTop(op[0]):
+          continue
+        x = op[1][0]
+        y = op[1][1]
+        z = op[1][2] - self.pick_offset
+        r = -op[2][2]
+        while r < 0:
+          r += np.pi
+        while r > np.pi:
+          r -= np.pi
+        return self._encodeAction(self.PICK_PRIMATIVE, x, y, z, r)
+    # place
+    else:
+      obj_poses.sort(key=lambda x: x[1][-1], reverse=True)
+      for op in obj_poses:
+        if self._isObjectHeld(op[0]):
+          continue
+        x = op[1][0]
+        y = op[1][1]
+        z = op[1][2] + self.place_offset
+        r = -op[2][2]
+        while r < 0:
+          r += np.pi
+        while r > np.pi:
+          r -= np.pi
+        return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
 
   def _isPointInWorkspace(self, p):
     '''
@@ -228,6 +267,18 @@ class PyBulletEnv(BaseEnv):
     pos = [-0.50, 0, 0.25]
     pb.resetBasePositionAndOrientation(obj, pos, pb.getQuaternionFromEuler([0., 0., 0.]))
 
+  def _isObjOnTop(self, obj):
+    obj_position = self._getObjectPosition(obj)
+    for o in self.objects:
+      if self._isObjectHeld(o) or o is obj:
+        continue
+      block_position = self._getObjectPosition(o)
+      if np.allclose(block_position[:-1], obj_position[:-1],
+                     atol=self.block_original_size * self.block_scale_range[0] * 2 / 3) and \
+          block_position[-1] > obj_position[-1]:
+        return False
+    return True
+
   def _getNumTopBlock(self):
     cluster_pos = []
     for obj in self.objects:
@@ -286,8 +337,8 @@ class PyBulletEnv(BaseEnv):
                                   int(max(x_pixel - self.heightmap_size/20, 0)):int(min(x_pixel + self.heightmap_size/20, self.heightmap_size))]
     safe_z_pos = np.max(local_region) + self.workspace[2][0]
     if motion_primative == self.PICK_PRIMATIVE:
-      safe_z_pos -= 0.005
+      safe_z_pos -= self.pick_offset
       safe_z_pos = max(safe_z_pos, 0.025)
     else:
-      safe_z_pos += 0.03
+      safe_z_pos += self.place_offset
     return safe_z_pos

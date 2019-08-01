@@ -18,7 +18,7 @@ def getObjectPosition(obj):
 def getObjectRotation(obj):
   ''''''
   pos, rot = pb.getBasePositionAndOrientation(obj)
-  return pos
+  return rot
 
 def getObjectPose(obj):
   pos, rot = pb.getBasePositionAndOrientation(obj)
