@@ -87,7 +87,7 @@ class PyBulletEnv(BaseEnv):
 
     # Get transform for action
     pos = [x, y, z]
-    rot = pb.getQuaternionFromEuler([0, np.pi, rot])
+    rot = pb.getQuaternionFromEuler([0, np.pi, -rot])
 
     # Take action specfied by motion primative
     if motion_primative == self.PICK_PRIMATIVE:
