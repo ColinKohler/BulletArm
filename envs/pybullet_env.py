@@ -287,6 +287,7 @@ class PyBulletEnv(BaseEnv):
     safe_z_pos = np.max(local_region) + self.workspace[2][0]
     if motion_primative == self.PICK_PRIMATIVE:
       safe_z_pos -= 0.005
+      safe_z_pos = max(safe_z_pos, 0.025)
     else:
       safe_z_pos += 0.03
     return safe_z_pos
