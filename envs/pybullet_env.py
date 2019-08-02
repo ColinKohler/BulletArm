@@ -8,7 +8,7 @@ import pybullet as pb
 import pybullet_data
 
 from helping_hands_rl_envs.envs.base_env import BaseEnv
-from helping_hands_rl_envs.pybullet_toolkit.robots.ur5_rg2 import UR5_RG2
+from helping_hands_rl_envs.pybullet_toolkit.robots.ur5_robotiq import UR5_RG2
 import helping_hands_rl_envs.pybullet_toolkit.utils.object_generation as pb_obj_generation
 
 class PyBulletEnv(BaseEnv):

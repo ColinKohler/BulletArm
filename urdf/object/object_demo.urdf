@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<robot name="airplane">
+   <!-- control -->
+  <link name="base">
+      <collision>
+          <geometry>
+              <mesh filename="../meshes/objects/828d1b43814fc98c93b89bfd41acaad0.obj"/>
+          </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.02" />
+        <inertia ixx = "0" ixy = "0" ixz = "0"
+             iyx = "0" iyy = "0" iyz = "0"
+             izx = "0" izy = "0" izz = "0" />
+      </inertial>
+  </link>
+</robot>
