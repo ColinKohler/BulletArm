@@ -31,7 +31,7 @@ class PyBulletEnv(BaseEnv):
     self._timestep = 1. / 240.
     self.ur5 = UR5_RG2()
     self.pick_pre_offset = 0.25
-    self.pick_offset = 0.005
+    self.pick_offset = 0.
     self.place_pre_offset = 0.25
     self.place_offset = 0.03
     self.block_original_size = 0.05
@@ -89,7 +89,7 @@ class PyBulletEnv(BaseEnv):
 
     # Get transform for action
     pos = [x, y, z]
-    rot = pb.getQuaternionFromEuler([0, np.pi, -rot])
+    rot = pb.getQuaternionFromEuler([0, np.pi/2, -rot])
 
     # Take action specfied by motion primative
     if motion_primative == self.PICK_PRIMATIVE:

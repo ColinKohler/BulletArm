@@ -29,14 +29,17 @@ class UR5_RG2(object):
     self.max_forces = [150, 150, 150, 28, 28, 28, 30, 30]
     self.gripper_close_force = [30] * 2
     self.gripper_open_force = [30] * 2
-    self.end_effector_index = 12
+    self.end_effector_index = 18
 
-    self.home_positions = [0., 0., -2.137, 1.432, -0.915, -1.591, 0.071, 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]
+    self.home_positions = [0., 0., -2.137, 1.432, -0.915, -1.591, 0.071, 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]
 
     self.root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
 
-    # self.gripper_joint_limit = [0.715 - math.asin((0 - 0.010) / 0.1143),
-    #                             0.715 - math.asin((0.085 - 0.010) / 0.1143)]
+    # the open length of the gripper. 0 is closed, 0.085 is completely opened
+    self.gripper_open_length_limit = [0, 0.085]
+    # the corresponding robotiq_85_left_knuckle_joint limit
+    self.gripper_joint_limit = [0.715 - math.asin((self.gripper_open_length_limit[0] - 0.010) / 0.1143),
+                                0.715 - math.asin((self.gripper_open_length_limit[1] - 0.010) / 0.1143)]
 
     self.controlJoints = ["robotiq_85_left_knuckle_joint",
                      "robotiq_85_right_knuckle_joint",
@@ -105,9 +108,9 @@ class UR5_RG2(object):
     self.holding_obj = self.state['holding_obj']
     self.gripper_closed = self.state['gripper_closed']
     if self.gripper_closed:
-      self._sendGripperCloseCommand()
+      self.closeGripper()
     else:
-      self._sendGripperOpenCommand()
+      self.openGripper()
 
   def pick(self, pos, rot, offset, dynamic=True, objects=None, simulate_grasp=True, perfect_grasp=False):
     ''''''
@@ -187,41 +190,69 @@ class UR5_RG2(object):
 
   def closeGripper(self):
     ''''''
+    # p1, p2 = self._getGripperJointPosition()
+    # target = self.gripper_joint_limit[0]
+    # self._sendGripperCloseCommand()
+    # self.gripper_closed = True
+    # it = 0
+    # while abs(target-p1) + abs(target-p2) > 0.001:
+    #   pb.stepSimulation()
+    #   it += 1
+    #   if it > 100:
+    #     return False
+    #   p1_, p2_ = self._getGripperJointPosition()
+    #   if abs(p1_-p1) < 0.001 and abs(p2_-p2) < 0.001:
+    #     return False
+    #   p1 = p1_
+    #   p2 = p2_
+    # return True
+
+    self._sendGripperCommand(self.gripper_joint_limit[0])
+    target = self.gripper_joint_limit[0]
     p1, p2 = self._getGripperJointPosition()
-    # limit = self.gripper_joint_limit[1]
-    self._sendGripperCloseCommand()
-    self.gripper_closed = True
     it = 0
-    # while (limit-p1) + (limit-p2) > 0.001:
-    while True:
-    # while p1 < 0.036:
+    while abs(target-p1) + abs(target-p2) > 0.001:
       pb.stepSimulation()
       it += 1
       if it > 100:
         return False
-      p1_, p2_ = self._getGripperJointPosition()
-      # if p1 >= p1_ and p2 >= p2_:
-      #   return False
-      p1 = p1_
-      p2 = p2_
+
+      f1, f2 = self._getGripperJointForce()
+      if f1 >= 0.1 and \
+          f2 >= 0.1:
+        self._sendGripperCommand(p1+0.001)
+        return False
+
+      p1, p2 = self._getGripperJointPosition()
     return True
 
   def checkGripperClosed(self):
-    limit = self.gripper_joint_limit[1]
+    target = self.gripper_joint_limit[0]
     p1, p2 = self._getGripperJointPosition()
-    if (limit - p1) + (limit - p2) > 0.001:
+    if abs(target-p1) + abs(target-p2) > 0.001:
       return
     else:
       self.holding_obj = None
 
   def openGripper(self):
     ''''''
+    # p1, p2 = self._getGripperJointPosition()
+    # self._sendGripperOpenCommand()
+    # self.gripper_closed = False
+    # self.holding_obj = None
+    # it = 0
+    # while p1 > 0.0:
+    #   pb.stepSimulation()
+    #   it += 1
+    #   if it > 100:
+    #     return False
+    #   p1, p2 = self._getGripperJointPosition()
+    # return True
+    self._sendGripperCommand(self.gripper_joint_limit[1])
+    target = self.gripper_joint_limit[1]
     p1, p2 = self._getGripperJointPosition()
-    self._sendGripperOpenCommand()
-    self.gripper_closed = False
-    self.holding_obj = None
     it = 0
-    while p1 > 0.0:
+    while abs(target - p1) + abs(target - p2) > 0.001:
       pb.stepSimulation()
       it += 1
       if it > 100:
@@ -257,7 +288,7 @@ class UR5_RG2(object):
     max_inner_it = 1000
 
     while not close_enough and outer_it < max_outer_it:
-      ik_solve = pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)[:-2]
+      ik_solve = pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)[:6]
       self._moveToJointPose(ik_solve, dynamic, max_inner_it)
 
       ls = pb.getLinkState(self.id, self.end_effector_index)
@@ -324,47 +355,59 @@ class UR5_RG2(object):
     p2 = pb.getJointState(self.id, self.gripper_joint_indices[1])[0]
     return p1, p2
 
+  def _getGripperJointForce(self):
+    f1 = pb.getJointState(self.id, self.gripper_joints['robotiq_85_left_inner_knuckle_joint'].id)[3]
+    f2 = pb.getJointState(self.id, self.gripper_joints['robotiq_85_right_inner_knuckle_joint'].id)[3]
+    return f1, f2
+
   def _sendPositionCommand(self, commands):
     ''''''
     num_motors = len(self.arm_joint_indices)
     pb.setJointMotorControlArray(self.id, self.arm_joint_indices, pb.POSITION_CONTROL, commands,
-                                 [0.]*num_motors, self.max_forces[:-2], [0.05]*num_motors, [1.0]*num_motors)
+                                 [0.]*num_motors, self.max_forces[:-2], [0.005]*num_motors, [1.0]*num_motors)
 
-  def _sendGripperCloseCommand(self):
-    # target_pos = self.gripper_joint_limit[1] + 0.01
-    # pb.setJointMotorControlArray(self.id, self.gripper_joint_indices, pb.POSITION_CONTROL,
-    #                              targetPositions=[target_pos, target_pos], forces=self.gripper_close_force)
-
-    gripper_opening_length = 0
-    gripper_opening_angle = 0.715 - math.asin((gripper_opening_length - 0.010) / 0.1143)  # angle calculation
-
-    pb.setJointMotorControl2(self.id,
-                            self.gripper_joints[self.gripper_main_control_joint_name].id,
-                            pb.POSITION_CONTROL,
-                            targetPosition=gripper_opening_angle,
-                            force=self.gripper_joints[self.gripper_main_control_joint_name].maxForce,
-                            maxVelocity=self.gripper_joints[self.gripper_main_control_joint_name].maxVelocity)
-    for i in range(len(self.gripper_mimic_joint_name)):
-        joint = self.gripper_joints[self.gripper_mimic_joint_name[i]]
-        pb.setJointMotorControl2(self.id, joint.id, pb.POSITION_CONTROL,
-                                targetPosition=gripper_opening_angle * self.gripper_mimic_multiplier[i],
-                                force=joint.maxForce,
-                                maxVelocity=joint.maxVelocity)
-
-
-  def _sendGripperOpenCommand(self):
-    # target_pos = self.gripper_joint_limit[0] - 0.01
-    # pb.setJointMotorControlArray(self.id, self.gripper_joint_indices, pb.POSITION_CONTROL,
-    #                              targetPositions=[target_pos, target_pos], forces=self.gripper_open_force)
-    gripper_opening_length = 0.085
-    gripper_opening_angle = 0.715 - math.asin((gripper_opening_length - 0.010) / 0.1143)  # angle calculation
-
+  def _sendGripperCommand(self, target):
     pb.setJointMotorControl2(self.id,
                              self.gripper_joints[self.gripper_main_control_joint_name].id,
                              pb.POSITION_CONTROL,
-                             targetPosition=gripper_opening_angle,
+                             targetPosition=target,
                              force=self.gripper_joints[self.gripper_main_control_joint_name].maxForce,
                              maxVelocity=self.gripper_joints[self.gripper_main_control_joint_name].maxVelocity)
+    for i in range(len(self.gripper_mimic_joint_name)):
+      joint = self.gripper_joints[self.gripper_mimic_joint_name[i]]
+      pb.setJointMotorControl2(self.id, joint.id, pb.POSITION_CONTROL,
+                               targetPosition=target * self.gripper_mimic_multiplier[i],
+                               force=joint.maxForce,
+                               maxVelocity=joint.maxVelocity)
+
+  # def _sendGripperCloseCommand(self):
+  #   pb.setJointMotorControl2(self.id,
+  #                           self.gripper_joints[self.gripper_main_control_joint_name].id,
+  #                           pb.POSITION_CONTROL,
+  #                           targetPosition=self.gripper_joint_limit[0],
+  #                           force=self.gripper_joints[self.gripper_main_control_joint_name].maxForce,
+  #                           maxVelocity=self.gripper_joints[self.gripper_main_control_joint_name].maxVelocity)
+  #   for i in range(len(self.gripper_mimic_joint_name)):
+  #       joint = self.gripper_joints[self.gripper_mimic_joint_name[i]]
+  #       pb.setJointMotorControl2(self.id, joint.id, pb.POSITION_CONTROL,
+  #                               targetPosition=self.gripper_joint_limit[0] * self.gripper_mimic_multiplier[i],
+  #                               force=joint.maxForce,
+  #                               maxVelocity=joint.maxVelocity)
+
+
+  # def _sendGripperOpenCommand(self):
+  #   pb.setJointMotorControl2(self.id,
+  #                            self.gripper_joints[self.gripper_main_control_joint_name].id,
+  #                            pb.POSITION_CONTROL,
+  #                            targetPosition=self.gripper_joint_limit[1],
+  #                            force=self.gripper_joints[self.gripper_main_control_joint_name].maxForce,
+  #                            maxVelocity=self.gripper_joints[self.gripper_main_control_joint_name].maxVelocity)
+  #   for i in range(len(self.gripper_mimic_joint_name)):
+  #       joint = self.gripper_joints[self.gripper_mimic_joint_name[i]]
+  #       pb.setJointMotorControl2(self.id, joint.id, pb.POSITION_CONTROL,
+  #                               targetPosition=self.gripper_joint_limit[1] * self.gripper_mimic_multiplier[i],
+  #                               force=joint.maxForce,
+  #                               maxVelocity=joint.maxVelocity)
 
   def _setJointPoses(self, q_poses):
     ''''''
