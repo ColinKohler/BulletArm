@@ -26,7 +26,7 @@ class Kuka(object):
     self.finger_a_force = 2
     self.finger_b_force = 2.5
     self.finger_tip_force = 2
-    self.end_effector_index = 6
+    self.end_effector_index = 14
     self.gripper_index = 7
 
     # lower limits for null space
@@ -43,15 +43,15 @@ class Kuka(object):
       0.00001, 0.00001, 0.00001, 0.00001
     ]
 
-    # self.home_positions = [0., 0., -2.137, 1.432, -0.915, -1.591, 0.071, 0., 0., 0., 0., 0., 0., 0.]
-    self.home_positions = [
-        0.006418, 0.413184, -0.011401, -1.589317, 0.005379, 1.137684, -0.006539, 0.000048,
-        -0.299912, 0.000000, -0.000043, 0.299960, 0.000000, -0.000200
-    ]
+    self.home_positions = [0.3926, 0., -2.137, 1.432, 0, -1.591, 0.071, 0., 0., 0., 0., 0., 0., 0., 0.]
+    # self.home_positions = [
+    #     0.006418, 0.413184, -0.011401, -1.589317, 0.005379, 1.137684, -0.006539, 0.000048,
+    #     -0.299912, 0.000000, -0.000043, 0.299960, 0.000000, -0.000200
+    # ]
 
     self.root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
 
-    self.gripper_joint_limit = [0, 0.036]
+    self.gripper_joint_limit = [0, 0.3]
 
     self.holding_obj = None
     self.gripper_closed = False
@@ -65,21 +65,21 @@ class Kuka(object):
     ''''''
     ur5_urdf_filepath = os.path.join(self.root_dir, 'urdf/kuka/kuka_with_gripper2.sdf')
     self.id = pb.loadSDF(ur5_urdf_filepath)[0]
-    pb.resetBasePositionAndOrientation(self.id, [0,0,0], [0,0,0,1])
+    pb.resetBasePositionAndOrientation(self.id, [-0.2,0,0], [0,0,0,1])
 
     # self.is_holding = False
     self.gripper_closed = False
     self.holding_obj = None
     self.num_joints = pb.getNumJoints(self.id)
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
-
+    self.openGripper()
     # self.gripper_joint_names = list()
     # self.gripper_joint_indices = list()
     self.arm_joint_names = list()
     self.arm_joint_indices = list()
     for i in range (self.num_joints):
       joint_info = pb.getJointInfo(self.id, i)
-      if i in range(1, 7):
+      if i in range(7):
         self.arm_joint_names.append(str(joint_info[1]))
         self.arm_joint_indices.append(i)
       # elif i in range(10, 12):
@@ -129,7 +129,7 @@ class Kuka(object):
       self.moveTo(pos, rot, dynamic)
       self.holding_obj = self.getPickedObj(objects)
 
-    self.moveToJ(self.home_positions[1:7], dynamic)
+    self.moveToJ(self.home_positions[:7], dynamic)
     self.checkGripperClosed()
 
   def place(self, pos, rot, offset, dynamic=True, simulate_grasp=True):
@@ -150,7 +150,7 @@ class Kuka(object):
     self.openGripper()
     self.holding_obj = None
     self.moveTo(pre_pos, pre_rot, dynamic)
-    self.moveToJ(self.home_positions[1:7], dynamic)
+    self.moveToJ(self.home_positions[:7], dynamic)
 
   def moveTo(self, pos, rot, dynamic=True):
     if dynamic or not self.holding_obj:
@@ -207,16 +207,21 @@ class Kuka(object):
   def openGripper(self):
     ''''''
     p1, p2 = self._getGripperJointPosition()
-    self._sendGripperOpenCommand()
+    target = self.gripper_joint_limit[1]
+    self._sendGripperCommand(target)
     self.gripper_closed = False
     self.holding_obj = None
     it = 0
-    while p1 > 0.0:
+    while abs(target-p1) + abs(target-p2) > 0.001:
       pb.stepSimulation()
       it += 1
       if it > 100:
         return False
-      p1, p2 = self._getGripperJointPosition()
+      p1_, p2_ = self._getGripperJointPosition()
+      if p1 >= p1_ and p2 >= p2_:
+        return False
+      p1 = p1_
+      p2 = p2_
     return True
 
   def _moveToJointPose(self, target_pose, dynamic=True, max_it=1000):
@@ -247,7 +252,12 @@ class Kuka(object):
     max_inner_it = 1000
 
     while not close_enough and outer_it < max_outer_it:
-      ik_solve = pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)
+      ik_solve = pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot,
+                                               lowerLimits=self.ll,
+                                               upperLimits=self.ul,
+                                               jointRanges=self.jr,
+                                               restPoses=self.rp
+                                               )[:7]
       self._moveToJointPose(ik_solve, dynamic, max_inner_it)
 
       ls = pb.getLinkState(self.id, self.end_effector_index)
@@ -317,8 +327,21 @@ class Kuka(object):
   def _sendPositionCommand(self, commands):
     ''''''
     num_motors = len(self.arm_joint_indices)
-    pb.setJointMotorControlArray(self.id, self.arm_joint_indices, pb.POSITION_CONTROL, commands,
-                                 [0.]*num_motors, [self.max_force]*num_motors, [0.05]*num_motors, [1.0]*num_motors)
+    # pb.setJointMotorControlArray(self.id, self.arm_joint_indices, pb.POSITION_CONTROL, commands,
+    #                              targetVelocities=[0.]*num_motors,
+    #                              forces=[self.max_force]*num_motors,
+    #                              positionGains=[0.3]*num_motors,
+    #                              velocityGains=[1.0]*num_motors)
+    for i in range(num_motors):
+      pb.setJointMotorControl2(bodyUniqueId=self.id,
+                               jointIndex=i,
+                               controlMode=pb.POSITION_CONTROL,
+                               targetPosition=commands[i],
+                               targetVelocity=0,
+                               force=self.max_force,
+                               maxVelocity=self.max_velocity,
+                               positionGain=0.3,
+                               velocityGain=1)
 
   def _sendGripperCommand(self, target_pos):
     pb.setJointMotorControl2(self.id,
@@ -349,7 +372,7 @@ class Kuka(object):
                              force=self.finger_tip_force)
 
   def _sendGripperCloseCommand(self):
-    target_pos = self.gripper_joint_limit[1] + 0.01
+    target_pos = self.gripper_joint_limit[0]
     # pb.setJointMotorControlArray(self.id, self.gripper_joint_indices, pb.POSITION_CONTROL,
     #                              targetPositions=[target_pos, target_pos], forces=self.gripper_close_force)
 
@@ -381,7 +404,7 @@ class Kuka(object):
                             force=self.finger_tip_force)
 
   def _sendGripperOpenCommand(self):
-    target_pos = self.gripper_joint_limit[0] - 0.01
+    target_pos = self.gripper_joint_limit[1]
     # pb.setJointMotorControlArray(self.id, self.gripper_joint_indices, pb.POSITION_CONTROL,
     #                              targetPositions=[target_pos, target_pos], forces=self.gripper_open_force)
     pb.setJointMotorControl2(self.id,
