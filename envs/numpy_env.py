@@ -17,10 +17,6 @@ class NumpyEnv(BaseEnv):
     self.pick_rot = pick_rot
     self.place_rot = place_rot
 
-  def setPosCandidate(self, pos_candidate):
-    super().setPosCandidate(pos_candidate)
-    self.pos_candidate = self.pos_candidate.astype(np.int)
-
   def reset(self):
     ''''''
     self.held_object = None

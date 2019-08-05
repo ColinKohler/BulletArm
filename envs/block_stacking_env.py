@@ -19,6 +19,7 @@ def createBlockStackingEnv(simulator_base_env, config):
                                                config['obs_size'], config['render'], config['action_sequence'],
                                                pick_rot=config['pick_rot'], place_rot=config['place_rot'],
                                                scale=config['scale'])
+                                               config['pos_candidate'])
       elif simulator_base_env is VrepEnv:
         super(BlockStackingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
                                                config['obs_size'], config['port'], config['fast_mode'],
@@ -32,6 +33,7 @@ def createBlockStackingEnv(simulator_base_env, config):
                                                perfect_grasp=config['perfect_grasp'])
       else:
         raise ValueError('Bad simulator base env specified.')
+
       self.simulator_base_env = simulator_base_env
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
@@ -97,7 +99,7 @@ def createBlockStackingEnv(simulator_base_env, config):
 
     def _checkTermination(self):
       ''''''
-      # return self._getNumTopBlock() == 1
+      #return self._getNumTopBlock() == 1
       return self._checkStack()
 
     def _estimateIfXPossible(self, primitive, x, y):
