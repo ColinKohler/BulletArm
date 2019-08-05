@@ -9,6 +9,7 @@ import pybullet_data
 
 from helping_hands_rl_envs.envs.base_env import BaseEnv
 from helping_hands_rl_envs.pybullet_toolkit.robots.ur5_rg2 import UR5_RG2
+from helping_hands_rl_envs.pybullet_toolkit.robots.kuka import Kuka
 import helping_hands_rl_envs.pybullet_toolkit.utils.object_generation as pb_obj_generation
 
 class PyBulletEnv(BaseEnv):
@@ -29,7 +30,7 @@ class PyBulletEnv(BaseEnv):
 
     # Environment specific variables
     self._timestep = 1. / 240.
-    self.ur5 = UR5_RG2()
+    self.robot = Kuka()
     self.pick_pre_offset = 0.25
     self.pick_offset = 0.005
     self.place_pre_offset = 0.25
@@ -59,7 +60,7 @@ class PyBulletEnv(BaseEnv):
     self.table_id = pb.loadURDF('plane.urdf', [0,0,0])
 
     # Load the UR5 and set it to the home positions
-    self.ur5.reset()
+    self.robot.reset()
 
     # Reset episode vars
     self.objects = list()
@@ -76,13 +77,13 @@ class PyBulletEnv(BaseEnv):
                   'objects': deepcopy(self.objects),
                   'env_state': pb.saveState()
                   }
-    self.ur5.saveState()
+    self.robot.saveState()
 
   def restoreState(self):
     self.current_episode_steps = self.state['current_episode_steps']
     self.objects = self.state['objects']
     pb.restoreState(self.state['env_state'])
-    self.ur5.restoreState()
+    self.robot.restoreState()
 
   def takeAction(self, action):
     motion_primative, x, y, z, rot = self._getSpecificAction(action)
@@ -93,11 +94,11 @@ class PyBulletEnv(BaseEnv):
 
     # Take action specfied by motion primative
     if motion_primative == self.PICK_PRIMATIVE:
-      self.ur5.pick(pos, rot, self.pick_pre_offset, dynamic=self.dynamic, objects=self.objects,
-                    simulate_grasp=self.simulate_grasp, perfect_grasp=self.perfect_grasp)
+      self.robot.pick(pos, rot, self.pick_pre_offset, dynamic=self.dynamic, objects=self.objects,
+                      simulate_grasp=self.simulate_grasp, perfect_grasp=self.perfect_grasp)
     elif motion_primative == self.PLACE_PRIMATIVE:
-      if self.ur5.holding_obj is not None:
-        self.ur5.place(pos, rot, self.place_pre_offset, dynamic=self.dynamic, simulate_grasp=self.simulate_grasp)
+      if self.robot.holding_obj is not None:
+        self.robot.place(pos, rot, self.place_pre_offset, dynamic=self.dynamic, simulate_grasp=self.simulate_grasp)
     elif motion_primative == self.PUSH_PRIMATIVE:
       pass
     else:
@@ -300,7 +301,7 @@ class PyBulletEnv(BaseEnv):
     return pb_obj_generation.getObjectPosition(obj)
 
   def _isHolding(self):
-    return self.ur5.holding_obj is not None
+    return self.robot.holding_obj is not None
 
   def _getRestPoseMatrix(self):
     T = np.eye(4)
@@ -319,7 +320,7 @@ class PyBulletEnv(BaseEnv):
     if obj in self.objects:
       # pb.removeBody(obj)
       self._moveObjectOutWorkspace(obj)
-      self.ur5.openGripper()
+      self.robot.openGripper()
       self.objects.remove(obj)
 
   def _moveObjectOutWorkspace(self, obj):
