@@ -76,7 +76,7 @@ class UR5_RG2(object):
     else:
       self._sendGripperOpenCommand()
 
-  def pick(self, pos, rot, offset, dynamic=True, objects=None, simulate_grasp=True):
+  def pick(self, pos, rot, offset, dynamic=True, objects=None, simulate_grasp=True, perfect_grasp=False):
     ''''''
     # Setup pre-grasp pos and default orientation
     self.openGripper()
@@ -87,25 +87,28 @@ class UR5_RG2(object):
 
     # Move to pre-grasp pose and then grasp pose
     self.moveTo(pre_pos, pre_rot, dynamic)
-    self.moveTo(pos, rot, dynamic)
-
-    # Grasp object and lift up to pre pose
     if simulate_grasp:
-      gripper_fully_closed = self.closeGripper()
-      if gripper_fully_closed:
-        self.openGripper()
+      self.moveTo(pos, rot, True)
+      if perfect_grasp and not self._checkPerfectGrasp(objects):
         self.moveTo(pre_pos, pre_rot, dynamic)
       else:
-        self.moveTo(pre_pos, pre_rot, True)
-        self.holding_obj = self.getPickedObj(objects)
+        # Grasp object and lift up to pre pose
+        gripper_fully_closed = self.closeGripper()
+        if gripper_fully_closed:
+          self.openGripper()
+          self.moveTo(pre_pos, pre_rot, dynamic)
+        else:
+          self.moveTo(pre_pos, pre_rot, True)
+          self.holding_obj = self.getPickedObj(objects)
 
     else:
+      self.moveTo(pos, rot, dynamic)
       self.holding_obj = self.getPickedObj(objects)
 
     self.moveToJ(self.home_positions[1:7], dynamic)
     self.checkGripperClosed()
 
-  def place(self, pos, rot, offset, dynamic=True):
+  def place(self, pos, rot, offset, dynamic=True, simulate_grasp=True):
     ''''''
     # Setup pre-grasp pos and default orientation
     pre_pos = copy.copy(pos)
@@ -114,7 +117,10 @@ class UR5_RG2(object):
 
     # Move to pre-grasp pose and then grasp pose
     self.moveTo(pre_pos, pre_rot, dynamic)
-    self.moveTo(pos, rot, dynamic)
+    if simulate_grasp:
+      self.moveTo(pos, rot, True)
+    else:
+      self.moveTo(pos, rot, dynamic)
 
     # Grasp object and lift up to pre pose
     self.openGripper()
@@ -140,7 +146,7 @@ class UR5_RG2(object):
     end_pos = self._getEndEffectorPosition()
     sorted_obj = sorted(objects, key=lambda o: np.linalg.norm(end_pos-object_generation.getObjectPosition(o)))
     obj_pos = object_generation.getObjectPosition(sorted_obj[0])
-    if np.linalg.norm(end_pos[:-1]-obj_pos[:-1]) < 0.05 and np.abs(end_pos[-1]-obj_pos[-1]) < 0.02:
+    if np.linalg.norm(end_pos[:-1]-obj_pos[:-1]) < 0.05 and np.abs(end_pos[-1]-obj_pos[-1]) < 0.025:
       return sorted_obj[0]
     # if object_generation.getObjectPosition(sorted_obj[0])[-1] > 0.25:
     #   return sorted_obj[0]
@@ -288,7 +294,7 @@ class UR5_RG2(object):
     ''''''
     num_motors = len(self.arm_joint_indices)
     pb.setJointMotorControlArray(self.id, self.arm_joint_indices, pb.POSITION_CONTROL, commands,
-                                 [0.]*num_motors, self.max_forces[:-2], [0.01]*num_motors, [1.0]*num_motors)
+                                 [0.]*num_motors, self.max_forces[:-2], [0.05]*num_motors, [1.0]*num_motors)
 
   def _sendGripperCloseCommand(self):
     target_pos = self.gripper_joint_limit[1] + 0.01
@@ -307,3 +313,18 @@ class UR5_RG2(object):
       pb.resetJointState(self.id, motor, q_poses[i])
 
     self._sendPositionCommand(q_poses)
+
+  def _checkPerfectGrasp(self, objects):
+    if not objects:
+      return False
+    end_pos = self._getEndEffectorPosition()
+    end_rot = transformations.euler_from_quaternion(self._getEndEffectorRotation())
+    sorted_obj = sorted(objects, key=lambda o: np.linalg.norm(end_pos - object_generation.getObjectPosition(o)))
+    obj_pos, obj_rot = object_generation.getObjectPose(sorted_obj[0])
+    obj_rot = transformations.euler_from_quaternion(obj_rot)
+    angle = np.pi - np.abs(np.abs(end_rot[2] - obj_rot[2]) - np.pi)
+    while angle > np.pi/2:
+      angle -= np.pi/2
+    angle = min(angle, np.pi/2-angle)
+    return angle < np.pi/15
+
