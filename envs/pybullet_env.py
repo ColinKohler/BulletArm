@@ -31,12 +31,12 @@ class PyBulletEnv(BaseEnv):
     # Environment specific variables
     self._timestep = 1. / 240.
     self.robot = Kuka()
-    self.pick_pre_offset = 0.25
+    self.pick_pre_offset = 0.1
     self.pick_offset = 0.005
-    self.place_pre_offset = 0.25
-    self.place_offset = 0.03
+    self.place_pre_offset = 0.1
+    self.place_offset = 0.05
     self.block_original_size = 0.05
-    self.block_scale_range = (0.6, 0.7)
+    self.block_scale_range = (0.8, 1.0)
 
     # Setup camera parameters
     self.view_matrix = pb.computeViewMatrixFromYawPitchRoll([workspace[0].mean(), workspace[1].mean(), 0], 1.0, -90, -90, 0, 2)
@@ -222,8 +222,8 @@ class PyBulletEnv(BaseEnv):
                            min_distance=0.1, padding=0.2, random_orientation=False):
     ''''''
     if shape_type == self.CUBE:
-      min_distance = 0.1
-      padding = 0.05
+      min_distance = self.block_original_size * self.block_scale_range[1] * 1.414 * 2
+      padding = self.block_original_size * self.block_scale_range[1] * 1.414
     shape_handles = list()
     positions = list()
 
@@ -395,7 +395,10 @@ class PyBulletEnv(BaseEnv):
     x_pixel, y_pixel = self._getPixelsFromPos(x, y)
     local_region = self.heightmap[int(max(y_pixel - self.heightmap_size/20, 0)):int(min(y_pixel + self.heightmap_size/20, self.heightmap_size)), \
                                   int(max(x_pixel - self.heightmap_size/20, 0)):int(min(x_pixel + self.heightmap_size/20, self.heightmap_size))]
-    safe_z_pos = np.max(local_region) + self.workspace[2][0]
+    try:
+      safe_z_pos = np.max(local_region) + self.workspace[2][0]
+    except ValueError:
+      safe_z_pos = self.workspace[2][0]
     if motion_primative == self.PICK_PRIMATIVE:
       safe_z_pos -= self.pick_offset
       safe_z_pos = max(safe_z_pos, 0.025)

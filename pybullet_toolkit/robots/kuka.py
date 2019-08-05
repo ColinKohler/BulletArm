@@ -252,12 +252,7 @@ class Kuka(object):
     max_inner_it = 1000
 
     while not close_enough and outer_it < max_outer_it:
-      ik_solve = pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot,
-                                               lowerLimits=self.ll,
-                                               upperLimits=self.ul,
-                                               jointRanges=self.jr,
-                                               restPoses=self.rp
-                                               )[:7]
+      ik_solve = pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)[:7]
       self._moveToJointPose(ik_solve, dynamic, max_inner_it)
 
       ls = pb.getLinkState(self.id, self.end_effector_index)
