@@ -28,14 +28,15 @@ class PyBulletEnv(BaseEnv):
     self.dynamic = not fast_mode
 
     # Environment specific variables
+    self.block_original_size = 0.05
+    self.block_scale_range = (0.6, 0.7)
     self._timestep = 1. / 240.
     self.ur5 = UR5_RG2()
     self.pick_pre_offset = 0.25
     self.pick_offset = 0.005
     self.place_pre_offset = 0.25
-    self.place_offset = 0.03
-    self.block_original_size = 0.05
-    self.block_scale_range = (0.6, 0.7)
+    self.place_offset = self.block_scale_range[1]*self.block_original_size
+
 
     # Setup camera parameters
     self.view_matrix = pb.computeViewMatrixFromYawPitchRoll([workspace[0].mean(), workspace[1].mean(), 0], 1.0, -90, -90, 0, 2)
