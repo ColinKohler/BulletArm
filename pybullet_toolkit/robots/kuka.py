@@ -180,7 +180,7 @@ class Kuka(object):
     ''''''
     p1, p2 = self._getGripperJointPosition()
     target = self.gripper_joint_limit[0]
-    self._sendGripperCommand(target)
+    self._sendGripperCommand(target, target)
     self.gripper_closed = True
     it = 0
     while abs(target-p1) + abs(target-p2) > 0.001:
@@ -208,7 +208,7 @@ class Kuka(object):
     ''''''
     p1, p2 = self._getGripperJointPosition()
     target = self.gripper_joint_limit[1]
-    self._sendGripperCommand(target)
+    self._sendGripperCommand(target+0.1, target-0.1)
     self.gripper_closed = False
     self.holding_obj = None
     it = 0
@@ -338,21 +338,21 @@ class Kuka(object):
     #                            positionGain=0.3,
     #                            velocityGain=1)
 
-  def _sendGripperCommand(self, target_pos):
-    pb.setJointMotorControl2(self.id,
-                             7,
-                             pb.POSITION_CONTROL,
-                             targetPosition=target_pos,
-                             force=self.max_force)
+  def _sendGripperCommand(self, target_pos1, target_pos2):
+    # pb.setJointMotorControl2(self.id,
+    #                          7,
+    #                          pb.POSITION_CONTROL,
+    #                          targetPosition=target_pos,
+    #                          force=self.max_force)
     pb.setJointMotorControl2(self.id,
                              8,
                              pb.POSITION_CONTROL,
-                             targetPosition=-target_pos,
+                             targetPosition=-target_pos1,
                              force=self.finger_a_force)
     pb.setJointMotorControl2(self.id,
                              11,
                              pb.POSITION_CONTROL,
-                             targetPosition=target_pos,
+                             targetPosition=target_pos2,
                              force=self.finger_b_force)
 
     pb.setJointMotorControl2(self.id,
@@ -366,68 +366,68 @@ class Kuka(object):
                              targetPosition=0,
                              force=self.finger_tip_force)
 
-  def _sendGripperCloseCommand(self):
-    target_pos = self.gripper_joint_limit[0]
-    # pb.setJointMotorControlArray(self.id, self.gripper_joint_indices, pb.POSITION_CONTROL,
-    #                              targetPositions=[target_pos, target_pos], forces=self.gripper_close_force)
-
-    pb.setJointMotorControl2(self.id,
-                            7,
-                            pb.POSITION_CONTROL,
-                            targetPosition=target_pos,
-                            force=self.max_force)
-    pb.setJointMotorControl2(self.id,
-                            8,
-                            pb.POSITION_CONTROL,
-                            targetPosition=-target_pos,
-                            force=self.finger_a_force)
-    pb.setJointMotorControl2(self.id,
-                            11,
-                            pb.POSITION_CONTROL,
-                            targetPosition=target_pos,
-                            force=self.finger_b_force)
-
-    pb.setJointMotorControl2(self.id,
-                            10,
-                            pb.POSITION_CONTROL,
-                            targetPosition=0,
-                            force=self.finger_tip_force)
-    pb.setJointMotorControl2(self.id,
-                            13,
-                            pb.POSITION_CONTROL,
-                            targetPosition=0,
-                            force=self.finger_tip_force)
-
-  def _sendGripperOpenCommand(self):
-    target_pos = self.gripper_joint_limit[1]
-    # pb.setJointMotorControlArray(self.id, self.gripper_joint_indices, pb.POSITION_CONTROL,
-    #                              targetPositions=[target_pos, target_pos], forces=self.gripper_open_force)
-    pb.setJointMotorControl2(self.id,
-                            7,
-                            pb.POSITION_CONTROL,
-                            targetPosition=target_pos,
-                            force=self.max_force)
-    pb.setJointMotorControl2(self.id,
-                            8,
-                            pb.POSITION_CONTROL,
-                            targetPosition=-target_pos,
-                            force=self.finger_a_force)
-    pb.setJointMotorControl2(self.id,
-                            11,
-                            pb.POSITION_CONTROL,
-                            targetPosition=target_pos,
-                            force=self.finger_b_force)
-
-    pb.setJointMotorControl2(self.id,
-                            10,
-                            pb.POSITION_CONTROL,
-                            targetPosition=0,
-                            force=self.finger_tip_force)
-    pb.setJointMotorControl2(self.id,
-                            13,
-                            pb.POSITION_CONTROL,
-                            targetPosition=0,
-                            force=self.finger_tip_force)
+  # def _sendGripperCloseCommand(self):
+  #   target_pos = self.gripper_joint_limit[0]
+  #   # pb.setJointMotorControlArray(self.id, self.gripper_joint_indices, pb.POSITION_CONTROL,
+  #   #                              targetPositions=[target_pos, target_pos], forces=self.gripper_close_force)
+  #
+  #   pb.setJointMotorControl2(self.id,
+  #                           7,
+  #                           pb.POSITION_CONTROL,
+  #                           targetPosition=target_pos,
+  #                           force=self.max_force)
+  #   pb.setJointMotorControl2(self.id,
+  #                           8,
+  #                           pb.POSITION_CONTROL,
+  #                           targetPosition=-target_pos,
+  #                           force=self.finger_a_force)
+  #   pb.setJointMotorControl2(self.id,
+  #                           11,
+  #                           pb.POSITION_CONTROL,
+  #                           targetPosition=target_pos,
+  #                           force=self.finger_b_force)
+  #
+  #   pb.setJointMotorControl2(self.id,
+  #                           10,
+  #                           pb.POSITION_CONTROL,
+  #                           targetPosition=0,
+  #                           force=self.finger_tip_force)
+  #   pb.setJointMotorControl2(self.id,
+  #                           13,
+  #                           pb.POSITION_CONTROL,
+  #                           targetPosition=0,
+  #                           force=self.finger_tip_force)
+  #
+  # def _sendGripperOpenCommand(self):
+  #   target_pos = self.gripper_joint_limit[1]
+  #   # pb.setJointMotorControlArray(self.id, self.gripper_joint_indices, pb.POSITION_CONTROL,
+  #   #                              targetPositions=[target_pos, target_pos], forces=self.gripper_open_force)
+  #   pb.setJointMotorControl2(self.id,
+  #                           7,
+  #                           pb.POSITION_CONTROL,
+  #                           targetPosition=target_pos,
+  #                           force=self.max_force)
+  #   pb.setJointMotorControl2(self.id,
+  #                           8,
+  #                           pb.POSITION_CONTROL,
+  #                           targetPosition=-target_pos,
+  #                           force=self.finger_a_force)
+  #   pb.setJointMotorControl2(self.id,
+  #                           11,
+  #                           pb.POSITION_CONTROL,
+  #                           targetPosition=target_pos,
+  #                           force=self.finger_b_force)
+  #
+  #   pb.setJointMotorControl2(self.id,
+  #                           10,
+  #                           pb.POSITION_CONTROL,
+  #                           targetPosition=0,
+  #                           force=self.finger_tip_force)
+  #   pb.setJointMotorControl2(self.id,
+  #                           13,
+  #                           pb.POSITION_CONTROL,
+  #                           targetPosition=0,
+  #                           force=self.finger_tip_force)
 
   def _setJointPoses(self, q_poses):
     ''''''

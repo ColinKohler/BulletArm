@@ -34,9 +34,9 @@ class PyBulletEnv(BaseEnv):
     self.pick_pre_offset = 0.15
     self.pick_offset = 0.005
     self.place_pre_offset = 0.15
-    self.place_offset = 0.03
+    self.place_offset = 0.05
     self.block_original_size = 0.05
-    self.block_scale_range = (0.6, 0.7)
+    self.block_scale_range = (0.8, 1.0)
 
     # Setup camera parameters
     self.view_matrix = pb.computeViewMatrixFromYawPitchRoll([workspace[0].mean(), workspace[1].mean(), 0], 1.0, -90, -90, 0, 2)
@@ -223,7 +223,7 @@ class PyBulletEnv(BaseEnv):
     ''''''
     if shape_type == self.CUBE:
       min_distance = self.block_original_size * self.block_scale_range[1] * 1.414 * 2
-      padding = self.block_original_size * self.block_scale_range[1] * 1.414
+      padding = self.block_original_size * self.block_scale_range[1] * 2
     shape_handles = list()
     positions = list()
 
