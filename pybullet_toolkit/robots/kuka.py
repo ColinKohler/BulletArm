@@ -25,7 +25,7 @@ class Kuka(RobotBase):
     self.max_velocity = .35
     self.max_force = 200.
     self.finger_a_force = 2
-    self.finger_b_force = 2.5
+    self.finger_b_force = 2
     self.finger_tip_force = 2
     self.end_effector_index = 14
     self.gripper_index = 7
@@ -86,9 +86,11 @@ class Kuka(RobotBase):
       pb.stepSimulation()
       it += 1
       if it > 100:
+        self._sendGripperCommand(p1-0.01, p2-0.01)
         return False
       p1_, p2_ = self._getGripperJointPosition()
       if p1 <= p1_ and p2 <= p2_:
+        self._sendGripperCommand(p1_-0.01, p2_-0.01)
         return False
       p1 = p1_
       p2 = p2_
@@ -106,7 +108,7 @@ class Kuka(RobotBase):
     ''''''
     p1, p2 = self._getGripperJointPosition()
     target = self.gripper_joint_limit[1]
-    self._sendGripperCommand(target+0.1, target-0.1)
+    self._sendGripperCommand(target, target)
     self.gripper_closed = False
     self.holding_obj = None
     it = 0
@@ -136,7 +138,7 @@ class Kuka(RobotBase):
     pb.setJointMotorControlArray(self.id, self.arm_joint_indices, pb.POSITION_CONTROL, commands,
                                  targetVelocities=[0.]*num_motors,
                                  forces=[self.max_force]*num_motors,
-                                 positionGains=[0.03]*num_motors,
+                                 positionGains=[0.02]*num_motors,
                                  velocityGains=[1.0]*num_motors)
     # for i in range(num_motors):
     #   pb.setJointMotorControl2(bodyUniqueId=self.id,
