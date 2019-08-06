@@ -70,9 +70,11 @@ class UR5_RG2(RobotBase):
       pb.stepSimulation()
       it += 1
       if it > 100:
+        self._sendGripperCommand(p1+0.01, p2+0.01)
         return False
       p1_, p2_ = self._getGripperJointPosition()
       if p1 >= p1_ and p2 >= p2_:
+        self._sendGripperCommand(p1+0.01, p2+0.01)
         return False
       p1 = p1_
       p2 = p2_
@@ -113,7 +115,7 @@ class UR5_RG2(RobotBase):
     ''''''
     num_motors = len(self.arm_joint_indices)
     pb.setJointMotorControlArray(self.id, self.arm_joint_indices, pb.POSITION_CONTROL, commands,
-                                 [0.]*num_motors, self.max_forces[:-2], [0.03]*num_motors, [1.0]*num_motors)
+                                 [0.]*num_motors, self.max_forces[:-2], [0.02]*num_motors, [1.0]*num_motors)
 
   def _sendGripperCloseCommand(self):
     target_pos = self.gripper_joint_limit[1] + 0.01
@@ -125,3 +127,6 @@ class UR5_RG2(RobotBase):
     pb.setJointMotorControlArray(self.id, self.gripper_joint_indices, pb.POSITION_CONTROL,
                                  targetPositions=[target_pos, target_pos], forces=self.gripper_open_force)
 
+  def _sendGripperCommand(self, target_pos1, target_pos2):
+    pb.setJointMotorControlArray(self.id, self.gripper_joint_indices, pb.POSITION_CONTROL,
+                                 targetPositions=[target_pos1, target_pos2], forces=self.gripper_open_force)
