@@ -17,7 +17,7 @@ class PyBulletEnv(BaseEnv):
   PyBullet Arm RL base class.
   '''
   def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, fast_mode=False, render=False,
-               action_sequence='pxyr', simulate_grasp=True, pos_candidate=None, perfect_grasp=True):
+               action_sequence='pxyr', simulate_grasp=True, pos_candidate=None, perfect_grasp=True, robot='ur5'):
     super(PyBulletEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence, pos_candidate)
 
     # Connect to pybullet and add data files to path
@@ -30,13 +30,20 @@ class PyBulletEnv(BaseEnv):
 
     # Environment specific variables
     self._timestep = 1. / 240.
-    self.robot = Kuka()
+    if robot == 'ur5':
+      self.robot = UR5_RG2()
+    elif robot == 'kuka':
+      self.robot = Kuka()
+    else:
+      raise NotImplementedError
+
+    self.block_original_size = 0.05
+    self.block_scale_range = (0.8, 1.)
     self.pick_pre_offset = 0.15
     self.pick_offset = 0.005
     self.place_pre_offset = 0.15
-    self.place_offset = 0.05
-    self.block_original_size = 0.05
-    self.block_scale_range = (0.8, 1.0)
+    self.place_offset = self.block_scale_range[1]*self.block_original_size
+
 
     # Setup camera parameters
     self.view_matrix = pb.computeViewMatrixFromYawPitchRoll([workspace[0].mean(), workspace[1].mean(), 0], 1.0, -90, -90, 0, 2)
