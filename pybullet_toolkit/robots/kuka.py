@@ -322,21 +322,21 @@ class Kuka(object):
   def _sendPositionCommand(self, commands):
     ''''''
     num_motors = len(self.arm_joint_indices)
-    # pb.setJointMotorControlArray(self.id, self.arm_joint_indices, pb.POSITION_CONTROL, commands,
-    #                              targetVelocities=[0.]*num_motors,
-    #                              forces=[self.max_force]*num_motors,
-    #                              positionGains=[0.3]*num_motors,
-    #                              velocityGains=[1.0]*num_motors)
-    for i in range(num_motors):
-      pb.setJointMotorControl2(bodyUniqueId=self.id,
-                               jointIndex=i,
-                               controlMode=pb.POSITION_CONTROL,
-                               targetPosition=commands[i],
-                               targetVelocity=0,
-                               force=self.max_force,
-                               maxVelocity=self.max_velocity,
-                               positionGain=0.3,
-                               velocityGain=1)
+    pb.setJointMotorControlArray(self.id, self.arm_joint_indices, pb.POSITION_CONTROL, commands,
+                                 targetVelocities=[0.]*num_motors,
+                                 forces=[self.max_force]*num_motors,
+                                 positionGains=[0.03]*num_motors,
+                                 velocityGains=[1.0]*num_motors)
+    # for i in range(num_motors):
+    #   pb.setJointMotorControl2(bodyUniqueId=self.id,
+    #                            jointIndex=i,
+    #                            controlMode=pb.POSITION_CONTROL,
+    #                            targetPosition=commands[i],
+    #                            targetVelocity=0,
+    #                            force=self.max_force,
+    #                            maxVelocity=self.max_velocity,
+    #                            positionGain=0.3,
+    #                            velocityGain=1)
 
   def _sendGripperCommand(self, target_pos):
     pb.setJointMotorControl2(self.id,

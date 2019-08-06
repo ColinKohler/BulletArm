@@ -31,12 +31,12 @@ class PyBulletEnv(BaseEnv):
     # Environment specific variables
     self._timestep = 1. / 240.
     self.robot = Kuka()
-    self.pick_pre_offset = 0.1
+    self.pick_pre_offset = 0.15
     self.pick_offset = 0.005
-    self.place_pre_offset = 0.1
-    self.place_offset = 0.05
+    self.place_pre_offset = 0.15
+    self.place_offset = 0.03
     self.block_original_size = 0.05
-    self.block_scale_range = (0.8, 1.0)
+    self.block_scale_range = (0.6, 0.7)
 
     # Setup camera parameters
     self.view_matrix = pb.computeViewMatrixFromYawPitchRoll([workspace[0].mean(), workspace[1].mean(), 0], 1.0, -90, -90, 0, 2)
