@@ -21,6 +21,7 @@ def createBlockStackingEnv(simulator_base_env, config):
       if 'perfect_grasp' not in config:
         config['perfect_grasp'] = False
 
+      if simulator_base_env is NumpyEnv:
         super(BlockStackingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
                                                config['obs_size'], config['render'], config['action_sequence'],
                                                pick_rot=config['pick_rot'], place_rot=config['place_rot'],
