@@ -557,7 +557,7 @@
              izx = "0.000000" izy = "0.000000" izz = "0.000006" />
       </inertial>
       <contact>
-      <lateral_friction value="0.8"/>
+      <lateral_friction value="10"/>
       <spinning_friction value="0.1"/>
       <rolling_friction value="0.0"/>
     </contact>
