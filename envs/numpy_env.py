@@ -169,6 +169,40 @@ class NumpyEnv(BaseEnv):
     ''''''
     return self._isHolding(), self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
+  def _getValidPositions(self, padding, min_distance, existing_positions, num_shapes):
+    while True:
+      existing_positions_copy = deepcopy(existing_positions)
+      valid_positions = []
+      for i in range(num_shapes):
+        # Generate random drop config
+        x_extents = self.workspace[0][1] - self.workspace[0][0]
+        y_extents = self.workspace[1][1] - self.workspace[1][0]
+
+        is_position_valid = False
+        for j in range(1000):
+          if is_position_valid:
+            break
+          position = [int((x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2),
+                      int((y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2)]
+          if self.pos_candidate is not None:
+            position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0] - position[0]).argmin()]
+            position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1] - position[1]).argmin()]
+
+          if existing_positions_copy:
+            # is_position_valid = np.all(
+            #   np.sum(np.abs(np.array(positions)[:, :2] - np.array(position)[:2]), axis=1) > min_distance)
+            distances = np.array(list(map(lambda p: np.linalg.norm(np.array(p) - position), existing_positions_copy)))
+            is_position_valid = np.all(distances > min_distance)
+          else:
+            is_position_valid = True
+        if is_position_valid:
+          existing_positions_copy.append(position)
+          valid_positions.append(position)
+        else:
+          break
+      if len(valid_positions) == num_shapes:
+        return valid_positions
+
   def _generateShapes(self, object_type, num_objects, min_distance=None, padding=None, random_orientation=False):
     ''''''
     if min_distance is None:
@@ -176,35 +210,16 @@ class NumpyEnv(BaseEnv):
     if padding is None:
       padding = self.scale*self.heightmap_size/5
     objects = list()
-    positions = deepcopy(list(map(lambda o: o.pos, self.objects)))
-    for p in positions:
-      p[2] = 0
-    for i in range(num_objects):
-      # Generate random drop config
-      x_extents = self.workspace[0][1] - self.workspace[0][0]
-      y_extents = self.workspace[1][1] - self.workspace[1][0]
+    positions = deepcopy(list(map(lambda o: o.pos[:-1], self.objects)))
 
-      is_position_valid = False
-      while not is_position_valid:
-        position = [int((x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2),
-                    int((y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2),
-                    0]
-        if self.pos_candidate is not None:
-          position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0]-position[0]).argmin()]
-          position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1]-position[1]).argmin()]
-
-        if positions:
-          is_position_valid = np.all(np.sum(np.abs(np.array(positions)[:, :2] - np.array(position)[:2]), axis=1) > min_distance)
-        else:
-          is_position_valid = True
-
-      positions.append(position)
+    valid_positions = self._getValidPositions(padding, min_distance, positions, num_objects)
+    for position in valid_positions:
       if random_orientation:
-        rotation = np.pi*np.random.random_sample()
+        rotation = np.pi * np.random.random_sample()
       else:
         rotation = 0.0
-      size = npr.randint(self.scale*self.heightmap_size/10, self.scale*self.heightmap_size/7)
-      position[2] = int(size / 2)
+      size = npr.randint(self.scale * self.heightmap_size / 10, self.scale * self.heightmap_size / 7)
+      position.append(int(size / 2))
 
       if object_type is self.CUBE:
         obj, self.heightmap = object_generation.generateCube(self.heightmap, position, rotation, size)
@@ -215,6 +230,44 @@ class NumpyEnv(BaseEnv):
       objects.append(obj)
     self.objects.extend(objects)
     return objects
+
+
+    # for i in range(num_objects):
+    #   # Generate random drop config
+    #   x_extents = self.workspace[0][1] - self.workspace[0][0]
+    #   y_extents = self.workspace[1][1] - self.workspace[1][0]
+    #
+    #   is_position_valid = False
+    #   while not is_position_valid:
+    #     position = [int((x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2),
+    #                 int((y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2),
+    #                 0]
+    #     if self.pos_candidate is not None:
+    #       position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0]-position[0]).argmin()]
+    #       position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1]-position[1]).argmin()]
+    #
+    #     if positions:
+    #       is_position_valid = np.all(np.sum(np.abs(np.array(positions)[:, :2] - np.array(position)[:2]), axis=1) > min_distance)
+    #     else:
+    #       is_position_valid = True
+    #
+    #   positions.append(position)
+    #   if random_orientation:
+    #     rotation = np.pi*np.random.random_sample()
+    #   else:
+    #     rotation = 0.0
+    #   size = npr.randint(self.scale*self.heightmap_size/10, self.scale*self.heightmap_size/7)
+    #   position[2] = int(size / 2)
+    #
+    #   if object_type is self.CUBE:
+    #     obj, self.heightmap = object_generation.generateCube(self.heightmap, position, rotation, size)
+    #   elif object_type is self.CYLINDER:
+    #     obj, self.heightmap = object_generation.generateCylinder(self.heightmap, position, rotation, size)
+    #   else:
+    #     raise NotImplementedError
+    #   objects.append(obj)
+    # self.objects.extend(objects)
+    # return objects
 
   def _removeObject(self, obj):
     if obj == self.held_object:
