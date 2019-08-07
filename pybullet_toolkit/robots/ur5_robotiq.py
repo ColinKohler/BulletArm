@@ -47,12 +47,14 @@ class UR5_Robotiq(RobotBase):
                      "robotiq_85_right_inner_knuckle_joint",
                      "robotiq_85_left_finger_tip_joint",
                      "robotiq_85_right_finger_tip_joint"]
-    self.gripper_main_control_joint_name = "robotiq_85_left_knuckle_joint"
-    self.gripper_mimic_joint_name = ["robotiq_85_right_knuckle_joint",
-                        "robotiq_85_left_inner_knuckle_joint",
-                        "robotiq_85_right_inner_knuckle_joint",
-                        "robotiq_85_left_finger_tip_joint",
-                        "robotiq_85_right_finger_tip_joint"]
+    self.gripper_main_control_joint_name = "robotiq_85_left_inner_knuckle_joint"
+    self.gripper_mimic_joint_name = [
+      "robotiq_85_right_knuckle_joint",
+      "robotiq_85_left_knuckle_joint",
+      "robotiq_85_right_inner_knuckle_joint",
+      "robotiq_85_left_finger_tip_joint",
+      "robotiq_85_right_finger_tip_joint"
+    ]
     self.gripper_mimic_multiplier = [1, 1, 1, -1, -1]
     self.gripper_joints = AttrDict()
 
@@ -107,13 +109,12 @@ class UR5_Robotiq(RobotBase):
     while abs(target-p1) + abs(target-p2) > 0.001:
       pb.stepSimulation()
       it += 1
-      if it > 200:
+      if it > 1000:
         return False
 
       f1, f2 = self._getGripperJointForce()
-      if f1 >= 1 and \
-          f2 >= 1:
-        self._sendGripperCommand(p1+0.0001)
+      if f1 >= 1 and f2 >= 1:
+        self._sendGripperCommand(p1)
         return False
 
       p1, p2 = self._getGripperJointPosition()
