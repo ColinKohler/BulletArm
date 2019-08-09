@@ -8,19 +8,35 @@ VALID_SIMULATORS = [NumpyEnv, VrepEnv, PyBulletEnv]
 def createBlockPickingEnv(simulator_base_env, config):
   class BlockPickingEnv(simulator_base_env):
     ''''''
-    def __init__(self, config):
-      if simulator_base_env is NumpyEnv:
-        super(BlockPickingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
-                                              config['obs_size'], config['render'], config['action_sequence'])
-      elif simulator_base_env is VrepEnv:
-        super(BlockPickingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
-                                              config['obs_size'], config['port'], config['fast_mode'],
-                                              config['action_sequence'])
-      elif simulator_base_env is PyBulletEnv:
-        super(BlockPickingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
-                                              config['obs_size'], config['fast_mode'], config['render'],
-                                              config['action_sequence'], config['simulate_grasp'])
 
+    def __init__(self, config):
+      if 'pick_rot' not in config:
+        config['pick_rot'] = True
+      if 'place_rot' not in config:
+        config['place_rot'] = False
+      if 'scale' not in config:
+        config['scale'] = 1.
+      if 'robot' not in config:
+        config['robot'] = 'ur5'
+      if 'pos_candidate' not in config:
+        config['pos_candidate'] = None
+      if 'perfect_grasp' not in config:
+        config['perfect_grasp'] = False
+
+      if simulator_base_env is NumpyEnv:
+        super().__init__(config['seed'], config['workspace'], config['max_steps'],
+                         config['obs_size'], config['render'], config['action_sequence'],
+                         pick_rot=config['pick_rot'], place_rot=config['place_rot'],
+                         scale=config['scale'])
+      elif simulator_base_env is VrepEnv:
+        super().__init__(config['seed'], config['workspace'], config['max_steps'],
+                         config['obs_size'], config['port'], config['fast_mode'],
+                         config['action_sequence'])
+      elif simulator_base_env is PyBulletEnv:
+        super().__init__(config['seed'], config['workspace'], config['max_steps'],
+                         config['obs_size'], config['fast_mode'], config['render'],
+                         config['action_sequence'], config['simulate_grasp'],
+                         config['pos_candidate'], config['perfect_grasp'], config['robot'])
       else:
         raise ValueError('Bad simulator base env specified.')
       self.simulator_base_env = simulator_base_env
@@ -37,6 +53,8 @@ def createBlockPickingEnv(simulator_base_env, config):
       done = self._checkTermination()
       if self.reward_type == 'dense':
         reward = 1.0 if self.obj_grasped > pre_obj_grasped else 0.0
+      elif self.reward_type == 'step_left':
+        reward = self.getStepLeft()
       else:
         reward = 1.0 if done else 0.0
 
@@ -79,6 +97,15 @@ def createBlockPickingEnv(simulator_base_env, config):
     def _getObservation(self):
       state, obs = super(BlockPickingEnv, self)._getObservation()
       return 0, obs
+
+    def getPlan(self):
+      return self.planBlockPicking()
+
+    def getStepLeft(self):
+      if not self.isSimValid():
+        return 100
+      step_left = self.num_obj - self.obj_grasped
+      return step_left
 
   def _thunk():
     return BlockPickingEnv(config)

@@ -22,19 +22,19 @@ def createBlockStackingEnv(simulator_base_env, config):
         config['perfect_grasp'] = False
 
       if simulator_base_env is NumpyEnv:
-        super(BlockStackingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
-                                               config['obs_size'], config['render'], config['action_sequence'],
-                                               pick_rot=config['pick_rot'], place_rot=config['place_rot'],
-                                               scale=config['scale'])
+        super().__init__(config['seed'], config['workspace'], config['max_steps'],
+                         config['obs_size'], config['render'], config['action_sequence'],
+                         pick_rot=config['pick_rot'], place_rot=config['place_rot'],
+                         scale=config['scale'])
       elif simulator_base_env is VrepEnv:
-        super(BlockStackingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
-                                               config['obs_size'], config['port'], config['fast_mode'],
-                                               config['action_sequence'])
+        super().__init__(config['seed'], config['workspace'], config['max_steps'],
+                         config['obs_size'], config['port'], config['fast_mode'],
+                         config['action_sequence'])
       elif simulator_base_env is PyBulletEnv:
-        super(BlockStackingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
-                                               config['obs_size'], config['fast_mode'], config['render'],
-                                               config['action_sequence'], config['simulate_grasp'],
-                                               config['pos_candidate'], config['perfect_grasp'], config['robot'])
+        super().__init__(config['seed'], config['workspace'], config['max_steps'],
+                         config['obs_size'], config['fast_mode'], config['render'],
+                         config['action_sequence'], config['simulate_grasp'],
+                         config['pos_candidate'], config['perfect_grasp'], config['robot'])
       else:
         raise ValueError('Bad simulator base env specified.')
       self.simulator_base_env = simulator_base_env

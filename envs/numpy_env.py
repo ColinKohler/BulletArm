@@ -290,6 +290,15 @@ class NumpyEnv(BaseEnv):
   def _getCylinders(self):
     return list(filter(lambda o: type(o) is object_generation.Cylinder, self.objects))
 
+  def planBlockPicking(self):
+    # pick
+    if self.held_object is None:
+      height_sorted_objects = sorted(self.objects, key=lambda x: x.pos[-1])
+      for obj in height_sorted_objects:
+        if not obj.on_top:
+          continue
+        return self._encodeAction(self.PICK_PRIMATIVE, obj.pos[0], obj.pos[1], obj.pos[2] - 2, obj.rot)
+
   def planBlockStacking(self):
     # pick
     if self.held_object is None:
