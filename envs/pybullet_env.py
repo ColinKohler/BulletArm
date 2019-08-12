@@ -232,7 +232,7 @@ class PyBulletEnv(BaseEnv):
       min_distance = self.block_original_size * self.block_scale_range[1] * 1.414 * 2
       padding = self.block_original_size * self.block_scale_range[1] * 2
     shape_handles = list()
-    positions = list()
+    positions = [self._getObjectPosition(o)[:-1] for o in self.objects]
 
     valid_positions = self._getValidPositions(padding, min_distance, positions, num_shapes)
 
@@ -248,6 +248,8 @@ class PyBulletEnv(BaseEnv):
         handle = pb_obj_generation.generateCube(position, orientation, scale)
       elif shape_type == self.BRICK:
         handle = pb_obj_generation.generateBrick(position, orientation, scale)
+      elif shape_type == self.TRIANGLE:
+        handle = pb_obj_generation.generateTriangle(position, orientation, scale)
       else:
         raise NotImplementedError
       shape_handles.append(handle)

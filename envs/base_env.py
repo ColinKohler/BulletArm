@@ -46,6 +46,7 @@ class BaseEnv(object):
     self.CYLINDER = 2
     self.CONE = 3
     self.BRICK = 4
+    self.TRIANGLE = 5
 
     assert action_sequence.find('x') != -1
     assert action_sequence.find('y') != -1
