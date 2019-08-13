@@ -254,4 +254,4 @@ class RobotBase:
     while angle > np.pi/2:
       angle -= np.pi/2
     angle = min(angle, np.pi/2-angle)
-    return angle < np.pi/15
+    return angle < np.pi/12
