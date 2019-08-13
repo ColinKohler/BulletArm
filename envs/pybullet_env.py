@@ -295,7 +295,7 @@ class PyBulletEnv(BaseEnv):
       if len(valid_positions) == num_shapes:
         return valid_positions
 
-  def _generateShapes(self, shape_type=0, num_shapes=1, size=None, pos=None, rot=None,
+  def _generateShapes(self, shape_type=0, num_shapes=1, scale=None, pos=None, rot=None,
                            min_distance=0.1, padding=0.2, random_orientation=False):
     ''''''
     if shape_type == self.CUBE:
@@ -312,7 +312,8 @@ class PyBulletEnv(BaseEnv):
         orientation = pb.getQuaternionFromEuler([0., 0., 2*np.pi*np.random.random_sample()])
       else:
         orientation = pb.getQuaternionFromEuler([0., 0., 0.])
-      scale = npr.uniform(self.block_scale_range[0], self.block_scale_range[1])
+      if not scale:
+        scale = npr.uniform(self.block_scale_range[0], self.block_scale_range[1])
 
       if shape_type == self.CUBE:
         handle = pb_obj_generation.generateCube(position, orientation, scale)
