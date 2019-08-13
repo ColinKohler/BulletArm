@@ -56,7 +56,7 @@ class RobotBase:
     if np.linalg.norm(end_pos[:-1]-obj_pos[:-1]) < 0.05 and np.abs(end_pos[-1]-obj_pos[-1]) < 0.025:
       return sorted_obj[0]
 
-  def pick(self, pos, rot, offset, dynamic=True, objects=None, simulate_grasp=True, perfect_grasp=False):
+  def pick(self, pos, rot, offset, dynamic=True, objects=None, simulate_grasp=True):
     ''''''
     # Setup pre-grasp pos and default orientation
     self.openGripper()
@@ -69,17 +69,14 @@ class RobotBase:
     self.moveTo(pre_pos, pre_rot, dynamic)
     if simulate_grasp:
       self.moveTo(pos, rot, True)
-      if perfect_grasp and not self._checkPerfectGrasp(objects):
+      # Grasp object and lift up to pre pose
+      gripper_fully_closed = self.closeGripper()
+      if gripper_fully_closed:
+        self.openGripper()
         self.moveTo(pre_pos, pre_rot, dynamic)
       else:
-        # Grasp object and lift up to pre pose
-        gripper_fully_closed = self.closeGripper()
-        if gripper_fully_closed:
-          self.openGripper()
-          self.moveTo(pre_pos, pre_rot, dynamic)
-        else:
-          self.moveTo(pre_pos, pre_rot, True)
-          self.holding_obj = self.getPickedObj(objects)
+        self.moveTo(pre_pos, pre_rot, True)
+        self.holding_obj = self.getPickedObj(objects)
 
     else:
       self.moveTo(pos, rot, dynamic)
@@ -241,17 +238,3 @@ class RobotBase:
       pb.resetJointState(self.id, motor, q_poses[i])
 
     self._sendPositionCommand(q_poses)
-
-  def _checkPerfectGrasp(self, objects):
-    if not objects:
-      return False
-    end_pos = self._getEndEffectorPosition()
-    end_rot = transformations.euler_from_quaternion(self._getEndEffectorRotation())
-    sorted_obj = sorted(objects, key=lambda o: np.linalg.norm(end_pos - object_generation.getObjectPosition(o)))
-    obj_pos, obj_rot = object_generation.getObjectPose(sorted_obj[0])
-    obj_rot = transformations.euler_from_quaternion(obj_rot)
-    angle = np.pi - np.abs(np.abs(end_rot[2] - obj_rot[2]) - np.pi)
-    while angle > np.pi/2:
-      angle -= np.pi/2
-    angle = min(angle, np.pi/2-angle)
-    return angle < np.pi/12

@@ -55,6 +55,9 @@ class PyBulletEnv(BaseEnv):
     rot = pb.getQuaternionFromEuler([0,np.pi,0])
     self.rest_pose = [[0.0, 0.5, 0.5], rot]
 
+    self.objects = list()
+    self.object_types = {}
+
     self.simulate_grasp = simulate_grasp
     self.perfect_grasp = perfect_grasp
 
@@ -71,6 +74,8 @@ class PyBulletEnv(BaseEnv):
 
     # Reset episode vars
     self.objects = list()
+    self.object_types = {}
+
     self.heightmap = None
     self.current_episode_steps = 1
 
@@ -97,15 +102,17 @@ class PyBulletEnv(BaseEnv):
 
     # Get transform for action
     pos = [x, y, z]
-    rot = pb.getQuaternionFromEuler([0, np.pi, -rot])
+    rot_q = pb.getQuaternionFromEuler([0, np.pi, -rot])
 
     # Take action specfied by motion primative
     if motion_primative == self.PICK_PRIMATIVE:
-      self.robot.pick(pos, rot, self.pick_pre_offset, dynamic=self.dynamic, objects=self.objects,
-                      simulate_grasp=self.simulate_grasp, perfect_grasp=self.perfect_grasp)
+      if self.perfect_grasp and not self._checkPerfectGrasp(x, y, z, -rot, self.objects):
+        return
+      self.robot.pick(pos, rot_q, self.pick_pre_offset, dynamic=self.dynamic, objects=self.objects,
+                      simulate_grasp=self.simulate_grasp)
     elif motion_primative == self.PLACE_PRIMATIVE:
       if self.robot.holding_obj is not None:
-        self.robot.place(pos, rot, self.place_pre_offset, dynamic=self.dynamic, simulate_grasp=self.simulate_grasp)
+        self.robot.place(pos, rot_q, self.place_pre_offset, dynamic=self.dynamic, simulate_grasp=self.simulate_grasp)
     elif motion_primative == self.PUSH_PRIMATIVE:
       pass
     else:
@@ -317,6 +324,8 @@ class PyBulletEnv(BaseEnv):
         raise NotImplementedError
       shape_handles.append(handle)
     self.objects.extend(shape_handles)
+    for h in shape_handles:
+      self.object_types[h] = shape_type
     for _ in range(50):
       pb.stepSimulation()
     return shape_handles
@@ -440,6 +449,23 @@ class PyBulletEnv(BaseEnv):
       if heights[i] - heights[i-1] < 0.9*self.block_scale_range[0]*self.block_original_size:
         return False
     return True
+
+  def _checkPerfectGrasp(self, x, y, z, rot, objects):
+    end_pos = np.array([x, y, z])
+    sorted_obj = sorted(objects, key=lambda o: np.linalg.norm(end_pos - pb_obj_generation.getObjectPosition(o)))
+    obj_pos, obj_rot = pb_obj_generation.getObjectPose(sorted_obj[0])
+    obj_type = self.object_types[sorted_obj[0]]
+    obj_rot = pb.getEulerFromQuaternion(obj_rot)
+    angle = np.pi - np.abs(np.abs(rot - obj_rot[2]) - np.pi)
+    if obj_type is self.CUBE:
+      while angle > np.pi / 2:
+        angle -= np.pi / 2
+      angle = min(angle, np.pi / 2 - angle)
+    elif obj_type is self.TRIANGLE:
+      angle = abs(angle - np.pi/2)
+      angle = min(angle, np.pi - angle)
+    return angle < np.pi / 12
+
 
   def _checkObjUpright(self, obj):
     triangle_rot = pb_obj_generation.getObjectRotation(obj)
