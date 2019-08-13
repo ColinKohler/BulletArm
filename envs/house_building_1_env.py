@@ -85,8 +85,8 @@ def createHouseBuilding1Env(simulator_base_env, config):
       step_left = 2 * (self._getNumTopBlock() - 1)
       if self._isHolding():
         step_left -= 1
-        if self._isObjectHeld(self.triangles[0]):
-          step_left -= 1
+        if self._isObjectHeld(self.triangles[0]) and self._getNumTopBlock() > 2:
+          step_left += 2
       return step_left
 
     def isSimValid(self):
