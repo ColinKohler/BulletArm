@@ -1,7 +1,4 @@
 from copy import deepcopy
-import numpy as np
-from helping_hands_rl_envs.envs.numpy_env import NumpyEnv
-from helping_hands_rl_envs.envs.vrep_env import VrepEnv
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 
 def createHouseBuilding1Env(simulator_base_env, config):
@@ -57,8 +54,8 @@ def createHouseBuilding1Env(simulator_base_env, config):
     def reset(self):
       ''''''
       super(HouseBuilding1Env, self).reset()
-      self.blocks = self._generateShapes(0, self.num_obj-1, random_orientation=self.random_orientation)
       self.triangles = self._generateShapes(self.TRIANGLE, 1, random_orientation=self.random_orientation)
+      self.blocks = self._generateShapes(0, self.num_obj-1, random_orientation=self.random_orientation)
       return self._getObservation()
 
     def saveState(self):
@@ -74,20 +71,13 @@ def createHouseBuilding1Env(simulator_base_env, config):
     def _checkTermination(self):
       ''''''
       # return self._getNumTopBlock() == 1
-      return self._checkStack()
-
-    def _estimateIfXPossible(self, primitive, x, y):
-      z = self._getPrimativeHeight(primitive, x, y)
-      if primitive == self.PICK_PRIMATIVE:
-        return self._checkPickValid(x, y, z, 0, False)
-      else:
-        return self._checkPlaceValid(x, y, z, 0, False)
+      return self._checkStack() and self._checkObjUpright(self.triangles[0])
 
     def getObjectPosition(self):
-      return list(map(self._getObjectPosition, self.blocks))
+      return list(map(self._getObjectPosition, self.objects))
 
     def getPlan(self):
-      return self.planBlockStacking()
+      return self.planHouseBuilding1(self.blocks, self.triangles)
 
     def getStepLeft(self):
       if not self.isSimValid():
@@ -95,7 +85,12 @@ def createHouseBuilding1Env(simulator_base_env, config):
       step_left = 2 * (self._getNumTopBlock() - 1)
       if self._isHolding():
         step_left -= 1
+        if self._isObjectHeld(self.triangles[0]):
+          step_left -= 1
       return step_left
+
+    def isSimValid(self):
+      return self._checkObjUpright(self.triangles[0]) and super().isSimValid()
 
 
   def _thunk():

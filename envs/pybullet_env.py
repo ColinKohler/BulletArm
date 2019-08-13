@@ -129,6 +129,69 @@ class PyBulletEnv(BaseEnv):
     for _ in range(iteration):
       pb.stepSimulation()
 
+  def planHouseBuilding1(self, blocks, triangles):
+    block_poses = []
+    for obj in blocks:
+      pos, rot = pb_obj_generation.getObjectPose(obj)
+      rot = pb.getEulerFromQuaternion(rot)
+      block_poses.append((obj, pos, rot))
+    # pick
+    if not self._isHolding():
+      if not self._checkStack(blocks):
+        block_poses.sort(key=lambda x: x[1][-1])
+        for op in block_poses:
+          if not self._isObjOnTop(op[0]):
+            continue
+          x = op[1][0]
+          y = op[1][1]
+          z = op[1][2] - self.pick_offset
+          r = -op[2][2]
+          while r < 0:
+            r += np.pi
+          while r > np.pi:
+            r -= np.pi
+          return self._encodeAction(self.PICK_PRIMATIVE, x, y, z, r)
+      else:
+        triangle_pos, triangle_rot = pb_obj_generation.getObjectPose(triangles[0])
+        triangle_rot = pb.getEulerFromQuaternion(triangle_rot)
+        x = triangle_pos[0]
+        y = triangle_pos[1]
+        z = triangle_pos[2] - self.pick_offset
+        r = -(triangle_rot[2] + np.pi/2)
+        while r < 0:
+          r += np.pi
+        while r > np.pi:
+          r -= np.pi
+        return self._encodeAction(self.PICK_PRIMATIVE, x, y, z, r)
+    # place
+    else:
+      if self._isObjectHeld(triangles[0]) and not self._checkStack(blocks):
+        block_pos = [self._getObjectPosition(o)[:-1] for o in blocks]
+        place_pos = self._getValidPositions(self.block_scale_range[1] * self.block_original_size,
+                                            self.block_scale_range[1] * self.block_original_size,
+                                            block_pos,
+                                            1)[0]
+        x = place_pos[0]
+        y = place_pos[1]
+        z = self.place_offset
+        r = 0
+        return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
+
+      block_poses.sort(key=lambda x: x[1][-1], reverse=True)
+      for op in block_poses:
+        if self._isObjectHeld(op[0]):
+          continue
+        x = op[1][0]
+        y = op[1][1]
+        z = op[1][2] + self.place_offset
+        r = -op[2][2]
+        while r < 0:
+          r += np.pi
+        while r > np.pi:
+          r -= np.pi
+        return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
+
+
   def planBlockStacking(self):
     obj_poses = []
     for obj in self.objects:
@@ -364,17 +427,24 @@ class PyBulletEnv(BaseEnv):
         cluster_pos.append([block_position[:-1]])
     return len(cluster_pos) + self._isHolding()
 
-  def _checkStack(self):
-    for obj in self.objects:
+  def _checkStack(self, objects=None):
+    if not objects:
+      objects = self.objects
+    for obj in objects:
       if self._isObjectHeld(obj):
         return False
 
-    heights = list(map(lambda o: self._getObjectPosition(o)[-1], self.objects))
+    heights = list(map(lambda o: self._getObjectPosition(o)[-1], objects))
     heights.sort()
     for i in range(1, len(heights)):
       if heights[i] - heights[i-1] < 0.9*self.block_scale_range[0]*self.block_original_size:
         return False
     return True
+
+  def _checkObjUpright(self, obj):
+    triangle_rot = pb_obj_generation.getObjectRotation(obj)
+    triangle_rot = pb.getEulerFromQuaternion(triangle_rot)
+    return abs(triangle_rot[0]) < 0.1 and abs(triangle_rot[1]) < 0.1
 
   def _checkOnTop(self, bottom_obj, top_obj):
     # bottom_position = self._getObjectPosition(bottom_obj)
