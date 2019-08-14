@@ -13,13 +13,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-				<mesh filename="1.obj"/>
+				<mesh filename="1.obj" scale="1 1 .5"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-				<mesh filename="1.obj"/>
+				<mesh filename="1.obj" scale="1 1 .5"/>
       </geometry>
     </collision>
   </link>

@@ -444,11 +444,18 @@ class PyBulletEnv(BaseEnv):
       if self._isObjectHeld(obj):
         return False
 
-    heights = list(map(lambda o: self._getObjectPosition(o)[-1], objects))
-    heights.sort()
-    for i in range(1, len(heights)):
-      if heights[i] - heights[i-1] < 0.9*self.block_scale_range[0]*self.block_original_size:
-        return False
+    objects = sorted(objects, key=lambda o: self._getObjectPosition(o)[-1])
+    for i, obj in enumerate(objects):
+      if i == 0:
+        continue
+      if self.object_types[obj] is self.TRIANGLE:
+        if self._getObjectPosition(obj)[-1] - self._getObjectPosition(objects[i-1])[-1] < \
+            0.5*self.block_scale_range[0]*self.block_original_size:
+          return False
+      else:
+        if self._getObjectPosition(obj)[-1] - self._getObjectPosition(objects[i-1])[-1] < \
+            0.9*self.block_scale_range[0]*self.block_original_size:
+          return False
     return True
 
   def _checkPerfectGrasp(self, x, y, z, rot, objects):
