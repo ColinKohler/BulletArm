@@ -55,6 +55,9 @@ class PyBulletEnv(BaseEnv):
     rot = pb.getQuaternionFromEuler([0,np.pi,0])
     self.rest_pose = [[0.0, 0.5, 0.5], rot]
 
+    self.objects = list()
+    self.object_types = {}
+
     self.simulate_grasp = simulate_grasp
     self.perfect_grasp = perfect_grasp
 
@@ -71,6 +74,8 @@ class PyBulletEnv(BaseEnv):
 
     # Reset episode vars
     self.objects = list()
+    self.object_types = {}
+
     self.heightmap = None
     self.current_episode_steps = 1
 
@@ -97,15 +102,17 @@ class PyBulletEnv(BaseEnv):
 
     # Get transform for action
     pos = [x, y, z]
-    rot = pb.getQuaternionFromEuler([0, np.pi, -rot])
+    rot_q = pb.getQuaternionFromEuler([0, np.pi, -rot])
 
     # Take action specfied by motion primative
     if motion_primative == self.PICK_PRIMATIVE:
-      self.robot.pick(pos, rot, self.pick_pre_offset, dynamic=self.dynamic, objects=self.objects,
-                      simulate_grasp=self.simulate_grasp, perfect_grasp=self.perfect_grasp)
+      if self.perfect_grasp and not self._checkPerfectGrasp(x, y, z, -rot, self.objects):
+        return
+      self.robot.pick(pos, rot_q, self.pick_pre_offset, dynamic=self.dynamic, objects=self.objects,
+                      simulate_grasp=self.simulate_grasp)
     elif motion_primative == self.PLACE_PRIMATIVE:
       if self.robot.holding_obj is not None:
-        self.robot.place(pos, rot, self.place_pre_offset, dynamic=self.dynamic, simulate_grasp=self.simulate_grasp)
+        self.robot.place(pos, rot_q, self.place_pre_offset, dynamic=self.dynamic, simulate_grasp=self.simulate_grasp)
     elif motion_primative == self.PUSH_PRIMATIVE:
       pass
     else:
@@ -128,6 +135,75 @@ class PyBulletEnv(BaseEnv):
       return
     for _ in range(iteration):
       pb.stepSimulation()
+
+  def planHouseBuilding1(self, blocks, triangles):
+    block_poses = []
+    for obj in blocks:
+      pos, rot = pb_obj_generation.getObjectPose(obj)
+      rot = pb.getEulerFromQuaternion(rot)
+      block_poses.append((obj, pos, rot))
+    # pick
+    if not self._isHolding():
+      if not self._checkStack(blocks):
+        block_poses.sort(key=lambda x: x[1][-1])
+        x, y, z, r = block_poses[0][1][0], block_poses[0][1][1], block_poses[0][1][2] - self.pick_offset, -block_poses[0][2][2]
+        for op in block_poses:
+          if not self._isObjOnTop(op[0]):
+            continue
+          x = op[1][0]
+          y = op[1][1]
+          z = op[1][2] - self.pick_offset
+          r = -op[2][2]
+          while r < 0:
+            r += np.pi
+          while r > np.pi:
+            r -= np.pi
+          break
+        return self._encodeAction(self.PICK_PRIMATIVE, x, y, z, r)
+      else:
+        triangle_pos, triangle_rot = pb_obj_generation.getObjectPose(triangles[0])
+        triangle_rot = pb.getEulerFromQuaternion(triangle_rot)
+        x = triangle_pos[0]
+        y = triangle_pos[1]
+        z = triangle_pos[2] - self.pick_offset
+        r = -(triangle_rot[2] + np.pi/2)
+        while r < 0:
+          r += np.pi
+        while r > np.pi:
+          r -= np.pi
+        return self._encodeAction(self.PICK_PRIMATIVE, x, y, z, r)
+    # place
+    else:
+      if self._isObjectHeld(triangles[0]) and not self._checkStack(blocks):
+        block_pos = [self._getObjectPosition(o)[:-1] for o in blocks]
+        place_pos = self._getValidPositions(self.block_scale_range[1] * self.block_original_size,
+                                            self.block_scale_range[1] * self.block_original_size,
+                                            block_pos,
+                                            1)[0]
+        x = place_pos[0]
+        y = place_pos[1]
+        z = self.place_offset
+        r = 0
+        return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
+
+      else:
+        block_poses.sort(key=lambda x: x[1][-1], reverse=True)
+        x, y, z, r = block_poses[0][1][0], block_poses[0][1][1], block_poses[0][1][2] + self.place_offset, - \
+        block_poses[0][2][2]
+        for op in block_poses:
+          if self._isObjectHeld(op[0]):
+            continue
+          x = op[1][0]
+          y = op[1][1]
+          z = op[1][2] + self.place_offset
+          r = -op[2][2]
+          while r < 0:
+            r += np.pi
+          while r > np.pi:
+            r -= np.pi
+          break
+        return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
+
 
   def planBlockStacking(self):
     obj_poses = []
@@ -225,14 +301,14 @@ class PyBulletEnv(BaseEnv):
       if len(valid_positions) == num_shapes:
         return valid_positions
 
-  def _generateShapes(self, shape_type=0, num_shapes=1, size=None, pos=None, rot=None,
+  def _generateShapes(self, shape_type=0, num_shapes=1, scale=None, pos=None, rot=None,
                            min_distance=0.1, padding=0.2, random_orientation=False):
     ''''''
     if shape_type == self.CUBE:
       min_distance = self.block_original_size * self.block_scale_range[1] * 1.414 * 2
       padding = self.block_original_size * self.block_scale_range[1] * 2
     shape_handles = list()
-    positions = list()
+    positions = [self._getObjectPosition(o)[:-1] for o in self.objects]
 
     valid_positions = self._getValidPositions(padding, min_distance, positions, num_shapes)
 
@@ -242,16 +318,21 @@ class PyBulletEnv(BaseEnv):
         orientation = pb.getQuaternionFromEuler([0., 0., 2*np.pi*np.random.random_sample()])
       else:
         orientation = pb.getQuaternionFromEuler([0., 0., 0.])
-      scale = npr.uniform(self.block_scale_range[0], self.block_scale_range[1])
+      if not scale:
+        scale = npr.uniform(self.block_scale_range[0], self.block_scale_range[1])
 
       if shape_type == self.CUBE:
         handle = pb_obj_generation.generateCube(position, orientation, scale)
       elif shape_type == self.BRICK:
         handle = pb_obj_generation.generateBrick(position, orientation, scale)
+      elif shape_type == self.TRIANGLE:
+        handle = pb_obj_generation.generateTriangle(position, orientation, scale)
       else:
         raise NotImplementedError
       shape_handles.append(handle)
     self.objects.extend(shape_handles)
+    for h in shape_handles:
+      self.object_types[h] = shape_type
     for _ in range(50):
       pb.stepSimulation()
     return shape_handles
@@ -362,17 +443,48 @@ class PyBulletEnv(BaseEnv):
         cluster_pos.append([block_position[:-1]])
     return len(cluster_pos) + self._isHolding()
 
-  def _checkStack(self):
-    for obj in self.objects:
+  def _checkStack(self, objects=None):
+    if not objects:
+      objects = self.objects
+    for obj in objects:
       if self._isObjectHeld(obj):
         return False
 
-    heights = list(map(lambda o: self._getObjectPosition(o)[-1], self.objects))
-    heights.sort()
-    for i in range(1, len(heights)):
-      if heights[i] - heights[i-1] < 0.9*self.block_scale_range[0]*self.block_original_size:
-        return False
+    objects = sorted(objects, key=lambda o: self._getObjectPosition(o)[-1])
+    for i, obj in enumerate(objects):
+      if i == 0:
+        continue
+      if self.object_types[obj] is self.TRIANGLE:
+        if self._getObjectPosition(obj)[-1] - self._getObjectPosition(objects[i-1])[-1] < \
+            0.5*self.block_scale_range[0]*self.block_original_size:
+          return False
+      else:
+        if self._getObjectPosition(obj)[-1] - self._getObjectPosition(objects[i-1])[-1] < \
+            0.9*self.block_scale_range[0]*self.block_original_size:
+          return False
     return True
+
+  def _checkPerfectGrasp(self, x, y, z, rot, objects):
+    end_pos = np.array([x, y, z])
+    sorted_obj = sorted(objects, key=lambda o: np.linalg.norm(end_pos - pb_obj_generation.getObjectPosition(o)))
+    obj_pos, obj_rot = pb_obj_generation.getObjectPose(sorted_obj[0])
+    obj_type = self.object_types[sorted_obj[0]]
+    obj_rot = pb.getEulerFromQuaternion(obj_rot)
+    angle = np.pi - np.abs(np.abs(rot - obj_rot[2]) - np.pi)
+    if obj_type is self.CUBE:
+      while angle > np.pi / 2:
+        angle -= np.pi / 2
+      angle = min(angle, np.pi / 2 - angle)
+    elif obj_type is self.TRIANGLE:
+      angle = abs(angle - np.pi/2)
+      angle = min(angle, np.pi - angle)
+    return angle < np.pi / 12
+
+
+  def _checkObjUpright(self, obj):
+    triangle_rot = pb_obj_generation.getObjectRotation(obj)
+    triangle_rot = pb.getEulerFromQuaternion(triangle_rot)
+    return abs(triangle_rot[0]) < 0.1 and abs(triangle_rot[1]) < 0.1
 
   def _checkOnTop(self, bottom_obj, top_obj):
     # bottom_position = self._getObjectPosition(bottom_obj)
