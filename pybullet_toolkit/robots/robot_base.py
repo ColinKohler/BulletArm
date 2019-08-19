@@ -43,7 +43,7 @@ class RobotBase:
     self.holding_obj = self.state['holding_obj']
     self.gripper_closed = self.state['gripper_closed']
     if self.gripper_closed:
-      self.closeGripper()
+      self.closeGripper(max_it=0)
     else:
       self.openGripper()
 
@@ -122,7 +122,7 @@ class RobotBase:
     raise NotImplementedError
 
   @abstractmethod
-  def closeGripper(self):
+  def closeGripper(self, max_it=100):
     raise NotImplementedError
 
   @abstractmethod

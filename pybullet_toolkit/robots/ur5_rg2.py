@@ -58,7 +58,7 @@ class UR5_RG2(RobotBase):
         self.gripper_joint_names.append(str(joint_info[1]))
         self.gripper_joint_indices.append(i)
 
-  def closeGripper(self):
+  def closeGripper(self, max_it=100):
     ''''''
     p1, p2 = self._getGripperJointPosition()
     limit = self.gripper_joint_limit[1]
@@ -69,7 +69,7 @@ class UR5_RG2(RobotBase):
     # while p1 < 0.036:
       pb.stepSimulation()
       it += 1
-      if it > 100:
+      if it > max_it:
         self._sendGripperCommand(p1+0.001, p2+0.001)
         return False
       p1_, p2_ = self._getGripperJointPosition()
