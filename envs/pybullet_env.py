@@ -146,6 +146,7 @@ class PyBulletEnv(BaseEnv):
     if not self._isHolding():
       if not self._checkStack(blocks):
         block_poses.sort(key=lambda x: x[1][-1])
+        x, y, z, r = block_poses[0][1][0], block_poses[0][1][1], block_poses[0][1][2] - self.pick_offset, -block_poses[0][2][2]
         for op in block_poses:
           if not self._isObjOnTop(op[0]):
             continue
@@ -157,7 +158,8 @@ class PyBulletEnv(BaseEnv):
             r += np.pi
           while r > np.pi:
             r -= np.pi
-          return self._encodeAction(self.PICK_PRIMATIVE, x, y, z, r)
+          break
+        return self._encodeAction(self.PICK_PRIMATIVE, x, y, z, r)
       else:
         triangle_pos, triangle_rot = pb_obj_generation.getObjectPose(triangles[0])
         triangle_rot = pb.getEulerFromQuaternion(triangle_rot)
@@ -184,18 +186,22 @@ class PyBulletEnv(BaseEnv):
         r = 0
         return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
 
-      block_poses.sort(key=lambda x: x[1][-1], reverse=True)
-      for op in block_poses:
-        if self._isObjectHeld(op[0]):
-          continue
-        x = op[1][0]
-        y = op[1][1]
-        z = op[1][2] + self.place_offset
-        r = -op[2][2]
-        while r < 0:
-          r += np.pi
-        while r > np.pi:
-          r -= np.pi
+      else:
+        block_poses.sort(key=lambda x: x[1][-1], reverse=True)
+        x, y, z, r = block_poses[0][1][0], block_poses[0][1][1], block_poses[0][1][2] + self.place_offset, - \
+        block_poses[0][2][2]
+        for op in block_poses:
+          if self._isObjectHeld(op[0]):
+            continue
+          x = op[1][0]
+          y = op[1][1]
+          z = op[1][2] + self.place_offset
+          r = -op[2][2]
+          while r < 0:
+            r += np.pi
+          while r > np.pi:
+            r -= np.pi
+          break
         return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
 
 
