@@ -137,8 +137,8 @@ class PyBulletEnv(BaseEnv):
       obj_poses.append((obj, pos, rot))
     # pick
     if not self._isHolding():
-      obj_poses.sort(key=lambda x: x[1][-1])
-      for op in obj_poses:
+      obj_poses.sort(key=lambda x: x[1][-1], reverse=True)
+      for op in obj_poses[1:]+obj_poses[:1]:
         if not self._isObjOnTop(op[0]):
           continue
         x = op[1][0]
