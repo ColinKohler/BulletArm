@@ -17,7 +17,8 @@ class PyBulletEnv(BaseEnv):
   PyBullet Arm RL base class.
   '''
   def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, fast_mode=False, render=False,
-               action_sequence='pxyr', simulate_grasp=True, pos_candidate=None, perfect_grasp=True, robot='ur5'):
+               action_sequence='pxyr', simulate_grasp=True, pos_candidate=None, perfect_grasp=True, perfect_place=True,
+               robot='ur5'):
     super(PyBulletEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence, pos_candidate)
 
     # Connect to pybullet and add data files to path
@@ -60,6 +61,7 @@ class PyBulletEnv(BaseEnv):
 
     self.simulate_grasp = simulate_grasp
     self.perfect_grasp = perfect_grasp
+    self.perfect_place = perfect_place
 
   def reset(self):
     ''''''
@@ -112,6 +114,8 @@ class PyBulletEnv(BaseEnv):
                       simulate_grasp=self.simulate_grasp)
     elif motion_primative == self.PLACE_PRIMATIVE:
       if self.robot.holding_obj is not None:
+        if self.perfect_place and not self._checkPerfectPlace(x, y, z, -rot, self.objects):
+          return
         self.robot.place(pos, rot_q, self.place_pre_offset, dynamic=self.dynamic, simulate_grasp=self.simulate_grasp)
     elif motion_primative == self.PUSH_PRIMATIVE:
       pass
@@ -478,6 +482,18 @@ class PyBulletEnv(BaseEnv):
     elif obj_type is self.TRIANGLE:
       angle = abs(angle - np.pi/2)
       angle = min(angle, np.pi - angle)
+    return angle < np.pi / 12
+
+  def _checkPerfectPlace(self, x, y, z, rot, objects):
+    end_pos = np.array([x, y, z])
+    sorted_obj = sorted(objects, key=lambda o: np.linalg.norm(end_pos - pb_obj_generation.getObjectPosition(o)))
+    obj_pos, obj_rot = pb_obj_generation.getObjectPose(sorted_obj[0])
+    obj_type = self.object_types[sorted_obj[0]]
+    obj_rot = pb.getEulerFromQuaternion(obj_rot)
+    angle = np.pi - np.abs(np.abs(rot - obj_rot[2]) - np.pi)
+    if angle > np.pi/2:
+      angle -= np.pi/2
+    angle = min(angle, np.pi / 2 - angle)
     return angle < np.pi / 12
 
 

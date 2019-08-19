@@ -17,12 +17,15 @@ def createHouseBuilding1Env(simulator_base_env, config):
         config['pos_candidate'] = None
       if 'perfect_grasp' not in config:
         config['perfect_grasp'] = False
+      if 'perfect_place' not in config:
+        config['perfect_place'] = False
 
       if simulator_base_env is PyBulletEnv:
         super().__init__(config['seed'], config['workspace'], config['max_steps'],
                          config['obs_size'], config['fast_mode'], config['render'],
                          config['action_sequence'], config['simulate_grasp'],
-                         config['pos_candidate'], config['perfect_grasp'], config['robot'])
+                         config['pos_candidate'], config['perfect_grasp'], config['perfect_place'],
+                         config['robot'])
       else:
         raise ValueError('Bad simulator base env specified.')
       self.simulator_base_env = simulator_base_env
