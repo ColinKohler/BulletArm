@@ -70,11 +70,11 @@ class UR5_RG2(RobotBase):
       pb.stepSimulation()
       it += 1
       if it > max_it:
-        self._sendGripperCommand(p1+0.001, p2+0.001)
+        self._sendGripperCommand(p1+0.01, p2+0.01)
         return False
       p1_, p2_ = self._getGripperJointPosition()
       if p1 >= p1_ and p2 >= p2_:
-        self._sendGripperCommand(p1+0.001, p2+0.001)
+        self._sendGripperCommand(p1+0.01, p2+0.01)
         return False
       p1 = p1_
       p2 = p2_
