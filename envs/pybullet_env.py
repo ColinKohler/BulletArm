@@ -140,30 +140,59 @@ class PyBulletEnv(BaseEnv):
     for _ in range(iteration):
       pb.stepSimulation()
 
-  def planHouseBuilding1(self, blocks, triangles):
+  def getPickingBlockPlan(self, blocks, second_biggest=False):
     block_poses = []
     for obj in blocks:
       pos, rot = pb_obj_generation.getObjectPose(obj)
       rot = pb.getEulerFromQuaternion(rot)
       block_poses.append((obj, pos, rot))
+
+    if second_biggest:
+      block_poses.sort(key=lambda x: x[1][-1], reverse=True)
+      block_poses = block_poses[1:] + block_poses[:1]
+
+    x, y, z, r = block_poses[0][1][0], block_poses[0][1][1], block_poses[0][1][2]-self.pick_offset, block_poses[0][2][2]
+    for op in block_poses:
+      if not self._isObjOnTop(op[0]):
+        continue
+      x = op[1][0]
+      y = op[1][1]
+      z = op[1][2] - self.pick_offset
+      r = -op[2][2]
+      while r < 0:
+        r += np.pi
+      while r > np.pi:
+        r -= np.pi
+      break
+    return self._encodeAction(self.PICK_PRIMATIVE, x, y, z, r)
+
+  def getStackingBlockPlan(self, blocks):
+    block_poses = []
+    for obj in blocks:
+      pos, rot = pb_obj_generation.getObjectPose(obj)
+      rot = pb.getEulerFromQuaternion(rot)
+      block_poses.append((obj, pos, rot))
+    block_poses.sort(key=lambda x: x[1][-1], reverse=True)
+    for op in block_poses:
+      if self._isObjectHeld(op[0]):
+        continue
+      x = op[1][0]
+      y = op[1][1]
+      z = op[1][2] + self.place_offset
+      r = -op[2][2]
+      while r < 0:
+        r += np.pi
+      while r > np.pi:
+        r -= np.pi
+      return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
+
+  def planHouseBuilding1(self, blocks, triangles):
     # pick
     if not self._isHolding():
+      # blocks not stacked, pick block
       if not self._checkStack(blocks):
-        block_poses.sort(key=lambda x: x[1][-1])
-        x, y, z, r = block_poses[0][1][0], block_poses[0][1][1], block_poses[0][1][2] - self.pick_offset, -block_poses[0][2][2]
-        for op in block_poses:
-          if not self._isObjOnTop(op[0]):
-            continue
-          x = op[1][0]
-          y = op[1][1]
-          z = op[1][2] - self.pick_offset
-          r = -op[2][2]
-          while r < 0:
-            r += np.pi
-          while r > np.pi:
-            r -= np.pi
-          break
-        return self._encodeAction(self.PICK_PRIMATIVE, x, y, z, r)
+        return self.getPickingBlockPlan(blocks, True)
+      # blocks stacked, pick triangle
       else:
         triangle_pos, triangle_rot = pb_obj_generation.getObjectPose(triangles[0])
         triangle_rot = pb.getEulerFromQuaternion(triangle_rot)
@@ -178,6 +207,7 @@ class PyBulletEnv(BaseEnv):
         return self._encodeAction(self.PICK_PRIMATIVE, x, y, z, r)
     # place
     else:
+      # holding triangle, but block not stacked, put down triangle
       if self._isObjectHeld(triangles[0]) and not self._checkStack(blocks):
         block_pos = [self._getObjectPosition(o)[:-1] for o in blocks]
         place_pos = self._getValidPositions(self.block_scale_range[1] * self.block_original_size,
@@ -189,62 +219,18 @@ class PyBulletEnv(BaseEnv):
         z = self.place_offset
         r = 0
         return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
-
+      # stack on block
       else:
-        block_poses.sort(key=lambda x: x[1][-1], reverse=True)
-        x, y, z, r = block_poses[0][1][0], block_poses[0][1][1], block_poses[0][1][2] + self.place_offset, - \
-        block_poses[0][2][2]
-        for op in block_poses:
-          if self._isObjectHeld(op[0]):
-            continue
-          x = op[1][0]
-          y = op[1][1]
-          z = op[1][2] + self.place_offset
-          r = -op[2][2]
-          while r < 0:
-            r += np.pi
-          while r > np.pi:
-            r -= np.pi
-          break
-        return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
-
+        return self.getStackingBlockPlan(blocks)
 
   def planBlockStacking(self):
-    obj_poses = []
-    for obj in self.objects:
-      pos, rot = pb_obj_generation.getObjectPose(obj)
-      rot = pb.getEulerFromQuaternion(rot)
-      obj_poses.append((obj, pos, rot))
     # pick
     if not self._isHolding():
-      obj_poses.sort(key=lambda x: x[1][-1], reverse=True)
-      for op in obj_poses[1:]+obj_poses[:1]:
-        if not self._isObjOnTop(op[0]):
-          continue
-        x = op[1][0]
-        y = op[1][1]
-        z = op[1][2] - self.pick_offset
-        r = -op[2][2]
-        while r < 0:
-          r += np.pi
-        while r > np.pi:
-          r -= np.pi
-        return self._encodeAction(self.PICK_PRIMATIVE, x, y, z, r)
+      return self.getPickingBlockPlan(self.objects, True)
+
     # place
     else:
-      obj_poses.sort(key=lambda x: x[1][-1], reverse=True)
-      for op in obj_poses:
-        if self._isObjectHeld(op[0]):
-          continue
-        x = op[1][0]
-        y = op[1][1]
-        z = op[1][2] + self.place_offset
-        r = -op[2][2]
-        while r < 0:
-          r += np.pi
-        while r > np.pi:
-          r -= np.pi
-        return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
+      return self.getStackingBlockPlan(self.objects)
 
   def _isPointInWorkspace(self, p):
     '''
