@@ -294,8 +294,8 @@ class PyBulletEnv(BaseEnv):
   def _generateShapes(self, shape_type=0, num_shapes=1, scale=None, pos=None, rot=None,
                            min_distance=0.1, padding=0.2, random_orientation=False):
     ''''''
-    if shape_type == self.CUBE:
-      min_distance = self.block_original_size * self.block_scale_range[1] * 1.414 * 2
+    if shape_type == self.CUBE or self.TRIANGLE:
+      min_distance = self.block_original_size * self.block_scale_range[1] * 2
       padding = self.block_original_size * self.block_scale_range[1] * 2
     shape_handles = list()
     positions = [self._getObjectPosition(o)[:-1] for o in self.objects]
