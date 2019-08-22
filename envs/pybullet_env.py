@@ -40,6 +40,8 @@ class PyBulletEnv(BaseEnv):
 
     self.block_original_size = 0.05
     self.block_scale_range = (0.6, 0.7)
+    self.min_block_size = self.block_original_size * self.block_scale_range[0]
+    self.max_block_size = self.block_original_size * self.block_scale_range[1]
     self.pick_pre_offset = 0.15
     self.pick_offset = 0.005
     self.place_pre_offset = 0.15
@@ -223,6 +225,60 @@ class PyBulletEnv(BaseEnv):
       else:
         return self.getStackingBlockPlan(blocks)
 
+  def planHouseBuilding2(self, blocks, bricks):
+    block1_pos = self._getObjectPosition(blocks[0])
+    block2_pos = self._getObjectPosition(blocks[1])
+    valid_block_pos = 3*self.max_block_size < np.linalg.norm(np.array(block1_pos)-np.array(block2_pos)) < 4*self.min_block_size
+    if not self._isHolding():
+      if not valid_block_pos:
+        return self.getPickingBlockPlan(blocks)
+      else:
+        brick_pos, brick_rot = pb_obj_generation.getObjectPose(bricks[0])
+        brick_rot = pb.getEulerFromQuaternion(brick_rot)
+        x = brick_pos[0]
+        y = brick_pos[1]
+        z = brick_pos[2] - self.pick_offset
+        r = -(brick_rot[2] + np.pi / 2)
+        while r < 0:
+          r += np.pi
+        while r > np.pi:
+          r -= np.pi
+        return self._encodeAction(self.PICK_PRIMATIVE, x, y, z, r)
+    else:
+      if self._isObjectHeld(bricks[0]):
+        if not valid_block_pos:
+          block_pos = [self._getObjectPosition(o)[:-1] for o in blocks]
+          place_pos = self._getValidPositions(self.max_block_size * 4,
+                                              self.max_block_size * 4,
+                                              block_pos,
+                                              1)[0]
+          x, y, z, r = place_pos[0], place_pos[1], self.place_offset, 0
+          return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
+        else:
+          block_pos = [self._getObjectPosition(o) for o in blocks]
+          middle_point = np.mean((np.array(block_pos[0]), np.array(block_pos[1])), axis=0)
+          x, y, z = middle_point[0], middle_point[1], middle_point[2]+self.place_offset
+          slop = (block_pos[0][1] - block_pos[1][1]) / (block_pos[0][0] - block_pos[1][0])
+          r = -np.arctan(slop)-np.pi/2
+          return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
+      else:
+        while True:
+          if self._isObjectHeld(blocks[0]):
+            other_block = blocks[1]
+          else:
+            other_block = blocks[0]
+          other_block_pos = self._getObjectPosition(other_block)
+          brick_pos = [self._getObjectPosition(bricks[0])[:-1]]
+          place_pos = self._getValidPositions(self.max_block_size * 2,
+                                              self.max_block_size * 3,
+                                              brick_pos,
+                                              1)[0]
+          dist = np.linalg.norm(np.array(other_block_pos[:-1]) - np.array(place_pos))
+          if 3 * self.max_block_size < dist < 4 * self.min_block_size:
+            break
+        x, y, z, r = place_pos[0], place_pos[1], self.place_offset, 0
+        return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
+
   def planBlockStacking(self):
     # pick
     if not self._isHolding():
@@ -294,9 +350,12 @@ class PyBulletEnv(BaseEnv):
   def _generateShapes(self, shape_type=0, num_shapes=1, scale=None, pos=None, rot=None,
                            min_distance=0.1, padding=0.2, random_orientation=False):
     ''''''
-    if shape_type == self.CUBE or self.TRIANGLE:
+    if shape_type == self.CUBE or shape_type == self.TRIANGLE:
       min_distance = self.block_original_size * self.block_scale_range[1] * 2
       padding = self.block_original_size * self.block_scale_range[1] * 2
+    elif shape_type == self.BRICK:
+      min_distance = self.max_block_size * 4
+      padding = self.max_block_size * 2
     shape_handles = list()
     positions = [self._getObjectPosition(o)[:-1] for o in self.objects]
 
@@ -405,9 +464,11 @@ class PyBulletEnv(BaseEnv):
     pos = [-0.50, 0, 0.25]
     pb.resetBasePositionAndOrientation(obj, pos, pb.getQuaternionFromEuler([0., 0., 0.]))
 
-  def _isObjOnTop(self, obj):
+  def _isObjOnTop(self, obj, objects=None):
+    if not objects:
+      objects = self.objects
     obj_position = self._getObjectPosition(obj)
-    for o in self.objects:
+    for o in objects:
       if self._isObjectHeld(o) or o is obj:
         continue
       block_position = self._getObjectPosition(o)
@@ -417,9 +478,11 @@ class PyBulletEnv(BaseEnv):
         return False
     return True
 
-  def _getNumTopBlock(self):
+  def _getNumTopBlock(self, blocks=None):
+    if not blocks:
+      blocks = self.objects
     cluster_pos = []
-    for obj in self.objects:
+    for obj in blocks:
       if self._isObjectHeld(obj):
         continue
       block_position = self._getObjectPosition(obj)
