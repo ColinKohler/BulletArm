@@ -260,7 +260,7 @@ class PyBulletEnv(BaseEnv):
         if not valid_block_pos:
           block_pos = [self._getObjectPosition(o)[:-1] for o in blocks]
           place_pos = self._getValidPositions(self.max_block_size * 3,
-                                              self.max_block_size * 3,
+                                              self.max_block_size * 2,
                                               block_pos,
                                               1)[0]
           x, y, z, r = place_pos[0], place_pos[1], self.place_offset, 0
@@ -275,15 +275,15 @@ class PyBulletEnv(BaseEnv):
             r += np.pi
           return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
       else:
-        while True:
+        for i in range(10000):
           if self._isObjectHeld(blocks[0]):
             other_block = blocks[1]
           else:
             other_block = blocks[0]
           other_block_pos = self._getObjectPosition(other_block)
           roof_pos = [self._getObjectPosition(roofs[0])[:-1]]
-          place_pos = self._getValidPositions(self.max_block_size * 3,
-                                              self.max_block_size * 3,
+          place_pos = self._getValidPositions(self.max_block_size * 2,
+                                              self.max_block_size * 2,
                                               roof_pos,
                                               1)[0]
           dist = np.linalg.norm(np.array(other_block_pos[:-1]) - np.array(place_pos))
@@ -370,7 +370,7 @@ class PyBulletEnv(BaseEnv):
       min_distance = self.max_block_size * 4
       padding = self.max_block_size * 4
     elif shape_type == self.ROOF:
-      min_distance = self.max_block_size * 3
+      min_distance = self.max_block_size * 2
       padding = self.max_block_size * 3
     shape_handles = list()
     positions = [self._getObjectPosition(o)[:-1] for o in self.objects]
@@ -546,7 +546,7 @@ class PyBulletEnv(BaseEnv):
       while angle > np.pi / 2:
         angle -= np.pi / 2
       angle = min(angle, np.pi / 2 - angle)
-    elif obj_type is self.TRIANGLE:
+    elif obj_type is self.TRIANGLE or obj_type is self.ROOF:
       angle = abs(angle - np.pi/2)
       angle = min(angle, np.pi - angle)
     return angle < np.pi / 12

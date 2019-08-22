@@ -102,7 +102,7 @@ def createHouseBuilding2Env(simulator_base_env, config):
       return step_left
 
     def isSimValid(self):
-      return super().isSimValid()
+      return self._checkObjUpright(self.roofs[0]) and super().isSimValid()
 
   def _thunk():
     return HouseBuilding2Env(config)
