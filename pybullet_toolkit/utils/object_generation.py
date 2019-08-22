@@ -33,3 +33,8 @@ def generateTriangle(pos, rot, scale):
   root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
   brick_urdf_filepath = os.path.join(root_dir, 'urdf/object/0.urdf')
   return pb.loadURDF(brick_urdf_filepath, basePosition=pos, baseOrientation=rot, globalScaling=scale)
+
+def generateRoof(pos, rot, scale):
+  root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
+  roof_urdf_filepath = os.path.join(root_dir, 'urdf/object/roof.urdf')
+  return pb.loadURDF(roof_urdf_filepath, basePosition=pos, baseOrientation=rot, globalScaling=scale)

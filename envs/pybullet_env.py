@@ -225,31 +225,35 @@ class PyBulletEnv(BaseEnv):
       else:
         return self.getStackingBlockPlan(blocks)
 
-  def planHouseBuilding2(self, blocks, bricks):
+  def planHouseBuilding2(self, blocks, roofs):
     block1_pos = self._getObjectPosition(blocks[0])
     block2_pos = self._getObjectPosition(blocks[1])
-    valid_block_pos = 3*self.max_block_size < np.linalg.norm(np.array(block1_pos)-np.array(block2_pos)) < 4*self.min_block_size
+    max_block_size = self.max_block_size
+    dist = np.linalg.norm(np.array(block1_pos) - np.array(block2_pos))
+    def dist_valid(d):
+      return 1.5 * max_block_size < d < 2 * max_block_size
+    valid_block_pos = dist_valid(dist)
     if not self._isHolding():
       if not valid_block_pos:
         return self.getPickingBlockPlan(blocks)
       else:
-        brick_pos, brick_rot = pb_obj_generation.getObjectPose(bricks[0])
-        brick_rot = pb.getEulerFromQuaternion(brick_rot)
-        x = brick_pos[0]
-        y = brick_pos[1]
-        z = brick_pos[2] - self.pick_offset
-        r = -(brick_rot[2] + np.pi / 2)
+        roof_pos, roof_rot = pb_obj_generation.getObjectPose(roofs[0])
+        roof_rot = pb.getEulerFromQuaternion(roof_rot)
+        x = roof_pos[0]
+        y = roof_pos[1]
+        z = roof_pos[2] - self.pick_offset
+        r = -(roof_rot[2] + np.pi / 2)
         while r < 0:
           r += np.pi
         while r > np.pi:
           r -= np.pi
         return self._encodeAction(self.PICK_PRIMATIVE, x, y, z, r)
     else:
-      if self._isObjectHeld(bricks[0]):
+      if self._isObjectHeld(roofs[0]):
         if not valid_block_pos:
           block_pos = [self._getObjectPosition(o)[:-1] for o in blocks]
-          place_pos = self._getValidPositions(self.max_block_size * 4,
-                                              self.max_block_size * 4,
+          place_pos = self._getValidPositions(self.max_block_size * 3,
+                                              self.max_block_size * 3,
                                               block_pos,
                                               1)[0]
           x, y, z, r = place_pos[0], place_pos[1], self.place_offset, 0
@@ -260,6 +264,8 @@ class PyBulletEnv(BaseEnv):
           x, y, z = middle_point[0], middle_point[1], middle_point[2]+self.place_offset
           slop = (block_pos[0][1] - block_pos[1][1]) / (block_pos[0][0] - block_pos[1][0])
           r = -np.arctan(slop)-np.pi/2
+          while r < 0:
+            r += np.pi
           return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
       else:
         while True:
@@ -268,13 +274,13 @@ class PyBulletEnv(BaseEnv):
           else:
             other_block = blocks[0]
           other_block_pos = self._getObjectPosition(other_block)
-          brick_pos = [self._getObjectPosition(bricks[0])[:-1]]
-          place_pos = self._getValidPositions(self.max_block_size * 2,
+          roof_pos = [self._getObjectPosition(roofs[0])[:-1]]
+          place_pos = self._getValidPositions(self.max_block_size * 3,
                                               self.max_block_size * 3,
-                                              brick_pos,
+                                              roof_pos,
                                               1)[0]
           dist = np.linalg.norm(np.array(other_block_pos[:-1]) - np.array(place_pos))
-          if 3 * self.max_block_size < dist < 4 * self.min_block_size:
+          if dist_valid(dist):
             break
         x, y, z, r = place_pos[0], place_pos[1], self.place_offset, 0
         return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
@@ -355,7 +361,10 @@ class PyBulletEnv(BaseEnv):
       padding = self.block_original_size * self.block_scale_range[1] * 2
     elif shape_type == self.BRICK:
       min_distance = self.max_block_size * 4
-      padding = self.max_block_size * 2
+      padding = self.max_block_size * 4
+    elif shape_type == self.ROOF:
+      min_distance = self.max_block_size * 3
+      padding = self.max_block_size * 3
     shape_handles = list()
     positions = [self._getObjectPosition(o)[:-1] for o in self.objects]
 
@@ -376,6 +385,8 @@ class PyBulletEnv(BaseEnv):
         handle = pb_obj_generation.generateBrick(position, orientation, scale)
       elif shape_type == self.TRIANGLE:
         handle = pb_obj_generation.generateTriangle(position, orientation, scale)
+      elif shape_type == self.ROOF:
+        handle = pb_obj_generation.generateRoof(position, orientation, scale)
       else:
         raise NotImplementedError
       shape_handles.append(handle)
@@ -562,9 +573,9 @@ class PyBulletEnv(BaseEnv):
       return False
     contact_points = pb.getContactPoints(top_obj)
     for p in contact_points:
-      if p[2] != bottom_obj:
-        return False
-    return True
+      if p[2] == bottom_obj:
+        return True
+    return False
 
   def _getPrimativeHeight(self, motion_primative, x, y):
     '''
@@ -577,8 +588,17 @@ class PyBulletEnv(BaseEnv):
     Returns: Valid Z coordinate for the action
     '''
     x_pixel, y_pixel = self._getPixelsFromPos(x, y)
-    local_region = self.heightmap[int(max(y_pixel - self.heightmap_size/20, 0)):int(min(y_pixel + self.heightmap_size/20, self.heightmap_size)), \
-                                  int(max(x_pixel - self.heightmap_size/20, 0)):int(min(x_pixel + self.heightmap_size/20, self.heightmap_size))]
+    if self._isHolding():
+      if self.object_types[self.robot.holding_obj] is self.BRICK:
+        extend = int(2*self.max_block_size/self.heightmap_resolution)
+      elif self.object_types[self.robot.holding_obj] is self.ROOF:
+        extend = int(1.5*self.max_block_size/self.heightmap_resolution)
+      else:
+        extend = int(0.5*self.max_block_size/self.heightmap_resolution)
+    else:
+      extend = int(0.5*self.max_block_size/self.heightmap_resolution)
+    local_region = self.heightmap[int(max(y_pixel - extend, 0)):int(min(y_pixel + extend, self.heightmap_size)), \
+                                  int(max(x_pixel - extend, 0)):int(min(x_pixel + extend, self.heightmap_size))]
     try:
       safe_z_pos = np.max(local_region) + self.workspace[2][0]
     except ValueError:

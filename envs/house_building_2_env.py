@@ -34,7 +34,7 @@ def createHouseBuilding2Env(simulator_base_env, config):
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
 
       self.blocks = []
-      self.bricks = None
+      self.roofs = None
       self.stacking_state = {}
 
     def step(self, action):
@@ -58,7 +58,7 @@ def createHouseBuilding2Env(simulator_base_env, config):
       ''''''
       super(HouseBuilding2Env, self).reset()
       self.blocks = self._generateShapes(0, self.num_obj-1, random_orientation=self.random_orientation)
-      self.bricks = self._generateShapes(self.BRICK, 1, random_orientation=self.random_orientation)
+      self.roofs = self._generateShapes(self.ROOF, 1, random_orientation=self.random_orientation)
       return self._getObservation()
 
     def saveState(self):
@@ -76,12 +76,12 @@ def createHouseBuilding2Env(simulator_base_env, config):
           top_blocks.append(block)
       if len(top_blocks) != 2:
         return False
-      if self._checkOnTop(top_blocks[0], self.bricks[0]) and self._checkOnTop(top_blocks[1], self.bricks[0]):
+      if self._checkOnTop(top_blocks[0], self.roofs[0]) and self._checkOnTop(top_blocks[1], self.roofs[0]):
         return True
       return False
 
     def getPlan(self):
-      return self.planHouseBuilding2(self.blocks, self.bricks)
+      return self.planHouseBuilding2(self.blocks, self.roofs)
 
     def isSimValid(self):
       return super().isSimValid()
