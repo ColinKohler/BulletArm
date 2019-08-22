@@ -225,6 +225,13 @@ class PyBulletEnv(BaseEnv):
       else:
         return self.getStackingBlockPlan(blocks)
 
+  def blockPosValidHouseBuilding2(self, blocks):
+    block1_pos = self._getObjectPosition(blocks[0])
+    block2_pos = self._getObjectPosition(blocks[1])
+    max_block_size = self.max_block_size
+    dist = np.linalg.norm(np.array(block1_pos) - np.array(block2_pos))
+    return 1.5 * max_block_size < dist < 2 * max_block_size
+
   def planHouseBuilding2(self, blocks, roofs):
     block1_pos = self._getObjectPosition(blocks[0])
     block2_pos = self._getObjectPosition(blocks[1])
