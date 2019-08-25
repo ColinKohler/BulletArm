@@ -72,7 +72,7 @@ class UR5_RG2(RobotBase):
       it += 1
       p1_, p2_ = self._getGripperJointPosition()
       if it > max_it or (abs(p1-p1_)<0.0001 and abs(p2-p2_)<0.0001):
-        mean = (p1+p2)/2 + 0.005
+        mean = (p1+p2)/2 + 0.01
         self._sendGripperCommand(mean, mean)
         return False
       p1 = p1_
