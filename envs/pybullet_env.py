@@ -250,10 +250,9 @@ class PyBulletEnv(BaseEnv):
     image_arr = pb.getCameraImage(width=self.heightmap_size, height=self.heightmap_size,
                                   viewMatrix=self.view_matrix, projectionMatrix=self.proj_matrix)
     self.heightmap = image_arr[3] - np.min(image_arr[3])
-    self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
     self.heightmap = self.heightmap.T
 
-    return self._isHolding(), self.heightmap
+    return self._isHolding(), self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
   def _getValidPositions(self, padding, min_distance, existing_positions, num_shapes):
     while True:
