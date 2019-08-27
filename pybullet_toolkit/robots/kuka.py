@@ -74,7 +74,7 @@ class Kuka(RobotBase):
         self.arm_joint_names.append(str(joint_info[1]))
         self.arm_joint_indices.append(i)
 
-  def closeGripper(self):
+  def closeGripper(self, max_it=100):
     ''''''
     p1, p2 = self._getGripperJointPosition()
     target = self.gripper_joint_limit[0]
@@ -82,15 +82,12 @@ class Kuka(RobotBase):
     self.gripper_closed = True
     it = 0
     while abs(target-p1) + abs(target-p2) > 0.001:
-    # while p1 < 0.036:
       pb.stepSimulation()
       it += 1
-      if it > 100:
-        self._sendGripperCommand(p1-0.01, p2-0.01)
-        return False
       p1_, p2_ = self._getGripperJointPosition()
-      if p1 <= p1_ and p2 <= p2_:
-        self._sendGripperCommand(p1_-0.01, p2_-0.01)
+      if it > max_it or (abs(p1 - p1_) < 0.0001 and abs(p2 - p2_) < 0.0001):
+        mean = (p1 + p2) / 2 - 0.01
+        self._sendGripperCommand(mean, mean)
         return False
       p1 = p1_
       p2 = p2_

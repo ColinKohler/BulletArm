@@ -531,6 +531,10 @@
       </axis>
     </joint>
     <link name='left_finger'>
+      <contact>
+        <lateral_friction>0.8</lateral_friction>
+        <spinning_friction>.1</spinning_friction>
+      </contact>
       <pose frame=''>0 0.024 1.35 0 -0.05 0</pose>
       <inertial>
         <pose frame=''>0 0 0.04 0 0 0</pose>
@@ -573,7 +577,7 @@
       <child>left_finger_base</child>
     </joint>
     <link name='left_finger_base'>
-    <contact>
+      <contact>
         <lateral_friction>0.8</lateral_friction>
         <spinning_friction>.1</spinning_friction>
       </contact>
