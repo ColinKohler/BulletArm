@@ -13,6 +13,9 @@ from helping_hands_rl_envs.pybullet_toolkit.robots.kuka import Kuka
 from helping_hands_rl_envs.pybullet_toolkit.robots.ur5_robotiq import UR5_Robotiq
 import helping_hands_rl_envs.pybullet_toolkit.utils.object_generation as pb_obj_generation
 
+import json
+import os
+
 class PyBulletEnv(BaseEnv):
   '''
   PyBullet Arm RL base class.
@@ -100,6 +103,30 @@ class PyBulletEnv(BaseEnv):
     self.current_episode_steps = self.state['current_episode_steps']
     self.objects = self.state['objects']
     pb.restoreState(self.state['env_state'])
+    self.robot.restoreState()
+
+  def saveEnvToFile(self, path):
+    bullet_file = os.path.join(path, 'env.bullet')
+    json_file = os.path.join(path, 'env.json')
+    pb.saveBullet(bullet_file)
+    self.robot.saveState()
+    state = {
+      'current_episode_steps': deepcopy(self.current_episode_steps),
+      'objects': deepcopy(self.objects),
+      'robot_state': deepcopy(self.robot.state)
+    }
+    with open(json_file, 'w') as f:
+      json.dump(state, f)
+
+  def loadEnvFromFile(self, path):
+    bullet_file = os.path.join(path, 'env.bullet')
+    json_file = os.path.join(path, 'env.json')
+    pb.restoreState(fileName=bullet_file)
+    with open(json_file, 'r') as f:
+      state = json.load(f)
+    self.current_episode_steps = state['current_episode_steps']
+    self.objects = state['objects']
+    self.robot.state = state['robot_state']
     self.robot.restoreState()
 
   def takeAction(self, action):

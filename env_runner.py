@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 from multiprocessing import Process, Pipe
+import os
 
 def worker(remote, parent_remote, env_fn):
   '''
@@ -41,6 +42,12 @@ def worker(remote, parent_remote, env_fn):
         remote.send(env.getPlan())
       elif cmd == 'set_pos_candidate':
         env.setPosCandidate(data)
+      elif cmd == 'save_to_file':
+        path = data
+        env.saveEnvToFile(path)
+      elif cmd == 'load_from_file':
+        path = data
+        env.loadEnvFromFile(path)
       else:
         raise NotImplementerError
   except KeyboardInterrupt:
@@ -157,6 +164,17 @@ class EnvRunner(object):
   def restore(self):
     for remote in self.remotes:
       remote.send(('restore', None))
+
+  def saveToFile(self, path):
+    for i, remote in enumerate(self.remotes):
+      p = os.path.join(path, str(i))
+      if not os.path.exists(p):
+        os.makedirs(p)
+      remote.send(('save_to_file', os.path.join(path, str(i))))
+
+  def loadFromFile(self, path):
+    for i, remote in enumerate(self.remotes):
+      remote.send(('load_from_file', os.path.join(path, str(i))))
 
   def getObjPosition(self):
     for remote in self.remotes:
