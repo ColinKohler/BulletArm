@@ -88,10 +88,10 @@ class EnvRunner(object):
     Args:
       - actions: PyTorch variable of environment actions
     '''
-    self._stepAsync(actions, auto_reset)
-    return self._stepWait()
+    self.stepAsync(actions, auto_reset)
+    return self.stepWait()
 
-  def _stepAsync(self, actions, auto_reset=True):
+  def stepAsync(self, actions, auto_reset=True):
     '''
     Step each environment in a async fashion
 
@@ -106,7 +106,7 @@ class EnvRunner(object):
         remote.send(('step', action))
     self.waiting = True
 
-  def _stepWait(self):
+  def stepWait(self):
     '''
     Wait until each environment has completed its next step
 
