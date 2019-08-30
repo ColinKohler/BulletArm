@@ -325,7 +325,7 @@ class PyBulletEnv(BaseEnv):
                            min_distance=0.1, padding=0.2, random_orientation=False):
     ''''''
     if shape_type == self.CUBE or self.TRIANGLE:
-      min_distance = self.block_original_size * self.block_scale_range[1] * 2
+      min_distance = self.block_original_size * self.block_scale_range[1] * 2.4
       padding = self.block_original_size * self.block_scale_range[1] * 2
     shape_handles = list()
     positions = [self._getObjectPosition(o)[:-1] for o in self.objects]
