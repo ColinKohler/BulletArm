@@ -5,6 +5,10 @@ import numpy.random as npr
 from helping_hands_rl_envs.envs.base_env import BaseEnv
 from helping_hands_rl_envs.numpy_toolkit import object_generation
 
+import os
+import json
+import pickle
+
 class NumpyEnv(BaseEnv):
   def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, render=False, action_sequence='pxyr',
                pick_rot=True, place_rot=False, pos_candidate=None, scale=1.):
@@ -44,6 +48,32 @@ class NumpyEnv(BaseEnv):
     self.objects = self.state['objects']
     self.valid = self.state['valid']
     held_object_idx = self.state['held_object_idx']
+    self.held_object = self.objects[held_object_idx] if held_object_idx is not None else None
+
+  def saveEnvToFile(self, path):
+    # np_file = os.path.join(path, 'env.np')
+    pickle_file = os.path.join(path, 'env.pickle')
+    # np.save(np_file, self.heightmap)
+    state = {
+      'heightmap': self.heightmap,
+      'held_object_idx': self.objects.index(self.held_object) if self.objects and self.held_object else None,
+      'current_episode_steps': deepcopy(self.current_episode_steps),
+      'objects': deepcopy(self.objects),
+      'valid': deepcopy(self.valid)}
+    with open(pickle_file, 'wb') as f:
+      pickle.dump(state, f)
+
+  def loadEnvFromFile(self, path):
+    # np_file = os.path.join(path, 'env.np')
+    # json_file = os.path.join(path, 'env.json')
+    pickle_file = os.path.join(path, 'env.pickle')
+    with open(pickle_file, 'rb') as f:
+      state = pickle.load(f)
+    self.heightmap = state['heightmap']
+    self.current_episode_steps = state['current_episode_steps']
+    self.objects = state['objects']
+    self.valid = state['valid']
+    held_object_idx = state['held_object_idx']
     self.held_object = self.objects[held_object_idx] if held_object_idx is not None else None
 
   def takeAction(self, action):

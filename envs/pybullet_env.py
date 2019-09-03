@@ -10,7 +10,11 @@ import pybullet_data
 from helping_hands_rl_envs.envs.base_env import BaseEnv
 from helping_hands_rl_envs.pybullet_toolkit.robots.ur5_rg2 import UR5_RG2
 from helping_hands_rl_envs.pybullet_toolkit.robots.kuka import Kuka
+from helping_hands_rl_envs.pybullet_toolkit.robots.ur5_robotiq import UR5_Robotiq
 import helping_hands_rl_envs.pybullet_toolkit.utils.object_generation as pb_obj_generation
+
+import json
+import os
 
 class PyBulletEnv(BaseEnv):
   '''
@@ -33,6 +37,8 @@ class PyBulletEnv(BaseEnv):
     self._timestep = 1. / 240.
     if robot == 'ur5':
       self.robot = UR5_RG2()
+    elif robot == 'ur5_robotiq':
+      self.robot = UR5_Robotiq()
     elif robot == 'kuka':
       self.robot = Kuka()
     else:
@@ -99,6 +105,30 @@ class PyBulletEnv(BaseEnv):
     self.current_episode_steps = self.state['current_episode_steps']
     self.objects = self.state['objects']
     pb.restoreState(self.state['env_state'])
+    self.robot.restoreState()
+
+  def saveEnvToFile(self, path):
+    bullet_file = os.path.join(path, 'env.bullet')
+    json_file = os.path.join(path, 'env.json')
+    pb.saveBullet(bullet_file)
+    self.robot.saveState()
+    state = {
+      'current_episode_steps': deepcopy(self.current_episode_steps),
+      'objects': deepcopy(self.objects),
+      'robot_state': deepcopy(self.robot.state)
+    }
+    with open(json_file, 'w') as f:
+      json.dump(state, f)
+
+  def loadEnvFromFile(self, path):
+    bullet_file = os.path.join(path, 'env.bullet')
+    json_file = os.path.join(path, 'env.json')
+    pb.restoreState(fileName=bullet_file)
+    with open(json_file, 'r') as f:
+      state = json.load(f)
+    self.current_episode_steps = state['current_episode_steps']
+    self.objects = state['objects']
+    self.robot.state = state['robot_state']
     self.robot.restoreState()
 
   def takeAction(self, action):
@@ -364,7 +394,7 @@ class PyBulletEnv(BaseEnv):
                            min_distance=0.1, padding=0.2, random_orientation=False):
     ''''''
     if shape_type == self.CUBE or shape_type == self.TRIANGLE:
-      min_distance = self.block_original_size * self.block_scale_range[1] * 2
+      min_distance = self.block_original_size * self.block_scale_range[1] * 2.4
       padding = self.block_original_size * self.block_scale_range[1] * 2
     elif shape_type == self.BRICK:
       min_distance = self.max_block_size * 4
@@ -403,54 +433,6 @@ class PyBulletEnv(BaseEnv):
     for _ in range(50):
       pb.stepSimulation()
     return shape_handles
-    #
-    # shape_name = self._getShapeName(shape_type)
-    # for i in range(num_shapes):
-    #   name = '{}_{}'.format(shape_name, len(shape_handles))
-    #
-    #   # Generate random drop config
-    #   x_extents = self.workspace[0][1] - self.workspace[0][0]
-    #   y_extents = self.workspace[1][1] - self.workspace[1][0]
-    #
-    #   is_position_valid = False
-    #   while not is_position_valid:
-    #     position = [(x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2,
-    #                 (y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2,
-    #                 0.05]
-    #
-    #     if self.pos_candidate is not None:
-    #       position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0] - position[0]).argmin()]
-    #       position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1] - position[1]).argmin()]
-    #       if not (self.workspace[0][0]+padding/2 < position[0] < self.workspace[0][1]-padding/2 and
-    #               self.workspace[1][0]+padding/2 < position[1] < self.workspace[1][1]-padding/2):
-    #         continue
-    #
-    #     if positions:
-    #       distances = np.array(list(map(lambda p: np.linalg.norm(np.array(p)-position[:-1]), positions)))
-    #       is_position_valid = np.all(distances > min_distance)
-    #       # is_position_valid = np.all(np.sum(np.abs(np.array(positions) - np.array(position[:-1])), axis=1) > min_distance)
-    #     else:
-    #       is_position_valid = True
-    #   positions.append(position[:-1])
-    #   if random_orientation:
-    #     orientation = pb.getQuaternionFromEuler([0., 0., 2*np.pi*np.random.random_sample()])
-    #   else:
-    #     orientation = pb.getQuaternionFromEuler([0., 0., 0.])
-    #
-    #   scale = npr.uniform(self.block_scale_range[0], self.block_scale_range[1])
-    #
-    #   if shape_type == self.CUBE:
-    #     handle = pb_obj_generation.generateCube(position, orientation, scale)
-    #   elif shape_type == self.BRICK:
-    #     handle = pb_obj_generation.generateBrick(position, orientation, scale)
-    #   else:
-    #     raise NotImplementedError
-    #   shape_handles.append(handle)
-    #
-    # self.objects.extend(shape_handles)
-    # for _ in range(50):
-    #   pb.stepSimulation()
-    # return shape_handles
 
   def _getObjectPosition(self, obj):
     return pb_obj_generation.getObjectPosition(obj)
