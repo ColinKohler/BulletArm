@@ -2,6 +2,7 @@ import numpy as np
 import torch
 from multiprocessing import Process, Pipe
 import os
+import git
 
 def worker(remote, parent_remote, env_fn):
   '''
@@ -193,3 +194,8 @@ class EnvRunner(object):
   def setPosCandidate(self, pos_candidate):
     for remote in self.remotes:
       remote.send(('set_pos_candidate', pos_candidate))
+
+  @staticmethod
+  def getEnvGitHash():
+    repo = git.Repo(search_parent_directories=True)
+    return repo.head.object.hexsha

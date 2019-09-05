@@ -115,7 +115,8 @@ class PyBulletEnv(BaseEnv):
     state = {
       'current_episode_steps': deepcopy(self.current_episode_steps),
       'objects': deepcopy(self.objects),
-      'robot_state': deepcopy(self.robot.state)
+      'robot_state': deepcopy(self.robot.state),
+      'random_state': np.random.get_state()
     }
     with open(json_file, 'w') as f:
       json.dump(state, f)
@@ -129,6 +130,7 @@ class PyBulletEnv(BaseEnv):
     self.current_episode_steps = state['current_episode_steps']
     self.objects = state['objects']
     self.robot.state = state['robot_state']
+    np.random.set_state(state['random_state'])
     self.robot.restoreState()
 
   def takeAction(self, action):
