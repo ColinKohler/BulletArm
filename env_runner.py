@@ -3,6 +3,7 @@ import torch
 from multiprocessing import Process, Pipe
 import os
 import git
+import helping_hands_rl_envs
 
 def worker(remote, parent_remote, env_fn):
   '''
@@ -197,5 +198,5 @@ class EnvRunner(object):
 
   @staticmethod
   def getEnvGitHash():
-    repo = git.Repo(search_parent_directories=True)
+    repo = git.Repo(helping_hands_rl_envs.__path__[0])
     return repo.head.object.hexsha
