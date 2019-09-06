@@ -13,7 +13,7 @@ from helping_hands_rl_envs.pybullet_toolkit.robots.kuka import Kuka
 from helping_hands_rl_envs.pybullet_toolkit.robots.ur5_robotiq import UR5_Robotiq
 import helping_hands_rl_envs.pybullet_toolkit.utils.object_generation as pb_obj_generation
 
-import json
+import pickle
 import os
 
 class PyBulletEnv(BaseEnv):
@@ -109,7 +109,7 @@ class PyBulletEnv(BaseEnv):
 
   def saveEnvToFile(self, path):
     bullet_file = os.path.join(path, 'env.bullet')
-    json_file = os.path.join(path, 'env.json')
+    pickle_file = os.path.join(path, 'env.pickle')
     pb.saveBullet(bullet_file)
     self.robot.saveState()
     state = {
@@ -118,15 +118,15 @@ class PyBulletEnv(BaseEnv):
       'robot_state': deepcopy(self.robot.state),
       'random_state': np.random.get_state()
     }
-    with open(json_file, 'w') as f:
-      json.dump(state, f)
+    with open(pickle_file, 'wb') as f:
+      pickle.dump(state, f)
 
   def loadEnvFromFile(self, path):
     bullet_file = os.path.join(path, 'env.bullet')
-    json_file = os.path.join(path, 'env.json')
+    pickle_file = os.path.join(path, 'env.pickle')
     pb.restoreState(fileName=bullet_file)
-    with open(json_file, 'r') as f:
-      state = json.load(f)
+    with open(pickle_file, 'rb') as f:
+      state = pickle.load(f)
     self.current_episode_steps = state['current_episode_steps']
     self.objects = state['objects']
     self.robot.state = state['robot_state']
