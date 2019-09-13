@@ -7,6 +7,10 @@ from helping_hands_rl_envs.envs.vrep_env import VrepEnv
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.envs.block_picking_env import createBlockPickingEnv
 from helping_hands_rl_envs.envs.block_stacking_env import createBlockStackingEnv
+from helping_hands_rl_envs.envs.brick_stacking_env import createBrickStackingEnv
+from helping_hands_rl_envs.envs.block_cylinder_stacking_env import createBlockCylinderStackingEnv
+from helping_hands_rl_envs.envs.house_building_1_env import createHouseBuilding1Env
+from helping_hands_rl_envs.envs.house_building_2_env import createHouseBuilding2Env
 from helping_hands_rl_envs.env_runner import EnvRunner
 
 def createEnvs(num_processes, simulator, env_type, config):
@@ -23,11 +27,13 @@ def createEnvs(num_processes, simulator, env_type, config):
   '''
   if 'action_sequence' not in config:
     config['action_sequence'] = 'pxyr'
+  if 'simulate_grasp' not in config:
+    config['simulate_grasp'] = True
 
   # Clone env config and generate random seeds for the different processes
   configs = [copy.copy(config) for _ in range(num_processes)]
-  for config in configs:
-    config['seed'] = npr.randint(100)
+  for i, config in enumerate(configs):
+    config['seed'] = config['seed'] + i if 'seed' in config else npr.randint(100)
 
   # Set the super environment and add details to the configs as needed
   if simulator == 'vrep':
@@ -49,8 +55,17 @@ def createEnvs(num_processes, simulator, env_type, config):
     envs = [createBlockPickingEnv(parent_env, configs[i]) for i in range(num_processes)]
   elif env_type == 'block_stacking':
     envs = [createBlockStackingEnv(parent_env, configs[i]) for i in range(num_processes)]
+  elif env_type == 'brick_stacking':
+    envs = [createBrickStackingEnv(parent_env, configs[i]) for i in range(num_processes)]
+  elif env_type == 'block_cylinder_stacking':
+    envs = [createBlockCylinderStackingEnv(parent_env, configs[i]) for i in range(num_processes)]
+  elif env_type == 'house_building_1':
+    envs = [createHouseBuilding1Env(parent_env, configs[i]) for i in range(num_processes)]
+  elif env_type == 'house_building_2':
+    envs = [createHouseBuilding2Env(parent_env, configs[i]) for i in range(num_processes)]
   else:
     raise ValueError('Invalid environment type passed to factory. Valid types are: \'block_picking\', \'block_stacking\'.')
-
   envs = EnvRunner(envs)
+  if 'pos_candidate' in config:
+    envs.setPosCandidate(config['pos_candidate'])
   return envs

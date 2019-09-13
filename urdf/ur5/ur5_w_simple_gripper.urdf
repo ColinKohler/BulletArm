@@ -207,6 +207,10 @@
       </geometry>
       <origin rpy="0 0 0" xyz="-0.01 0 0"/>
     </collision>
+    <inertial>
+      <mass value="0"/>
+      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+    </inertial>
   </link>
   <transmission name="simple_arm_shoulder_pan_trans">
     <type>transmission_interface/SimpleTransmission</type>
@@ -264,7 +268,12 @@
   </transmission>
   <!-- nothing to do here at the moment -->
   <!-- ROS base_link to UR 'Base' Coordinates transform -->
-  <link name="simple_arm_base"/>
+  <link name="simple_arm_base">
+    <inertial>
+      <mass value="0"/>
+      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+    </inertial>
+  </link>
   <joint name="simple_arm_base_link-base_fixed_joint" type="fixed">
     <!-- NOTE: this rotation is only needed as long as base_link itself is
                  not corrected wrt the real robot (ie: rotated over 180
@@ -275,7 +284,12 @@
     <child link="simple_arm_base"/>
   </joint>
   <!-- Frame coincident with all-zeros TCP on UR controller -->
-  <link name="simple_arm_tool0"/>
+  <link name="simple_arm_tool0">
+    <inertial>
+      <mass value="0"/>
+      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+    </inertial>
+  </link>
   <joint name="simple_arm_wrist_3_link-tool0_fixed_joint" type="fixed">
     <origin rpy="-1.57079632679 0 0" xyz="0 0.0823 0"/>
     <parent link="simple_arm_wrist_3_link"/>
@@ -304,6 +318,11 @@
       <mass value="1.0"/>
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
     </inertial>
+    <contact>
+      <lateral_friction value="20.0"/>
+      <spinning_friction value="0.0"/>
+      <rolling_friction value="0.0"/>
+    </contact>
   </link>
   <!-- right finger -->
   <joint name="simple_gripper_right_finger_joint" type="prismatic">
@@ -312,6 +331,7 @@
     <child link="simple_gripper_right_finger"/>
     <axis xyz="-1 0 0"/>
     <limit effort="60" lower="0.0" upper="0.0360" velocity="0.02"/>
+    <dynamics damping="200"/>
   </joint>
   <link name="simple_gripper_right_finger">
     <visual>
@@ -332,9 +352,9 @@
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
     </inertial>
     <contact>
-      <lateral_friction value="1.0"/>
-      <spinning_friction value="1.0"/>
-      <rolling_friction value="1.0"/>
+      <lateral_friction value="20.0"/>
+      <spinning_friction value="0.0"/>
+      <rolling_friction value="0.0"/>
     </contact>
   </link>
   <!-- left finger -->
@@ -344,6 +364,7 @@
     <child link="simple_gripper_left_finger"/>
     <axis xyz="1 0 0"/>
     <limit effort="60" lower="0.0" upper="0.0360" velocity="0.02"/>
+    <dynamics damping="200"/>
   </joint>
   <link name="simple_gripper_left_finger">
     <visual>
@@ -364,13 +385,18 @@
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
     </inertial>
     <contact>
-      <lateral_friction value="1.0"/>
-      <spinning_friction value="1.0"/>
-      <rolling_friction value="1.0"/>
+      <lateral_friction value="20.0"/>
+      <spinning_friction value="0.0"/>
+      <rolling_friction value="0.0"/>
     </contact>
   </link>
   <!-- End effector tip -->
-  <link name="simple_gripper_tip"/>
+  <link name="simple_gripper_tip">
+    <inertial>
+      <mass value="0"/>
+      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+    </inertial>
+  </link>
   <joint name="simple_gripper_tip_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0.0 0.0 0.040"/>
     <parent link="simple_gripper_base"/>

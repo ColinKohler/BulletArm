@@ -5,7 +5,7 @@ class BaseEnv(object):
   '''
   Base Arm RL environment.
   '''
-  def __init__(self, seed, workspace, max_steps, heightmap_size, action_sequence='pxyr'):
+  def __init__(self, seed, workspace, max_steps, heightmap_size, action_sequence='pxyr', pos_candidate=None):
     """
     constructor of BaseEnv
     Args:
@@ -45,12 +45,22 @@ class BaseEnv(object):
     self.SPHERE = 1
     self.CYLINDER = 2
     self.CONE = 3
+    self.BRICK = 4
+    self.TRIANGLE = 5
+    self.ROOF = 6
 
     assert action_sequence.find('x') != -1
     assert action_sequence.find('y') != -1
     self.action_sequence = action_sequence
 
     self.offset = 0.01
+
+    self.pos_candidate = pos_candidate
+
+  def setPosCandidate(self, pos_candidate):
+    self.pos_candidate = pos_candidate*self.heightmap_resolution
+    self.pos_candidate[0] += self.workspace[0, 0]
+    self.pos_candidate[1] += self.workspace[1, 0]
 
   def _getSpecificAction(self, action):
     """
@@ -69,12 +79,29 @@ class BaseEnv(object):
     rot = action[rot_idx] if rot_idx != -1 else 0
     return motion_primative, x, y, z, rot
 
+  def _encodeAction(self, primitive, x, y, z, r):
+    primitive_idx, x_idx, y_idx, z_idx, rot_idx = map(lambda a: self.action_sequence.find(a),
+                                                      ['p', 'x', 'y', 'z', 'r'])
+    action = np.zeros(len(self.action_sequence), dtype=np.float)
+    if primitive_idx != -1:
+      action[primitive_idx] = primitive
+    if x_idx != -1:
+      action[x_idx] = x
+    if y_idx != -1:
+      action[y_idx] = y
+    if z_idx != -1:
+      action[z_idx] = z
+    if rot_idx != -1:
+      action[rot_idx] = r
+    return action
+
   def _getShapeName(self, shape_type):
     ''' Get the shape name from the type (int) '''
     if shape_type == self.CUBE: return 'cube'
     elif shape_type == self.SPHERE: return 'sphere'
-    elif shape_type == self.CYLINER: return 'cylinder'
+    elif shape_type == self.CYLINDER: return 'cylinder'
     elif shape_type == self.CONE: return 'cone'
+    elif shape_type == self.BRICK: return 'brick'
     else: return 'unknown'
 
   def _getPrimativeHeight(self, motion_primative, x, y):
@@ -88,8 +115,8 @@ class BaseEnv(object):
     Returns: Valid Z coordinate for the action
     '''
     x_pixel, y_pixel = self._getPixelsFromPos(x, y)
-    local_region = self.heightmap[max(y_pixel - 30, 0):min(y_pixel + 30, self.heightmap_size), \
-                                  max(x_pixel - 30, 0):min(x_pixel + 30, self.heightmap_size)]
+    local_region = self.heightmap[int(max(y_pixel - self.heightmap_size/20, 0)):int(min(y_pixel + self.heightmap_size/20, self.heightmap_size)), \
+                                  int(max(x_pixel - self.heightmap_size/20, 0)):int(min(x_pixel + self.heightmap_size/20, self.heightmap_size))]
     safe_z_pos = np.max(local_region) + self.workspace[2][0]
     safe_z_pos = safe_z_pos - self.offset if motion_primative == self.PICK_PRIMATIVE else safe_z_pos + self.offset
 
