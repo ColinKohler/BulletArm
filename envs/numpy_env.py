@@ -10,8 +10,26 @@ import json
 import pickle
 
 class NumpyEnv(BaseEnv):
-  def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, render=False, action_sequence='pxyr',
-               pick_rot=True, place_rot=False, pos_candidate=None, scale=1.):
+  def __init__(self, config):
+    if 'pick_rot' not in config:
+      config['pick_rot'] = True
+    if 'place_rot' not in config:
+      config['place_rot'] = False
+    if 'scale' not in config:
+      config['scale'] = 1.
+    if 'pos_candidate' not in config:
+      config['pos_candidate'] = None
+
+    seed = config['seed']
+    workspace = config['workspace']
+    max_steps = config['max_steps']
+    heightmap_size = config['obs_size']
+    render = config['render']
+    action_sequence = config['action_sequence']
+    pos_candidate = config['pos_candidate']
+    pick_rot = config['pick_rot']
+    place_rot = config['place_rot']
+    scale = config['scale']
     super(NumpyEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence, pos_candidate)
 
     self.scale = scale

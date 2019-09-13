@@ -8,7 +8,9 @@ import helping_hands_rl_envs
 
 def generateCube(pos, rot, scale):
   ''''''
-  return pb.loadURDF('cube_small.urdf', basePosition=pos, baseOrientation=rot, globalScaling=scale)
+  root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
+  urdf_filepath = os.path.join(root_dir, 'urdf/object/cube.urdf')
+  return pb.loadURDF(urdf_filepath, basePosition=pos, baseOrientation=rot, globalScaling=scale)
 
 def getObjectPosition(obj):
   ''''''
