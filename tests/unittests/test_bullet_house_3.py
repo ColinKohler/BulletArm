@@ -11,7 +11,7 @@ class TestBulletHouse3(unittest.TestCase):
                           [0, 0.50]])
   env_config = {'workspace': workspace, 'max_steps': 1000, 'obs_size': 90, 'render': False, 'fast_mode': True,
                 'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 3, 'random_orientation': True,
-                'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'ur5'}
+                'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka'}
 
 
   def testPlanner(self):
@@ -31,7 +31,7 @@ class TestBulletHouse3(unittest.TestCase):
     s = 0
     for i in range(100):
       states, obs = env.reset()
-      for _ in range(6):
+      for _ in range(10):
         action = env.getPlan()
         (states_, obs_), rewards, dones = env.step(np.array(action))
         if dones:
