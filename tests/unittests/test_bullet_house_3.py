@@ -86,6 +86,14 @@ class TestBulletHouse3(unittest.TestCase):
     (states_, obs_), rewards, dones = env.step(np.array(action))
     self.assertEqual(rewards, 3)
 
+    env.saveState()
+    position = list(env.getObjectPosition())
+    action = env.getPlan()
+    action[1], action[2] = position[0][0], position[0][1]
+    (states_, obs_), rewards, dones = env.step(np.array(action))
+    self.assertEqual(rewards, 4)
+    env.restoreState()
+
     action = env.getPlan()
     (states_, obs_), rewards, dones = env.step(np.array(action))
     self.assertEqual(rewards, 2)

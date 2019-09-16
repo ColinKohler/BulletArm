@@ -302,7 +302,9 @@ class PyBulletEnv(BaseEnv):
     return 1.3 * max_block_size < dist < 2.2 * max_block_size
 
   def brickPosValidHouseBuilding3(self, blocks, bricks):
-    return self._checkOnTop(blocks[0], bricks[0]) and self._checkOnTop(blocks[1], bricks[0])
+    return self._checkOnTop(blocks[0], bricks[0]) and \
+           self._checkOnTop(blocks[1], bricks[0]) and \
+           self._checkInBetween(bricks[0], blocks[0], blocks[1])
 
   def planHouseBuilding2(self, blocks, roofs):
     block1_pos = self._getObjectPosition(blocks[0])
@@ -701,6 +703,16 @@ class PyBulletEnv(BaseEnv):
       if p[2] == bottom_obj:
         return True
     return False
+
+  def _checkInBetween(self, obj0, obj1, obj2, threshold=None):
+    if not threshold:
+      threshold = self.max_block_size * 0.5
+    position0 = pb_obj_generation.getObjectPosition(obj0)[:-1]
+    position1 = pb_obj_generation.getObjectPosition(obj1)[:-1]
+    position2 = pb_obj_generation.getObjectPosition(obj2)[:-1]
+    middle_point = np.mean((np.array(position1), np.array(position2)), axis=0)
+    dist = np.linalg.norm(middle_point - position0)
+    return dist < threshold
 
   def _checkOriSimilar(self, objects, threshold=np.pi/7):
     oris = list(map(lambda o: pb.getEulerFromQuaternion(pb_obj_generation.getObjectRotation(o))[2], objects))

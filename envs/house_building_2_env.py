@@ -2,6 +2,7 @@ from copy import deepcopy
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 
 def createHouseBuilding2Env(simulator_base_env, config):
+  # TODO: check in between
   class HouseBuilding2Env(simulator_base_env):
     ''''''
     def __init__(self, config):
