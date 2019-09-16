@@ -118,13 +118,15 @@ class PyBulletEnv(BaseEnv):
   def saveState(self):
     self.state = {'current_episode_steps': deepcopy(self.current_episode_steps),
                   'objects': deepcopy(self.objects),
-                  'env_state': pb.saveState()
+                  'env_state': pb.saveState(),
+                  'heightmap': deepcopy(self.heightmap)
                   }
     self.robot.saveState()
 
   def restoreState(self):
     self.current_episode_steps = self.state['current_episode_steps']
     self.objects = self.state['objects']
+    self.heightmap = self.state['heightmap']
     pb.restoreState(self.state['env_state'])
     self.robot.restoreState()
 
@@ -134,6 +136,7 @@ class PyBulletEnv(BaseEnv):
     pb.saveBullet(bullet_file)
     self.robot.saveState()
     state = {
+      'heightmap': deepcopy(self.heightmap),
       'current_episode_steps': deepcopy(self.current_episode_steps),
       'objects': deepcopy(self.objects),
       'robot_state': deepcopy(self.robot.state),
@@ -148,6 +151,7 @@ class PyBulletEnv(BaseEnv):
     pb.restoreState(fileName=bullet_file)
     with open(pickle_file, 'rb') as f:
       state = pickle.load(f)
+    self.heightmap = state['heightmap']
     self.current_episode_steps = state['current_episode_steps']
     self.objects = state['objects']
     self.robot.state = state['robot_state']
