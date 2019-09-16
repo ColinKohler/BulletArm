@@ -18,8 +18,7 @@ def createBlockStackingEnv(simulator_base_env, config):
         super(BlockStackingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
                                                config['obs_size'], config['render'], config['action_sequence'],
                                                pick_rot=config['pick_rot'], place_rot=config['place_rot'],
-                                               scale=config['scale'])
-                                               config['pos_candidate'])
+                                               scale=config['scale'], pos_candidate=config['pos_candidate'])
       elif simulator_base_env is VrepEnv:
         super(BlockStackingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
                                                config['obs_size'], config['port'], config['fast_mode'],
@@ -99,7 +98,6 @@ def createBlockStackingEnv(simulator_base_env, config):
 
     def _checkTermination(self):
       ''''''
-      #return self._getNumTopBlock() == 1
       return self._checkStack()
 
     def _estimateIfXPossible(self, primitive, x, y):
@@ -108,9 +106,6 @@ def createBlockStackingEnv(simulator_base_env, config):
         return self._checkPickValid(x, y, z, 0, False)
       else:
         return self._checkPlaceValid(x, y, z, 0, False)
-
-    def getObjectPosition(self):
-      return list(map(self._getObjectPosition, self.blocks))
 
     def getPlan(self):
       return self.planBlockStacking()
@@ -122,7 +117,6 @@ def createBlockStackingEnv(simulator_base_env, config):
       if self._isHolding():
         step_left -= 1
       return step_left
-
 
   def _thunk():
     return BlockStackingEnv(config)

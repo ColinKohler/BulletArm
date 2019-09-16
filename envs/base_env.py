@@ -23,7 +23,7 @@ class BaseEnv(object):
     # Setup environment
     self.workspace = workspace
     self.workspace_size = np.linalg.norm(self.workspace[0,1] - self.workspace[0,0])
-    self.pos_candidate = pos_candidate.astype(np.int)
+    self.pos_candidate = pos_candidate.astype(np.int) if pos_candidate else pos_candidate
     self.max_steps = max_steps
 
     # Setup heightmap

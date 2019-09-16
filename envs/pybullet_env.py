@@ -118,8 +118,7 @@ class PyBulletEnv(BaseEnv):
   def wait(self, iteration):
     if not self.simulate_grasp and self._isHolding():
       return
-    for _ in range(iteration):
-      pb.stepSimulation()
+    [pb.stepSimulation() for _ in range(iteration)]
 
   def planBlockStacking(self):
     obj_poses = []
@@ -244,57 +243,29 @@ class PyBulletEnv(BaseEnv):
         raise NotImplementedError
       shape_handles.append(handle)
     self.objects.extend(shape_handles)
-    for _ in range(50):
-      pb.stepSimulation()
+
+    self.wait(50)
     return shape_handles
-    #
-    # shape_name = self._getShapeName(shape_type)
-    # for i in range(num_shapes):
-    #   name = '{}_{}'.format(shape_name, len(shape_handles))
-    #
-    #   # Generate random drop config
-    #   x_extents = self.workspace[0][1] - self.workspace[0][0]
-    #   y_extents = self.workspace[1][1] - self.workspace[1][0]
-    #
-    #   is_position_valid = False
-    #   while not is_position_valid:
-    #     position = [(x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2,
-    #                 (y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2,
-    #                 0.05]
-    #
-    #     if self.pos_candidate is not None:
-    #       position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0] - position[0]).argmin()]
-    #       position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1] - position[1]).argmin()]
-    #       if not (self.workspace[0][0]+padding/2 < position[0] < self.workspace[0][1]-padding/2 and
-    #               self.workspace[1][0]+padding/2 < position[1] < self.workspace[1][1]-padding/2):
-    #         continue
-    #
-    #     if positions:
-    #       distances = np.array(list(map(lambda p: np.linalg.norm(np.array(p)-position[:-1]), positions)))
-    #       is_position_valid = np.all(distances > min_distance)
-    #       # is_position_valid = np.all(np.sum(np.abs(np.array(positions) - np.array(position[:-1])), axis=1) > min_distance)
-    #     else:
-    #       is_position_valid = True
-    #   positions.append(position[:-1])
-    #   if random_orientation:
-    #     orientation = pb.getQuaternionFromEuler([0., 0., 2*np.pi*np.random.random_sample()])
-    #   else:
-    #     orientation = pb.getQuaternionFromEuler([0., 0., 0.])
-    #
-    #   scale = npr.uniform(self.block_scale_range[0], self.block_scale_range[1])
-    #
-    #   if shape_type == self.CUBE:
-    #     handle = pb_obj_generation.generateCube(position, orientation, scale)
-    #   elif shape_type == self.BRICK:
-    #     handle = pb_obj_generation.generateBrick(position, orientation, scale)
-    #   else:
-    #     raise NotImplementedError
-    #   shape_handles.append(handle)
-    #
-    # self.objects.extend(shape_handles)
-    # for _ in range(50):
-    #   pb.stepSimulation()
-    # return shape_handles
+
+  def getObjectPoses(self):
+    obj_poses = list()
+    for obj in self.objects:
+      if self._isObjectHeld(obj):
+        continue
+      pos, rot = self._getObjectPose(obj)
+      obj_poses.append(pos + rot)
+    return np.array(obj_poses)
+
+  def _getObjectPose(self, obj):
+    return pb_obj_generation.getObjectPose(obj)
+
+  def getObjectPositions(self):
+    obj_positions = list()
+    for obj in self.objects:
+      if self._isObjectHeld(obj):
+        continue
+      obj_positions.append(self._getObjectPosition(obj))
+    return np.array(obj_positions)
 
   def _getObjectPosition(self, obj):
     return pb_obj_generation.getObjectPosition(obj)
