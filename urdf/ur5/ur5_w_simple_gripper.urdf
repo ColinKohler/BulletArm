@@ -318,6 +318,11 @@
       <mass value="1.0"/>
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
     </inertial>
+    <contact>
+      <lateral_friction value="20.0"/>
+      <spinning_friction value="0.0"/>
+      <rolling_friction value="0.0"/>
+    </contact>
   </link>
   <!-- right finger -->
   <joint name="simple_gripper_right_finger_joint" type="prismatic">

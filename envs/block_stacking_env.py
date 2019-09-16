@@ -9,27 +9,13 @@ def createBlockStackingEnv(simulator_base_env, config):
     ''''''
     def __init__(self, config):
       if simulator_base_env is NumpyEnv:
-        if 'pick_rot' not in config:
-          config['pick_rot'] = True
-        if 'place_rot' not in config:
-          config['place_rot'] = False
-        if 'scale' not in config:
-          config['scale'] = 1.
-        super(BlockStackingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
-                                               config['obs_size'], config['render'], config['action_sequence'],
-                                               pick_rot=config['pick_rot'], place_rot=config['place_rot'],
-                                               scale=config['scale'], pos_candidate=config['pos_candidate'])
+        super().__init__(config)
       elif simulator_base_env is VrepEnv:
-        super(BlockStackingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
-                                               config['obs_size'], config['port'], config['fast_mode'],
-                                               config['action_sequence'])
+        super().__init__(config['seed'], config['workspace'], config['max_steps'],
+                         config['obs_size'], config['port'], config['fast_mode'],
+                         config['action_sequence'])
       elif simulator_base_env is PyBulletEnv:
-        if 'perfect_grasp' not in config:
-          config['perfect_grasp'] = False
-        super(BlockStackingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
-                                               config['obs_size'], config['fast_mode'], config['render'],
-                                               config['action_sequence'], config['simulate_grasp'],
-                                               perfect_grasp=config['perfect_grasp'])
+        super().__init__(config)
       else:
         raise ValueError('Bad simulator base env specified.')
 

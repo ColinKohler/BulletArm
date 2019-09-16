@@ -5,9 +5,31 @@ import numpy.random as npr
 from helping_hands_rl_envs.envs.base_env import BaseEnv
 from helping_hands_rl_envs.numpy_toolkit import object_generation
 
+import os
+import json
+import pickle
+
 class NumpyEnv(BaseEnv):
-  def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, render=False, action_sequence='pxyr',
-               pick_rot=True, place_rot=False, pos_candidate=None, scale=1.):
+  def __init__(self, config):
+    if 'pick_rot' not in config:
+      config['pick_rot'] = True
+    if 'place_rot' not in config:
+      config['place_rot'] = False
+    if 'scale' not in config:
+      config['scale'] = 1.
+    if 'pos_candidate' not in config:
+      config['pos_candidate'] = None
+
+    seed = config['seed']
+    workspace = config['workspace']
+    max_steps = config['max_steps']
+    heightmap_size = config['obs_size']
+    render = config['render']
+    action_sequence = config['action_sequence']
+    pos_candidate = config['pos_candidate']
+    pick_rot = config['pick_rot']
+    place_rot = config['place_rot']
+    scale = config['scale']
     super(NumpyEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence, pos_candidate)
 
     self.scale = scale
@@ -40,6 +62,32 @@ class NumpyEnv(BaseEnv):
     self.objects = self.state['objects']
     self.valid = self.state['valid']
     held_object_idx = self.state['held_object_idx']
+    self.held_object = self.objects[held_object_idx] if held_object_idx is not None else None
+
+  def saveEnvToFile(self, path):
+    # np_file = os.path.join(path, 'env.np')
+    pickle_file = os.path.join(path, 'env.pickle')
+    # np.save(np_file, self.heightmap)
+    state = {
+      'heightmap': self.heightmap,
+      'held_object_idx': self.objects.index(self.held_object) if self.objects and self.held_object else None,
+      'current_episode_steps': deepcopy(self.current_episode_steps),
+      'objects': deepcopy(self.objects),
+      'valid': deepcopy(self.valid)}
+    with open(pickle_file, 'wb') as f:
+      pickle.dump(state, f)
+
+  def loadEnvFromFile(self, path):
+    # np_file = os.path.join(path, 'env.np')
+    # json_file = os.path.join(path, 'env.json')
+    pickle_file = os.path.join(path, 'env.pickle')
+    with open(pickle_file, 'rb') as f:
+      state = pickle.load(f)
+    self.heightmap = state['heightmap']
+    self.current_episode_steps = state['current_episode_steps']
+    self.objects = state['objects']
+    self.valid = state['valid']
+    held_object_idx = state['held_object_idx']
     self.held_object = self.objects[held_object_idx] if held_object_idx is not None else None
 
   def takeAction(self, action):
@@ -285,6 +333,15 @@ class NumpyEnv(BaseEnv):
 
   def _getCylinders(self):
     return list(filter(lambda o: type(o) is object_generation.Cylinder, self.objects))
+
+  def planBlockPicking(self):
+    # pick
+    if self.held_object is None:
+      height_sorted_objects = sorted(self.objects, key=lambda x: x.pos[-1])
+      for obj in height_sorted_objects:
+        if not obj.on_top:
+          continue
+        return self._encodeAction(self.PICK_PRIMATIVE, obj.pos[0], obj.pos[1], obj.pos[2] - 2, obj.rot)
 
   def planBlockStacking(self):
     # pick

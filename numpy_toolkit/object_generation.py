@@ -106,18 +106,12 @@ class Cube(object):
         return True
       else:
         # check rotation
-        if grasp_rot > np.pi:
-          grasp_rot -= np.pi
-        valid_rot1 = self.rot
-        if valid_rot1 < np.pi/2:
-          valid_rot2 = valid_rot1 + np.pi/2
-        else:
-          valid_rot2 = valid_rot1 - np.pi/2
-        valid_rot3 = valid_rot1 + np.pi
-        valid_rot4 = valid_rot2 + np.pi
-        valid_rots = np.array([valid_rot1, valid_rot2, valid_rot3, valid_rot4])
-        angle = np.pi - np.abs(np.abs(valid_rots - grasp_rot) - np.pi)
-        return np.any(angle < np.pi/7)
+        obj_rot = self.rot
+        angle = np.pi - np.abs(np.abs(grasp_rot - obj_rot) - np.pi)
+        while angle > np.pi / 2:
+          angle -= np.pi / 2
+        angle = min(angle, np.pi / 2 - angle)
+        return angle < np.pi / 12
     return False
 
   def isStackValid(self, stack_pos, stack_rot, bottom_block, check_rot=False):
@@ -125,7 +119,7 @@ class Cube(object):
     if bottom_block == self or not bottom_block.on_top or type(bottom_block) is not Cube:
       return False
     # check position, height
-    if np.allclose(stack_pos[:-1], bottom_block.pos[:-1], atol=(bottom_block.size / 2)) and \
+    if np.allclose(stack_pos[:-1], bottom_block.pos[:-1], atol=(bottom_block.size / 4)) and \
         bottom_block.pos[-1]<=stack_pos[-1]:
       if not check_rot:
         return True
