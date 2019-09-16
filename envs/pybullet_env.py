@@ -189,8 +189,7 @@ class PyBulletEnv(BaseEnv):
   def wait(self, iteration):
     if not self.simulate_grasp and self._isHolding():
       return
-    for _ in range(iteration):
-      pb.stepSimulation()
+    [pb.stepSimulation() for _ in range(iteration)]
 
   def getPickingBlockPlan(self, blocks, second_biggest=False):
     block_poses = []
@@ -448,11 +447,32 @@ class PyBulletEnv(BaseEnv):
         raise NotImplementedError
       shape_handles.append(handle)
     self.objects.extend(shape_handles)
+    
     for h in shape_handles:
       self.object_types[h] = shape_type
-    for _ in range(50):
-      pb.stepSimulation()
+
+    self.wait(50)
     return shape_handles
+
+  def getObjectPoses(self):
+    obj_poses = list()
+    for obj in self.objects:
+      if self._isObjectHeld(obj):
+        continue
+      pos, rot = self._getObjectPose(obj)
+      obj_poses.append(pos + rot)
+    return np.array(obj_poses)
+
+  def _getObjectPose(self, obj):
+    return pb_obj_generation.getObjectPose(obj)
+
+  def getObjectPositions(self):
+    obj_positions = list()
+    for obj in self.objects:
+      if self._isObjectHeld(obj):
+        continue
+      obj_positions.append(self._getObjectPosition(obj))
+    return np.array(obj_positions)
 
   def _getObjectPosition(self, obj):
     return pb_obj_generation.getObjectPosition(obj)

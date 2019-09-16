@@ -12,6 +12,7 @@ def createBlockPickingEnv(simulator_base_env, config):
     def __init__(self, config):
       if simulator_base_env is NumpyEnv:
         super().__init__(config)
+
       elif simulator_base_env is VrepEnv:
         super().__init__(config['seed'], config['workspace'], config['max_steps'],
                          config['obs_size'], config['port'], config['fast_mode'],

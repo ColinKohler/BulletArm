@@ -18,6 +18,7 @@ def createBlockStackingEnv(simulator_base_env, config):
         super().__init__(config)
       else:
         raise ValueError('Bad simulator base env specified.')
+
       self.simulator_base_env = simulator_base_env
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
@@ -83,7 +84,6 @@ def createBlockStackingEnv(simulator_base_env, config):
 
     def _checkTermination(self):
       ''''''
-      # return self._getNumTopBlock() == 1
       return self._checkStack()
 
     def _estimateIfXPossible(self, primitive, x, y):
@@ -92,9 +92,6 @@ def createBlockStackingEnv(simulator_base_env, config):
         return self._checkPickValid(x, y, z, 0, False)
       else:
         return self._checkPlaceValid(x, y, z, 0, False)
-
-    def getObjectPosition(self):
-      return list(map(self._getObjectPosition, self.blocks))
 
     def getPlan(self):
       return self.planBlockStacking()
@@ -106,7 +103,6 @@ def createBlockStackingEnv(simulator_base_env, config):
       if self._isHolding():
         step_left -= 1
       return step_left
-
 
   def _thunk():
     return BlockStackingEnv(config)

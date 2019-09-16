@@ -65,7 +65,6 @@ def createEnvs(num_processes, simulator, env_type, config):
     envs = [createHouseBuilding2Env(parent_env, configs[i]) for i in range(num_processes)]
   else:
     raise ValueError('Invalid environment type passed to factory. Valid types are: \'block_picking\', \'block_stacking\'.')
+
   envs = EnvRunner(envs)
-  if 'pos_candidate' in config:
-    envs.setPosCandidate(config['pos_candidate'])
   return envs
