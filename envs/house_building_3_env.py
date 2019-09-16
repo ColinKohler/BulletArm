@@ -81,14 +81,12 @@ def createHouseBuilding3Env(simulator_base_env, config):
       return False
 
     def getPlan(self):
-      # TODO: edge cases?
       return self.planHouseBuilding3(self.blocks, self.bricks, self.roofs)
 
     def getObjectPosition(self):
       return list(map(self._getObjectPosition, self.objects))
 
     def getStepLeft(self):
-      # TODO: check all edge cases?
       if not self.isSimValid():
         return 100
       if self._checkTermination():
@@ -121,10 +119,15 @@ def createHouseBuilding3Env(simulator_base_env, config):
           if self._isObjectHeld(self.bricks[0]):
             step_left += 1
         elif self._checkOnTop(self.blocks[0], self.bricks[0]) or self._checkOnTop(self.blocks[1], self.bricks[0]):
-          if self._isObjectHeld(self.roofs[0]):
+          step_left += 2
+          if self._checkOnTop(self.bricks[0], self.roofs[0]):
+            step_left += 2
+          elif self._isObjectHeld(self.roofs[0]):
             step_left += 1
         elif self._checkOnTop(self.bricks[0], self.roofs[0]):
           step_left += 2
+          if self._isObjectHeld(self.blocks[0]):
+            step_left -= 1
         elif self._isHolding():
           if self._isObjectHeld(self.roofs[0]) or self._isObjectHeld(self.bricks[0]):
             step_left += 1

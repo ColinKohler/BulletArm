@@ -299,7 +299,7 @@ class PyBulletEnv(BaseEnv):
     block2_pos = self._getObjectPosition(blocks[1])
     max_block_size = self.max_block_size
     dist = np.linalg.norm(np.array(block1_pos) - np.array(block2_pos))
-    return 1.3 * max_block_size < dist < 2.2 * max_block_size
+    return block1_pos[-1] < self.max_block_size and block2_pos[-1] < self.max_block_size and dist < 2.2 * max_block_size
 
   def brickPosValidHouseBuilding3(self, blocks, bricks):
     return self._checkOnTop(blocks[0], bricks[0]) and \
@@ -367,13 +367,29 @@ class PyBulletEnv(BaseEnv):
     valid_block_pos = self.blockPosValidHouseBuilding2(blocks)
     # not holding, do pick
     if not self._isHolding():
-      # block pos not valid, adjust block pos => pick block
       if not valid_block_pos:
-        return self.getPickingBlockPlan(blocks)
-      else:
-        # block pos valid, brick is not on top => pick brick
-        if not self.brickPosValidHouseBuilding3(blocks, bricks):
+        if self._checkOnTop(bricks[0], roofs[0]):
+          return self.getPickingRoofPlan(roofs)
+        # block pos not valid, and brick on top of any block => pick brick
+        elif self._checkOnTop(blocks[0], bricks[0]) or self._checkOnTop(blocks[1], bricks[0]):
           return self.getPickingBrickPlan(bricks)
+        # block pos not valid, and roof on top of any block => pick roof
+        elif self._checkOnTop(blocks[0], roofs[0]) or self._checkOnTop(blocks[1], roofs[0]):
+          return self.getPickingRoofPlan(roofs)
+        else:
+          # block pos not valid, adjust block pos => pick block
+          return self.getPickingBlockPlan(blocks)
+      else:
+        if not self.brickPosValidHouseBuilding3(blocks, bricks):
+          # block pos valid, brick is not on top, roof on top of brick => pick roof
+          if self._checkOnTop(bricks[0], roofs[0]):
+            return self.getPickingRoofPlan(roofs)
+          # block pos valid, brick is not on top, and roof on top of any block => pick roof
+          elif self._checkOnTop(blocks[0], roofs[0]) or self._checkOnTop(blocks[1], roofs[0]):
+            return self.getPickingRoofPlan(roofs)
+          # block pos valid, brick is not on top => pick brick
+          else:
+            return self.getPickingBrickPlan(bricks)
         # block pos valid, brick is on top => pick roof
         else:
           return self.getPickingRoofPlan(roofs)
@@ -384,7 +400,7 @@ class PyBulletEnv(BaseEnv):
         if not valid_block_pos:
           existing_pos = [self._getObjectPosition(o)[:-1] for o in blocks + roofs]
           place_pos = self._getValidPositions(self.max_block_size * 3,
-                                              self.max_block_size * 2,
+                                              self.max_block_size * 3,
                                               existing_pos,
                                               1)[0]
           x, y, z, r = place_pos[0], place_pos[1], self.place_offset, 0
@@ -406,12 +422,12 @@ class PyBulletEnv(BaseEnv):
           existing_pos = [self._getObjectPosition(o)[:-1] for o in blocks + bricks]
           try:
             place_pos = self._getValidPositions(self.max_block_size * 3,
-                                              self.max_block_size * 2,
+                                              self.max_block_size * 3,
                                               existing_pos,
                                               1)[0]
           except NoValidPositionException:
             place_pos = self._getValidPositions(self.max_block_size * 3,
-                                              self.max_block_size * 2,
+                                              self.max_block_size * 3,
                                               [],
                                               1)[0]
           x, y, z, r = place_pos[0], place_pos[1], self.place_offset, 0
@@ -706,7 +722,7 @@ class PyBulletEnv(BaseEnv):
 
   def _checkInBetween(self, obj0, obj1, obj2, threshold=None):
     if not threshold:
-      threshold = self.max_block_size * 0.5
+      threshold = 0.5*self.max_block_size
     position0 = pb_obj_generation.getObjectPosition(obj0)[:-1]
     position1 = pb_obj_generation.getObjectPosition(obj1)[:-1]
     position2 = pb_obj_generation.getObjectPosition(obj2)[:-1]
