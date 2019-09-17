@@ -11,6 +11,7 @@ from helping_hands_rl_envs.envs.brick_stacking_env import createBrickStackingEnv
 from helping_hands_rl_envs.envs.block_cylinder_stacking_env import createBlockCylinderStackingEnv
 from helping_hands_rl_envs.envs.house_building_1_env import createHouseBuilding1Env
 from helping_hands_rl_envs.envs.house_building_2_env import createHouseBuilding2Env
+from helping_hands_rl_envs.envs.house_building_3_env import createHouseBuilding3Env
 from helping_hands_rl_envs.env_runner import EnvRunner
 
 def createEnvs(num_processes, simulator, env_type, config):
@@ -63,8 +64,9 @@ def createEnvs(num_processes, simulator, env_type, config):
     envs = [createHouseBuilding1Env(parent_env, configs[i]) for i in range(num_processes)]
   elif env_type == 'house_building_2':
     envs = [createHouseBuilding2Env(parent_env, configs[i]) for i in range(num_processes)]
+  elif env_type == 'house_building_3':
+    envs = [createHouseBuilding3Env(parent_env, configs[i]) for i in range(num_processes)]
   else:
-    raise ValueError('Invalid environment type passed to factory. Valid types are: \'block_picking\', \'block_stacking\'.')
-
+    raise ValueError('Invalid environment type passed to factory.')
   envs = EnvRunner(envs)
   return envs

@@ -16,6 +16,9 @@ import helping_hands_rl_envs.pybullet_toolkit.utils.object_generation as pb_obj_
 import pickle
 import os
 
+class NoValidPositionException(Exception):
+  pass
+
 class PyBulletEnv(BaseEnv):
   '''
   PyBullet Arm RL base class.
@@ -241,6 +244,22 @@ class PyBulletEnv(BaseEnv):
         r -= np.pi
       return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
 
+  def getPickingRoofPlan(self, roofs):
+    roof_pos, roof_rot = pb_obj_generation.getObjectPose(roofs[0])
+    roof_rot = pb.getEulerFromQuaternion(roof_rot)
+    x = roof_pos[0]
+    y = roof_pos[1]
+    z = roof_pos[2] - self.pick_offset
+    r = -(roof_rot[2] + np.pi / 2)
+    while r < 0:
+      r += np.pi
+    while r > np.pi:
+      r -= np.pi
+    return self._encodeAction(self.PICK_PRIMATIVE, x, y, z, r)
+
+  def getPickingBrickPlan(self, bricks):
+    return self.getPickingRoofPlan(bricks)
+
   def planHouseBuilding1(self, blocks, triangles):
     # pick
     if not self._isHolding():
@@ -283,7 +302,12 @@ class PyBulletEnv(BaseEnv):
     block2_pos = self._getObjectPosition(blocks[1])
     max_block_size = self.max_block_size
     dist = np.linalg.norm(np.array(block1_pos) - np.array(block2_pos))
-    return 1.5 * max_block_size < dist < 2 * max_block_size
+    return block1_pos[-1] < self.max_block_size and block2_pos[-1] < self.max_block_size and dist < 2.2 * max_block_size
+
+  def brickPosValidHouseBuilding3(self, blocks, bricks):
+    return self._checkOnTop(blocks[0], bricks[0]) and \
+           self._checkOnTop(blocks[1], bricks[0]) and \
+           self._checkInBetween(bricks[0], blocks[0], blocks[1])
 
   def planHouseBuilding2(self, blocks, roofs):
     block1_pos = self._getObjectPosition(blocks[0])
@@ -293,23 +317,18 @@ class PyBulletEnv(BaseEnv):
     def dist_valid(d):
       return 1.5 * max_block_size < d < 2 * max_block_size
     valid_block_pos = dist_valid(dist)
+    # not holding, do pick
     if not self._isHolding():
+      # block pos not valid, adjust block pos => pick block
       if not valid_block_pos:
         return self.getPickingBlockPlan(blocks)
+      # block pos valid, pick roof
       else:
-        roof_pos, roof_rot = pb_obj_generation.getObjectPose(roofs[0])
-        roof_rot = pb.getEulerFromQuaternion(roof_rot)
-        x = roof_pos[0]
-        y = roof_pos[1]
-        z = roof_pos[2] - self.pick_offset
-        r = -(roof_rot[2] + np.pi / 2)
-        while r < 0:
-          r += np.pi
-        while r > np.pi:
-          r -= np.pi
-        return self._encodeAction(self.PICK_PRIMATIVE, x, y, z, r)
+        return self.getPickingRoofPlan(roofs)
+    # holding, do placing
     else:
       if self._isObjectHeld(roofs[0]):
+        # holding roof, but block pos not valid => place roof on arbitrary pos
         if not valid_block_pos:
           block_pos = [self._getObjectPosition(o)[:-1] for o in blocks]
           place_pos = self._getValidPositions(self.max_block_size * 3,
@@ -318,6 +337,7 @@ class PyBulletEnv(BaseEnv):
                                               1)[0]
           x, y, z, r = place_pos[0], place_pos[1], self.place_offset, 0
           return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
+        # holding roof, block pos valid => place roof on top
         else:
           block_pos = [self._getObjectPosition(o) for o in blocks]
           middle_point = np.mean((np.array(block_pos[0]), np.array(block_pos[1])), axis=0)
@@ -327,6 +347,7 @@ class PyBulletEnv(BaseEnv):
           while r < 0:
             r += np.pi
           return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
+      # holding block, place block on valid pos
       else:
         for i in range(10000):
           if self._isObjectHeld(blocks[0]):
@@ -343,6 +364,118 @@ class PyBulletEnv(BaseEnv):
           if dist_valid(dist):
             break
         x, y, z, r = place_pos[0], place_pos[1], self.place_offset, 0
+        return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
+
+  def planHouseBuilding3(self, blocks, bricks, roofs):
+    valid_block_pos = self.blockPosValidHouseBuilding2(blocks)
+    # not holding, do pick
+    if not self._isHolding():
+      if not valid_block_pos:
+        if self._checkOnTop(bricks[0], roofs[0]):
+          return self.getPickingRoofPlan(roofs)
+        # block pos not valid, and brick on top of any block => pick brick
+        elif self._checkOnTop(blocks[0], bricks[0]) or self._checkOnTop(blocks[1], bricks[0]):
+          return self.getPickingBrickPlan(bricks)
+        # block pos not valid, and roof on top of any block => pick roof
+        elif self._checkOnTop(blocks[0], roofs[0]) or self._checkOnTop(blocks[1], roofs[0]):
+          return self.getPickingRoofPlan(roofs)
+        else:
+          # block pos not valid, adjust block pos => pick block
+          return self.getPickingBlockPlan(blocks)
+      else:
+        if not self.brickPosValidHouseBuilding3(blocks, bricks):
+          # block pos valid, brick is not on top, roof on top of brick => pick roof
+          if self._checkOnTop(bricks[0], roofs[0]):
+            return self.getPickingRoofPlan(roofs)
+          # block pos valid, brick is not on top, and roof on top of any block => pick roof
+          elif self._checkOnTop(blocks[0], roofs[0]) or self._checkOnTop(blocks[1], roofs[0]):
+            return self.getPickingRoofPlan(roofs)
+          # block pos valid, brick is not on top => pick brick
+          else:
+            return self.getPickingBrickPlan(bricks)
+        # block pos valid, brick is on top => pick roof
+        else:
+          return self.getPickingRoofPlan(roofs)
+    # holding, do placing
+    else:
+      if self._isObjectHeld(bricks[0]):
+        # holding brick, but block pos not valid => place brick on arbitrary pos
+        if not valid_block_pos:
+          existing_pos = [self._getObjectPosition(o)[:-1] for o in blocks + roofs]
+          place_pos = self._getValidPositions(self.max_block_size * 3,
+                                              self.max_block_size * 3,
+                                              existing_pos,
+                                              1)[0]
+          x, y, z, r = place_pos[0], place_pos[1], self.place_offset, 0
+          return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
+        # holding brick, block pos valid => place brick on top
+        else:
+          block_pos = [self._getObjectPosition(o) for o in blocks]
+          middle_point = np.mean((np.array(block_pos[0]), np.array(block_pos[1])), axis=0)
+          x, y, z = middle_point[0], middle_point[1], middle_point[2] + self.place_offset
+          slop = (block_pos[0][1] - block_pos[1][1]) / (block_pos[0][0] - block_pos[1][0])
+          r = -np.arctan(slop) - np.pi / 2
+          while r < 0:
+            r += np.pi
+          return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
+
+      elif self._isObjectHeld(roofs[0]):
+        # holding roof, but block pos not valid or brick not on top of blocks => place roof on arbitrary pos
+        if not (valid_block_pos and self.brickPosValidHouseBuilding3(blocks, bricks)):
+          existing_pos = [self._getObjectPosition(o)[:-1] for o in blocks + bricks]
+          try:
+            place_pos = self._getValidPositions(self.max_block_size * 3,
+                                              self.max_block_size * 3,
+                                              existing_pos,
+                                              1)[0]
+          except NoValidPositionException:
+            place_pos = self._getValidPositions(self.max_block_size * 3,
+                                              self.max_block_size * 3,
+                                              [],
+                                              1)[0]
+          x, y, z, r = place_pos[0], place_pos[1], self.place_offset, 0
+          return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
+        # holding roof, block and brick pos valid => place roof on top
+        else:
+          brick_pos, brick_rot = pb_obj_generation.getObjectPose(bricks[0])
+          brick_rot = pb.getEulerFromQuaternion(brick_rot)
+          r = -(brick_rot[2] + np.pi / 2)
+          while r < 0:
+            r += np.pi
+          while r > np.pi:
+            r -= np.pi
+          x, y, z = brick_pos[0], brick_pos[1], brick_pos[2]+self.place_offset
+          return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
+      # holding block, place block on valid pos
+      else:
+        max_block_size = self.max_block_size
+        def dist_valid(d):
+          return 1.7 * max_block_size < d < 1.8 * max_block_size
+
+        if self._isObjectHeld(blocks[0]):
+          other_block = blocks[1]
+        else:
+          other_block = blocks[0]
+        other_block_pos = self._getObjectPosition(other_block)
+        roof_pos = [self._getObjectPosition(roofs[0])[:-1]]
+        brick_pos = [self._getObjectPosition(bricks[0])[:-1]]
+        place_pos = self._getValidPositions(self.max_block_size * 2, self.max_block_size * 2, [], 1)[0]
+        for i in range(10000):
+          try:
+            place_pos = self._getValidPositions(self.max_block_size * 2,
+                                                self.max_block_size * 2,
+                                                roof_pos+brick_pos,
+                                                1)[0]
+          except NoValidPositionException:
+            continue
+          dist = np.linalg.norm(np.array(other_block_pos[:-1]) - np.array(place_pos))
+          if dist_valid(dist):
+            break
+        slop = (place_pos[1] - other_block_pos[1]) / (place_pos[0] - other_block_pos[0])
+        r = -np.arctan(slop) - np.pi / 2
+        while r < 0:
+          r += np.pi
+        x, y, z = place_pos[0], place_pos[1], self.place_offset
         return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
 
   def planBlockStacking(self):
@@ -377,7 +510,7 @@ class PyBulletEnv(BaseEnv):
     return self._isHolding(), self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
   def _getValidPositions(self, padding, min_distance, existing_positions, num_shapes):
-    while True:
+    for _ in range(100):
       existing_positions_copy = deepcopy(existing_positions)
       valid_positions = []
       for i in range(num_shapes):
@@ -386,7 +519,7 @@ class PyBulletEnv(BaseEnv):
         y_extents = self.workspace[1][1] - self.workspace[1][0]
 
         is_position_valid = False
-        for j in range(1000):
+        for j in range(100):
           if is_position_valid:
             break
           position = [(x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2,
@@ -412,6 +545,7 @@ class PyBulletEnv(BaseEnv):
           break
       if len(valid_positions) == num_shapes:
         return valid_positions
+    raise NoValidPositionException
 
   def _generateShapes(self, shape_type=0, num_shapes=1, scale=None, pos=None, rot=None,
                            min_distance=0.1, padding=0.2, random_orientation=False):
@@ -421,9 +555,9 @@ class PyBulletEnv(BaseEnv):
       padding = self.block_original_size * self.block_scale_range[1] * 2
     elif shape_type == self.BRICK:
       min_distance = self.max_block_size * 4
-      padding = self.max_block_size * 4
+      padding = self.max_block_size * 3
     elif shape_type == self.ROOF:
-      min_distance = self.max_block_size * 2
+      min_distance = self.max_block_size * 4
       padding = self.max_block_size * 3
     shape_handles = list()
     positions = [self._getObjectPosition(o)[:-1] for o in self.objects]
@@ -609,6 +743,20 @@ class PyBulletEnv(BaseEnv):
       if p[2] == bottom_obj:
         return True
     return False
+
+  def _checkInBetween(self, obj0, obj1, obj2, threshold=None):
+    if not threshold:
+      threshold = self.max_block_size
+    position0 = pb_obj_generation.getObjectPosition(obj0)[:-1]
+    position1 = pb_obj_generation.getObjectPosition(obj1)[:-1]
+    position2 = pb_obj_generation.getObjectPosition(obj2)[:-1]
+    middle_point = np.mean((np.array(position1), np.array(position2)), axis=0)
+    dist = np.linalg.norm(middle_point - position0)
+    return dist < threshold
+
+  def _checkOriSimilar(self, objects, threshold=np.pi/7):
+    oris = list(map(lambda o: pb.getEulerFromQuaternion(pb_obj_generation.getObjectRotation(o))[2], objects))
+    return np.allclose(oris, oris, threshold)
 
   def _getPrimativeHeight(self, motion_primative, x, y):
     '''
