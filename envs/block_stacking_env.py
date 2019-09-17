@@ -8,38 +8,17 @@ def createBlockStackingEnv(simulator_base_env, config):
   class BlockStackingEnv(simulator_base_env):
     ''''''
     def __init__(self, config):
-      if 'pick_rot' not in config:
-        config['pick_rot'] = True
-      if 'place_rot' not in config:
-        config['place_rot'] = False
-      if 'scale' not in config:
-        config['scale'] = 1.
-      if 'robot' not in config:
-        config['robot'] = 'ur5'
-      if 'pos_candidate' not in config:
-        config['pos_candidate'] = None
-      if 'perfect_grasp' not in config:
-        config['perfect_grasp'] = False
-      if 'perfect_place' not in config:
-        config['perfect_place'] = False
-
       if simulator_base_env is NumpyEnv:
-        super().__init__(config['seed'], config['workspace'], config['max_steps'],
-                         config['obs_size'], config['render'], config['action_sequence'],
-                         pick_rot=config['pick_rot'], place_rot=config['place_rot'],
-                         scale=config['scale'])
+        super().__init__(config)
       elif simulator_base_env is VrepEnv:
         super().__init__(config['seed'], config['workspace'], config['max_steps'],
                          config['obs_size'], config['port'], config['fast_mode'],
                          config['action_sequence'])
       elif simulator_base_env is PyBulletEnv:
-        super().__init__(config['seed'], config['workspace'], config['max_steps'],
-                         config['obs_size'], config['fast_mode'], config['render'],
-                         config['action_sequence'], config['simulate_grasp'],
-                         config['pos_candidate'], config['perfect_grasp'], config['perfect_place'],
-                         config['robot'])
+        super().__init__(config)
       else:
         raise ValueError('Bad simulator base env specified.')
+
       self.simulator_base_env = simulator_base_env
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
@@ -105,7 +84,6 @@ def createBlockStackingEnv(simulator_base_env, config):
 
     def _checkTermination(self):
       ''''''
-      # return self._getNumTopBlock() == 1
       return self._checkStack()
 
     def _estimateIfXPossible(self, primitive, x, y):
@@ -114,9 +92,6 @@ def createBlockStackingEnv(simulator_base_env, config):
         return self._checkPickValid(x, y, z, 0, False)
       else:
         return self._checkPlaceValid(x, y, z, 0, False)
-
-    def getObjectPosition(self):
-      return list(map(self._getObjectPosition, self.blocks))
 
     def getPlan(self):
       return self.planBlockStacking()
@@ -128,7 +103,6 @@ def createBlockStackingEnv(simulator_base_env, config):
       if self._isHolding():
         step_left -= 1
       return step_left
-
 
   def _thunk():
     return BlockStackingEnv(config)

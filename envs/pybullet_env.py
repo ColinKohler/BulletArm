@@ -20,10 +20,28 @@ class PyBulletEnv(BaseEnv):
   '''
   PyBullet Arm RL base class.
   '''
-  def __init__(self, seed, workspace, max_steps=10, heightmap_size=250, fast_mode=False, render=False,
-               action_sequence='pxyr', simulate_grasp=True, pos_candidate=None, perfect_grasp=True, perfect_place=True,
-               robot='ur5'):
-    super(PyBulletEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence, pos_candidate)
+  def __init__(self, config):
+    if 'robot' not in config:
+      config['robot'] = 'ur5'
+    if 'pos_candidate' not in config:
+      config['pos_candidate'] = None
+    if 'perfect_grasp' not in config:
+      config['perfect_grasp'] = False
+    if 'perfect_place' not in config:
+      config['perfect_place'] = False
+    seed = config['seed']
+    workspace = config['workspace']
+    max_steps = config['max_steps']
+    obs_size = config['obs_size']
+    fast_mode = config['fast_mode']
+    render = config['render']
+    action_sequence = config['action_sequence']
+    simulate_grasp = config['simulate_grasp']
+    pos_candidate = config['pos_candidate']
+    perfect_grasp = config['perfect_grasp']
+    perfect_place = config['perfect_place']
+    robot = config['robot']
+    super(PyBulletEnv, self).__init__(seed, workspace, max_steps, obs_size, action_sequence, pos_candidate)
 
     # Connect to pybullet and add data files to path
     if render:
@@ -175,8 +193,7 @@ class PyBulletEnv(BaseEnv):
   def wait(self, iteration):
     if not self.simulate_grasp and self._isHolding():
       return
-    for _ in range(iteration):
-      pb.stepSimulation()
+    [pb.stepSimulation() for _ in range(iteration)]
 
   def getPickingBlockPlan(self, blocks, second_biggest=False):
     block_poses = []
@@ -434,11 +451,32 @@ class PyBulletEnv(BaseEnv):
         raise NotImplementedError
       shape_handles.append(handle)
     self.objects.extend(shape_handles)
+    
     for h in shape_handles:
       self.object_types[h] = shape_type
-    for _ in range(50):
-      pb.stepSimulation()
+
+    self.wait(50)
     return shape_handles
+
+  def getObjectPoses(self):
+    obj_poses = list()
+    for obj in self.objects:
+      if self._isObjectHeld(obj):
+        continue
+      pos, rot = self._getObjectPose(obj)
+      obj_poses.append(pos + rot)
+    return np.array(obj_poses)
+
+  def _getObjectPose(self, obj):
+    return pb_obj_generation.getObjectPose(obj)
+
+  def getObjectPositions(self):
+    obj_positions = list()
+    for obj in self.objects:
+      if self._isObjectHeld(obj):
+        continue
+      obj_positions.append(self._getObjectPosition(obj))
+    return np.array(obj_positions)
 
   def _getObjectPosition(self, obj):
     return pb_obj_generation.getObjectPosition(obj)

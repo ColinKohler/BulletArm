@@ -38,8 +38,10 @@ def worker(remote, parent_remote, env_fn):
         break
       elif cmd == 'get_spaces':
         remote.send((env.obs_shape, env.action_space, env.action_shape))
-      elif cmd == 'get_obj_position':
-        remote.send(env.getObjectPosition())
+      elif cmd == 'get_obj_positions':
+        remote.send(env.getObjectPositions())
+      elif cmd == 'get_obj_poses':
+        remote.send(env.getObjectPoses())
       elif cmd == 'get_plan':
         remote.send(env.getPlan())
       elif cmd == 'set_pos_candidate':
@@ -149,6 +151,18 @@ class EnvRunner(object):
 
     return states, depths
 
+  def reset_envs(self, env_nums):
+    for env_num in env_nums:
+      self.remotes[env_num].send(('reset', None))
+
+    obs = [self.remotes[env_num].recv() for env_num in env_nums]
+    states, depths = zip(*obs)
+
+    states = torch.from_numpy(np.stack(states).astype(float)).float()
+    depths = torch.from_numpy(np.stack(depths)).float()
+
+    return states, depths
+
   def close(self):
     '''
     Close all worker processes
@@ -166,7 +180,7 @@ class EnvRunner(object):
   def restore(self):
     for remote in self.remotes:
       remote.send(('restore', None))
-
+      
   def saveToFile(self, path):
     for i, remote in enumerate(self.remotes):
       p = os.path.join(path, str(i))
@@ -178,12 +192,19 @@ class EnvRunner(object):
     for i, remote in enumerate(self.remotes):
       remote.send(('load_from_file', os.path.join(path, str(i))))
 
-  def getObjPosition(self):
+  def getObjPositions(self):
     for remote in self.remotes:
-      remote.send(('get_obj_position', None))
+      remote.send(('get_obj_positions', None))
 
-    position = [remote.recv() for remote in self.remotes]
-    return position
+    positions = [remote.recv() for remote in self.remotes]
+    return np.array(positions)
+
+  def getObjPoses(self):
+    for remote in self.remotes:
+      remote.send(('get_obj_poses', None))
+
+    poses = [remote.recv() for remote in self.remotes]
+    return np.array(poses)
 
   def getPlan(self):
     for remote in self.remotes:
