@@ -726,7 +726,7 @@ class PyBulletEnv(BaseEnv):
 
   def _checkInBetween(self, obj0, obj1, obj2, threshold=None):
     if not threshold:
-      threshold = 0.5*self.max_block_size
+      threshold = self.max_block_size
     position0 = pb_obj_generation.getObjectPosition(obj0)[:-1]
     position1 = pb_obj_generation.getObjectPosition(obj1)[:-1]
     position2 = pb_obj_generation.getObjectPosition(obj2)[:-1]
