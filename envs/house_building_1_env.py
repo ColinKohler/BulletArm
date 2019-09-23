@@ -37,9 +37,15 @@ def createHouseBuilding1Env(simulator_base_env, config):
 
     def reset(self):
       ''''''
-      super(HouseBuilding1Env, self).reset()
-      self.triangles = self._generateShapes(self.TRIANGLE, 1, random_orientation=self.random_orientation)
-      self.blocks = self._generateShapes(0, self.num_obj-1, random_orientation=self.random_orientation)
+      while True:
+        super(HouseBuilding1Env, self).reset()
+        try:
+          self.triangles = self._generateShapes(self.TRIANGLE, 1, random_orientation=self.random_orientation)
+          self.blocks = self._generateShapes(0, self.num_obj-1, random_orientation=self.random_orientation)
+        except:
+          continue
+        else:
+          break
       return self._getObservation()
 
     def saveState(self):
