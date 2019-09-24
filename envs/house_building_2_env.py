@@ -37,9 +37,15 @@ def createHouseBuilding2Env(simulator_base_env, config):
 
     def reset(self):
       ''''''
-      super(HouseBuilding2Env, self).reset()
-      self.blocks = self._generateShapes(0, self.num_obj-1, random_orientation=self.random_orientation)
-      self.roofs = self._generateShapes(self.ROOF, 1, random_orientation=self.random_orientation)
+      while True:
+        super(HouseBuilding2Env, self).reset()
+        try:
+          self.blocks = self._generateShapes(0, self.num_obj-1, random_orientation=self.random_orientation)
+          self.roofs = self._generateShapes(self.ROOF, 1, random_orientation=self.random_orientation)
+        except:
+          continue
+        else:
+          break
       return self._getObservation()
 
     def saveState(self):

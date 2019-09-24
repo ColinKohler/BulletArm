@@ -331,10 +331,16 @@ class PyBulletEnv(BaseEnv):
         # holding roof, but block pos not valid => place roof on arbitrary pos
         if not valid_block_pos:
           block_pos = [self._getObjectPosition(o)[:-1] for o in blocks]
-          place_pos = self._getValidPositions(self.max_block_size * 3,
-                                              self.max_block_size * 2,
-                                              block_pos,
-                                              1)[0]
+          try:
+            place_pos = self._getValidPositions(self.max_block_size * 3,
+                                                self.max_block_size * 2,
+                                                block_pos,
+                                                1)[0]
+          except NoValidPositionException:
+            place_pos = self._getValidPositions(self.max_block_size * 3,
+                                                self.max_block_size * 2,
+                                                [],
+                                                1)[0]
           x, y, z, r = place_pos[0], place_pos[1], self.place_offset, 0
           return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
         # holding roof, block pos valid => place roof on top
@@ -349,6 +355,7 @@ class PyBulletEnv(BaseEnv):
           return self._encodeAction(self.PLACE_PRIMATIVE, x, y, z, r)
       # holding block, place block on valid pos
       else:
+        place_pos = self._getValidPositions(self.max_block_size * 2, self.max_block_size * 2, [], 1)[0]
         for i in range(10000):
           if self._isObjectHeld(blocks[0]):
             other_block = blocks[1]
@@ -356,10 +363,13 @@ class PyBulletEnv(BaseEnv):
             other_block = blocks[0]
           other_block_pos = self._getObjectPosition(other_block)
           roof_pos = [self._getObjectPosition(roofs[0])[:-1]]
-          place_pos = self._getValidPositions(self.max_block_size * 2,
-                                              self.max_block_size * 2,
-                                              roof_pos,
-                                              1)[0]
+          try:
+            place_pos = self._getValidPositions(self.max_block_size * 2,
+                                                self.max_block_size * 2,
+                                                roof_pos,
+                                                1)[0]
+          except NoValidPositionException:
+            continue
           dist = np.linalg.norm(np.array(other_block_pos[:-1]) - np.array(place_pos))
           if dist_valid(dist):
             break
