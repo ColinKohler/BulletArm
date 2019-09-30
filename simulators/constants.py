@@ -1,0 +1,13 @@
+# Shape types
+CUBE = 0
+SPHERE = 1
+CYLINDER = 2
+CONE = 3
+BRICK = 4
+TRIANGLE = 5
+ROOF = 6
+
+# Motion primatives
+PICK_PRIMATIVE = 0
+PLACE_PRIMATIVE = 1
+PUSH_PRIMATIVE = 2
