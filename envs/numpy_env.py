@@ -3,7 +3,7 @@ import numpy as np
 import numpy.random as npr
 
 from helping_hands_rl_envs.envs.base_env import BaseEnv
-from helping_hands_rl_envs.numpy_toolkit import object_generation
+from helping_hands_rl_envs.simulators.numpy import object_generation
 
 import os
 import json

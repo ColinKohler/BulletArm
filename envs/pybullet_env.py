@@ -8,10 +8,10 @@ import pybullet as pb
 import pybullet_data
 
 from helping_hands_rl_envs.envs.base_env import BaseEnv
-from helping_hands_rl_envs.pybullet_toolkit.robots.ur5_rg2 import UR5_RG2
-from helping_hands_rl_envs.pybullet_toolkit.robots.kuka import Kuka
-from helping_hands_rl_envs.pybullet_toolkit.robots.ur5_robotiq import UR5_Robotiq
-import helping_hands_rl_envs.pybullet_toolkit.utils.object_generation as pb_obj_generation
+from helping_hands_rl_envs.simulators.pybullet.robots.ur5_rg2 import UR5_RG2
+from helping_hands_rl_envs.simulators.pybullet.robots.kuka import Kuka
+from helping_hands_rl_envs.simulators.pybullet.robots.ur5_robotiq import UR5_Robotiq
+import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
 
 import pickle
 import os
@@ -447,7 +447,7 @@ class PyBulletEnv(BaseEnv):
         raise NotImplementedError
       shape_handles.append(handle)
     self.objects.extend(shape_handles)
-    
+
     for h in shape_handles:
       self.object_types[h] = shape_type
 
