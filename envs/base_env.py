@@ -1,6 +1,8 @@
 import numpy as np
 import numpy.random  as npr
 
+from helping_hands_rl_envs.simulators import constants
+
 class BaseEnv(object):
   '''
   Base Arm RL environment.
@@ -35,20 +37,6 @@ class BaseEnv(object):
     self.obs_shape = self.heightmap_shape
     self.action_space = np.concatenate((self.workspace[:2,:].T, np.array([[0.0], [0.0]])), axis=1)
     self.action_shape = 3
-
-    # Motion primatives
-    self.PICK_PRIMATIVE = 0
-    self.PLACE_PRIMATIVE = 1
-    self.PUSH_PRIMATIVE = 2
-
-    # Shape types
-    self.CUBE = 0
-    self.SPHERE = 1
-    self.CYLINDER = 2
-    self.CONE = 3
-    self.BRICK = 4
-    self.TRIANGLE = 5
-    self.ROOF = 6
 
     assert action_sequence.find('x') != -1
     assert action_sequence.find('y') != -1
@@ -112,7 +100,7 @@ class BaseEnv(object):
     local_region = self.heightmap[int(max(y_pixel - self.heightmap_size/20, 0)):int(min(y_pixel + self.heightmap_size/20, self.heightmap_size)), \
                                   int(max(x_pixel - self.heightmap_size/20, 0)):int(min(x_pixel + self.heightmap_size/20, self.heightmap_size))]
     safe_z_pos = np.max(local_region) + self.workspace[2][0]
-    safe_z_pos = safe_z_pos - self.offset if motion_primative == self.PICK_PRIMATIVE else safe_z_pos + self.offset
+    safe_z_pos = safe_z_pos - self.offset if motion_primative == constants.PICK_PRIMATIVE else safe_z_pos + self.offset
 
     return safe_z_pos
 

@@ -1,10 +1,10 @@
 import itertools
 
 class NumpyObject(object):
-  new_id = itertools.count().next
+  new_id = itertools.count()
 
   def __init__(self, object_type_id, pos, rot, size, heightmap):
-    self.id = resource_cl.new_id()
+    self.id = resource_cl.new_id.next()
     self.object_type_id = object_type_id
 
     self.pos = pos

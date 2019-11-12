@@ -55,7 +55,7 @@ class Kuka(RobotBase):
 
   def reset(self):
     ''''''
-    ur5_urdf_filepath = os.path.join(self.root_dir, 'urdf/kuka/kuka_with_gripper2.sdf')
+    ur5_urdf_filepath = os.path.join(self.root_dir, 'simulators/urdf/kuka/kuka_with_gripper2.sdf')
     self.id = pb.loadSDF(ur5_urdf_filepath)[0]
     pb.resetBasePositionAndOrientation(self.id, [-0.2,0,0], [0,0,0,1])
 

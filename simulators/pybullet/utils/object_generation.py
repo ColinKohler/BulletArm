@@ -5,26 +5,13 @@ import numpy as np
 import numpy.random as npr
 
 import helping_hands_rl_envs
+from helping_hands_rl_envs.simulators.pybullet.objects.cube import Cube
+from helping_hands_rl_envs.simulators.pybullet.objects.rectangle import Rectangle
+from helping_hands_rl_envs.simulators.pybullet.objects.triangle import Triangle
 
 def generateCube(pos, rot, scale):
   ''''''
-  root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
-  urdf_filepath = os.path.join(root_dir, 'simulators/urdf/object/cube.urdf')
-  return pb.loadURDF(urdf_filepath, basePosition=pos, baseOrientation=rot, globalScaling=scale)
-
-def getObjectPosition(obj):
-  ''''''
-  pos, rot = pb.getBasePositionAndOrientation(obj)
-  return pos
-
-def getObjectRotation(obj):
-  ''''''
-  pos, rot = pb.getBasePositionAndOrientation(obj)
-  return rot
-
-def getObjectPose(obj):
-  pos, rot = pb.getBasePositionAndOrientation(obj)
-  return pos, rot
+  return Cube(pos, rot, scale)
 
 def generateBrick(pos, rot, scale):
   root_dir = os.path.dirname(helping_hands_rl_envs.__file__)

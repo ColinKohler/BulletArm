@@ -51,8 +51,8 @@ class RobotBase:
     if not objects:
       return None
     end_pos = self._getEndEffectorPosition()
-    sorted_obj = sorted(objects, key=lambda o: np.linalg.norm(end_pos-object_generation.getObjectPosition(o)))
-    obj_pos = object_generation.getObjectPosition(sorted_obj[0])
+    sorted_obj = sorted(objects, key=lambda o: np.linalg.norm(end_pos-o.getPosition()))
+    obj_pos = sorted_obj[0].getPosition()
     if np.linalg.norm(end_pos[:-1]-obj_pos[:-1]) < 0.05 and np.abs(end_pos[-1]-obj_pos[-1]) < 0.025:
       return sorted_obj[0]
 
@@ -177,7 +177,7 @@ class RobotBase:
 
     end_pos = self._getEndEffectorPosition()
     end_rot = self._getEndEffectorRotation()
-    obj_pos, obj_rot = object_generation.getObjectPose(self.holding_obj)
+    obj_pos, obj_rot = self.holding_obj.getPose()
     oTend = pybullet_util.getMatrix(end_pos, end_rot)
     oTobj = pybullet_util.getMatrix(obj_pos, obj_rot)
     endTobj = np.linalg.inv(oTend).dot(oTobj)
@@ -190,7 +190,7 @@ class RobotBase:
     obj_pos_ = oTobj_[:3, -1]
     obj_rot_ = transformations.quaternion_from_matrix(oTobj_)
 
-    pb.resetBasePositionAndOrientation(self.holding_obj, obj_pos_, obj_rot_)
+    self.holding_obj.resetPose(obj_pos_, obj_rot_)
 
   def _teleportArmWithObjJointPose(self, joint_pose):
     if not self.holding_obj:
@@ -199,7 +199,7 @@ class RobotBase:
 
     end_pos = self._getEndEffectorPosition()
     end_rot = self._getEndEffectorRotation()
-    obj_pos, obj_rot = object_generation.getObjectPose(self.holding_obj)
+    obj_pos, obj_rot = self.holding_obj.getPose()
     oTend = pybullet_util.getMatrix(end_pos, end_rot)
     oTobj = pybullet_util.getMatrix(obj_pos, obj_rot)
     endTobj = np.linalg.inv(oTend).dot(oTobj)
@@ -212,7 +212,7 @@ class RobotBase:
     obj_pos_ = oTobj_[:3, -1]
     obj_rot_ = transformations.quaternion_from_matrix(oTobj_)
 
-    pb.resetBasePositionAndOrientation(self.holding_obj, obj_pos_, obj_rot_)
+    self.holding_obj.resetPose(obj_pos_, obj_rot_)
 
   def _getEndEffectorPosition(self):
     ''''''

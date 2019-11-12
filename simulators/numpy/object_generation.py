@@ -5,9 +5,9 @@ import numpy as np
 from scipy import ndimage
 import numpy.random as npr
 
-import constants
-from cube import Cube
-from cylinder import Cylinder
+from helping_hands_rl_envs.simulators.numpy import object_generation
+from helping_hands_rl_envs.simulators.numpy.objects.cube import Cube
+from helping_hands_rl_envs.simulators.numpy.objects.cylinder import Cylinder
 
 def generateObject(object_type_id, heightmap, pos, rot, size):
   if object_type_id == constants.CUBE:

@@ -2,9 +2,9 @@ import sys
 sys.path.append('..')
 
 import numpy as np
-from numpy_object import NumpyObject
 
-import constants
+from helping_hands_rl_envs.simulators.numpy.objects.numpy_object import NumpyObject
+from helping_hands_rl_envs.simulators import constants
 
 class Cylinder(NumpyObject):
   def __init__(self, pos, rot, size, heightmap):

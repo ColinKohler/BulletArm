@@ -93,7 +93,6 @@ class UR5_RG2(RobotBase):
     limit = self.gripper_joint_limit[0]
     self._sendGripperCommand(limit, limit)
     self.gripper_closed = False
-    self.holding_obj = None
     it = 0
     while p1 > 0.0:
       pb.stepSimulation()
