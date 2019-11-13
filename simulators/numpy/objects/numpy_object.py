@@ -1,10 +1,10 @@
 import itertools
 
 class NumpyObject(object):
-  new_id = itertools.count()
+  id_iter = itertools.count()
 
-  def __init__(self, object_type_id, pos, rot, size, heightmap):
-    self.id = resource_cl.new_id.next()
+  def __init__(self, object_type_id, pos, rot, size):
+    self.id = next(NumpyObject.id_iter)
     self.object_type_id = object_type_id
 
     self.pos = pos
@@ -12,5 +12,11 @@ class NumpyObject(object):
     self.size = size
     self.height = pos[-1]
 
-    self.heightmap = heightmap
-    self.heightmap_size = heightmap.shape[0]
+  def getPosition(self):
+    return self.pos
+
+  def getRotation(self):
+    return [0., 0., self.rot]
+
+  def getPose(self):
+    return self.getPosition(), self.getRotation()

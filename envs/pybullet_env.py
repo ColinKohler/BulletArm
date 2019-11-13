@@ -412,6 +412,7 @@ class PyBulletEnv(BaseEnv):
       objs.append(obj)
     return np.array(objs)
 
+  # TODO: Move this to base clase
   def getObjectPoses(self):
     obj_poses = list()
     for obj in self.objects:

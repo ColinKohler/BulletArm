@@ -5,14 +5,15 @@ import numpy as np
 
 from helping_hands_rl_envs.simulators.numpy.objects.numpy_object import NumpyObject
 from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.simulators.numpy import utils
 
 class Cube(NumpyObject):
   def __init__(self, pos, rot, size, heightmap):
-    super(Cube, self).__init__(constants.CUBE, pos, rot, size, heightmap)
+    super(Cube, self).__init__(constants.CUBE, pos, rot, size)
 
     self.x_min, self.x_max = max(0, int(pos[0] - size / 2)), min(heightmap.shape[0], int(pos[0] + size / 2))
     self.y_min, self.y_max = max(0, int(pos[1] - size / 2)), min(heightmap.shape[1], int(pos[1] + size / 2))
-    self.mask = self.getMask()
+    self.mask = self.getMask(heightmap)
 
     self.chunk_before = None
     self.on_top = True
@@ -28,7 +29,7 @@ class Cube(NumpyObject):
       self.y_min, self.y_max = max(0, int(pos[1] - self.size / 2)), min(heightmap.shape[1], int(pos[1] + self.size / 2))
       self.mask = np.zeros_like(heightmap, dtype=np.int)
       self.mask[self.y_min:self.y_max, self.x_min:self.x_max] = 1
-      self.mask = rotateImage(self.mask, np.rad2deg(self.rot), (self.pos[1], self.pos[0]))
+      self.mask = utils.rotateImage(self.mask, np.rad2deg(self.rot), (self.pos[1], self.pos[0]))
       self.mask = (self.mask == 1)
       base_h = heightmap[self.mask].max() if self.mask.sum() > 0 else 0
       self.pos[-1] = self.height + base_h
@@ -84,10 +85,10 @@ class Cube(NumpyObject):
         return np.any(angle < np.pi/7)
     return False
 
-  def getMask(self):
+  def getMask(self, heightmap):
     mask = np.zeros_like(heightmap, dtype=np.int)
     mask[self.y_min:self.y_max, self.x_min:self.x_max] = 1
-    mask = rotateImage(mask, np.rad2deg(self.rot), (self.pos[1], self.pos[0]))
+    mask = utils.rotateImage(mask, np.rad2deg(self.rot), (self.pos[1], self.pos[0]))
     mask = (mask == 1)
 
     return mask

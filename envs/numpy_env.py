@@ -1,13 +1,13 @@
+import os
+import json
+import pickle
 from copy import deepcopy
 import numpy as np
 import numpy.random as npr
 
 from helping_hands_rl_envs.envs.base_env import BaseEnv
 from helping_hands_rl_envs.simulators.numpy import object_generation
-
-import os
-import json
-import pickle
+from helping_hands_rl_envs.simulators import constants
 
 class NumpyEnv(BaseEnv):
   def __init__(self, config):
@@ -38,6 +38,10 @@ class NumpyEnv(BaseEnv):
     self.valid = True
     self.pick_rot = pick_rot
     self.place_rot = place_rot
+
+    # TODO: These are kinda pointless but the pick/place planners currently use them...
+    self.pick_offset = 0.0
+    self.place_offset = 0.0
 
   def reset(self):
     ''''''
@@ -93,13 +97,13 @@ class NumpyEnv(BaseEnv):
   def takeAction(self, action):
     motion_primative, x, y, z, rot = self._getSpecificAction(action)
 
-    if motion_primative == self.PICK_PRIMATIVE:
+    if motion_primative == constants.PICK_PRIMATIVE:
       self.held_object = self._pick(x, y, z, rot)
-    elif motion_primative == self.PLACE_PRIMATIVE:
+    elif motion_primative == constants.PLACE_PRIMATIVE:
       if self.held_object:
         self._place(x, y, z, rot)
         self.held_object = None
-    elif motion_primative == self.PUSH_PRIMATIVE:
+    elif motion_primative == constants.PUSH_PRIMATIVE:
       pass
     else:
       raise ValueError('Bad motion primative supplied for action.')
@@ -265,53 +269,15 @@ class NumpyEnv(BaseEnv):
       size = npr.randint(self.scale * self.heightmap_size / 10, self.scale * self.heightmap_size / 7)
       position.append(int(size / 2))
 
-      if object_type is self.CUBE:
+      if object_type is constants.CUBE:
         obj, self.heightmap = object_generation.generateCube(self.heightmap, position, rotation, size)
-      elif object_type is self.CYLINDER:
+      elif object_type is constants.CYLINDER:
         obj, self.heightmap = object_generation.generateCylinder(self.heightmap, position, rotation, size)
       else:
         raise NotImplementedError
       objects.append(obj)
     self.objects.extend(objects)
     return objects
-
-
-    # for i in range(num_objects):
-    #   # Generate random drop config
-    #   x_extents = self.workspace[0][1] - self.workspace[0][0]
-    #   y_extents = self.workspace[1][1] - self.workspace[1][0]
-    #
-    #   is_position_valid = False
-    #   while not is_position_valid:
-    #     position = [int((x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2),
-    #                 int((y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2),
-    #                 0]
-    #     if self.pos_candidate is not None:
-    #       position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0]-position[0]).argmin()]
-    #       position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1]-position[1]).argmin()]
-    #
-    #     if positions:
-    #       is_position_valid = np.all(np.sum(np.abs(np.array(positions)[:, :2] - np.array(position)[:2]), axis=1) > min_distance)
-    #     else:
-    #       is_position_valid = True
-    #
-    #   positions.append(position)
-    #   if random_orientation:
-    #     rotation = np.pi*np.random.random_sample()
-    #   else:
-    #     rotation = 0.0
-    #   size = npr.randint(self.scale*self.heightmap_size/10, self.scale*self.heightmap_size/7)
-    #   position[2] = int(size / 2)
-    #
-    #   if object_type is self.CUBE:
-    #     obj, self.heightmap = object_generation.generateCube(self.heightmap, position, rotation, size)
-    #   elif object_type is self.CYLINDER:
-    #     obj, self.heightmap = object_generation.generateCylinder(self.heightmap, position, rotation, size)
-    #   else:
-    #     raise NotImplementedError
-    #   objects.append(obj)
-    # self.objects.extend(objects)
-    # return objects
 
   def _removeObject(self, obj):
     if obj == self.held_object:
@@ -327,6 +293,38 @@ class NumpyEnv(BaseEnv):
   def _getObjectPosition(self, obj):
     ''''''
     return obj.pos
+
+  def _isObjOnTop(self, obj, objects=None):
+    if not objects:
+      objects = self.objects
+    obj_position = obj.getPosition()
+    for o in objects:
+      if self._isObjectHeld(o) or o is obj:
+        continue
+      block_position = o.getPosition()
+      # TODO: This atol could be bad, the direct port from pybullet didnt work so I did this instead
+      if np.allclose(block_position[:-1], obj_position[:-1],atol=0.01) and \
+         block_position[-1] > obj_position[-1]:
+        return False
+    return True
+
+  # TODO: Move this to base clase
+  def getObjects(self):
+    objs = list()
+    for obj in self.objects:
+      if self._isObjectHeld(obj):
+        continue
+      objs.append(obj)
+    return np.array(objs)
+
+  def getObjectPoses(self):
+    obj_poses = list()
+    for obj in self.objects:
+      if self._isObjectHeld(obj):
+        continue
+      pos, rot = obj.getPose()
+      obj_poses.append(pos + rot)
+    return np.array(obj_poses)
 
   def _getBlocks(self):
     return list(filter(lambda o: type(o) is object_generation.Cube, self.objects))
