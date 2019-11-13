@@ -10,8 +10,8 @@ def worker(remote, parent_remote, env_fn):
   Worker function which interacts with the environment over remote
 
   Args:
-    - remote: Worjer remote connection
-    - parent_remote: EnvRunner remote connection
+    - remote: Worker remote connection
+    - parent_remote: RL EnvRunner remote connection
     - env_fn: Function which creates a deictic environment
   '''
   parent_remote.close()
@@ -38,12 +38,6 @@ def worker(remote, parent_remote, env_fn):
         break
       elif cmd == 'get_spaces':
         remote.send((env.obs_shape, env.action_space, env.action_shape))
-      elif cmd == 'get_obj_positions':
-        remote.send(env.getObjectPositions())
-      elif cmd == 'get_obj_poses':
-        remote.send(env.getObjectPoses())
-      elif cmd == 'get_plan':
-        remote.send(env.getPlan())
       elif cmd == 'set_pos_candidate':
         env.setPosCandidate(data)
       elif cmd == 'save_to_file':
@@ -56,11 +50,10 @@ def worker(remote, parent_remote, env_fn):
         raise NotImplementerError
   except KeyboardInterrupt:
     print('EnvRunner worker: caught keyboard interrupt')
-  # finally:
 
-class EnvRunner(object):
+class RLRunner(object):
   '''
-  Environment runner which runs mulitpl environemnts in parallel in subprocesses
+  RL environment runner which runs mulitpl environemnts in parallel in subprocesses
   and communicates with them via pipe
 
   Args:
@@ -180,7 +173,7 @@ class EnvRunner(object):
   def restore(self):
     for remote in self.remotes:
       remote.send(('restore', None))
-      
+
   def saveToFile(self, path):
     for i, remote in enumerate(self.remotes):
       p = os.path.join(path, str(i))
@@ -191,27 +184,6 @@ class EnvRunner(object):
   def loadFromFile(self, path):
     for i, remote in enumerate(self.remotes):
       remote.send(('load_from_file', os.path.join(path, str(i))))
-
-  def getObjPositions(self):
-    for remote in self.remotes:
-      remote.send(('get_obj_positions', None))
-
-    positions = [remote.recv() for remote in self.remotes]
-    return np.array(positions)
-
-  def getObjPoses(self):
-    for remote in self.remotes:
-      remote.send(('get_obj_poses', None))
-
-    poses = [remote.recv() for remote in self.remotes]
-    return np.array(poses)
-
-  def getPlan(self):
-    for remote in self.remotes:
-      remote.send(('get_plan', None))
-    plan = [remote.recv() for remote in self.remotes]
-    plan = torch.from_numpy(np.stack(plan)).float()
-    return plan
 
   def setPosCandidate(self, pos_candidate):
     for remote in self.remotes:

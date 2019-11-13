@@ -11,14 +11,19 @@ from helping_hands_rl_envs.envs.brick_stacking_env import createBrickStackingEnv
 from helping_hands_rl_envs.envs.block_cylinder_stacking_env import createBlockCylinderStackingEnv
 from helping_hands_rl_envs.envs.house_building_1_env import createHouseBuilding1Env
 from helping_hands_rl_envs.envs.house_building_2_env import createHouseBuilding2Env
-from helping_hands_rl_envs.env_runner import EnvRunner
 
-def createEnvs(num_processes, simulator, env_type, config):
+from helping_hands_rl_envs.planners.planner_factory import createPlanner
+
+from helping_hands_rl_envs.rl_runner import RLRunner
+from helping_hands_rl_envs.data_runner import DataRunner
+
+def createEnvs(num_processes, runner_type, simulator, env_type, config):
   '''
   Create a number of environments on different processes to run in parralel
 
   Args:
     - num_processes: Number of envs to create
+    - runner_type: data or rl runner
     - simulator: String indicating the type of simulator to use
     - env_type: String indicating the type of environment to create
     - conifg: Dict containing intialization arguments for the env
@@ -64,7 +69,15 @@ def createEnvs(num_processes, simulator, env_type, config):
   elif env_type == 'house_building_2':
     envs = [createHouseBuilding2Env(parent_env, configs[i]) for i in range(num_processes)]
   else:
-    raise ValueError('Invalid environment type passed to factory. Valid types are: \'block_picking\', \'block_stacking\'.')
+    raise ValueError('Invalid environment type passed to factory.')
 
-  envs = EnvRunner(envs)
+  if runner_type == 'rl':
+    envs = RLRunner(envs)
+  elif runner_type == 'data':
+    if 'planner' not in config: config['planner'] = env_type
+    planners = [createPlanner(config['planner']) for i in range(num_processes)]
+    envs = DataRunner(envs, planners)
+  else:
+    raise ValueError('Invalid env runner type given. Must specify \'rl\', or \'data\'')
+
   return envs

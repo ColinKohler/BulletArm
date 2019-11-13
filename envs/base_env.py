@@ -33,14 +33,35 @@ class BaseEnv(object):
     self.heightmap_shape = (self.heightmap_size, self.heightmap_size, 1)
     self.heightmap_resolution = self.workspace_size / self.heightmap_size
 
-    # Setup observation and action spaces
-    self.obs_shape = self.heightmap_shape
-    self.action_space = np.concatenate((self.workspace[:2,:].T, np.array([[0.0], [0.0]])), axis=1)
-    self.action_shape = 3
-
     assert action_sequence.find('x') != -1
     assert action_sequence.find('y') != -1
     self.action_sequence = action_sequence
+
+    # Setup observation and action spaces
+    self.obs_shape = self.heightmap_shape
+    self.num_primatives = constants.NUM_PRIMATIVES
+
+    # TODO: This is a bit of a hacky way to set this but I'm not sure if there is a better way due to the
+    #       action seqeuence stuff
+    self.action_space = [[], []]
+    primative_idx, x_idx, y_idx, z_idx, rot_idx = map(lambda a: self.action_sequence.find(a), ['p', 'x', 'y', 'z', 'r'])
+    if primative_idx != -1:
+      self.action_has_primative = True
+    if x_idx != -1:
+      self.action_space[0].append(self.workspace[0,0])
+      self.action_space[1].append(self.workspace[0,1])
+    if y_idx != -1:
+      self.action_space[0].append(self.workspace[1,0])
+      self.action_space[1].append(self.workspace[1,1])
+    if z_idx != -1:
+      self.action_space[0].append(self.workspace[2,0])
+      self.action_space[1].append(self.workspace[2,1])
+    if rot_idx != -1:
+      self.action_space[0].append(0.0)
+      self.action_space[1].append(180.0)
+
+    self.action_space = np.array(self.action_space)
+    self.action_shape = self.action_space.shape[0]
 
     self.offset = 0.01
 
