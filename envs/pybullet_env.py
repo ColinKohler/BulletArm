@@ -196,52 +196,6 @@ class PyBulletEnv(BaseEnv):
       return
     [pb.stepSimulation() for _ in range(iteration)]
 
-  def getPickingBlockPlan(self, blocks, second_biggest=False):
-    block_poses = []
-    for obj in blocks:
-      pos, rot = obj.getPose()
-      rot = pb.getEulerFromQuaternion(rot)
-      block_poses.append((obj, pos, rot))
-
-    if second_biggest:
-      block_poses.sort(key=lambda x: x[1][-1], reverse=True)
-      block_poses = block_poses[1:] + block_poses[:1]
-
-    x, y, z, r = block_poses[0][1][0], block_poses[0][1][1], block_poses[0][1][2]-self.pick_offset, block_poses[0][2][2]
-    for op in block_poses:
-      if not self._isObjOnTop(op[0]):
-        continue
-      x = op[1][0]
-      y = op[1][1]
-      z = op[1][2] - self.pick_offset
-      r = -op[2][2]
-      while r < 0:
-        r += np.pi
-      while r > np.pi:
-        r -= np.pi
-      break
-    return self._encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
-
-  def getStackingBlockPlan(self, blocks):
-    block_poses = []
-    for obj in blocks:
-      pos, rot = obj.getPose()
-      rot = pb.getEulerFromQuaternion(rot)
-      block_poses.append((obj, pos, rot))
-    block_poses.sort(key=lambda x: x[1][-1], reverse=True)
-    for op in block_poses:
-      if self._isObjectHeld(op[0]):
-        continue
-      x = op[1][0]
-      y = op[1][1]
-      z = op[1][2] + self.place_offset
-      r = -op[2][2]
-      while r < 0:
-        r += np.pi
-      while r > np.pi:
-        r -= np.pi
-      return self._encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
-
   def planHouseBuilding1(self, blocks, triangles):
     # pick
     if not self._isHolding():
@@ -345,15 +299,6 @@ class PyBulletEnv(BaseEnv):
             break
         x, y, z, r = place_pos[0], place_pos[1], self.place_offset, 0
         return self._encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
-
-  def planBlockStacking(self):
-    # pick
-    if not self._isHolding():
-      return self.getPickingBlockPlan(self.objects, True)
-
-    # place
-    else:
-      return self.getStackingBlockPlan(self.objects)
 
   def _isPointInWorkspace(self, p):
     '''
