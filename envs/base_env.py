@@ -58,7 +58,7 @@ class BaseEnv(object):
       self.action_space[1].append(self.workspace[2,1])
     if rot_idx != -1:
       self.action_space[0].append(0.0)
-      self.action_space[1].append(180.0)
+      self.action_space[1].append(np.pi)
 
     self.action_space = np.array(self.action_space)
     self.action_shape = self.action_space.shape[0]

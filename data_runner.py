@@ -25,10 +25,6 @@ def worker(remote, parent_remote, env_fn, planner_fn):
       if cmd == 'step':
         obs, reward, done = env.step(data)
         remote.send((obs, reward, done))
-      elif cmd == 'step_auto_reset':
-        obs, reward, done = env.step(data)
-        if done: obs = env.reset()
-        remote.send((obs, reward, done))
       elif cmd == 'reset':
         obs = env.reset()
         remote.send(obs)
@@ -66,17 +62,17 @@ class DataRunner(object):
     for remote in self.worker_remotes:
       remote.close()
 
-  def step(self, actions, auto_reset=True):
+  def step(self, actions):
     '''
     Step the environments synchronously.
 
     Args:
       - actions: PyTorch variable of environment actions
     '''
-    self.stepAsync(actions, auto_reset)
+    self.stepAsync(actions)
     return self.stepWait()
 
-  def stepAsync(self, actions, auto_reset=True):
+  def stepAsync(self, actions):
     '''
     Step each environment in a async fashion
 
@@ -85,10 +81,7 @@ class DataRunner(object):
     '''
     actions = actions.squeeze(1).numpy()
     for remote, action in zip(self.remotes, actions):
-      if auto_reset:
-        remote.send(('step_auto_reset', action))
-      else:
-        remote.send(('step', action))
+      remote.send(('step', action))
     self.waiting = True
 
   def stepWait(self):

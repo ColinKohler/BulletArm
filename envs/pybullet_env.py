@@ -459,13 +459,21 @@ class PyBulletEnv(BaseEnv):
     self.wait(50)
     return shape_handles
 
+  def getObjects(self):
+    objs = list()
+    for obj in self.objects:
+      if self._isObjectHeld(obj):
+        continue
+      objs.append(obj)
+    return np.array(objs)
+
   def getObjectPoses(self):
     obj_poses = list()
     for obj in self.objects:
       if self._isObjectHeld(obj):
         continue
       pos, rot = obj.getPose()
-      obj_poses.append(pos + rot)
+      obj_poses.append(pos + pb.getEulerFromQuaternion(rot))
     return np.array(obj_poses)
 
   def getObjectPositions(self):
@@ -501,7 +509,7 @@ class PyBulletEnv(BaseEnv):
 
   def _moveObjectOutWorkspace(self, obj):
     pos = [-0.50, 0, 0.25]
-    pb.resetBasePositionAndOrientation(obj, pos, pb.getQuaternionFromEuler([0., 0., 0.]))
+    obj.resetPose(pos, pb.getQuaternionFromEuler([0., 0., 0.]))
 
   def _isObjOnTop(self, obj, objects=None):
     if not objects:
