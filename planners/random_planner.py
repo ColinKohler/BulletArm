@@ -4,8 +4,8 @@ import numpy.random as npr
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
 
 class RandomPlanner(BasePlanner):
-  def __init__(self, env):
-    super(RandomPlanner, self).__init__(env)
+  def __init__(self, env, config):
+    super(RandomPlanner, self).__init__(env, config)
 
   def getNextAction(self):
     location = npr.uniform(self.env.action_space[:,0], self.env.action_space[:,1])

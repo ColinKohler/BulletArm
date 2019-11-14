@@ -95,7 +95,7 @@ class NumpyEnv(BaseEnv):
     self.held_object = self.objects[held_object_idx] if held_object_idx is not None else None
 
   def takeAction(self, action):
-    motion_primative, x, y, z, rot = self._getSpecificAction(action)
+    motion_primative, x, y, z, rot = self._deocdeAction(action)
 
     if motion_primative == constants.PICK_PRIMATIVE:
       self.held_object = self._pick(x, y, z, rot)

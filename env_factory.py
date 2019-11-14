@@ -17,7 +17,7 @@ from helping_hands_rl_envs.planners.planner_factory import createPlanner
 from helping_hands_rl_envs.rl_runner import RLRunner
 from helping_hands_rl_envs.data_runner import DataRunner
 
-def createEnvs(num_processes, runner_type, simulator, env_type, config):
+def createEnvs(num_processes, runner_type, simulator, env_type, env_config, planner_config=None):
   '''
   Create a number of environments on different processes to run in parralel
 
@@ -30,23 +30,23 @@ def createEnvs(num_processes, runner_type, simulator, env_type, config):
 
   Returns: EnvRunner containing all environments
   '''
-  if 'action_sequence' not in config:
-    config['action_sequence'] = 'pxyr'
-  if 'simulate_grasp' not in config:
-    config['simulate_grasp'] = True
+  if 'action_sequence' not in env_config:
+    env_config['action_sequence'] = 'pxyr'
+  if 'simulate_grasp' not in env_config:
+    env_config['simulate_grasp'] = True
 
   # Clone env config and generate random seeds for the different processes
-  configs = [copy.copy(config) for _ in range(num_processes)]
-  for i, config in enumerate(configs):
-    config['seed'] = config['seed'] + i if 'seed' in config else npr.randint(100)
+  env_configs = [copy.copy(env_config) for _ in range(num_processes)]
+  for i, env_config in enumerate(env_configs):
+    env_config['seed'] = env_config['seed'] + i if 'seed' in env_config else npr.randint(100)
 
   # Set the super environment and add details to the configs as needed
   if simulator == 'vrep':
     for i in range(num_processes):
-      if 'port' in configs[i]:
-        configs[i]['port'] += i
+      if 'port' in env_configs[i]:
+        env_configs[i]['port'] += i
       else:
-        configs[i]['port'] = 19997+i
+        env_configs[i]['port'] = 19997+i
     parent_env = VrepEnv
   elif simulator == 'pybullet':
     parent_env = PyBulletEnv
@@ -57,25 +57,25 @@ def createEnvs(num_processes, runner_type, simulator, env_type, config):
 
   # Create the various environments
   if env_type == 'block_picking':
-    envs = [createBlockPickingEnv(parent_env, configs[i]) for i in range(num_processes)]
+    envs = [createBlockPickingEnv(parent_env, env_configs[i]) for i in range(num_processes)]
   elif env_type == 'block_stacking':
-    envs = [createBlockStackingEnv(parent_env, configs[i]) for i in range(num_processes)]
+    envs = [createBlockStackingEnv(parent_env, env_configs[i]) for i in range(num_processes)]
   elif env_type == 'brick_stacking':
-    envs = [createBrickStackingEnv(parent_env, configs[i]) for i in range(num_processes)]
+    envs = [createBrickStackingEnv(parent_env, env_configs[i]) for i in range(num_processes)]
   elif env_type == 'block_cylinder_stacking':
-    envs = [createBlockCylinderStackingEnv(parent_env, configs[i]) for i in range(num_processes)]
+    envs = [createBlockCylinderStackingEnv(parent_env, env_configs[i]) for i in range(num_processes)]
   elif env_type == 'house_building_1':
-    envs = [createHouseBuilding1Env(parent_env, configs[i]) for i in range(num_processes)]
+    envs = [createHouseBuilding1Env(parent_env, env_configs[i]) for i in range(num_processes)]
   elif env_type == 'house_building_2':
-    envs = [createHouseBuilding2Env(parent_env, configs[i]) for i in range(num_processes)]
+    envs = [createHouseBuilding2Env(parent_env, env_configs[i]) for i in range(num_processes)]
   else:
     raise ValueError('Invalid environment type passed to factory.')
 
   if runner_type == 'rl':
     envs = RLRunner(envs)
   elif runner_type == 'data':
-    if 'planner' not in config: config['planner'] = env_type
-    planners = [createPlanner(config['planner']) for i in range(num_processes)]
+    if 'planner' not in planner_config: planner_config['planner'] = env_type
+    planners = [createPlanner(planner_config) for i in range(num_processes)]
     envs = DataRunner(envs, planners)
   else:
     raise ValueError('Invalid env runner type given. Must specify \'rl\', or \'data\'')

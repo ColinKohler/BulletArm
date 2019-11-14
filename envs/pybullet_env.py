@@ -1,6 +1,5 @@
 import time
 import copy
-from copy import deepcopy
 import numpy as np
 import numpy.random as npr
 
@@ -63,15 +62,16 @@ class PyBulletEnv(BaseEnv):
     else:
       raise NotImplementedError
 
+    # TODO: Move this somewhere it makes sense
     self.block_original_size = 0.05
     self.block_scale_range = (0.6, 0.7)
     self.min_block_size = self.block_original_size * self.block_scale_range[0]
     self.max_block_size = self.block_original_size * self.block_scale_range[1]
+
     self.pick_pre_offset = 0.15
     self.pick_offset = 0.005
     self.place_pre_offset = 0.15
     self.place_offset = self.block_scale_range[1]*self.block_original_size
-
 
     # Setup camera parameters
     self.view_matrix = pb.computeViewMatrixFromYawPitchRoll([workspace[0].mean(), workspace[1].mean(), 0], 1.0, -90, -90, 0, 2)
@@ -80,7 +80,7 @@ class PyBulletEnv(BaseEnv):
     self.proj_matrix = pb.computeProjectionMatrix(-workspace_x_offset, workspace_x_offset, -workspace_y_offset, workspace_y_offset, -1.0, 10.0)
 
     # Rest pose for arm
-    rot = pb.getQuaternionFromEuler([0,np.pi,0])
+    rot = pb.getQuaternionFromEuler([0, np.pi, 0])
     self.rest_pose = [[0.0, 0.5, 0.5], rot]
 
     self.objects = list()
@@ -114,8 +114,8 @@ class PyBulletEnv(BaseEnv):
     return self._getObservation()
 
   def saveState(self):
-    self.state = {'current_episode_steps': deepcopy(self.current_episode_steps),
-                  'objects': deepcopy(self.objects),
+    self.state = {'current_episode_steps': copy.deepcopy(self.current_episode_steps),
+                  'objects': copy.deepcopy(self.objects),
                   'env_state': pb.saveState()
                   }
     self.robot.saveState()
@@ -132,9 +132,9 @@ class PyBulletEnv(BaseEnv):
     pb.saveBullet(bullet_file)
     self.robot.saveState()
     state = {
-      'current_episode_steps': deepcopy(self.current_episode_steps),
-      'objects': deepcopy(self.objects),
-      'robot_state': deepcopy(self.robot.state),
+      'current_episode_steps': copy.deepcopy(self.current_episode_steps),
+      'objects': copy.deepcopy(self.objects),
+      'robot_state': copy.deepcopy(self.robot.state),
       'random_state': np.random.get_state()
     }
     with open(pickle_file, 'wb') as f:
@@ -153,7 +153,7 @@ class PyBulletEnv(BaseEnv):
     self.robot.restoreState()
 
   def takeAction(self, action):
-    motion_primative, x, y, z, rot = self._getSpecificAction(action)
+    motion_primative, x, y, z, rot = self._decodeAction(action)
 
     # Get transform for action
     pos = [x, y, z]
@@ -163,17 +163,15 @@ class PyBulletEnv(BaseEnv):
     if motion_primative == constants.PICK_PRIMATIVE:
       if self.perfect_grasp and not self._checkPerfectGrasp(x, y, z, -rot, self.objects):
         return
-      self.robot.pick(pos, rot_q, self.pick_pre_offset, dynamic=self.dynamic, objects=self.objects,
-                      simulate_grasp=self.simulate_grasp)
+      self.robot.pick(pos, rot_q, self.pick_pre_offset, dynamic=self.dynamic,
+                      objects=self.objects, simulate_grasp=self.simulate_grasp)
     elif motion_primative == constants.PLACE_PRIMATIVE:
       obj = self.robot.holding_obj
       if self.robot.holding_obj is not None:
         if self.perfect_place and not self._checkPerfectPlace(x, y, z, -rot, self.objects):
           return
-        self.robot.place(pos, rot_q, self.place_pre_offset, dynamic=self.dynamic, simulate_grasp=self.simulate_grasp)
-      # self.wait(100)
-      # pb.applyExternalForce(obj.object_id, -1, [0.0, 0.0, -0.25], [0.0, 0.0, 0.0], pb.WORLD_FRAME)
-      # self.wait(100)
+        self.robot.place(pos, rot_q, self.place_pre_offset,
+                         dynamic=self.dynamic, simulate_grasp=self.simulate_grasp)
     elif motion_primative == constants.PUSH_PRIMATIVE:
       pass
     else:
@@ -183,11 +181,9 @@ class PyBulletEnv(BaseEnv):
     for obj in self.objects:
       if self._isObjectHeld(obj):
         continue
-      p = obj.getPosition()
-      if not self._isPointInWorkspace(p):
+      if not self._isObjectWithinWorkspace(obj):
         return False
       if self.pos_candidate is not None:
-        if np.abs(self.pos_candidate[0] - p[0]).min() > 0.02 or np.abs(self.pos_candidate[1] - p[1]).min() > 0.02:
           return False
     return True
 
@@ -313,18 +309,27 @@ class PyBulletEnv(BaseEnv):
            self.workspace[1][0] < p[1] < self.workspace[1][1] and \
            self.workspace[2][0] < p[2] < self.workspace[2][1]
 
-  def _getObservation(self):
+  def _getObservation(self, action=None):
     ''''''
+    old_heightmap = self.heightmap
+
     image_arr = pb.getCameraImage(width=self.heightmap_size, height=self.heightmap_size,
                                   viewMatrix=self.view_matrix, projectionMatrix=self.proj_matrix)
     self.heightmap = image_arr[3] - np.min(image_arr[3])
     self.heightmap = self.heightmap.T
 
-    return self._isHolding(), self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
+    if action is None or self._isHolding() == False:
+      in_hand_img = np.zeros((self.in_hand_size, self.in_hand_size, 1))
+    else:
+      motion_primative, x, y, z, rot = self._decodeAction(action)
+      in_hand_img = self.getInHandImage(old_heightmap, x, y, rot, self.heightmap)
+
+
+    return self._isHolding(), in_hand_img, self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
   def _getValidPositions(self, padding, min_distance, existing_positions, num_shapes):
     while True:
-      existing_positions_copy = deepcopy(existing_positions)
+      existing_positions_copy = copy.deepcopy(existing_positions)
       valid_positions = []
       for i in range(num_shapes):
         # Generate random drop config
@@ -412,14 +417,15 @@ class PyBulletEnv(BaseEnv):
       objs.append(obj)
     return np.array(objs)
 
-  # TODO: Move this to base clase
   def getObjectPoses(self):
     obj_poses = list()
     for obj in self.objects:
       if self._isObjectHeld(obj):
         continue
       pos, rot = obj.getPose()
-      obj_poses.append(pos + pb.getEulerFromQuaternion(rot))
+      rot = self.convertQuaternionToEuler(rot)
+
+      obj_poses.append(pos + rot)
     return np.array(obj_poses)
 
   def getObjectPositions(self):
@@ -587,3 +593,16 @@ class PyBulletEnv(BaseEnv):
     else:
       safe_z_pos += self.place_offset
     return safe_z_pos
+
+  def convertQuaternionToEuler(self, rot):
+    rot = list(pb.getEulerFromQuaternion(rot))
+
+    # TODO: Do we only need to reverse the z-axis here?
+    # TODO: This normalization should be improved
+    rot[2] *= -1
+    while rot[2] < 0:
+      rot[2] += np.pi
+    while rot[2] > np.pi:
+      rot[2] -= np.pi
+
+    return rot

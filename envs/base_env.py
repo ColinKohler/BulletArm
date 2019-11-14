@@ -1,5 +1,6 @@
 import numpy as np
 import numpy.random  as npr
+import skimage.transform as sk_transform
 
 from helping_hands_rl_envs.simulators import constants
 
@@ -30,6 +31,7 @@ class BaseEnv(object):
 
     # Setup heightmap
     self.heightmap_size = heightmap_size
+    self.in_hand_size = 24
     self.heightmap_shape = (self.heightmap_size, self.heightmap_size, 1)
     self.heightmap_resolution = self.workspace_size / self.heightmap_size
 
@@ -65,7 +67,7 @@ class BaseEnv(object):
 
     self.offset = 0.01
 
-  def _getSpecificAction(self, action):
+  def _decodeAction(self, action):
     """
     decode input action base on self.action_sequence
     Args:
@@ -97,6 +99,13 @@ class BaseEnv(object):
     if rot_idx != -1:
       action[rot_idx] = r
     return action
+
+  def _checkTermination(self):
+    '''
+    Sub-envs should override this to set their own termination conditions
+    Returns: False
+    '''
+    return False
 
   def _getShapeName(self, shape_type):
     ''' Get the shape name from the type (int) '''
@@ -138,23 +147,66 @@ class BaseEnv(object):
 
     return int(x_pixel), int(y_pixel)
 
+  def _isObjectOnCandidatePose(self, obj):
+    '''
+    Checks if the object has drifted off the candidate positions.
+    Args:
+      - obs: A simulated object
+    Returns: True if object is close to a candidate position, False otherwise
+    '''
+    pos = obj.getPosition()
+    return np.abs(self.pos_candidate[0] - pos[0]).min() > 0.02 or \
+           np.abs(self.pos_candidate[1] - pos[1]).min() > 0.02
+
+  def _isObjectWithinWorkspace(self, obj):
+    '''
+    Checks if the object is entirely within the workspace.
+    Args:
+      - obs: A simulated object
+    Returns: True if bounding box of object is within workspace, False otherwise
+    '''
+    xyz_min, xyz_max = obj.getBoundingBox()
+    # TODO: Need to always use max z value as min z value is just under zero
+    p1 = [xyz_min[0], xyz_min[1], xyz_max[2]]
+    p2 = [xyz_min[0], xyz_max[1], xyz_max[2]]
+    p3 = [xyz_max[0], xyz_min[1], xyz_max[2]]
+    p4 = xyz_max
+
+    return all(map(lambda x: self._isPointInWorkspace(x), [p1, p2, p3, p4]))
+
   def _isPointInWorkspace(self, p):
     '''
     Checks if the given point is within the workspace
-
     Args:
       - p: [x, y, z] point
-
     Returns: True in point is within workspace, False otherwise
     '''
     return p[0] > self.workspace[0][0] - 0.1 and p[0] < self.workspace[0][1] + 0.1 and \
            p[1] > self.workspace[1][0] - 0.1 and p[1] < self.workspace[1][1] + 0.1 and \
            p[2] > self.workspace[2][0] and p[2] < self.workspace[2][1]
 
-  def _checkTermination(self):
-    '''
-    Sub-envs should override this to set their own termination conditions
-    Returns: False
-    '''
-    return False
+  def getInHandImage(self, heightmap, x, y, rot, next_heightmap):
+    # Pad heightmaps for grasps near the edges of the workspace
+    heightmap = np.pad(heightmap, int(self.in_hand_size / 2), 'constant', constant_values=0.0)
+    next_heightmap = np.pad(next_heightmap, int(self.in_hand_size / 2), 'constant', constant_values=0.0)
 
+    x, y = self._getPixelsFromPos(x, y)
+    x = x + int(self.in_hand_size / 2)
+    y = y + int(self.in_hand_size / 2)
+
+    # Get the corners of the crop
+    x_min = int(x - self.in_hand_size / 2)
+    x_max = int(x + self.in_hand_size / 2)
+    y_min = int(y - self.in_hand_size / 2)
+    y_max = int(y + self.in_hand_size / 2)
+
+    # Crop both heightmaps
+    crop = heightmap[y_min:y_max, x_min:x_max]
+    next_crop = next_heightmap[y_min:y_max, x_min:x_max]
+
+    # Adjust the in-hand image to remove background objects
+    next_max = np.max(next_crop)
+    crop[crop >= next_max] -= next_max
+
+    crop = sk_transform.rotate(crop, rot)
+    return crop.reshape((self.in_hand_size, self.in_hand_size, 1))

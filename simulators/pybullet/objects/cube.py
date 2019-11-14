@@ -16,3 +16,6 @@ class Cube(PybulletObject):
     object_id = pb.loadURDF(urdf_filepath, basePosition=pos, baseOrientation=rot, globalScaling=scale)
 
     super(Cube, self).__init__(constants.CUBE, object_id)
+
+    self.block_original_size = 0.05
+    self.block_size = 0.05 * scale

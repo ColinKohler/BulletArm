@@ -19,15 +19,18 @@ class PybulletObject(object):
 
   def getPosition(self):
     pos, _ = pb.getBasePositionAndOrientation(self.object_id)
-    return pos
+    return list(pos)
 
   def getRotation(self):
     _, rot = pb.getBasePositionAndOrientation(self.object_id)
-    return rot
+    return list(rot)
 
   def getPose(self):
     pos, rot = pb.getBasePositionAndOrientation(self.object_id)
-    return pos, rot
+    return list(pos), list(rot)
+
+  def getBoundingBox(self):
+    return list(pb.getAABB(self.object_id))
 
   def resetPose(self, pos, rot):
     pb.resetBasePositionAndOrientation(self.object_id, pos, rot)

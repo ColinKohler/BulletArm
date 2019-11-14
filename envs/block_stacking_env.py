@@ -41,7 +41,7 @@ def createBlockStackingEnv(simulator_base_env, config):
 
       self.takeAction(action)
       self.wait(100)
-      obs = self._getObservation()
+      obs = self._getObservation(action)
       done = self._checkTermination()
       curr_num_top = self._getNumTopBlock()
       if self.reward_type == 'dense':

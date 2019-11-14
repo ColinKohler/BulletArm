@@ -5,8 +5,8 @@ from helping_hands_rl_envs.planners.base_planner import BasePlanner
 from helping_hands_rl_envs.simulators import constants
 
 class BlockStackingPlanner(BasePlanner):
-  def __init__(self, env):
-    super(BlockStackingPlanner, self).__init__(env)
+  def __init__(self, env, config):
+    super(BlockStackingPlanner, self).__init__(env, config)
 
   def getNextAction(self):
     if self.env._isHolding():
@@ -17,17 +17,15 @@ class BlockStackingPlanner(BasePlanner):
   def getPickingAction(self):
     blocks, block_poses = self.getBlockPoses(roll=True)
 
-    x, y, z, r = block_poses[0][0], block_poses[0][1], block_poses[0][2] - self.env.pick_offset, -block_poses[0][5]
+    x, y, z, r = block_poses[0][0], block_poses[0][1], block_poses[0][2], block_poses[0][5]
     for block, pose in zip(blocks, block_poses):
       # TODO: This function could use a better name
       if self.env._isObjOnTop(block):
-        x, y, z, r = pose[0], pose[1], pose[2] - self.env.pick_offset, -pose[5]
-        # TODO: Why do we need these while loops
-        while r < 0:
-          r += np.pi
-        while r > np.pi:
-          r -= np.pi
+        x, y, z, r = pose[0], pose[1], pose[2], pose[5]
         break
+
+    if self.pos_noise: x, y = self.addNoiseToPos(x, y)
+    if self.rot_noise: rot = self.addNoiseToRot(rot)
 
     return self.env._encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
@@ -36,13 +34,10 @@ class BlockStackingPlanner(BasePlanner):
 
     for block, pose in zip(blocks, block_poses):
       if not self.env._isObjectHeld(block):
-        x, y, z, r = pose[0], pose[1], pose[2] + self.env.place_offset, -pose[5]
-        # TODO: Why do we need these while loops
-        while r < 0:
-          r += np.pi
-        while r > np.pi:
-          r -= np.pi
-        break
+        x, y, z, r = pose[0], pose[1], pose[2], pose[5]
+
+    if self.pos_noise: x, y = self.addNoiseToPos(x, y)
+    if self.rot_noise: rot = self.addNoiseToRot(rot)
 
     return self.env._encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 

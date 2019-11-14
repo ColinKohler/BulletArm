@@ -24,7 +24,8 @@ def worker(remote, parent_remote, env_fn, planner_fn):
       cmd, data = remote.recv()
       if cmd == 'step':
         obs, reward, done = env.step(data)
-        remote.send((obs, reward, done))
+        valid = env.isSimValid()
+        remote.send((obs, reward, done, valid))
       elif cmd == 'reset':
         obs = env.reset()
         remote.send(obs)
@@ -96,17 +97,19 @@ class DataRunner(object):
     results = [remote.recv() for remote in self.remotes]
     self.waiting = False
 
-    obs, rewards, dones = zip(*results)
-    states, depths = zip(*obs)
+    obs, rewards, dones, valids = zip(*results)
+    states, hand_obs, depths = zip(*obs)
 
     states = torch.from_numpy(np.stack(states).astype(float)).float()
+    hand_obs = torch.from_numpy(np.stack(hand_obs)).float()
     depths = torch.from_numpy(np.stack(depths)).float()
     rewards = torch.from_numpy(np.stack(rewards)).float()
     if len(rewards.shape) == 1:
       rewards = rewards.unsqueeze(1)
     dones = torch.from_numpy(np.stack(dones).astype(np.float32)).float()
+    valids = torch.from_numpy(np.stack(valids).astype(np.float32)).float()
 
-    return states, depths, rewards, dones
+    return states, hand_obs, depths, rewards, dones, valids
 
   def reset(self):
     '''
@@ -118,21 +121,23 @@ class DataRunner(object):
       remote.send(('reset', None))
 
     obs = [remote.recv() for remote in self.remotes]
-    states, depths = zip(*obs)
+    states, hand_obs, depths = zip(*obs)
 
     states = torch.from_numpy(np.stack(states).astype(float)).float()
+    hand_obs = torch.from_numpy(np.stack(hand_obs)).float()
     depths = torch.from_numpy(np.stack(depths)).float()
 
-    return states, depths
+    return states, hand_obs, depths
 
   def reset_envs(self, env_nums):
     for env_num in env_nums:
       self.remotes[env_num].send(('reset', None))
 
     obs = [self.remotes[env_num].recv() for env_num in env_nums]
-    states, depths = zip(*obs)
+    states, in_hands, depths = zip(*obs)
 
     states = torch.from_numpy(np.stack(states).astype(float)).float()
+    in_hand_imgs = torch.from_numpy(np.stack(in_hand_imgs)).float()
     depths = torch.from_numpy(np.stack(depths)).float()
 
     return states, depths
@@ -153,6 +158,13 @@ class DataRunner(object):
     action = [remote.recv() for remote in self.remotes]
     action = torch.from_numpy(np.stack(action)).float()
     return action
+
+  def didBlockFall(self):
+    for remote in self.remotes:
+      remote.send(('did_block_fall', None))
+    did_block_fall = [remote.recv() for remote in self.remotes]
+    did_block_fall = torch.from_numpy(np.stack(did_block_fall)).float()
+    return did_block_fall
 
   def setPosCandidate(self, pos_candidate):
     for remote in self.remotes:
