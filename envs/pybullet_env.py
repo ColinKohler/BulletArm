@@ -107,6 +107,7 @@ class PyBulletEnv(BaseEnv):
 
     self.heightmap = None
     self.current_episode_steps = 1
+    self.last_action = None
 
     # Step simulation
     pb.stepSimulation()
@@ -154,6 +155,7 @@ class PyBulletEnv(BaseEnv):
 
   def takeAction(self, action):
     motion_primative, x, y, z, rot = self._decodeAction(action)
+    self.last_action = [motion_primative, self.robot.holding_obj, x, y, z, rot]
 
     # Get transform for action
     pos = [x, y, z]
@@ -191,6 +193,12 @@ class PyBulletEnv(BaseEnv):
     if not self.simulate_grasp and self._isHolding():
       return
     [pb.stepSimulation() for _ in range(iteration)]
+
+  def didBlockFall(self):
+    motion_primative, obj, x, y, z, rot = self.last_action
+
+    return motion_primative == constants.PLACE_PRIMATIVE and \
+           np.abs(z - obj.getPosition()[-1]) > obj.getHeight()
 
   def planHouseBuilding1(self, blocks, triangles):
     # pick
@@ -543,7 +551,6 @@ class PyBulletEnv(BaseEnv):
       angle -= np.pi/2
     angle = min(angle, np.pi / 2 - angle)
     return angle < np.pi / 12
-
 
   def _checkObjUpright(self, obj):
     triangle_rot = obj.getRotation()

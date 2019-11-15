@@ -34,6 +34,8 @@ def worker(remote, parent_remote, env_fn, planner_fn):
         break
       elif cmd == 'get_next_action':
         remote.send(planner.getNextAction())
+      elif cmd == 'did_block_fall':
+        remote.send(env.didBlockFall())
       else:
         raise NotImplementerError
   except KeyboardInterrupt:

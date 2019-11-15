@@ -19,3 +19,6 @@ class Cube(PybulletObject):
 
     self.block_original_size = 0.05
     self.block_size = 0.05 * scale
+
+  def getHeight(self):
+    return self.block_size
