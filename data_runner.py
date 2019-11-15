@@ -136,13 +136,13 @@ class DataRunner(object):
       self.remotes[env_num].send(('reset', None))
 
     obs = [self.remotes[env_num].recv() for env_num in env_nums]
-    states, in_hands, depths = zip(*obs)
+    states, hand_obs, depths = zip(*obs)
 
     states = torch.from_numpy(np.stack(states).astype(float)).float()
-    in_hand_imgs = torch.from_numpy(np.stack(in_hand_imgs)).float()
+    hand_obs = torch.from_numpy(np.stack(hand_obs)).float()
     depths = torch.from_numpy(np.stack(depths)).float()
 
-    return states, depths
+    return states, hand_obs, depths
 
   def close(self):
     '''
