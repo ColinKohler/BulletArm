@@ -13,11 +13,11 @@ class BasePlanner(object):
   def addNoiseToPos(self, x, y):
     # TODO: Would we ever want to include noise on the z-axis here?
     if self.pos_noise:
-      x += npr.uniform(-self.pos_noise, self.pos_noise)
-      y += npr.uniform(-self.pos_noise, self.pos_noise)
+      x = np.clip(x + npr.uniform(-self.pos_noise, self.pos_noise), self.env.workspace[0,0], self.env.workspace[0,1])
+      y = np.clip(y + npr.uniform(-self.pos_noise, self.pos_noise), self.env.workspace[1,0], self.env.workspace[1,1])
     return x, y
 
   def addNoiseToRot(self, rot):
     if self.rot_noise:
-      rot += npr.uniform(-self.rot_noise, self.rot_noise)
+      rot = np.clip(rot + npr.uniform(-self.rot_noise, self.rot_noise), 0., np.pi)
     return rot

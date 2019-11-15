@@ -15,7 +15,6 @@ state, hand_obs, obs = envs.reset()
 done = False
 while not done:
   plt.imshow(obs.squeeze(), cmap='gray', vmin=0.0, vmax=0.1); plt.show()
-  plt.imshow(hand_obs.squeeze(), cmap='gray', vmin=0.0, vmax=0.1); plt.show()
   action = envs.getNextAction()
   state_, hand_obs_, obs_, reward, done, valid = envs.step(action)
 
@@ -25,4 +24,3 @@ while not done:
   hand_obs = hand_obs_
 
 plt.imshow(obs.squeeze(), cmap='gray', vmin=0.0, vmax=0.1); plt.show()
-plt.imshow(hand_obs.squeeze(), cmap='gray', vmin=0.0, vmax=0.1); plt.show()
