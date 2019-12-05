@@ -15,31 +15,48 @@ class BlockStackingPlanner(BasePlanner):
       return self.getPickingAction()
 
   def getPickingAction(self):
-    blocks, block_poses = self.getBlockPoses(roll=True)
+    if npr.rand() > self.rand_pick_prob:
+      blocks, block_poses = self.getBlockPoses(roll=True)
 
-    x, y, z, r = block_poses[0][0], block_poses[0][1], block_poses[0][2], block_poses[0][5]
-    for block, pose in zip(blocks, block_poses):
-      # TODO: This function could use a better name
-      if self.env._isObjOnTop(block):
-        x, y, z, r = pose[0], pose[1], pose[2], pose[5]
-        break
+      x, y, z, r = block_poses[0][0], block_poses[0][1], block_poses[0][2], block_poses[0][5]
+      for block, pose in zip(blocks, block_poses):
+        # TODO: This function could use a better name
+        if self.env._isObjOnTop(block):
+          x, y, z, r = pose[0], pose[1], pose[2], pose[5]
+          break
 
-    if self.pos_noise: x, y = self.addNoiseToPos(x, y)
-    if self.rot_noise: rot = self.addNoiseToRot(rot)
+      if self.pos_noise: x, y = self.addNoiseToPos(x, y)
+      if self.rot_noise: rot = self.addNoiseToRot(rot)
 
-    return self.env._encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
+      return self.env._encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
+    else:
+      x = npr.uniform(self.env.workspace[0,0], self.env.workspace[0,1])
+      y = npr.uniform(self.env.workspace[1,0], self.env.workspace[1,1])
+      z = 0.
+      r = npr.uniform(0., np.pi)
+
+      return self.env._encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
+
 
   def getPlacingAction(self):
-    blocks, block_poses = self.getBlockPoses()
+    if npr.rand() > self.rand_place_prob:
+      blocks, block_poses = self.getBlockPoses()
 
-    for block, pose in zip(blocks, block_poses):
-      if not self.env._isObjectHeld(block):
-        x, y, z, r = pose[0], pose[1], pose[2], pose[5]
+      for block, pose in zip(blocks, block_poses):
+        if not self.env._isObjectHeld(block):
+          x, y, z, r = pose[0], pose[1], pose[2], pose[5]
 
-    if self.pos_noise: x, y = self.addNoiseToPos(x, y)
-    if self.rot_noise: rot = self.addNoiseToRot(rot)
+      if self.pos_noise: x, y = self.addNoiseToPos(x, y)
+      if self.rot_noise: rot = self.addNoiseToRot(rot)
 
-    return self.env._encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
+      return self.env._encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
+    else:
+      x = npr.uniform(self.env.workspace[0,0], self.env.workspace[0,1])
+      y = npr.uniform(self.env.workspace[1,0], self.env.workspace[1,1])
+      z = 0.
+      r = npr.uniform(0., np.pi)
+
+      return self.env._encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def getBlockPoses(self, roll=False):
     blocks = np.array(self.env.getObjects())

@@ -4,6 +4,8 @@ import numpy.random as npr
 class BasePlanner(object):
   def __init__(self, env, config):
     self.env = env
+    self.rand_pick_prob = config['rand_pick_prob'] if 'rand_pick_prob' in config else 0.0
+    self.rand_place_prob = config['rand_place_prob'] if 'rand_place_prob' in config else 0.0
     self.pos_noise = config['pos_noise'] if 'pos_noise' in config else None
     self.rot_noise = config['rot_noise'] if 'rot_noise' in config else None
 

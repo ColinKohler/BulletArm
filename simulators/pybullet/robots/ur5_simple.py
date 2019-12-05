@@ -15,12 +15,12 @@ from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 from helping_hands_rl_envs.simulators.pybullet.utils import object_generation
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 
-class UR5_RG2(RobotBase):
+class UR5_Simple(RobotBase):
   '''
 
   '''
   def __init__(self):
-    super().__init__()
+    super(UR5_Simple, self).__init__()
     # Setup arm and gripper variables
     self.max_forces = [150, 150, 150, 28, 28, 28, 30, 30]
     self.gripper_close_force = [30] * 2
@@ -37,7 +37,7 @@ class UR5_RG2(RobotBase):
 
   def reset(self):
     ''''''
-    ur5_urdf_filepath = os.path.join(self.root_dir, 'simulators/urdf/ur5/ur5_w_simple_gripper.urdf')
+    ur5_urdf_filepath = os.path.join(self.root_dir, 'simulators/urdf/ur5/ur5_simple_gripper.urdf')
     self.id = pb.loadURDF(ur5_urdf_filepath, [0,0,0], [0,0,0,1])
     # self.is_holding = False
     self.gripper_closed = False

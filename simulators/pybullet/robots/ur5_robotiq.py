@@ -24,7 +24,7 @@ jointTypeList = ["REVOLUTE", "PRISMATIC", "SPHERICAL", "PLANAR", "FIXED"]
 
 class UR5_Robotiq(RobotBase):
   def __init__(self):
-    super().__init__()
+    super(UR5_Robotiq, self).__init__()
     # Setup arm and gripper variables
     self.max_forces = [150, 150, 150, 28, 28, 28, 30, 30]
     self.gripper_close_force = [30] * 2
@@ -69,7 +69,7 @@ class UR5_Robotiq(RobotBase):
 
   def reset(self):
     ''''''
-    ur5_urdf_filepath = os.path.join(self.root_dir, 'urdf/ur5/ur5_w_robotiq_85_gripper.urdf')
+    ur5_urdf_filepath = os.path.join(self.root_dir, 'simulators/urdf/ur5/ur5_robotiq_85_gripper.urdf')
     self.id = pb.loadURDF(ur5_urdf_filepath, [0,0,0], [0,0,0,1])
     # self.is_holding = False
     self.gripper_closed = False
