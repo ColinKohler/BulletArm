@@ -4,9 +4,9 @@ import numpy.random as npr
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
 from helping_hands_rl_envs.simulators import constants
 
-class BlockStackingPlanner(BasePlanner):
+class BrickStackingPlanner(BasePlanner):
   def __init__(self, env, config):
-    super(BlockStackingPlanner, self).__init__(env, config)
+    super(BrickStackingPlanner, self).__init__(env, config)
 
   def getNextAction(self):
     if self.env._isHolding():
@@ -39,14 +39,16 @@ class BlockStackingPlanner(BasePlanner):
 
   def getPlacingAction(self):
     if npr.rand() > self.rand_place_prob:
-      blocks, block_poses = self.getBlockPoses()
+      brick_pose = self.env.getObjectPoses(self.env.bricks)[0]
+      brick_bbox = np.array(self.env.bricks[0].getBoundingBox())
 
-      for block, pose in zip(blocks, block_poses):
-        if not self.env._isObjectHeld(block):
-          x, y, z, r = pose[0], pose[1], pose[2], pose[5]
+      x = npr.uniform(brick_bbox[0,0], brick_bbox[1,0])
+      y = npr.uniform(brick_bbox[0,1], brick_bbox[1,1])
+      z =  brick_pose[2]
+      r = brick_pose[5]
 
       if self.pos_noise: x, y = self.addNoiseToPos(x, y)
-      if self.rot_noise: rot = self.addNoiseToRot(rot)
+      if self.rot_noise: r = self.addNoiseToRot(r)
 
       return self.env._encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
     else:
@@ -58,10 +60,10 @@ class BlockStackingPlanner(BasePlanner):
       return self.env._encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def getBlockPoses(self, roll=False):
-    blocks = np.array(self.env.getObjects())
-    block_poses = self.env.getObjectPoses()
+    blocks = np.array(self.env.blocks)
+    block_poses = self.env.getObjectPoses(blocks)
 
-    # Sort by block size
+    # Sort by block heights
     sorted_inds = np.flip(np.argsort(block_poses[:,2], axis=0))
 
     # TODO: Should get a better var name for this

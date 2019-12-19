@@ -378,7 +378,7 @@ class PyBulletEnv(BaseEnv):
     if shape_type == constants.CUBE or shape_type == constants.TRIANGLE:
       min_distance = self.block_original_size * self.block_scale_range[1] * 2.4
       padding = self.block_original_size * self.block_scale_range[1] * 2
-    elif shape_type == constants.RECTANGLE:
+    elif shape_type == constants.BRICK:
       min_distance = self.max_block_size * 4
       padding = self.max_block_size * 4
     elif shape_type == constants.ROOF:
@@ -400,7 +400,7 @@ class PyBulletEnv(BaseEnv):
 
       if shape_type == constants.CUBE:
         handle = pb_obj_generation.generateCube(position, orientation, scale)
-      elif shape_type == constants.RECTANGLE:
+      elif shape_type == constants.BRICK:
         handle = pb_obj_generation.generateBrick(position, orientation, scale)
       elif shape_type == constants.TRIANGLE:
         handle = pb_obj_generation.generateTriangle(position, orientation, scale)
@@ -425,9 +425,11 @@ class PyBulletEnv(BaseEnv):
       objs.append(obj)
     return np.array(objs)
 
-  def getObjectPoses(self):
+  def getObjectPoses(self, objects=None):
+    if objects is None: objects = self.objects
+
     obj_poses = list()
-    for obj in self.objects:
+    for obj in objects:
       if self._isObjectHeld(obj):
         continue
       pos, rot = obj.getPose()
@@ -580,7 +582,7 @@ class PyBulletEnv(BaseEnv):
     '''
     x_pixel, y_pixel = self._getPixelsFromPos(x, y)
     if self._isHolding():
-      if self.object_types[self.robot.holding_obj] is constants.RECTANGLE:
+      if self.object_types[self.robot.holding_obj] is constants.BRICK:
         extend = int(2*self.max_block_size/self.heightmap_resolution)
       elif self.object_types[self.robot.holding_obj] is constants.ROOF:
         extend = int(1.5*self.max_block_size/self.heightmap_resolution)

@@ -6,7 +6,7 @@ import numpy.random as npr
 
 import helping_hands_rl_envs
 from helping_hands_rl_envs.simulators.pybullet.objects.cube import Cube
-from helping_hands_rl_envs.simulators.pybullet.objects.rectangle import Rectangle
+from helping_hands_rl_envs.simulators.pybullet.objects.brick import Brick
 from helping_hands_rl_envs.simulators.pybullet.objects.triangle import Triangle
 
 def generateCube(pos, rot, scale):
@@ -14,9 +14,7 @@ def generateCube(pos, rot, scale):
   return Cube(pos, rot, scale)
 
 def generateBrick(pos, rot, scale):
-  root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
-  brick_urdf_filepath = os.path.join(root_dir, 'simulators/urdf/object/brick_small.urdf')
-  return pb.loadURDF(brick_urdf_filepath, basePosition=pos, baseOrientation=rot, globalScaling=scale)
+  return Brick(pos, rot, scale)
 
 def generateTriangle(pos, rot, scale):
   root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
