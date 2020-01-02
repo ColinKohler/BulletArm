@@ -32,5 +32,15 @@ class PybulletObject(object):
   def getBoundingBox(self):
     return list(pb.getAABB(self.object_id))
 
+  def getContactPoints(self):
+    return pb.getContactPoints(self.object_id)
+
+  def isTouching(self, obj):
+    contact_points = self.getContactPoints()
+    for p in contact_points:
+      if p[2] == obj.object_id:
+        return True
+    return False
+
   def resetPose(self, pos, rot):
     pb.resetBasePositionAndOrientation(self.object_id, pos, rot)

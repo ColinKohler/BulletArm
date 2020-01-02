@@ -36,9 +36,13 @@ def createBrickStackingEnv(simulator_base_env, config):
     def reset(self):
       ''''''
       super(BrickStackingEnv, self).reset()
-      self.blocks = self._generateShapes(constants.CUBE, self.num_cubes, random_orientation=self.random_orientation)
       self.bricks = self._generateShapes(constants.BRICK, 1, random_orientation=self.random_orientation)
-      return self._getObservation()
+      self.blocks = self._generateShapes(constants.CUBE, self.num_cubes, random_orientation=self.random_orientation)
+
+      if self.bricks is None or self.blocks is None:
+        self.reset()
+      else:
+        return self._getObservation()
 
     def saveState(self):
       super(BrickStackingEnv, self).saveState()
@@ -52,7 +56,7 @@ def createBrickStackingEnv(simulator_base_env, config):
 
     def _checkTermination(self):
       ''''''
-      return all(map(lambda b: self._checkOnTop(b, self.bricks[0]), self.blocks))
+      return all([self._checkOnTop(self.bricks[0], b) for b in self.blocks])
 
     def getObjectPosition(self):
       return list(map(self._getObjectPosition, self.blocks+self.bricks))

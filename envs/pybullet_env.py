@@ -336,41 +336,42 @@ class PyBulletEnv(BaseEnv):
     return self._isHolding(), in_hand_img, self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
   def _getValidPositions(self, padding, min_distance, existing_positions, num_shapes):
-    while True:
-      existing_positions_copy = copy.deepcopy(existing_positions)
-      valid_positions = []
-      for i in range(num_shapes):
-        # Generate random drop config
-        x_extents = self.workspace[0][1] - self.workspace[0][0]
-        y_extents = self.workspace[1][1] - self.workspace[1][0]
+    existing_positions_copy = copy.deepcopy(existing_positions)
+    valid_positions = list()
+    for i in range(num_shapes):
+      # Generate random drop config
+      x_extents = self.workspace[0][1] - self.workspace[0][0]
+      y_extents = self.workspace[1][1] - self.workspace[1][0]
 
-        is_position_valid = False
-        for j in range(1000):
-          if is_position_valid:
-            break
-          position = [(x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2,
-                      (y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2]
-
-          if self.pos_candidate is not None:
-            position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0] - position[0]).argmin()]
-            position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1] - position[1]).argmin()]
-            if not (self.workspace[0][0]+padding/2 < position[0] < self.workspace[0][1]-padding/2 and
-                    self.workspace[1][0]+padding/2 < position[1] < self.workspace[1][1]-padding/2):
-              continue
-
-          if existing_positions_copy:
-            distances = np.array(list(map(lambda p: np.linalg.norm(np.array(p)-position), existing_positions_copy)))
-            is_position_valid = np.all(distances > min_distance)
-            # is_position_valid = np.all(np.sum(np.abs(np.array(positions) - np.array(position[:-1])), axis=1) > min_distance)
-          else:
-            is_position_valid = True
+      is_position_valid = False
+      for j in range(1000):
         if is_position_valid:
-          existing_positions_copy.append(position)
-          valid_positions.append(position)
-        else:
           break
-      if len(valid_positions) == num_shapes:
-        return valid_positions
+        position = [(x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2,
+                    (y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2]
+
+        if self.pos_candidate is not None:
+          position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0] - position[0]).argmin()]
+          position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1] - position[1]).argmin()]
+          if not (self.workspace[0][0]+padding/2 < position[0] < self.workspace[0][1]-padding/2 and
+                  self.workspace[1][0]+padding/2 < position[1] < self.workspace[1][1]-padding/2):
+            continue
+
+        if existing_positions_copy:
+          distances = np.array(list(map(lambda p: np.linalg.norm(np.array(p)-position), existing_positions_copy)))
+          is_position_valid = np.all(distances > min_distance)
+        else:
+          is_position_valid = True
+      if is_position_valid:
+        existing_positions_copy.append(position)
+        valid_positions.append(position)
+      else:
+        break
+
+    if len(valid_positions) == num_shapes:
+      return valid_positions
+    else:
+      return None
 
   def _generateShapes(self, shape_type=0, num_shapes=1, scale=None, pos=None, rot=None,
                            min_distance=0.1, padding=0.2, random_orientation=False):
@@ -388,6 +389,8 @@ class PyBulletEnv(BaseEnv):
     positions = [o.getXYPosition() for o in self.objects]
 
     valid_positions = self._getValidPositions(padding, min_distance, positions, num_shapes)
+    if valid_positions is None:
+      return None
 
     for position in valid_positions:
       position.append(0.05)
@@ -564,11 +567,7 @@ class PyBulletEnv(BaseEnv):
     top_position = top_obj.getPosition()
     if top_position[-1] - bottom_position[-1] < 0.9 * self.block_scale_range[0] * self.block_original_size:
       return False
-    contact_points = pb.getContactPoints(top_obj)
-    for p in contact_points:
-      if p[2] == bottom_obj:
-        return True
-    return False
+    return top_obj.isTouching(bottom_obj)
 
   def _getPrimativeHeight(self, motion_primative, x, y):
     '''

@@ -18,8 +18,6 @@ while not done:
   action = envs.getNextAction()
   state_, hand_obs_, obs_, reward, done, valid = envs.step(action)
 
-  print(envs.didBlockFall())
-
   obs = obs_
   hand_obs = hand_obs_
 
