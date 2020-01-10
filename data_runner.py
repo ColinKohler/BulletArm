@@ -36,6 +36,8 @@ def worker(remote, parent_remote, env_fn, planner_fn):
         remote.send(planner.getNextAction())
       elif cmd == 'did_block_fall':
         remote.send(env.didBlockFall())
+      elif cmd == 'get_value':
+        remote.send(planner.getValue())
       else:
         raise NotImplementerError
   except KeyboardInterrupt:
@@ -160,6 +162,13 @@ class DataRunner(object):
     action = [remote.recv() for remote in self.remotes]
     action = torch.from_numpy(np.stack(action)).float()
     return action
+
+  def getValue(self):
+    for remote in self.remotes:
+      remote.send(('get_value', None))
+    values = [remote.recv() for remote in self.remotes]
+    values = torch.from_numpy(np.stack(values)).float()
+    return values
 
   def didBlockFall(self):
     for remote in self.remotes:

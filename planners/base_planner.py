@@ -8,9 +8,13 @@ class BasePlanner(object):
     self.rand_place_prob = config['rand_place_prob'] if 'rand_place_prob' in config else 0.0
     self.pos_noise = config['pos_noise'] if 'pos_noise' in config else None
     self.rot_noise = config['rot_noise'] if 'rot_noise' in config else None
+    self.gamma = config['gamma']  if 'gamma' in config else 0.9
 
   def getNextAction(self):
     raise NotImplemented('Planners must implement this function')
+
+  def getValue(self):
+    return self.gamma**self.env.getStepLeft()
 
   def addNoiseToPos(self, x, y):
     # TODO: Would we ever want to include noise on the z-axis here?
