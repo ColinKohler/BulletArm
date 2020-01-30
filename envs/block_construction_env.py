@@ -1,11 +1,11 @@
-from copy import deepcopy
 import numpy as np
+
 from helping_hands_rl_envs.envs.numpy_env import NumpyEnv
 from helping_hands_rl_envs.envs.vrep_env import VrepEnv
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 
-def createBlockStackingEnv(simulator_base_env, config):
-  class BlockStackingEnv(simulator_base_env):
+def createBlockConstructionEnv(simulator_base_env, config):
+  class BlockConstructionEnv(simulator_base_env):
     ''''''
     def __init__(self, config):
       if simulator_base_env is NumpyEnv:
@@ -41,7 +41,7 @@ def createBlockStackingEnv(simulator_base_env, config):
 
       self.takeAction(action)
       self.wait(100)
-      obs = self._getObservation(action)
+      obs = self._getObservation()
       done = self._checkTermination()
       curr_num_top = self._getNumTopBlock()
       if self.reward_type == 'dense':
@@ -68,17 +68,17 @@ def createBlockStackingEnv(simulator_base_env, config):
 
     def reset(self):
       ''''''
-      super(BlockStackingEnv, self).reset()
+      super(BlockConstructionEnv, self).reset()
       self.blocks = self._generateShapes(0, self.num_obj, random_orientation=self.random_orientation)
       self.min_top = self.num_obj
       return self._getObservation()
 
     def saveState(self):
-      super(BlockStackingEnv, self).saveState()
+      super(BlockConstructionEnv, self).saveState()
       self.stacking_state = {'min_top': deepcopy(self.min_top)}
 
     def restoreState(self):
-      super(BlockStackingEnv, self).restoreState()
+      super(BlockConstructionEnv, self).restoreState()
       self.blocks = self.objects
       self.min_top = self.stacking_state['min_top']
 
@@ -105,6 +105,6 @@ def createBlockStackingEnv(simulator_base_env, config):
       return step_left
 
   def _thunk():
-    return BlockStackingEnv(config)
+    return BlockConstructionEnv(config)
 
   return _thunk
