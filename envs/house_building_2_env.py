@@ -1,5 +1,6 @@
 from copy import deepcopy
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.simulators import constants
 
 def createHouseBuilding2Env(simulator_base_env, config):
   # TODO: check in between
@@ -16,7 +17,7 @@ def createHouseBuilding2Env(simulator_base_env, config):
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
 
       self.blocks = []
-      self.roofs = None
+      self.roofs = []
       self.stacking_state = {}
 
     def step(self, action):
@@ -40,8 +41,8 @@ def createHouseBuilding2Env(simulator_base_env, config):
       while True:
         super(HouseBuilding2Env, self).reset()
         try:
-          self.blocks = self._generateShapes(0, self.num_obj-1, random_orientation=self.random_orientation)
-          self.roofs = self._generateShapes(self.ROOF, 1, random_orientation=self.random_orientation)
+          self.blocks = self._generateShapes(constants.CUBE, 2, random_orientation=self.random_orientation)
+          self.roofs = self._generateShapes(constants.ROOF, 1, random_orientation=self.random_orientation)
         except:
           continue
         else:

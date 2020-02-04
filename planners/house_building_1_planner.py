@@ -8,7 +8,7 @@ from helping_hands_rl_envs.simulators import constants
 
 class HouseBuilding1Planner(BlockStackingPlanner):
   def __init__(self, env, config):
-    super(BlockStackingPlanner, self).__init__(env, config)
+    super(HouseBuilding1Planner, self).__init__(env, config)
 
   def getPickingAction(self):
     blocks = list(filter(lambda x: self.env.object_types[x] == constants.CUBE, self.env.objects))
