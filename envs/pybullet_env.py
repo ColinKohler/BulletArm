@@ -574,7 +574,7 @@ class PyBulletEnv(BaseEnv):
       if self._isObjectHeld(obj):
         continue
       objs.append(obj)
-    return np.array(objs)
+    return objs
 
   def getObjectPoses(self, objects=None):
     if objects is None: objects = self.objects

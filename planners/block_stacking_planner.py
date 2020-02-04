@@ -26,7 +26,7 @@ class BlockStackingPlanner(BasePlanner):
           break
 
       if self.pos_noise: x, y = self.addNoiseToPos(x, y)
-      if self.rot_noise: rot = self.addNoiseToRot(rot)
+      if self.rot_noise: r = self.addNoiseToRot(r)
 
       return self.env._encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
     else:
@@ -46,7 +46,7 @@ class BlockStackingPlanner(BasePlanner):
           x, y, z, r = pose[0], pose[1], pose[2], pose[5]
 
       if self.pos_noise: x, y = self.addNoiseToPos(x, y)
-      if self.rot_noise: rot = self.addNoiseToRot(rot)
+      if self.rot_noise: r = self.addNoiseToRot(r)
 
       return self.env._encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
     else:
@@ -58,8 +58,8 @@ class BlockStackingPlanner(BasePlanner):
       return self.env._encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def getBlockPoses(self, roll=False):
-    blocks = np.array(self.env.getObjects())
-    block_poses = self.env.getObjectPoses()
+    blocks = np.array(list(filter(lambda x: self.env.object_types[x] == constants.CUBE and not self.env._isObjectHeld(x), self.env.objects)))
+    block_poses = self.env.getObjectPoses(blocks)
 
     # Sort by block size
     sorted_inds = np.flip(np.argsort(block_poses[:,2], axis=0))

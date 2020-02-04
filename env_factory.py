@@ -12,7 +12,7 @@ from helping_hands_rl_envs.envs.block_cylinder_stacking_env import createBlockCy
 from helping_hands_rl_envs.envs.house_building_1_env import createHouseBuilding1Env
 from helping_hands_rl_envs.envs.house_building_2_env import createHouseBuilding2Env
 from helping_hands_rl_envs.envs.house_building_3_env import createHouseBuilding3Env
-from helping_hands_rl_envs.planners.planner_factory import createPlanner
+from helping_hands_rl_envs.planners.planner_factory import createPlanner, AVAILABLE_PLANNER
 
 from helping_hands_rl_envs.rl_runner import RLRunner
 from helping_hands_rl_envs.data_runner import DataRunner
@@ -73,11 +73,16 @@ def createEnvs(num_processes, runner_type, simulator, env_type, env_config, plan
   else:
     raise ValueError('Invalid environment type passed to factory.')
 
+  if 'planner' not in planner_config:
+    if env_type in AVAILABLE_PLANNER:
+      planner_config['planner'] = env_type
+    else:
+      planner_config['planner'] = 'random'
+
+  planners = [createPlanner(planner_config) for i in range(num_processes)]
   if runner_type == 'rl':
-    envs = RLRunner(envs)
+    envs = RLRunner(envs, planners)
   elif runner_type == 'data':
-    if 'planner' not in planner_config: planner_config['planner'] = env_type
-    planners = [createPlanner(planner_config) for i in range(num_processes)]
     envs = DataRunner(envs, planners)
   else:
     raise ValueError('Invalid env runner type given. Must specify \'rl\', or \'data\'')
