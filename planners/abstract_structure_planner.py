@@ -85,9 +85,9 @@ class AbstractStructurePlanner:
         break
     x, y, z, r = place_pos[0], place_pos[1], self.env.place_offset, 0
     slope, intercept, r_value, p_value, std_err = scipy.stats.linregress([x, another_obj_position[0]], [y, another_obj_position[1]])
-    r = -np.arctan(slope) - np.pi / 2
-    while r < 0:
-      r += np.pi
+    r = np.arctan(slope) + np.pi / 2
+    while r > np.pi:
+      r -= np.pi
     return self.env._encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def placeOnTopOfMultiple(self, above_objs):
@@ -95,9 +95,9 @@ class AbstractStructurePlanner:
     slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(obj_positions[:, 0], obj_positions[:, 1])
     x, y, z = obj_positions.mean(0)
     z += +self.env.place_offset
-    r = -np.arctan(slope) - np.pi / 2
-    while r < 0:
-      r += np.pi
+    r = np.arctan(slope) + np.pi / 2
+    while r > np.pi:
+      r -= np.pi
     return self.env._encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def getSortedObjPoses(self, roll=False, objects=None):

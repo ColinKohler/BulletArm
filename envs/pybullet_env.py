@@ -166,18 +166,23 @@ class PyBulletEnv(BaseEnv):
 
     # Get transform for action
     pos = [x, y, z]
-    rot_q = pb.getQuaternionFromEuler([0, np.pi, -rot])
+    # [-pi, 0] is easier for the arm(kuka) to execute
+    while rot < -np.pi:
+      rot += np.pi
+    while rot > 0:
+      rot -= np.pi
+    rot_q = pb.getQuaternionFromEuler([0, np.pi, rot])
 
     # Take action specfied by motion primative
     if motion_primative == constants.PICK_PRIMATIVE:
-      if self.perfect_grasp and not self._checkPerfectGrasp(x, y, z, -rot, self.objects):
+      if self.perfect_grasp and not self._checkPerfectGrasp(x, y, z, rot, self.objects):
         return
       self.robot.pick(pos, rot_q, self.pick_pre_offset, dynamic=self.dynamic,
                       objects=self.objects, simulate_grasp=self.simulate_grasp)
     elif motion_primative == constants.PLACE_PRIMATIVE:
       obj = self.robot.holding_obj
       if self.robot.holding_obj is not None:
-        if self.perfect_place and not self._checkPerfectPlace(x, y, z, -rot, self.objects):
+        if self.perfect_place and not self._checkPerfectPlace(x, y, z, rot, self.objects):
           return
         self.robot.place(pos, rot_q, self.place_pre_offset,
                          dynamic=self.dynamic, simulate_grasp=self.simulate_grasp)
@@ -472,7 +477,6 @@ class PyBulletEnv(BaseEnv):
     image_arr = pb.getCameraImage(width=self.heightmap_size, height=self.heightmap_size,
                                   viewMatrix=self.view_matrix, projectionMatrix=self.proj_matrix)
     self.heightmap = image_arr[3] - np.min(image_arr[3])
-    self.heightmap = self.heightmap.T
 
     if action is None or self._isHolding() == False:
       in_hand_img = np.zeros((self.in_hand_size, self.in_hand_size, 1))
@@ -759,8 +763,8 @@ class PyBulletEnv(BaseEnv):
         extend = int(0.5*self.max_block_size/self.heightmap_resolution)
     else:
       extend = int(0.5*self.max_block_size/self.heightmap_resolution)
-    local_region = self.heightmap[int(max(y_pixel - extend, 0)):int(min(y_pixel + extend, self.heightmap_size)), \
-                                  int(max(x_pixel - extend, 0)):int(min(x_pixel + extend, self.heightmap_size))]
+    local_region = self.heightmap[int(max(x_pixel - extend, 0)):int(min(x_pixel + extend, self.heightmap_size)), \
+                                  int(max(y_pixel - extend, 0)):int(min(y_pixel + extend, self.heightmap_size))]
     try:
       safe_z_pos = np.max(local_region) + self.workspace[2][0]
     except ValueError:
@@ -775,9 +779,7 @@ class PyBulletEnv(BaseEnv):
   def convertQuaternionToEuler(self, rot):
     rot = list(pb.getEulerFromQuaternion(rot))
 
-    # TODO: Do we only need to reverse the z-axis here?
     # TODO: This normalization should be improved
-    rot[2] *= -1
     while rot[2] < 0:
       rot[2] += np.pi
     while rot[2] > np.pi:
