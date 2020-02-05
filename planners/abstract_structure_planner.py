@@ -28,9 +28,13 @@ class AbstractStructurePlanner:
         break
     if side_grasp:
       r += np.pi / 2
+      while r < 0:
+        r += np.pi
+      while r > np.pi:
+        r -= np.pi
     return self.env._encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
-  def placeOnHighestObj(self, objects):
+  def placeOnHighestObj(self, objects=None):
     """
     place on the highest object
     :param objects: pool of objects
@@ -80,6 +84,10 @@ class AbstractStructurePlanner:
       if min_dist_to_another < dist < max_dist_to_another:
         break
     x, y, z, r = place_pos[0], place_pos[1], self.env.place_offset, 0
+    slope, intercept, r_value, p_value, std_err = scipy.stats.linregress([x, another_obj_position[0]], [y, another_obj_position[1]])
+    r = -np.arctan(slope) - np.pi / 2
+    while r < 0:
+      r += np.pi
     return self.env._encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def placeOnTopOfMultiple(self, above_objs):

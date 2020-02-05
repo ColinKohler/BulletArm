@@ -12,7 +12,7 @@ class TestBulletHouse1(unittest.TestCase):
   workspace = np.asarray([[0.35, 0.65],
                           [-0.15, 0.15],
                           [0, 0.50]])
-  env_config = {'workspace': workspace, 'max_steps': 1000, 'obs_size': 90, 'render': True, 'fast_mode': True,
+  env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 90, 'render': True, 'fast_mode': True,
                 'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 3, 'random_orientation': False,
                 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka'}
 
@@ -69,6 +69,9 @@ class TestBulletHouse1(unittest.TestCase):
   def testPlanner2(self):
     self.env_config['render'] = False
     self.env_config['reward_type'] = 'sparse'
+    self.env_config['random_orientation'] = True
+    self.env_config['num_objects'] = 4
+
     env = env_factory.createEnvs(10, 'rl', 'pybullet', 'house_building_1', self.env_config, {})
     total = 0
     s = 0

@@ -12,7 +12,7 @@ class TestBulletHouse2(unittest.TestCase):
   workspace = np.asarray([[0.35, 0.65],
                           [-0.15, 0.15],
                           [0, 0.50]])
-  env_config = {'workspace': workspace, 'max_steps': 1000, 'obs_size': 90, 'render': True, 'fast_mode': True,
+  env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 90, 'render': True, 'fast_mode': True,
                 'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 3, 'random_orientation': False,
                 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka'}
 
