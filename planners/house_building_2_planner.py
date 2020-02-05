@@ -36,10 +36,10 @@ class HouseBuilding2Planner(BasePlanner, AbstractStructurePlanner):
     valid_block_pos = self.dist_valid(dist)
     # block pos not valid, adjust block pos => pick block
     if not valid_block_pos:
-      return self.pickSecondHighestObjOnTop(objects=blocks)
+      return self.pickSecondTallestObjOnTop(objects=blocks)
     # block pos valid, pick roof
     else:
-      return self.pickSecondHighestObjOnTop(objects=roofs, side_grasp=True)
+      return self.pickSecondTallestObjOnTop(objects=roofs, side_grasp=True)
 
   def getPlacingAction(self):
     blocks = list(filter(lambda x: self.env.object_types[x] == constants.CUBE, self.env.objects))

@@ -23,10 +23,10 @@ class HouseBuilding1Planner(BasePlanner, AbstractStructurePlanner):
     triangles = list(filter(lambda x: self.env.object_types[x] == constants.TRIANGLE, self.env.objects))
     # blocks not stacked, pick block
     if not self.env._checkStack(blocks):
-      return self.pickSecondHighestObjOnTop(objects=blocks)
+      return self.pickSecondTallestObjOnTop(objects=blocks)
     # blocks stacked, pick triangle
     else:
-      return self.pickSecondHighestObjOnTop(objects=triangles, side_grasp=True)
+      return self.pickSecondTallestObjOnTop(objects=triangles, side_grasp=True)
 
   def getPlacingAction(self):
     blocks = list(filter(lambda x: self.env.object_types[x] == constants.CUBE, self.env.objects))

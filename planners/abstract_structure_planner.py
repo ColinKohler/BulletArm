@@ -11,7 +11,7 @@ class AbstractStructurePlanner:
   def __init__(self, env):
     self.env = env
 
-  def pickSecondHighestObjOnTop(self, objects=None, side_grasp=False):
+  def pickSecondTallestObjOnTop(self, objects=None, side_grasp=False):
     """
     pick up the second highest object that is on top
     :param objects: pool of objects
@@ -91,6 +91,11 @@ class AbstractStructurePlanner:
     return self.env._encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def placeOnTopOfMultiple(self, above_objs):
+    """
+    place on top of multiple objects. will calculate the slope of those objects and match the rotation
+    :param above_objs: list of objects to put on top of
+    :return: encoded action
+    """
     obj_positions = np.array([o.getPosition() for o in above_objs])
     slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(obj_positions[:, 0], obj_positions[:, 1])
     x, y, z = obj_positions.mean(0)
@@ -116,3 +121,16 @@ class AbstractStructurePlanner:
     object_poses = object_poses[sorted_inds]
     return objects, object_poses
 
+  def getMaxBlockSize(self):
+    return self.env.max_block_size
+
+  def getDistance(self, obj1, obj2):
+    position1 = obj1.getPosition()
+    position2 = obj2.getPosition()
+    return np.linalg.norm(np.array(position1) - np.array(position2))
+
+  def checkOnTop(self, bottom_obj, top_obj):
+    return self.env._checkOnTop(bottom_obj, top_obj)
+
+  def checkInBetween(self, middle_obj, side_obj1, side_obj2):
+    return self.env._checkInBetween(middle_obj, side_obj1, side_obj2)
