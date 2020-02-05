@@ -540,11 +540,11 @@ class PyBulletEnv(BaseEnv):
       min_distance = self.block_original_size * self.block_scale_range[1] * 2.4
       padding = self.block_original_size * self.block_scale_range[1] * 2
     elif shape_type == constants.BRICK:
-      min_distance = self.max_block_size * 4
-      padding = self.max_block_size * 3
+      min_distance = self.max_block_size * 3.4
+      padding = self.max_block_size * 3.4
     elif shape_type == constants.ROOF:
-      min_distance = self.max_block_size * 4
-      padding = self.max_block_size * 3
+      min_distance = self.max_block_size * 3.4
+      padding = self.max_block_size * 3.4
     shape_handles = list()
     positions = [o.getXYPosition() for o in self.objects]
 
@@ -732,15 +732,15 @@ class PyBulletEnv(BaseEnv):
   def _checkInBetween(self, obj0, obj1, obj2, threshold=None):
     if not threshold:
       threshold = self.max_block_size
-    position0 = pb_obj_generation.getObjectPosition(obj0)[:-1]
-    position1 = pb_obj_generation.getObjectPosition(obj1)[:-1]
-    position2 = pb_obj_generation.getObjectPosition(obj2)[:-1]
+    position0 = obj0.getXYPosition()
+    position1 = obj1.getXYPosition()
+    position2 = obj2.getXYPosition()
     middle_point = np.mean((np.array(position1), np.array(position2)), axis=0)
     dist = np.linalg.norm(middle_point - position0)
     return dist < threshold
 
   def _checkOriSimilar(self, objects, threshold=np.pi/7):
-    oris = list(map(lambda o: pb.getEulerFromQuaternion(pb_obj_generation.getObjectRotation(o))[2], objects))
+    oris = list(map(lambda o: pb.getEulerFromQuaternion(o.getRotation())[2], objects))
     return np.allclose(oris, oris, threshold)
 
   def _getPrimativeHeight(self, motion_primative, x, y):

@@ -17,7 +17,7 @@ from helping_hands_rl_envs.planners.planner_factory import createPlanner, AVAILA
 from helping_hands_rl_envs.rl_runner import RLRunner
 from helping_hands_rl_envs.data_runner import DataRunner
 
-def createEnvs(num_processes, runner_type, simulator, env_type, env_config, planner_config=None):
+def createEnvs(num_processes, runner_type, simulator, env_type, env_config, planner_config={}):
   '''
   Create a number of environments on different processes to run in parralel
 

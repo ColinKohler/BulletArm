@@ -5,6 +5,7 @@ from helping_hands_rl_envs.planners.block_stacking_planner import BlockStackingP
 from helping_hands_rl_envs.planners.brick_stacking_planner import BrickStackingPlanner
 from helping_hands_rl_envs.planners.house_building_1_planner import HouseBuilding1Planner
 from helping_hands_rl_envs.planners.house_building_2_planner import HouseBuilding2Planner
+from helping_hands_rl_envs.planners.house_building_3_planner import HouseBuilding3Planner
 
 AVAILABLE_PLANNER = ['random',
                      'play',
@@ -12,7 +13,8 @@ AVAILABLE_PLANNER = ['random',
                      'block_stacking',
                      'brick_stacking',
                      'house_building_1',
-                     'house_building_2']
+                     'house_building_2',
+                     'house_building_3']
 
 def createPlanner(config):
   if 'planner_noise' not in config: config['planner_noise'] = None
@@ -31,3 +33,5 @@ def createPlanner(config):
     return lambda env: HouseBuilding1Planner(env, config)
   elif config['planner'] == 'house_building_2':
     return lambda env: HouseBuilding2Planner(env, config)
+  elif config['planner'] == 'house_building_3':
+    return lambda env: HouseBuilding3Planner(env, config)

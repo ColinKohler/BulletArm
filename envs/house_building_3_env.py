@@ -1,5 +1,6 @@
 from copy import deepcopy
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.simulators import constants
 
 def createHouseBuilding3Env(simulator_base_env, config):
   class HouseBuilding3Env(simulator_base_env):
@@ -43,10 +44,10 @@ def createHouseBuilding3Env(simulator_base_env, config):
       while True:
         super(HouseBuilding3Env, self).reset()
         try:
-          self.blocks = self._generateShapes(0, 2, random_orientation=self.random_orientation)
-          self.roofs = self._generateShapes(self.ROOF, 1, random_orientation=self.random_orientation)
-          self.bricks = self._generateShapes(self.BRICK, 1, random_orientation=self.random_orientation)
-        except:
+          self.blocks = self._generateShapes(constants.CUBE, 2, random_orientation=self.random_orientation)
+          self.roofs = self._generateShapes(constants.ROOF, 1, random_orientation=self.random_orientation)
+          self.bricks = self._generateShapes(constants.BRICK, 1, random_orientation=self.random_orientation)
+        except Exception as e:
           continue
         else:
           break

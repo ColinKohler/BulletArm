@@ -34,7 +34,7 @@ class AbstractStructurePlanner:
         r -= np.pi
     return self.env._encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
-  def placeOnHighestObj(self, objects=None):
+  def placeOnHighestObj(self, objects=None, side_place=False):
     """
     place on the highest object
     :param objects: pool of objects
@@ -46,6 +46,12 @@ class AbstractStructurePlanner:
     for obj, pose in zip(objects, object_poses):
       if not self.env._isObjectHeld(obj):
         x, y, z, r = pose[0], pose[1], pose[2]+self.env.place_offset, pose[5]
+    if side_place:
+      r += np.pi / 2
+      while r < 0:
+        r += np.pi
+      while r > np.pi:
+        r -= np.pi
     return self.env._encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def placeOnGround(self, padding_dist, min_dist):
@@ -134,3 +140,6 @@ class AbstractStructurePlanner:
 
   def checkInBetween(self, middle_obj, side_obj1, side_obj2):
     return self.env._checkInBetween(middle_obj, side_obj1, side_obj2)
+
+  def isObjectHeld(self, obj):
+    return self.env._isObjectHeld(obj)

@@ -44,3 +44,11 @@ class PybulletObject(object):
 
   def resetPose(self, pos, rot):
     pb.resetBasePositionAndOrientation(self.object_id, pos, rot)
+
+  def __eq__(self, other):
+    if not isinstance(other, PybulletObject):
+      return False
+    return self.object_id == other.object_id and self.object_type_id == other.object_type_id
+
+  def __hash__(self):
+    return self.object_id
