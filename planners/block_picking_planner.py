@@ -17,6 +17,12 @@ class BlockPickingPlanner(BasePlanner):
     r = block_poses[0][5] # Last rot dim is the only one we care about i.e. (x,y,z)
 
     if self.pos_noise: x, y = self.addNoiseToPos(x, y)
-    if self.rot_noise: rot = self.addNoiseToRot(rot)
+    if self.rot_noise: r = self.addNoiseToRot(r)
 
     return self.env._encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
+
+  def getStepLeft(self):
+    if not self.env.isSimValid():
+      return 100
+    step_left = self.env.num_obj - self.env.obj_grasped
+    return step_left

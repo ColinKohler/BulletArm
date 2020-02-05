@@ -6,13 +6,12 @@ from helping_hands_rl_envs.envs.pybullet_env import NoValidPositionException
 
 from helping_hands_rl_envs.planners.block_stacking_planner import BlockStackingPlanner
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
-from helping_hands_rl_envs.planners.abstract_structure_planner import AbstractStructurePlanner
+from helping_hands_rl_envs.planners.block_structure_planner import BlockStructurePlanner
 from helping_hands_rl_envs.simulators import constants
 
-class HouseBuilding2Planner(BasePlanner, AbstractStructurePlanner):
+class HouseBuilding2Planner(BlockStructurePlanner):
   def __init__(self, env, config):
     super(HouseBuilding2Planner, self).__init__(env, config)
-    AbstractStructurePlanner.__init__(self, env)
 
   def checkFirstLayer(self):
     blocks = list(filter(lambda x: self.env.object_types[x] == constants.CUBE, self.env.objects))
@@ -42,12 +41,6 @@ class HouseBuilding2Planner(BasePlanner, AbstractStructurePlanner):
         else:
           step_left -= 1
     return step_left
-
-  def getNextAction(self):
-    if self.env._isHolding():
-      return self.getPlacingAction()
-    else:
-      return self.getPickingAction()
 
   def dist_valid(self, d):
       return 1.5 * self.env.max_block_size < d < 2 * self.env.max_block_size

@@ -6,14 +6,13 @@ from helping_hands_rl_envs.envs.pybullet_env import NoValidPositionException
 
 from helping_hands_rl_envs.planners.block_stacking_planner import BlockStackingPlanner
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
-from helping_hands_rl_envs.planners.abstract_structure_planner import AbstractStructurePlanner
+from helping_hands_rl_envs.planners.block_structure_planner import BlockStructurePlanner
 from helping_hands_rl_envs.simulators import constants
 
-class HouseBuilding3Planner(BasePlanner, AbstractStructurePlanner):
+class HouseBuilding3Planner(BlockStructurePlanner):
   def __init__(self, env, config):
     super(HouseBuilding3Planner, self).__init__(env, config)
-    AbstractStructurePlanner.__init__(self, env)
-    
+
   def getStepLeft(self):
     blocks, bricks, roofs = self.getObjs()
 
@@ -70,12 +69,6 @@ class HouseBuilding3Planner(BasePlanner, AbstractStructurePlanner):
     bricks = list(filter(lambda x: self.env.object_types[x] == constants.BRICK, self.env.objects))
     roofs = list(filter(lambda x: self.env.object_types[x] == constants.ROOF, self.env.objects))
     return blocks, bricks, roofs
-
-  def getNextAction(self):
-    if self.env._isHolding():
-      return self.getPlacingAction()
-    else:
-      return self.getPickingAction()
 
   def dist_valid(self, d):
       return 1.5 * self.env.max_block_size < d < 2 * self.env.max_block_size

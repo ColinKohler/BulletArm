@@ -4,13 +4,12 @@ import pybullet as pb
 
 from helping_hands_rl_envs.planners.block_stacking_planner import BlockStackingPlanner
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
-from helping_hands_rl_envs.planners.abstract_structure_planner import AbstractStructurePlanner
+from helping_hands_rl_envs.planners.block_structure_planner import BlockStructurePlanner
 from helping_hands_rl_envs.simulators import constants
 
-class HouseBuilding1Planner(BasePlanner, AbstractStructurePlanner):
+class HouseBuilding1Planner(BlockStructurePlanner):
   def __init__(self, env, config):
     super(HouseBuilding1Planner, self).__init__(env, config)
-    AbstractStructurePlanner.__init__(self, env)
 
   def getStepLeft(self):
     blocks = list(filter(lambda x: self.env.object_types[x] == constants.CUBE, self.env.objects))
@@ -24,12 +23,6 @@ class HouseBuilding1Planner(BasePlanner, AbstractStructurePlanner):
       if self.isObjectHeld(triangles[0]) and self.getNumTopBlock() > 2:
         step_left += 2
     return step_left
-
-  def getNextAction(self):
-    if self.env._isHolding():
-      return self.getPlacingAction()
-    else:
-      return self.getPickingAction()
 
   def getPickingAction(self):
     blocks = list(filter(lambda x: self.env.object_types[x] == constants.CUBE, self.env.objects))

@@ -7,9 +7,41 @@ from helping_hands_rl_envs.envs.pybullet_env import NoValidPositionException
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
 from helping_hands_rl_envs.simulators import constants
 
-class AbstractStructurePlanner:
-  def __init__(self, env):
-    self.env = env
+class BlockStructurePlanner(BasePlanner):
+  def __init__(self, env, env_config):
+    super().__init__(env, env_config)
+
+  def getNextAction(self):
+    if self.isHolding():
+      if npr.rand() < self.rand_pick_prob:
+        return self.getRandomPickingAction()
+      else:
+        return self.getPlacingAction()
+    else:
+      if npr.rand() < self.rand_place_prob:
+        return self.getRandomPlacingAction()
+      else:
+        return self.getPickingAction()
+
+  def getRandomPickingAction(self):
+    x = npr.uniform(self.env.workspace[0, 0] + 0.025, self.env.workspace[0, 1] - 0.025)
+    y = npr.uniform(self.env.workspace[1, 0] + 0.025, self.env.workspace[1, 1] - 0.025)
+    z = 0.
+    r = npr.uniform(0., np.pi)
+    return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
+
+  def getRandomPlacingAction(self):
+    x = npr.uniform(self.env.workspace[0, 0], self.env.workspace[0, 1])
+    y = npr.uniform(self.env.workspace[1, 0], self.env.workspace[1, 1])
+    z = 0.
+    r = npr.uniform(0., np.pi)
+    return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
+
+  def getPickingAction(self):
+    raise NotImplemented('Planners must implement this function')
+
+  def getPlacingAction(self):
+    raise NotImplemented('Planners must implement this function')
 
   def pickSecondTallestObjOnTop(self, objects=None, side_grasp=False):
     """
@@ -126,44 +158,3 @@ class AbstractStructurePlanner:
     objects = objects[sorted_inds]
     object_poses = object_poses[sorted_inds]
     return objects, object_poses
-
-  def getMaxBlockSize(self):
-    return self.env.max_block_size
-
-  def getDistance(self, obj1, obj2):
-    position1 = obj1.getPosition()
-    position2 = obj2.getPosition()
-    return np.linalg.norm(np.array(position1) - np.array(position2))
-
-  def getValidPositions(self, padding, min_distance, existing_positions, num_shapes, sample_range=None):
-    return self.env._getValidPositions(padding, min_distance, existing_positions, num_shapes, sample_range)
-
-  def getNumTopBlock(self, objects=None):
-    return self.env._getNumTopBlock(objects)
-
-  def checkOnTopOf(self, bottom_obj, top_obj):
-    return self.env._checkOnTop(bottom_obj, top_obj)
-
-  def checkInBetween(self, middle_obj, side_obj1, side_obj2):
-    return self.env._checkInBetween(middle_obj, side_obj1, side_obj2)
-
-  def checkStack(self, objects):
-    return self.env._checkStack(objects)
-
-  def checkTermination(self):
-    return self.env._checkTermination()
-
-  def isObjectHeld(self, obj):
-    return self.env._isObjectHeld(obj)
-
-  def isObjOnTop(self, obj):
-    return self.env._isObjOnTop(obj)
-
-  def isHolding(self):
-    return self.env._isHolding()
-
-  def isSimValid(self):
-    return self.env.isSimValid()
-
-  def encodeAction(self, primitive, x, y, z, r):
-    return self.env._encodeAction(primitive, x, y, z, r)
