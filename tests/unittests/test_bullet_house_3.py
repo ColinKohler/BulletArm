@@ -22,25 +22,25 @@ class TestBulletHouse3(unittest.TestCase):
     env.reset()
     for i in range(5, -1, -1):
       action = env.getNextAction()
-      states_, in_hands_, obs_, rewards, dones = env.step(action)
-      self.assertEqual(rewards.item(), i)
+      states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+      self.assertEqual(env.getStepLeft(), i)
     env.close()
 
 
-  def testPlanner2(self):
-    self.env_config['render'] = False
-    self.env_config['reward_type'] = 'sparse'
-    self.env_config['random_orientation'] = True
-    env = env_factory.createEnvs(10, 'rl', 'pybullet', 'house_building_3', self.env_config, {})
-    total = 0
-    s = 0
-    env.reset()
-    while total < 1000:
-      states_, in_hands_, obs_, rewards, dones = env.step(env.getNextAction())
-      if dones.sum():
-        s += rewards.sum().int().item()
-        total += dones.sum().int().item()
-        print('{}/{}'.format(s, total))
+  # def testPlanner2(self):
+  #   self.env_config['render'] = False
+  #   self.env_config['reward_type'] = 'sparse'
+  #   self.env_config['random_orientation'] = True
+  #   env = env_factory.createEnvs(10, 'rl', 'pybullet', 'house_building_3', self.env_config, {})
+  #   total = 0
+  #   s = 0
+  #   env.reset()
+  #   while total < 1000:
+  #     states_, in_hands_, obs_, rewards, dones = env.step(env.getNextAction())
+  #     if dones.sum():
+  #       s += rewards.sum().int().item()
+  #       total += dones.sum().int().item()
+  #       print('{}/{}'.format(s, total))
 
   def testBlockNotValidTriangleOnBrick(self):
     self.env_config['render'] = False
@@ -52,34 +52,34 @@ class TestBulletHouse3(unittest.TestCase):
     env.save()
     position = env.getObjPositions()[0]
     action = torch.tensor([0, position[2][0], position[2][1], 0]).unsqueeze(0)
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 7)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 7)
 
     action = torch.tensor([1, position[3][0], position[3][1], 0]).unsqueeze(0)
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 8)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 8)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 7)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 7)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 6)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 6)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 5)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 5)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 4)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 4)
     env.restore()
     env.close()
 
   def testBlockNotValidBrickOrRoofOnBlock(self):
     self.env_config['seed'] = 1
-    self.env_config['render'] = True
+    self.env_config['render'] = False
     self.env_config['random_orientation'] = False
 
     env = env_factory.createEnvs(1, 'rl', 'pybullet', 'house_building_3', self.env_config)
@@ -88,38 +88,38 @@ class TestBulletHouse3(unittest.TestCase):
     env.save()
     position = list(env.getObjPositions())[0]
     action = torch.tensor([0, position[3][0], position[3][1], 0]).unsqueeze(0)
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 7)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 7)
 
     action = torch.tensor([1, position[0][0], position[0][1], 0]).unsqueeze(0)
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 8)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 8)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 7)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 7)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 6)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 6)
     env.restore()
 
     position = list(env.getObjPositions())[0]
     action = torch.tensor([0, position[2][0], position[2][1], 0]).unsqueeze(0)
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 7)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 7)
 
     action = torch.tensor([1, position[0][0], position[0][1], 0]).unsqueeze(0)
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 8)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 8)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 7)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 7)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 6)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 6)
 
     env.close()
 
@@ -132,37 +132,37 @@ class TestBulletHouse3(unittest.TestCase):
     env.save()
     position = list(env.getObjPositions())[0]
     action = torch.tensor([0, position[3][0], position[3][1], 0]).unsqueeze(0)
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 7)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 7)
 
     action = torch.tensor([1, position[0][0], position[0][1], 0]).unsqueeze(0)
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 8)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 8)
 
     position = list(env.getObjPositions())[0]
     action = torch.tensor([0, position[2][0], position[2][1], 0]).unsqueeze(0)
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 9)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 9)
 
     action = torch.tensor([1, position[0][0], position[0][1], 0]).unsqueeze(0)
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 10)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 10)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 9)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 9)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 8)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 8)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 7)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 7)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 6)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 6)
 
     env.close()
 
@@ -173,29 +173,29 @@ class TestBulletHouse3(unittest.TestCase):
     env.reset()
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 5)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 5)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 4)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 4)
 
     position = list(env.getObjPositions())[0]
     action = torch.tensor([0, position[2][0], position[2][1], np.pi / 2]).unsqueeze(0)
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 5)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 5)
 
     action = torch.tensor([1, position[3][0], position[3][1], np.pi / 2]).unsqueeze(0)
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 6)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 6)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 5)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 5)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 4)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 4)
 
     env.close()
 
@@ -206,48 +206,48 @@ class TestBulletHouse3(unittest.TestCase):
     env.reset()
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 5)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 5)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 4)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 4)
 
     env.save()
     position = list(env.getObjPositions())[0]
     action = torch.tensor([0, position[3][0], position[3][1], np.pi / 2]).unsqueeze(0)
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 3)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 3)
 
     action = torch.tensor([1, position[0][0], position[0][1], np.pi / 2]).unsqueeze(0)
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 4)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 4)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 3)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 3)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 2)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 2)
     env.restore()
 
     position = list(env.getObjPositions())[0]
     action = torch.tensor([0, position[2][0], position[2][1], np.pi / 2]).unsqueeze(0)
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 5)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 5)
 
     action = torch.tensor([1, position[0][0], position[0][1], np.pi / 2]).unsqueeze(0)
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 6)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 6)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 5)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 5)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 4)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 4)
 
     env.close()
 
@@ -258,27 +258,27 @@ class TestBulletHouse3(unittest.TestCase):
     env.reset()
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 5)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 5)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 4)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 4)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 3)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 3)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 2)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 2)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 1)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 1)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action)
-    self.assertEqual(rewards, 0)
+    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    self.assertEqual(env.getStepLeft(), 0)
 
     env.close()

@@ -13,6 +13,57 @@ class HouseBuilding3Planner(BasePlanner, AbstractStructurePlanner):
   def __init__(self, env, config):
     super(HouseBuilding3Planner, self).__init__(env, config)
     AbstractStructurePlanner.__init__(self, env)
+    
+  def getStepLeft(self):
+    blocks, bricks, roofs = self.getObjs()
+
+    if not self.isSimValid():
+      return 100
+    if self.checkTermination():
+      return 0
+    if self.checkFirstLayer():
+      if self.checkSecondLayer():
+        step_left = 2
+        if self.isObjectHeld(roofs[0]):
+          step_left = 1
+      else:
+        step_left = 4
+        if self.checkOnTopOf(blocks[0], roofs[0]) or self.checkOnTopOf(blocks[1], roofs[0]):
+          step_left += 2
+          if self.isObjectHeld(bricks[0]):
+            step_left += 1
+        elif self.checkOnTopOf(blocks[0], bricks[0]) or self.checkOnTopOf(blocks[1], bricks[0]):
+          if self.isObjectHeld(roofs[0]):
+            step_left += 1
+        elif self.checkOnTopOf(bricks[0], roofs[0]):
+          step_left += 2
+        else:
+          if self.isObjectHeld(bricks[0]):
+            step_left -= 1
+          elif self.isObjectHeld(roofs[0]):
+            step_left += 1
+    else:
+      step_left = 6
+      if self.checkOnTopOf(blocks[0], roofs[0]) or self.checkOnTopOf(blocks[1], roofs[0]):
+        step_left += 2
+        if self.isObjectHeld(bricks[0]):
+          step_left += 1
+      elif self.checkOnTopOf(blocks[0], bricks[0]) or self.checkOnTopOf(blocks[1], bricks[0]):
+        step_left += 2
+        if self.checkOnTopOf(bricks[0], roofs[0]):
+          step_left += 2
+        elif self.isObjectHeld(roofs[0]):
+          step_left += 1
+      elif self.checkOnTopOf(bricks[0], roofs[0]):
+        step_left += 2
+        if self.isObjectHeld(blocks[0]):
+          step_left -= 1
+      elif self.isHolding():
+        if self.isObjectHeld(roofs[0]) or self.isObjectHeld(bricks[0]):
+          step_left += 1
+        else:
+          step_left -= 1
+    return step_left
 
   def getObjs(self):
     blocks = list(filter(lambda x: self.env.object_types[x] == constants.CUBE, self.env.objects))
@@ -39,8 +90,8 @@ class HouseBuilding3Planner(BasePlanner, AbstractStructurePlanner):
 
   def checkSecondLayer(self):
     blocks, bricks, roofs = self.getObjs()
-    return self.checkOnTop(blocks[0], bricks[0]) and \
-           self.checkOnTop(blocks[1], bricks[0]) and \
+    return self.checkOnTopOf(blocks[0], bricks[0]) and \
+           self.checkOnTopOf(blocks[1], bricks[0]) and \
            self.checkInBetween(bricks[0], blocks[0], blocks[1])
 
   def getPickingAction(self):
@@ -48,13 +99,13 @@ class HouseBuilding3Planner(BasePlanner, AbstractStructurePlanner):
 
     if not self.checkFirstLayer():
       # block pos not valid, and roof on brick => pick roof
-      if self.checkOnTop(bricks[0], roofs[0]):
+      if self.checkOnTopOf(bricks[0], roofs[0]):
         return self.pickSecondTallestObjOnTop(objects=roofs, side_grasp=True)
       # block pos not valid, and brick on top of any block => pick brick
-      elif self.checkOnTop(blocks[0], bricks[0]) or self.checkOnTop(blocks[1], bricks[0]):
+      elif self.checkOnTopOf(blocks[0], bricks[0]) or self.checkOnTopOf(blocks[1], bricks[0]):
         return self.pickSecondTallestObjOnTop(objects=bricks, side_grasp=True)
       # block pos not valid, and roof on top of any block => pick roof
-      elif self.checkOnTop(blocks[0], roofs[0]) or self.checkOnTop(blocks[1], roofs[0]):
+      elif self.checkOnTopOf(blocks[0], roofs[0]) or self.checkOnTopOf(blocks[1], roofs[0]):
         return self.pickSecondTallestObjOnTop(objects=roofs, side_grasp=True)
       # block pos not valid, adjust block pos => pick block
       else:
@@ -65,10 +116,10 @@ class HouseBuilding3Planner(BasePlanner, AbstractStructurePlanner):
       # second layer not done
       if not self.checkSecondLayer():
         # block pos valid, brick is not on top, roof on top of brick => pick roof
-        if self.checkOnTop(bricks[0], roofs[0]):
+        if self.checkOnTopOf(bricks[0], roofs[0]):
           return self.pickSecondTallestObjOnTop(objects=roofs, side_grasp=True)
         # block pos valid, brick is not on top, and roof on top of any block => pick roof
-        elif self.checkOnTop(blocks[0], roofs[0]) or self.checkOnTop(blocks[1], roofs[0]):
+        elif self.checkOnTopOf(blocks[0], roofs[0]) or self.checkOnTopOf(blocks[1], roofs[0]):
           return self.pickSecondTallestObjOnTop(objects=roofs, side_grasp=True)
         # block pos valid, brick is not on top => pick brick
         else:

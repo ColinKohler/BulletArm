@@ -25,10 +25,7 @@ def createHouseBuilding2Env(simulator_base_env, config):
       self.wait(100)
       obs = self._getObservation()
       done = self._checkTermination()
-      if self.reward_type == 'step_left':
-        reward = self.getStepLeft()
-      else:
-        reward = 1.0 if done else 0.0
+      reward = 1.0 if done else 0.0
 
       if not done:
         done = self.current_episode_steps >= self.max_steps or not self.isSimValid()
@@ -67,27 +64,6 @@ def createHouseBuilding2Env(simulator_base_env, config):
       if self._checkOnTop(top_blocks[0], self.roofs[0]) and self._checkOnTop(top_blocks[1], self.roofs[0]):
         return True
       return False
-
-    def getPlan(self):
-      return self.planHouseBuilding2(self.blocks, self.roofs)
-
-    def getStepLeft(self):
-      if not self.isSimValid():
-        return 100
-      if self._checkTermination():
-        return 0
-      if self.blockPosValidHouseBuilding2(self.blocks):
-        step_left = 2
-        if self._isObjectHeld(self.roofs[0]):
-          step_left -= 1
-      else:
-        step_left = 4
-        if self._isHolding():
-          if self._isObjectHeld(self.roofs[0]):
-            step_left += 1
-          else:
-            step_left -= 1
-      return step_left
 
     def isSimValid(self):
       return self._checkObjUpright(self.roofs[0]) and super().isSimValid()

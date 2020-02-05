@@ -23,7 +23,7 @@ class AbstractStructurePlanner:
 
     x, y, z, r = object_poses[0][0], object_poses[0][1], object_poses[0][2]+self.env.pick_offset, object_poses[0][5]
     for obj, pose in zip(objects, object_poses):
-      if self.env._isObjOnTop(obj):
+      if self.isObjOnTop(obj):
         x, y, z, r = pose[0], pose[1], pose[2]+self.env.pick_offset, pose[5]
         break
     if side_grasp:
@@ -32,7 +32,7 @@ class AbstractStructurePlanner:
         r += np.pi
       while r > np.pi:
         r -= np.pi
-    return self.env._encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
+    return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
   def placeOnHighestObj(self, objects=None, side_place=False):
     """
@@ -44,7 +44,7 @@ class AbstractStructurePlanner:
     objects, object_poses = self.getSortedObjPoses(objects=objects)
     x, y, z, r = object_poses[0][0], object_poses[0][1], object_poses[0][2]+self.env.place_offset, object_poses[0][5]
     for obj, pose in zip(objects, object_poses):
-      if not self.env._isObjectHeld(obj):
+      if not self.isObjectHeld(obj):
         x, y, z, r = pose[0], pose[1], pose[2]+self.env.place_offset, pose[5]
     if side_place:
       r += np.pi / 2
@@ -52,7 +52,7 @@ class AbstractStructurePlanner:
         r += np.pi
       while r > np.pi:
         r -= np.pi
-    return self.env._encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
+    return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def placeOnGround(self, padding_dist, min_dist):
     """
@@ -61,10 +61,10 @@ class AbstractStructurePlanner:
     :param min_dist: min dist to adjacent object
     :return: encoded action
     """
-    existing_pos = [o.getXYPosition() for o in list(filter(lambda x: not self.env._isObjectHeld(x), self.env.objects))]
-    place_pos = self.env._getValidPositions(padding_dist, min_dist, existing_pos, 1)[0]
+    existing_pos = [o.getXYPosition() for o in list(filter(lambda x: not self.isObjectHeld(x), self.env.objects))]
+    place_pos = self.getValidPositions(padding_dist, min_dist, existing_pos, 1)[0]
     x, y, z, r = place_pos[0], place_pos[1], self.env.place_offset, 0
-    return self.env._encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
+    return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def placeNearAnother(self, another_obj, min_dist_to_another, max_dist_to_another, padding_dist, min_dist):
     """
@@ -76,14 +76,14 @@ class AbstractStructurePlanner:
     :param min_dist: min dist to other adjacent object
     :return: encoded action
     """
-    place_pos = self.env._getValidPositions(self.env.max_block_size * 2, self.env.max_block_size * 2, [], 1)[0]
+    place_pos = self.getValidPositions(self.env.max_block_size * 2, self.env.max_block_size * 2, [], 1)[0]
     another_obj_position = another_obj.getPosition()
     sample_range = [[another_obj_position[0] - max_dist_to_another, another_obj_position[0] + max_dist_to_another],
                     [another_obj_position[1] - max_dist_to_another, another_obj_position[1] + max_dist_to_another]]
-    existing_pos = [o.getXYPosition() for o in list(filter(lambda x: not self.env._isObjectHeld(x) and not another_obj == x, self.env.objects))]
+    existing_pos = [o.getXYPosition() for o in list(filter(lambda x: not self.isObjectHeld(x) and not another_obj == x, self.env.objects))]
     for i in range(10000):
       try:
-        place_pos = self.env._getValidPositions(padding_dist, min_dist, existing_pos, 1, sample_range=sample_range)[0]
+        place_pos = self.getValidPositions(padding_dist, min_dist, existing_pos, 1, sample_range=sample_range)[0]
       except NoValidPositionException:
         continue
       dist = np.linalg.norm(np.array(another_obj_position[:-1]) - np.array(place_pos))
@@ -94,7 +94,7 @@ class AbstractStructurePlanner:
     r = np.arctan(slope) + np.pi / 2
     while r > np.pi:
       r -= np.pi
-    return self.env._encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
+    return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def placeOnTopOfMultiple(self, above_objs):
     """
@@ -109,11 +109,11 @@ class AbstractStructurePlanner:
     r = np.arctan(slope) + np.pi / 2
     while r > np.pi:
       r -= np.pi
-    return self.env._encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
+    return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def getSortedObjPoses(self, roll=False, objects=None):
     if objects is None: objects = self.env.objects
-    objects = np.array(list(filter(lambda x: not self.env._isObjectHeld(x), objects)))
+    objects = np.array(list(filter(lambda x: not self.isObjectHeld(x), objects)))
     object_poses = self.env.getObjectPoses(objects)
 
     # Sort by block size
@@ -135,11 +135,35 @@ class AbstractStructurePlanner:
     position2 = obj2.getPosition()
     return np.linalg.norm(np.array(position1) - np.array(position2))
 
-  def checkOnTop(self, bottom_obj, top_obj):
+  def getValidPositions(self, padding, min_distance, existing_positions, num_shapes, sample_range=None):
+    return self.env._getValidPositions(padding, min_distance, existing_positions, num_shapes, sample_range)
+
+  def getNumTopBlock(self, objects=None):
+    return self.env._getNumTopBlock(objects)
+
+  def checkOnTopOf(self, bottom_obj, top_obj):
     return self.env._checkOnTop(bottom_obj, top_obj)
 
   def checkInBetween(self, middle_obj, side_obj1, side_obj2):
     return self.env._checkInBetween(middle_obj, side_obj1, side_obj2)
 
+  def checkStack(self, objects):
+    return self.env._checkStack(objects)
+
+  def checkTermination(self):
+    return self.env._checkTermination()
+
   def isObjectHeld(self, obj):
     return self.env._isObjectHeld(obj)
+
+  def isObjOnTop(self, obj):
+    return self.env._isObjOnTop(obj)
+
+  def isHolding(self):
+    return self.env._isHolding()
+
+  def isSimValid(self):
+    return self.env.isSimValid()
+
+  def encodeAction(self, primitive, x, y, z, r):
+    return self.env._encodeAction(primitive, x, y, z, r)

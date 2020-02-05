@@ -52,6 +52,8 @@ def worker(remote, parent_remote, env_fn, planner_fn):
         remote.send(env.didBlockFall())
       elif cmd == 'get_value':
         remote.send(planner.getValue())
+      elif cmd == 'get_step_left':
+        remote.send(planner.getStepLeft())
       elif cmd == 'save_to_file':
         path = data
         env.saveEnvToFile(path)
@@ -228,16 +230,19 @@ class RLRunner(object):
     values = torch.from_numpy(np.stack(values)).float()
     return values
 
+  def getStepLeft(self):
+    for remote in self.remotes:
+      remote.send(('get_step_left', None))
+    values = [remote.recv() for remote in self.remotes]
+    values = torch.from_numpy(np.stack(values)).float()
+    return values
+
   def didBlockFall(self):
     for remote in self.remotes:
       remote.send(('did_block_fall', None))
     did_block_fall = [remote.recv() for remote in self.remotes]
     did_block_fall = torch.from_numpy(np.stack(did_block_fall)).float()
     return did_block_fall
-
-  def loadFromFile(self, path):
-    for i, remote in enumerate(self.remotes):
-      remote.send(('load_from_file', os.path.join(path, str(i))))
 
   def setPosCandidate(self, pos_candidate):
     for remote in self.remotes:

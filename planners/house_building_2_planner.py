@@ -14,6 +14,35 @@ class HouseBuilding2Planner(BasePlanner, AbstractStructurePlanner):
     super(HouseBuilding2Planner, self).__init__(env, config)
     AbstractStructurePlanner.__init__(self, env)
 
+  def checkFirstLayer(self):
+    blocks = list(filter(lambda x: self.env.object_types[x] == constants.CUBE, self.env.objects))
+    block1_pos = blocks[0].getPosition()
+    block2_pos = blocks[1].getPosition()
+    return block1_pos[-1] < self.getMaxBlockSize() and \
+           block2_pos[-1] < self.getMaxBlockSize() and \
+           self.getDistance(blocks[0], blocks[1]) < 2.2 * self.getMaxBlockSize()
+
+
+  def getStepLeft(self):
+    roofs = list(filter(lambda x: self.env.object_types[x] == constants.ROOF, self.env.objects))
+
+    if not self.isSimValid():
+      return 100
+    if self.checkTermination():
+      return 0
+    if self.checkFirstLayer():
+      step_left = 2
+      if self.isObjectHeld(roofs[0]):
+        step_left -= 1
+    else:
+      step_left = 4
+      if self.isHolding():
+        if self.isObjectHeld(roofs[0]):
+          step_left += 1
+        else:
+          step_left -= 1
+    return step_left
+
   def getNextAction(self):
     if self.env._isHolding():
       return self.getPlacingAction()
@@ -54,7 +83,7 @@ class HouseBuilding2Planner(BasePlanner, AbstractStructurePlanner):
 
     valid_block_pos = self.dist_valid(dist)
 
-    if self.env._isObjectHeld(roofs[0]):
+    if self.isObjectHeld(roofs[0]):
       # holding roof, but block pos not valid => place roof on arbitrary pos
       if not valid_block_pos:
         return self.placeOnGround(self.env.max_block_size * 3, self.env.max_block_size * 3)
@@ -63,8 +92,8 @@ class HouseBuilding2Planner(BasePlanner, AbstractStructurePlanner):
         return self.placeOnTopOfMultiple(blocks)
     # holding block, place block on valid pos
     else:
-      if self.env._isObjectHeld(blocks[0]):
+      if self.isObjectHeld(blocks[0]):
         other_block = blocks[1]
       else:
         other_block = blocks[0]
-      return self.placeNearAnother(other_block, 1.5*self.env.max_block_size, 1.8*self.env.max_block_size, self.env.max_block_size * 3, self.env.max_block_size * 3)
+      return self.placeNearAnother(other_block, 1.7*self.env.max_block_size, 1.8*self.env.max_block_size, self.env.max_block_size * 3, self.env.max_block_size * 3)
