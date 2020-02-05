@@ -209,7 +209,7 @@ class PyBulletEnv(BaseEnv):
            np.abs(z - obj.getPosition()[-1]) > obj.getHeight()
 
   def getPickingRoofPlan(self, roofs):
-    roof_pos, roof_rot = pb_obj_generation.getObjectPose(roofs[0])
+    roof_pos, roof_rot = roofs[0].getPose()
     roof_rot = pb.getEulerFromQuaternion(roof_rot)
     x = roof_pos[0]
     y = roof_pos[1]
@@ -219,7 +219,7 @@ class PyBulletEnv(BaseEnv):
       r += np.pi
     while r > np.pi:
       r -= np.pi
-    return self._encodeAction(self.PICK_PRIMATIVE, x, y, z, r)
+    return self._encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
   def getPickingBrickPlan(self, bricks):
     return self.getPickingRoofPlan(bricks)
@@ -483,7 +483,7 @@ class PyBulletEnv(BaseEnv):
 
     return self._isHolding(), in_hand_img, self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
-  def _getValidPositions(self, padding, min_distance, existing_positions, num_shapes):
+  def _getValidPositions(self, padding, min_distance, existing_positions, num_shapes, sample_range=None):
     for _ in range(100):
       existing_positions_copy = copy.deepcopy(existing_positions)
       valid_positions = list()
@@ -496,8 +496,16 @@ class PyBulletEnv(BaseEnv):
         for j in range(100):
           if is_position_valid:
             break
-          position = [(x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2,
-                      (y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2]
+          if sample_range:
+            sample_range[0][0] = max(sample_range[0][0], self.workspace[0][0]+padding/2)
+            sample_range[0][1] = min(sample_range[0][1], self.workspace[0][1]-padding/2)
+            sample_range[1][0] = max(sample_range[1][0], self.workspace[1][0]+padding/2)
+            sample_range[1][1] = min(sample_range[1][1], self.workspace[1][1]-padding/2)
+            position = [(sample_range[0][1] - sample_range[0][0]) * npr.random_sample() + sample_range[0][0],
+                        (sample_range[1][1] - sample_range[1][0]) * npr.random_sample() + sample_range[1][0]]
+          else:
+            position = [(x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2,
+                        (y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2]
 
           if self.pos_candidate is not None:
             position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0] - position[0]).argmin()]

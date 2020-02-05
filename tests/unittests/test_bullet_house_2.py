@@ -52,10 +52,10 @@ class TestBulletHouse2(unittest.TestCase):
     self.assertEqual(dones, 1)
 
   def testPlanner2(self):
-    self.env_config['render'] = True
+    self.env_config['render'] = False
     self.env_config['reward_type'] = 'sparse'
     self.env_config['random_orientation'] = True
-    env = env_factory.createEnvs(1, 'rl', 'pybullet', 'house_building_2', self.env_config, {})
+    env = env_factory.createEnvs(10, 'rl', 'pybullet', 'house_building_2', self.env_config, {})
     total = 0
     s = 0
     env.reset()
