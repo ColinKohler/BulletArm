@@ -318,17 +318,24 @@ class PyBulletEnv(BaseEnv):
     raise NoValidPositionException
 
   def _generateShapes(self, shape_type=0, num_shapes=1, scale=None, pos=None, rot=None,
-                           min_distance=0.1, padding=0.2, random_orientation=False):
+                           min_distance=None, padding=None, random_orientation=False):
     ''''''
-    if shape_type == constants.CUBE or shape_type == constants.TRIANGLE:
-      min_distance = self.max_block_size * 1.5
-      padding = self.max_block_size * 1.5
-    elif shape_type == constants.BRICK:
-      min_distance = self.max_block_size * 3.4
-      padding = self.max_block_size * 3.4
-    elif shape_type == constants.ROOF:
-      min_distance = self.max_block_size * 3.4
-      padding = self.max_block_size * 3.4
+    if padding is None:
+      if shape_type == constants.CUBE or shape_type == constants.TRIANGLE:
+        padding = self.max_block_size * 1.5
+      elif shape_type == constants.BRICK:
+        padding = self.max_block_size * 3.4
+      elif shape_type == constants.ROOF:
+        padding = self.max_block_size * 3.4
+
+    if min_distance is None:
+      if shape_type == constants.CUBE or shape_type == constants.TRIANGLE:
+        min_distance = self.max_block_size * 2.4
+      elif shape_type == constants.BRICK:
+        min_distance = self.max_block_size * 3.4
+      elif shape_type == constants.ROOF:
+        min_distance = self.max_block_size * 3.4
+
     shape_handles = list()
     positions = [o.getXYPosition() for o in self.objects]
 

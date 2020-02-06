@@ -14,7 +14,8 @@ class TestBulletHouse1(unittest.TestCase):
                           [0, 0.50]])
   env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 90, 'render': False, 'fast_mode': True,
                 'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 4, 'random_orientation': False,
-                'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka'}
+                'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
+                'workspace_check': 'point'}
 
 
   def testPlanner(self):
@@ -34,7 +35,7 @@ class TestBulletHouse1(unittest.TestCase):
   #   self.env_config['random_orientation'] = True
   #   self.env_config['num_objects'] = 4
   #
-  #   env = env_factory.createEnvs(10, 'rl', 'pybullet', 'house_building_1', self.env_config, {})
+  #   env = env_factory.createEnvs(10, 'rl', 'pybullet', 'block_stacking', self.env_config, {})
   #   total = 0
   #   s = 0
   #   env.reset()
