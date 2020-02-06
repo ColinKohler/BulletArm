@@ -2,6 +2,7 @@ import unittest
 import time
 import numpy as np
 import torch
+import matplotlib.pyplot as plt
 
 from helping_hands_rl_envs.envs.house_building_1_env import createHouseBuilding1Env
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
@@ -9,9 +10,9 @@ from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs import env_factory
 
 class TestBulletHouse1(unittest.TestCase):
-  workspace = np.asarray([[0.35, 0.65],
-                          [-0.15, 0.15],
-                          [0, 0.50]])
+  workspace = np.asarray([[0, 90],
+                          [0, 90],
+                          [0, 90]])
   env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 90, 'render': False, 'fast_mode': True,
                 'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 4, 'random_orientation': False,
                 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka'}
@@ -19,10 +20,14 @@ class TestBulletHouse1(unittest.TestCase):
 
   def testPlanner(self):
     env = env_factory.createEnvs(1, 'rl', 'numpy', 'block_stacking', self.env_config)
-    env.reset()
+    states_, in_hands_, obs_ = env.reset()
+    plt.imshow(obs_.squeeze())
+    plt.show()
     for i in range(5, -1, -1):
       action = env.getNextAction()
       states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+      plt.imshow(obs_.squeeze())
+      plt.show()
       self.assertEqual(env.getStepLeft(), i)
     env.close()
 

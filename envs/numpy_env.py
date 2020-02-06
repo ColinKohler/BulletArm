@@ -95,7 +95,7 @@ class NumpyEnv(BaseEnv):
     self.held_object = self.objects[held_object_idx] if held_object_idx is not None else None
 
   def takeAction(self, action):
-    motion_primative, x, y, z, rot = self._deocdeAction(action)
+    motion_primative, x, y, z, rot = self._decodeAction(action)
 
     if motion_primative == constants.PICK_PRIMATIVE:
       self.held_object = self._pick(x, y, z, rot)
@@ -194,9 +194,11 @@ class NumpyEnv(BaseEnv):
       else:
         obj.on_top = True
 
-  def _getNumTopBlock(self):
+  def _getNumTopBlock(self, objects=None):
+    if objects is None:
+      objects = self.objects
     count = 0
-    for obj in self._getBlocks():
+    for obj in objects:
       if self.held_object == obj or obj.on_top:
         count += 1
     return count
@@ -213,9 +215,16 @@ class NumpyEnv(BaseEnv):
         count += 1
     return count
 
-  def _getObservation(self):
+  def _getObservation(self, action=None):
     ''''''
-    return self._isHolding(), self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
+    old_heightmap = self.heightmap.copy()
+    if action is None or self._isHolding() == False:
+      in_hand_img = np.zeros((self.in_hand_size, self.in_hand_size, 1))
+    else:
+      motion_primative, x, y, z, rot = self._decodeAction(action)
+      in_hand_img = self.getInHandImage(old_heightmap, x, y, rot, self.heightmap)
+
+    return self._isHolding(), in_hand_img, self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
   def _getValidPositions(self, padding, min_distance, existing_positions, num_shapes):
     while True:
@@ -317,9 +326,11 @@ class NumpyEnv(BaseEnv):
       objs.append(obj)
     return np.array(objs)
 
-  def getObjectPoses(self):
+  def getObjectPoses(self, objects=None):
+    if objects is None: objects = self.objects
+
     obj_poses = list()
-    for obj in self.objects:
+    for obj in objects:
       if self._isObjectHeld(obj):
         continue
       pos, rot = obj.getPose()
