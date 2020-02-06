@@ -7,6 +7,8 @@ from helping_hands_rl_envs.envs.pybullet_env import NoValidPositionException
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
 from helping_hands_rl_envs.simulators import constants
 
+import pybullet as pb
+
 class BlockStructurePlanner(BasePlanner):
   def __init__(self, env, env_config):
     super().__init__(env, env_config)
@@ -65,6 +67,30 @@ class BlockStructurePlanner(BasePlanner):
       while r > np.pi:
         r -= np.pi
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
+
+  def pickShortestObjOnTop(self, objects=None, side_grasp=False):
+    """
+    pick up the shortest object that is on top
+    :param objects: pool of objects
+    :param side_grasp: grasp on the side of the object (90 degree), should be true for triangle, brick, etc
+    :return: encoded action
+    """
+    if objects is None: objects = self.env.objects
+    objects, object_poses = self.getSortedObjPoses(objects=objects, ascend=True)
+
+    x, y, z, r = object_poses[0][0], object_poses[0][1], object_poses[0][2] + self.env.pick_offset, object_poses[0][5]
+    for obj, pose in zip(objects, object_poses):
+      if self.isObjOnTop(obj):
+        x, y, z, r = pose[0], pose[1], pose[2] + self.env.pick_offset, pose[5]
+        break
+    if side_grasp:
+      r += np.pi / 2
+      while r < 0:
+        r += np.pi
+      while r > np.pi:
+        r -= np.pi
+    return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
+
 
   def placeOnHighestObj(self, objects=None, side_place=False):
     """
@@ -128,13 +154,13 @@ class BlockStructurePlanner(BasePlanner):
       r -= np.pi
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
-  def placeOnTopOfMultiple(self, above_objs):
+  def placeOnTopOfMultiple(self, bottom_objs):
     """
     place on top of multiple objects. will calculate the slope of those objects and match the rotation
-    :param above_objs: list of objects to put on top of
+    :param bottom_objs: list of objects to put on top of
     :return: encoded action
     """
-    obj_positions = np.array([o.getPosition() for o in above_objs])
+    obj_positions = np.array([o.getPosition() for o in bottom_objs])
     slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(obj_positions[:, 0], obj_positions[:, 1])
     x, y, z = obj_positions.mean(0)
     z += +self.env.place_offset
@@ -143,13 +169,53 @@ class BlockStructurePlanner(BasePlanner):
       r -= np.pi
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
-  def getSortedObjPoses(self, roll=False, objects=None):
+  def placeOn(self, bottom_obj, bottom_obj_length, num_slots=2):
+    """
+    place object on top of bottom_obj. will create n=num_slots placing slots on top of bottom_obj, and place current obj
+    that is furthest to another object on top of bottom_obj
+
+    this function is for creating structures s.t. several small objects will be place on top of a long, big obj
+    :param bottom_obj: the object at the bottom
+    :param bottom_obj_length: the length of bottom_obj
+    :param num_slots: number of slots for placement
+    :return: encoded action
+    """
+    assert num_slots > 0
+    if num_slots == 1:
+      return self.placeOnHighestObj([bottom_obj], side_place=True)
+    bottom_pos, bottom_rot = bottom_obj.getPose()
+    bottom_rot = pb.getEulerFromQuaternion(bottom_rot)[2]
+    v = np.array([[np.cos(bottom_rot), np.sin(bottom_rot)]]).repeat(num_slots, 0)
+
+    bottom_obj_length -= self.getMaxBlockSize()
+    possible_points = v * np.expand_dims(np.linspace(-0.5, 0.5, num_slots), 1).repeat(2, 1) * bottom_obj_length
+    possible_points[:, 0] += bottom_pos[0]
+    possible_points[:, 1] += bottom_pos[1]
+
+    top_objs = self.getObjectsOnTopOf(bottom_obj)
+    if len(top_objs) == 0:
+      x, y = possible_points[np.random.choice(num_slots)]
+
+    else:
+      top_obj_positions = [o.getXYPosition() for o in top_objs]
+      x, y = possible_points[np.argmax(scipy.spatial.distance.cdist(possible_points, top_obj_positions).min(axis=1))]
+
+    z = bottom_pos[2] + self.env.place_offset
+    r = bottom_rot + np.pi / 2
+    while r > np.pi:
+      r -= np.pi
+    return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
+
+  def getSortedObjPoses(self, roll=False, objects=None, ascend=False):
     if objects is None: objects = self.env.objects
     objects = np.array(list(filter(lambda x: not self.isObjectHeld(x), objects)))
     object_poses = self.env.getObjectPoses(objects)
 
     # Sort by block size
-    sorted_inds = np.flip(np.argsort(object_poses[:,2], axis=0))
+    if ascend:
+      sorted_inds = np.argsort(object_poses[:, 2], axis=0)
+    else:
+      sorted_inds = np.flip(np.argsort(object_poses[:,2], axis=0))
 
     # TODO: Should get a better var name for this
     if roll:
