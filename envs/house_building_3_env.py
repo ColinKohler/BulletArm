@@ -18,11 +18,6 @@ def createHouseBuilding3Env(simulator_base_env, config):
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
 
-      self.blocks = []
-      self.bricks = []
-      self.roofs = []
-      self.env_state = {}
-
     def step(self, action):
       self.takeAction(action)
       self.wait(100)
@@ -41,40 +36,32 @@ def createHouseBuilding3Env(simulator_base_env, config):
       while True:
         super(HouseBuilding3Env, self).reset()
         try:
-          self.blocks = self._generateShapes(constants.CUBE, 2, random_orientation=self.random_orientation)
-          self.roofs = self._generateShapes(constants.ROOF, 1, random_orientation=self.random_orientation)
-          self.bricks = self._generateShapes(constants.BRICK, 1, random_orientation=self.random_orientation)
+          self._generateShapes(constants.CUBE, 2, random_orientation=self.random_orientation)
+          self._generateShapes(constants.ROOF, 1, random_orientation=self.random_orientation)
+          self._generateShapes(constants.BRICK, 1, random_orientation=self.random_orientation)
         except Exception as e:
           continue
         else:
           break
       return self._getObservation()
 
-    def saveState(self):
-      super().saveState()
-      self.env_state = {'blocks': deepcopy(self.blocks),
-                        'bricks': deepcopy(self.bricks),
-                        'roofs': deepcopy(self.roofs)}
-
-    def restoreState(self):
-      super().restoreState()
-      self.blocks = self.env_state['blocks']
-      self.bricks = self.env_state['bricks']
-      self.roofs = self.env_state['roofs']
-
     def _checkTermination(self):
+      blocks = list(filter(lambda x: self.object_types[x] == constants.CUBE, self.objects))
+      bricks = list(filter(lambda x: self.object_types[x] == constants.BRICK, self.objects))
+      roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
+      
       top_blocks = []
-      for block in self.blocks:
-        if self._isObjOnTop(block, self.blocks):
+      for block in blocks:
+        if self._isObjOnTop(block, blocks):
           top_blocks.append(block)
       if len(top_blocks) != 2:
         return False
-      if self._checkOnTop(top_blocks[0], self.bricks[0]) and \
-          self._checkOnTop(top_blocks[1], self.bricks[0]) and \
-          self._checkOnTop(self.bricks[0], self.roofs[0]) and \
-          self._checkOriSimilar([self.bricks[0], self.roofs[0]]) and \
-          self._checkInBetween(self.bricks[0], self.blocks[0], self.blocks[1]) and \
-          self._checkInBetween(self.roofs[0], self.blocks[0], self.blocks[1]):
+      if self._checkOnTop(top_blocks[0], bricks[0]) and \
+          self._checkOnTop(top_blocks[1], bricks[0]) and \
+          self._checkOnTop(bricks[0], roofs[0]) and \
+          self._checkOriSimilar([bricks[0], roofs[0]]) and \
+          self._checkInBetween(bricks[0], blocks[0], blocks[1]) and \
+          self._checkInBetween(roofs[0], blocks[0], blocks[1]):
         return True
       return False
 
@@ -82,7 +69,8 @@ def createHouseBuilding3Env(simulator_base_env, config):
       return list(map(self._getObjectPosition, self.objects))
 
     def isSimValid(self):
-      return self._checkObjUpright(self.roofs[0]) and super().isSimValid()
+      roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
+      return self._checkObjUpright(roofs[0]) and super().isSimValid()
 
   def _thunk():
     return HouseBuilding3Env(config)

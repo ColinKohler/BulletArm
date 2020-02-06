@@ -15,10 +15,6 @@ def createHouseBuilding1Env(simulator_base_env, config):
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
 
-      self.blocks = []
-      self.triangles = []
-      self.stacking_state = {}
-
     def step(self, action):
       self.takeAction(action)
       self.wait(100)
@@ -37,34 +33,25 @@ def createHouseBuilding1Env(simulator_base_env, config):
       while True:
         super(HouseBuilding1Env, self).reset()
         try:
-          self.triangles = self._generateShapes(constants.TRIANGLE, 1, random_orientation=self.random_orientation)
-          self.blocks = self._generateShapes(constants.CUBE, self.num_obj-1, random_orientation=self.random_orientation)
+          self._generateShapes(constants.TRIANGLE, 1, random_orientation=self.random_orientation)
+          self._generateShapes(constants.CUBE, self.num_obj-1, random_orientation=self.random_orientation)
         except Exception as e:
           continue
         else:
           break
       return self._getObservation()
 
-    def saveState(self):
-      super(HouseBuilding1Env, self).saveState()
-      self.stacking_state = {'blocks': deepcopy(self.blocks),
-                             'triangles': deepcopy(self.triangles)}
-
-    def restoreState(self):
-      super(HouseBuilding1Env, self).restoreState()
-      self.blocks = self.stacking_state['blocks']
-      self.triangles = self.stacking_state['triangles']
-
     def _checkTermination(self):
       ''''''
-      # return self._getNumTopBlock() == 1
-      return self._checkStack() and self._checkObjUpright(self.triangles[0])
+      triangles = list(filter(lambda x: self.object_types[x] == constants.TRIANGLE, self.objects))
+      return self._checkStack() and self._checkObjUpright(triangles[0])
 
     def getObjectPosition(self):
       return list(map(self._getObjectPosition, self.objects))
 
     def isSimValid(self):
-      return self._checkObjUpright(self.triangles[0]) and super().isSimValid()
+      triangles = list(filter(lambda x: self.object_types[x] == constants.TRIANGLE, self.objects))
+      return self._checkObjUpright(triangles[0]) and super().isSimValid()
 
 
   def _thunk():

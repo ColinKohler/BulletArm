@@ -98,6 +98,13 @@ class PyBulletEnv(BaseEnv):
 
     self.workspace_check = workspace_check
 
+    self.table_id = None
+    self.heightmap = None
+    self.current_episode_steps = 1
+    self.last_action = None
+    self.state = {}
+    self.pb_state = None
+
   def reset(self):
     ''''''
     pb.resetSimulation()
@@ -122,20 +129,31 @@ class PyBulletEnv(BaseEnv):
 
     return self._getObservation()
 
+  def getStateDict(self):
+    state = {'current_episode_steps': copy.deepcopy(self.current_episode_steps),
+             'objects': copy.deepcopy(self.objects),
+             'object_types': copy.deepcopy(self.object_types),
+             'heightmap': copy.deepcopy(self.heightmap),
+             'robot_state': copy.deepcopy(self.robot.state)
+             }
+    return state
+
+  def restoreStateDict(self, state):
+    self.current_episode_steps = state['current_episode_steps']
+    self.objects = state['objects']
+    self.object_types = state['object_types']
+    self.heightmap = state['heightmap']
+    self.robot.state = state['robot_state']
+    self.robot.restoreState()
+
   def saveState(self):
-    self.state = {'current_episode_steps': copy.deepcopy(self.current_episode_steps),
-                  'objects': copy.deepcopy(self.objects),
-                  'env_state': pb.saveState(),
-                  'heightmap': copy.deepcopy(self.heightmap)
-                  }
+    self.pb_state = pb.saveState()
     self.robot.saveState()
+    self.state = self.getStateDict()
 
   def restoreState(self):
-    self.current_episode_steps = self.state['current_episode_steps']
-    self.objects = self.state['objects']
-    self.heightmap = self.state['heightmap']
-    pb.restoreState(self.state['env_state'])
-    self.robot.restoreState()
+    pb.restoreState(self.pb_state)
+    self.restoreStateDict(self.state)
 
   def saveEnvToFile(self, path):
     bullet_file = os.path.join(path, 'env.bullet')

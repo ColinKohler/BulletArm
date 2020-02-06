@@ -8,18 +8,10 @@ def createBlockCylinderStackingEnv(simulator_base_env, config):
     ''''''
     def __init__(self, config):
       if simulator_base_env is NumpyEnv:
-        super(BlockStackingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
-                                               config['obs_size'], config['render'], config['action_sequence'])
-      # elif simulator_base_env is VrepEnv:
-      #   super(BlockStackingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
-      #                                          config['obs_size'], config['port'], config['fast_mode'],
-      #                                          config['action_sequence'])
-      # elif simulator_base_env is PyBulletEnv:
-      #   super(BlockStackingEnv, self).__init__(config['seed'], config['workspace'], config['max_steps'],
-      #                                          config['obs_size'], config['fast_mode'], config['render'],
-      #                                          config['action_sequence'])
+        super(BlockStackingEnv, self).__init__(config)
       else:
         raise ValueError('Bad simulator base env specified.')
+
       self.simulator_base_env = simulator_base_env
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
@@ -56,31 +48,28 @@ def createBlockCylinderStackingEnv(simulator_base_env, config):
     def reset(self):
       ''''''
       super(BlockStackingEnv, self).reset()
-      self.blocks = self._generateShapes(0, int(self.num_obj/2), random_orientation=self.random_orientation)
-      self.cylinders = self._generateShapes(2, int(self.num_obj/2), random_orientation=self.random_orientation)
+      self._generateShapes(0, int(self.num_obj/2), random_orientation=self.random_orientation)
+      self._generateShapes(2, int(self.num_obj/2), random_orientation=self.random_orientation)
       self.cylinder_stacked = False
       self.block_stacked = False
       return self._getObservation()
 
     def saveState(self):
       super(BlockStackingEnv, self).saveState()
-      self.stacking_state = {'cylinder_stacked': deepcopy(self.cylinder_stacked),
-                             'block_stacked': deepcopy(self.block_stacked)}
+      self.state['cylinder_stacked'] = deepcopy(self.cylinder_stacked)
+      self.state['block_stacked'] = deepcopy(self.block_stacked)
 
     def restoreState(self):
       super(BlockStackingEnv, self).restoreState()
-      self.blocks = self._getBlocks()
-      self.cylinders = self._getCylinders()
-      self.cylinder_stacked = self.stacking_state['cylinder_stacked']
-      self.block_stacked = self.stacking_state['block_stacked']
+      self.cylinder_stacked = self.state['cylinder_stacked']
+      self.block_stacked = self.state['block_stacked']
 
     def _checkTermination(self):
       ''''''
       return self._getNumTopBlock() == 1 and self. _getNumTopCylinder() == 1
 
     def getObjectPosition(self):
-      return list(map(self._getObjectPosition, self.blocks)) + list(map(self._getObjectPosition, self.cylinders))
-
+      return list(map(self._getObjectPosition, self.objects))
 
   def _thunk():
     return BlockStackingEnv(config)

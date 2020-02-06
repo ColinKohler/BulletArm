@@ -13,16 +13,14 @@ class TestBulletHouse1(unittest.TestCase):
                           [-0.15, 0.15],
                           [0, 0.50]])
   env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 90, 'render': False, 'fast_mode': True,
-                'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 3, 'num_cubes': 2, 'random_orientation': False,
+                'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 4, 'random_orientation': False,
                 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka'}
 
 
   def testPlanner(self):
-    self.env_config['render'] = True
-    self.env_config['seed'] = 1
-    env = env_factory.createEnvs(1, 'rl', 'pybullet', 'brick_stacking', self.env_config)
+    env = env_factory.createEnvs(1, 'rl', 'numpy', 'block_stacking', self.env_config)
     env.reset()
-    for i in range(3, -1, -1):
+    for i in range(5, -1, -1):
       action = env.getNextAction()
       states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
       self.assertEqual(env.getStepLeft(), i)
@@ -30,17 +28,18 @@ class TestBulletHouse1(unittest.TestCase):
 
 
   # def testPlanner2(self):
-    # self.env_config['render'] = False
-    # self.env_config['reward_type'] = 'sparse'
-    # self.env_config['random_orientation'] = True
-    #
-    # env = env_factory.createEnvs(10, 'rl', 'pybullet', 'brick_stacking', self.env_config, {})
-    # total = 0
-    # s = 0
-    # env.reset()
-    # while total < 1000:
-    #   states_, in_hands_, obs_, rewards, dones = env.step(env.getNextAction())
-    #   if dones.sum():
-    #     s += rewards.sum().int().item()
-    #     total += dones.sum().int().item()
-    #     print('{}/{}'.format(s, total))
+  #   self.env_config['render'] = False
+  #   self.env_config['reward_type'] = 'sparse'
+  #   self.env_config['random_orientation'] = True
+  #   self.env_config['num_objects'] = 4
+  #
+  #   env = env_factory.createEnvs(10, 'rl', 'pybullet', 'house_building_1', self.env_config, {})
+  #   total = 0
+  #   s = 0
+  #   env.reset()
+  #   while total < 1000:
+  #     states_, in_hands_, obs_, rewards, dones = env.step(env.getNextAction())
+  #     if dones.sum():
+  #       s += rewards.sum().int().item()
+  #       total += dones.sum().int().item()
+  #       print('{}/{}'.format(s, total))

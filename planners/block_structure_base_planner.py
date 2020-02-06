@@ -9,7 +9,7 @@ from helping_hands_rl_envs.simulators import constants
 
 import pybullet as pb
 
-class BlockStructurePlanner(BasePlanner):
+class BlockStructureBasePlanner(BasePlanner):
   def __init__(self, env, env_config):
     super().__init__(env, env_config)
 
@@ -104,6 +104,7 @@ class BlockStructurePlanner(BasePlanner):
     for obj, pose in zip(objects, object_poses):
       if not self.isObjectHeld(obj):
         x, y, z, r = pose[0], pose[1], pose[2]+self.env.place_offset, pose[5]
+        break
     if side_place:
       r += np.pi / 2
       while r < 0:

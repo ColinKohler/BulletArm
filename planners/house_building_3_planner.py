@@ -6,10 +6,10 @@ from helping_hands_rl_envs.envs.pybullet_env import NoValidPositionException
 
 from helping_hands_rl_envs.planners.block_stacking_planner import BlockStackingPlanner
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
-from helping_hands_rl_envs.planners.block_structure_planner import BlockStructurePlanner
+from helping_hands_rl_envs.planners.block_structure_base_planner import BlockStructureBasePlanner
 from helping_hands_rl_envs.simulators import constants
 
-class HouseBuilding3Planner(BlockStructurePlanner):
+class HouseBuilding3Planner(BlockStructureBasePlanner):
   def __init__(self, env, config):
     super(HouseBuilding3Planner, self).__init__(env, config)
 

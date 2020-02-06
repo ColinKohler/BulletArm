@@ -4,10 +4,10 @@ import pybullet as pb
 
 from helping_hands_rl_envs.planners.block_stacking_planner import BlockStackingPlanner
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
-from helping_hands_rl_envs.planners.block_structure_planner import BlockStructurePlanner
+from helping_hands_rl_envs.planners.block_structure_base_planner import BlockStructureBasePlanner
 from helping_hands_rl_envs.simulators import constants
 
-class HouseBuilding1Planner(BlockStructurePlanner):
+class HouseBuilding1Planner(BlockStructureBasePlanner):
   def __init__(self, env, config):
     super(HouseBuilding1Planner, self).__init__(env, config)
 

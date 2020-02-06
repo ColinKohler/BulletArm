@@ -3,10 +3,10 @@ import numpy.random as npr
 from functools import reduce
 
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
-from helping_hands_rl_envs.planners.block_structure_planner import BlockStructurePlanner
+from helping_hands_rl_envs.planners.block_structure_base_planner import BlockStructureBasePlanner
 from helping_hands_rl_envs.simulators import constants
 
-class BrickStackingPlanner(BlockStructurePlanner):
+class BrickStackingPlanner(BlockStructureBasePlanner):
   def __init__(self, env, config):
     super(BrickStackingPlanner, self).__init__(env, config)
 
@@ -14,7 +14,8 @@ class BrickStackingPlanner(BlockStructurePlanner):
     return self.pickShortestObjOnTop(objects=self.getObjects(obj_type=constants.CUBE))
 
   def getPlacingAction(self):
-    return self.placeOn(self.env.bricks[0], 3*self.getMaxBlockSize(), len(self.getObjects(obj_type=constants.CUBE)))
+    bricks = self.getObjects(obj_type=constants.BRICK)
+    return self.placeOn(bricks[0], 3*self.getMaxBlockSize(), len(self.getObjects(obj_type=constants.CUBE)))
 
   def getStepLeft(self):
     if not self.isSimValid():

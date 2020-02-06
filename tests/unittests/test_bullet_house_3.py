@@ -44,6 +44,7 @@ class TestBulletHouse3(unittest.TestCase):
   #       print('{}/{}'.format(s, total))
 
   def testBlockNotValidTriangleOnBrick(self):
+    self.env_config['seed'] = 2
     self.env_config['render'] = False
     self.env_config['random_orientation'] = False
 
@@ -79,7 +80,7 @@ class TestBulletHouse3(unittest.TestCase):
     env.close()
 
   def testBlockNotValidBrickOrRoofOnBlock(self):
-    self.env_config['seed'] = 1
+    self.env_config['seed'] = 2
     self.env_config['render'] = False
     self.env_config['random_orientation'] = False
 
@@ -125,6 +126,7 @@ class TestBulletHouse3(unittest.TestCase):
     env.close()
 
   def testBlockNotValidRoofOnBrickOnBlock(self):
+    self.env_config['seed'] = 2
     self.env_config['random_orientation'] = False
 
     env = env_factory.createEnvs(1, 'rl', 'pybullet', 'house_building_3', self.env_config)
@@ -168,6 +170,7 @@ class TestBulletHouse3(unittest.TestCase):
     env.close()
 
   def testBlockValidTriangleOnBrick(self):
+    self.env_config['seed'] = 2
     self.env_config['random_orientation'] = False
 
     env = env_factory.createEnvs(1, 'rl', 'pybullet', 'house_building_3', self.env_config)
@@ -201,6 +204,7 @@ class TestBulletHouse3(unittest.TestCase):
     env.close()
 
   def testBlockValidBrickOrRoofOnBlock(self):
+    self.env_config['seed'] = 2
     self.env_config['random_orientation'] = False
 
     env = env_factory.createEnvs(1, 'rl', 'pybullet', 'house_building_3', self.env_config)
@@ -253,6 +257,7 @@ class TestBulletHouse3(unittest.TestCase):
     env.close()
 
   def testSuccess(self):
+    self.env_config['seed'] = 2
     self.env_config['random_orientation'] = False
 
     env = env_factory.createEnvs(1, 'rl', 'pybullet', 'house_building_3', self.env_config)

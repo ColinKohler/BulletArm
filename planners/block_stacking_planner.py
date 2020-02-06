@@ -2,10 +2,10 @@ import numpy as np
 import numpy.random as npr
 
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
-from helping_hands_rl_envs.planners.block_structure_planner import BlockStructurePlanner
+from helping_hands_rl_envs.planners.block_structure_base_planner import BlockStructureBasePlanner
 from helping_hands_rl_envs.simulators import constants
 
-class BlockStackingPlanner(BlockStructurePlanner):
+class BlockStackingPlanner(BlockStructureBasePlanner):
   def __init__(self, env, config):
     super(BlockStackingPlanner, self).__init__(env, config)
 

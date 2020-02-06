@@ -16,10 +16,6 @@ def createHouseBuilding2Env(simulator_base_env, config):
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
 
-      self.blocks = []
-      self.roofs = []
-      self.stacking_state = {}
-
     def step(self, action):
       self.takeAction(action)
       self.wait(100)
@@ -38,35 +34,31 @@ def createHouseBuilding2Env(simulator_base_env, config):
       while True:
         super(HouseBuilding2Env, self).reset()
         try:
-          self.blocks = self._generateShapes(constants.CUBE, 2, random_orientation=self.random_orientation)
-          self.roofs = self._generateShapes(constants.ROOF, 1, random_orientation=self.random_orientation)
+          self._generateShapes(constants.CUBE, 2, random_orientation=self.random_orientation)
+          self._generateShapes(constants.ROOF, 1, random_orientation=self.random_orientation)
         except:
           continue
         else:
           break
       return self._getObservation()
 
-    def saveState(self):
-      # TODO
-      pass
-
-    def restoreState(self):
-      # TODO
-      pass
-
     def _checkTermination(self):
+      blocks = list(filter(lambda x: self.object_types[x] == constants.CUBE, self.objects))
+      roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
+
       top_blocks = []
-      for block in self.blocks:
-        if self._isObjOnTop(block, self.blocks):
+      for block in blocks:
+        if self._isObjOnTop(block, blocks):
           top_blocks.append(block)
       if len(top_blocks) != 2:
         return False
-      if self._checkOnTop(top_blocks[0], self.roofs[0]) and self._checkOnTop(top_blocks[1], self.roofs[0]):
+      if self._checkOnTop(top_blocks[0], roofs[0]) and self._checkOnTop(top_blocks[1], roofs[0]):
         return True
       return False
 
     def isSimValid(self):
-      return self._checkObjUpright(self.roofs[0]) and super().isSimValid()
+      roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
+      return self._checkObjUpright(roofs[0]) and super().isSimValid()
 
   def _thunk():
     return HouseBuilding2Env(config)
