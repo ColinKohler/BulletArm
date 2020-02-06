@@ -148,4 +148,4 @@ class HouseBuilding3Planner(BlockStructurePlanner):
         other_block = blocks[1]
       else:
         other_block = blocks[0]
-      return self.placeNearAnother(other_block, self.getMaxBlockSize()*1.7, self.getMaxBlockSize()*1.8, self.getMaxBlockSize()*3, self.getMaxBlockSize()*3)
+      return self.placeNearAnother(other_block, self.getMaxBlockSize()*1.7, self.getMaxBlockSize()*1.8, self.getMaxBlockSize()*2, self.getMaxBlockSize()*3)

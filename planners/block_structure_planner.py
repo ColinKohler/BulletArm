@@ -139,7 +139,7 @@ class BlockStructurePlanner(BasePlanner):
     sample_range = [[another_obj_position[0] - max_dist_to_another, another_obj_position[0] + max_dist_to_another],
                     [another_obj_position[1] - max_dist_to_another, another_obj_position[1] + max_dist_to_another]]
     existing_pos = [o.getXYPosition() for o in list(filter(lambda x: not self.isObjectHeld(x) and not another_obj == x, self.env.objects))]
-    for i in range(10000):
+    for i in range(1000):
       try:
         place_pos = self.getValidPositions(padding_dist, min_dist, existing_pos, 1, sample_range=sample_range)[0]
       except NoValidPositionException:

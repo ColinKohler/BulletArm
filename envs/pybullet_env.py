@@ -32,6 +32,8 @@ class PyBulletEnv(BaseEnv):
       config['perfect_grasp'] = False
     if 'perfect_place' not in config:
       config['perfect_place'] = False
+    if 'workspace_check' not in config:
+      config['workspace_check'] = 'box'
     seed = config['seed']
     workspace = config['workspace']
     max_steps = config['max_steps']
@@ -44,6 +46,7 @@ class PyBulletEnv(BaseEnv):
     perfect_grasp = config['perfect_grasp']
     perfect_place = config['perfect_place']
     robot = config['robot']
+    workspace_check = config['workspace_check']
     super(PyBulletEnv, self).__init__(seed, workspace, max_steps, obs_size, action_sequence, pos_candidate)
 
     # Connect to pybullet and add data files to path
@@ -92,6 +95,8 @@ class PyBulletEnv(BaseEnv):
     self.simulate_grasp = simulate_grasp
     self.perfect_grasp = perfect_grasp
     self.perfect_place = perfect_place
+
+    self.workspace_check = workspace_check
 
   def reset(self):
     ''''''
@@ -195,8 +200,13 @@ class PyBulletEnv(BaseEnv):
     for obj in self.objects:
       if self._isObjectHeld(obj):
         continue
-      if not self._isObjectWithinWorkspace(obj):
-        return False
+      p = obj.getPosition()
+      if self.workspace_check == 'point':
+        if not self._isPointInWorkspace(p):
+          return False
+      else:
+        if not self._isObjectWithinWorkspace(obj):
+          return False
       if self.pos_candidate is not None:
         if np.abs(self.pos_candidate[0] - p[0]).min() > 0.02 or np.abs(self.pos_candidate[1] - p[1]).min() > 0.02:
           return False
@@ -293,8 +303,8 @@ class PyBulletEnv(BaseEnv):
                            min_distance=0.1, padding=0.2, random_orientation=False):
     ''''''
     if shape_type == constants.CUBE or shape_type == constants.TRIANGLE:
-      min_distance = self.block_original_size * self.block_scale_range[1] * 2.4
-      padding = self.block_original_size * self.block_scale_range[1] * 2
+      min_distance = self.max_block_size * 1.5
+      padding = self.max_block_size * 1.5
     elif shape_type == constants.BRICK:
       min_distance = self.max_block_size * 3.4
       padding = self.max_block_size * 3.4

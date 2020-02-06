@@ -13,7 +13,8 @@ class TestBulletHouse3(unittest.TestCase):
                           [0, 0.50]])
   env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 90, 'render': False, 'fast_mode': True,
                 'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 4, 'random_orientation': True,
-                'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka'}
+                'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
+                'workspace_check': 'point'}
 
 
   def testPlanner(self):
