@@ -84,3 +84,12 @@ class BasePlanner(object):
 
   def isSimValid(self):
     return self.env.isSimValid()
+
+  def isObjOnGround(self, obj):
+    return self.env._isObjOnGround(obj)
+
+  def getHoldingObj(self):
+    return self.env._getHoldingObj()
+
+  def getHoldingObjType(self):
+    return self.env._getHoldingObjType()

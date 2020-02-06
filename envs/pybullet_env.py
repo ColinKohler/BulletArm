@@ -400,6 +400,12 @@ class PyBulletEnv(BaseEnv):
       obj_positions.append(obj.getPosition())
     return np.array(obj_positions)
 
+  def _getHoldingObj(self):
+    return self.robot.holding_obj
+
+  def _getHoldingObjType(self):
+    return self.object_types[self._getHoldingObj()] if self.robot.holding_obj else None
+
   def _isHolding(self):
     return self.robot.holding_obj is not None
 
@@ -440,6 +446,13 @@ class PyBulletEnv(BaseEnv):
           block_position[-1] > obj_position[-1]:
         return False
     return True
+
+  def _isObjOnGround(self, obj):
+    contact_points = obj.getContactPoints()
+    for p in contact_points:
+      if p[2] == self.table_id:
+        return True
+    return False
 
   def _getNumTopBlock(self, blocks=None):
     if not blocks:
