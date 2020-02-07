@@ -30,8 +30,8 @@ class BlockStackingPlanner(BasePlanner):
 
       return self.env._encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
     else:
-      x = npr.uniform(self.env.workspace[0,0]+0.025, self.env.workspace[0,1]-0.025)
-      y = npr.uniform(self.env.workspace[1,0]+0.025, self.env.workspace[1,1]-0.025)
+      x = npr.uniform(self.env.workspace[0,0], self.env.workspace[0,1])
+      y = npr.uniform(self.env.workspace[1,0], self.env.workspace[1,1])
       z = 0.
       r = npr.uniform(0., np.pi)
 

@@ -13,6 +13,9 @@ class BasePlanner(object):
   def getNextAction(self):
     raise NotImplemented('Planners must implement this function')
 
+  def getStepsLeft(self):
+    return self.env.getStepLeft()
+
   def getValue(self):
     return self.gamma**self.env.getStepLeft()
 
