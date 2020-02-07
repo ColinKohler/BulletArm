@@ -3,7 +3,6 @@ import numpy as np
 import numpy.random as npr
 
 from helping_hands_rl_envs.envs.numpy_env import NumpyEnv
-from helping_hands_rl_envs.envs.vrep_env import VrepEnv
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.envs.block_picking_env import createBlockPickingEnv
 from helping_hands_rl_envs.envs.block_stacking_env import createBlockStackingEnv
@@ -41,19 +40,12 @@ def createEnvs(num_processes, runner_type, simulator, env_type, env_config, plan
     env_config['seed'] = env_config['seed'] + i if 'seed' in env_config else npr.randint(100)
 
   # Set the super environment and add details to the configs as needed
-  if simulator == 'vrep':
-    for i in range(num_processes):
-      if 'port' in env_configs[i]:
-        env_configs[i]['port'] += i
-      else:
-        env_configs[i]['port'] = 19997+i
-    parent_env = VrepEnv
-  elif simulator == 'pybullet':
+  if simulator == 'pybullet':
     parent_env = PyBulletEnv
   elif simulator == 'numpy':
     parent_env = NumpyEnv
   else:
-    raise ValueError('Invalid simulator passed to factory. Valid simulators are: \'numpy\', \'vrep\', \'pybullet\'.')
+    raise ValueError('Invalid simulator passed to factory. Valid simulators are: \'numpy\', \'pybullet\'.')
 
   # Create the various environments
   if env_type == 'block_picking':

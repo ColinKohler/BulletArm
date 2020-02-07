@@ -27,7 +27,6 @@ issue and we can discuss it there!
 - **HouseBuilding2**:
 
 # Simulators
-- **V-REP Simulator:** Legecy code. Might refactor this in the future to use PyREP. 
 - **PyBullet Simulator:** Primary simulator.
 - **Numpy Simulator:** Less realistic but much fast. Typically used for early prototyping.
 

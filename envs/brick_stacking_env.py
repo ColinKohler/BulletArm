@@ -1,7 +1,6 @@
 from copy import deepcopy
 
 from helping_hands_rl_envs.envs.numpy_env import NumpyEnv
-from helping_hands_rl_envs.envs.vrep_env import VrepEnv
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 
 from helping_hands_rl_envs.simulators import constants
