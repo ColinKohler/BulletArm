@@ -2,13 +2,15 @@ from copy import deepcopy
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 
-def createHouseBuilding2Env(simulator_base_env, config):
-  # TODO: check in between
-  class HouseBuilding2Env(simulator_base_env):
+def createHouseBuilding3Env(simulator_base_env, config):
+  class HouseBuilding3Env(simulator_base_env):
     ''''''
     def __init__(self, config):
       if simulator_base_env is PyBulletEnv:
         super().__init__(config)
+        self.block_scale_range = (0.6, 0.6)
+        self.min_block_size = self.block_original_size * self.block_scale_range[0]
+        self.max_block_size = self.block_original_size * self.block_scale_range[1]
       else:
         raise ValueError('Bad simulator base env specified.')
       self.simulator_base_env = simulator_base_env
@@ -32,11 +34,12 @@ def createHouseBuilding2Env(simulator_base_env, config):
     def reset(self):
       ''''''
       while True:
-        super(HouseBuilding2Env, self).reset()
+        super(HouseBuilding3Env, self).reset()
         try:
           self._generateShapes(constants.CUBE, 2, random_orientation=self.random_orientation)
           self._generateShapes(constants.ROOF, 1, random_orientation=self.random_orientation)
-        except:
+          self._generateShapes(constants.BRICK, 1, random_orientation=self.random_orientation)
+        except Exception as e:
           continue
         else:
           break
@@ -44,23 +47,32 @@ def createHouseBuilding2Env(simulator_base_env, config):
 
     def _checkTermination(self):
       blocks = list(filter(lambda x: self.object_types[x] == constants.CUBE, self.objects))
+      bricks = list(filter(lambda x: self.object_types[x] == constants.BRICK, self.objects))
       roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
-
+      
       top_blocks = []
       for block in blocks:
         if self._isObjOnTop(block, blocks):
           top_blocks.append(block)
       if len(top_blocks) != 2:
         return False
-      if self._checkOnTop(top_blocks[0], roofs[0]) and self._checkOnTop(top_blocks[1], roofs[0]):
+      if self._checkOnTop(top_blocks[0], bricks[0]) and \
+          self._checkOnTop(top_blocks[1], bricks[0]) and \
+          self._checkOnTop(bricks[0], roofs[0]) and \
+          self._checkOriSimilar([bricks[0], roofs[0]]) and \
+          self._checkInBetween(bricks[0], blocks[0], blocks[1]) and \
+          self._checkInBetween(roofs[0], blocks[0], blocks[1]):
         return True
       return False
+
+    def getObjectPosition(self):
+      return list(map(self._getObjectPosition, self.objects))
 
     def isSimValid(self):
       roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
       return self._checkObjUpright(roofs[0]) and super().isSimValid()
 
   def _thunk():
-    return HouseBuilding2Env(config)
+    return HouseBuilding3Env(config)
 
   return _thunk

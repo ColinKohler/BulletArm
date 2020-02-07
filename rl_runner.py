@@ -5,7 +5,7 @@ import os
 import git
 import helping_hands_rl_envs
 
-def worker(remote, parent_remote, env_fn):
+def worker(remote, parent_remote, env_fn, planner_fn):
   '''
   Worker function which interacts with the environment over remote
 
@@ -16,6 +16,8 @@ def worker(remote, parent_remote, env_fn):
   '''
   parent_remote.close()
   env = env_fn()
+  planner = planner_fn(env)
+
   try:
     while True:
       cmd, data = remote.recv()
@@ -38,8 +40,20 @@ def worker(remote, parent_remote, env_fn):
         break
       elif cmd == 'get_spaces':
         remote.send((env.obs_shape, env.action_space, env.action_shape))
+      elif cmd == 'get_obj_positions':
+        remote.send(env.getObjectPositions())
+      elif cmd == 'get_obj_poses':
+        remote.send(env.getObjectPoses())
       elif cmd == 'set_pos_candidate':
         env.setPosCandidate(data)
+      elif cmd == 'get_next_action':
+        remote.send(planner.getNextAction())
+      elif cmd == 'did_block_fall':
+        remote.send(env.didBlockFall())
+      elif cmd == 'get_value':
+        remote.send(planner.getValue())
+      elif cmd == 'get_step_left':
+        remote.send(planner.getStepLeft())
       elif cmd == 'save_to_file':
         path = data
         env.saveEnvToFile(path)
@@ -59,14 +73,14 @@ class RLRunner(object):
   Args:
     - envs: List of DeiciticEnvs
   '''
-  def __init__(self, env_fns):
+  def __init__(self, env_fns, planner_fns):
     self.waiting = False
     self.closed = False
 
     num_envs = len(env_fns)
     self.remotes, self.worker_remotes = zip(*[Pipe() for _ in range(num_envs)])
-    self.processes = [Process(target=worker, args=(worker_remote, remote, env_fn))
-                      for (worker_remote, remote, env_fn) in zip(self.worker_remotes, self.remotes, env_fns)]
+    self.processes = [Process(target=worker, args=(worker_remote, remote, env_fn, planner_fn))
+                      for (worker_remote, remote, env_fn, planner_fn) in zip(self.worker_remotes, self.remotes, env_fns, planner_fns)]
     self.num_processes = len(self.processes)
 
     for process in self.processes:
@@ -187,6 +201,48 @@ class RLRunner(object):
   def loadFromFile(self, path):
     for i, remote in enumerate(self.remotes):
       remote.send(('load_from_file', os.path.join(path, str(i))))
+
+  def getObjPositions(self):
+    for remote in self.remotes:
+      remote.send(('get_obj_positions', None))
+
+    positions = [remote.recv() for remote in self.remotes]
+    return np.array(positions)
+
+  def getObjPoses(self):
+    for remote in self.remotes:
+      remote.send(('get_obj_poses', None))
+
+    poses = [remote.recv() for remote in self.remotes]
+    return np.array(poses)
+
+  def getNextAction(self):
+    for remote in self.remotes:
+      remote.send(('get_next_action', None))
+    action = [remote.recv() for remote in self.remotes]
+    action = torch.from_numpy(np.stack(action)).float()
+    return action
+
+  def getValue(self):
+    for remote in self.remotes:
+      remote.send(('get_value', None))
+    values = [remote.recv() for remote in self.remotes]
+    values = torch.from_numpy(np.stack(values)).float()
+    return values
+
+  def getStepLeft(self):
+    for remote in self.remotes:
+      remote.send(('get_step_left', None))
+    values = [remote.recv() for remote in self.remotes]
+    values = torch.from_numpy(np.stack(values)).float()
+    return values
+
+  def didBlockFall(self):
+    for remote in self.remotes:
+      remote.send(('did_block_fall', None))
+    did_block_fall = [remote.recv() for remote in self.remotes]
+    did_block_fall = torch.from_numpy(np.stack(did_block_fall)).float()
+    return did_block_fall
 
   def setPosCandidate(self, pos_candidate):
     for remote in self.remotes:

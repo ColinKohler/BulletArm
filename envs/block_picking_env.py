@@ -1,9 +1,6 @@
 from copy import deepcopy
 from helping_hands_rl_envs.envs.numpy_env import NumpyEnv
-from helping_hands_rl_envs.envs.vrep_env import VrepEnv
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
-
-VALID_SIMULATORS = [NumpyEnv, VrepEnv, PyBulletEnv]
 
 def createBlockPickingEnv(simulator_base_env, config):
   class BlockPickingEnv(simulator_base_env):
@@ -12,11 +9,6 @@ def createBlockPickingEnv(simulator_base_env, config):
     def __init__(self, config):
       if simulator_base_env is NumpyEnv:
         super().__init__(config)
-
-      elif simulator_base_env is VrepEnv:
-        super().__init__(config['seed'], config['workspace'], config['max_steps'],
-                         config['obs_size'], config['port'], config['fast_mode'],
-                         config['action_sequence'])
       elif simulator_base_env is PyBulletEnv:
         super().__init__(config)
       else:
@@ -49,25 +41,24 @@ def createBlockPickingEnv(simulator_base_env, config):
     def reset(self):
       ''''''
       super(BlockPickingEnv, self).reset()
-      self.blocks = self._generateShapes(0, self.num_obj, random_orientation=self.random_orientation)
+      self._generateShapes(0, self.num_obj, random_orientation=self.random_orientation)
       self.obj_grasped = 0
       return self._getObservation()
 
     def saveState(self):
       super(BlockPickingEnv, self).saveState()
-      self.picking_state = {'obj_grasped': deepcopy(self.obj_grasped)}
+      self.state['obj_grasped'] = deepcopy(self.obj_grasped)
 
     def restoreState(self):
       super(BlockPickingEnv, self).restoreState()
-      self.blocks = self.objects
-      self.obj_grasped = self.picking_state['obj_grasped']
+      self.obj_grasped = self.state['obj_grasped']
 
     def getObjectPosition(self):
-      return list(map(self._getObjectPosition, self.blocks))
+      return list(map(self._getObjectPosition, self.objects))
 
     def _checkTermination(self):
       ''''''
-      for obj in self.blocks:
+      for obj in self.objects:
         if self._isObjectHeld(obj):
           self.obj_grasped += 1
           self._removeObject(obj)
@@ -77,17 +68,8 @@ def createBlockPickingEnv(simulator_base_env, config):
       return False
 
     def _getObservation(self):
-      state, obs = super(BlockPickingEnv, self)._getObservation()
-      return 0, obs
-
-    def getPlan(self):
-      return self.planBlockPicking()
-
-    def getStepLeft(self):
-      if not self.isSimValid():
-        return 100
-      step_left = self.num_obj - self.obj_grasped
-      return step_left
+      state, in_hand, obs = super(BlockPickingEnv, self)._getObservation()
+      return 0, in_hand, obs
 
   def _thunk():
     return BlockPickingEnv(config)

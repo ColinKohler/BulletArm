@@ -35,31 +35,25 @@ def createBrickStackingEnv(simulator_base_env, config):
 
     def reset(self):
       ''''''
-      super(BrickStackingEnv, self).reset()
-      self.bricks = self._generateShapes(constants.BRICK, 1, random_orientation=self.random_orientation)
-      self.blocks = self._generateShapes(constants.CUBE, self.num_cubes, random_orientation=self.random_orientation)
-
-      if self.bricks is None or self.blocks is None:
-        self.reset()
-      else:
-        return self._getObservation()
-
-    def saveState(self):
-      super(BrickStackingEnv, self).saveState()
-      self.stacking_state = {'blocks': deepcopy(self.blocks),
-                             'bricks': deepcopy(self.bricks)}
-
-    def restoreState(self):
-      super(BrickStackingEnv, self).restoreState()
-      self.blocks = self.stacking_state['blocks']
-      self.bricks = self.stacking_state['bricks']
+      while True:
+        super(BrickStackingEnv, self).reset()
+        try:
+          self._generateShapes(constants.BRICK, 1, random_orientation=self.random_orientation)
+          self._generateShapes(constants.CUBE, self.num_cubes, random_orientation=self.random_orientation)
+        except Exception as e:
+          continue
+        else:
+          break
+      return self._getObservation()
 
     def _checkTermination(self):
       ''''''
-      return all([self._checkOnTop(self.bricks[0], b) for b in self.blocks])
+      blocks = list(filter(lambda x: self.object_types[x] == constants.CUBE, self.objects))
+      bricks = list(filter(lambda x: self.object_types[x] == constants.BRICK, self.objects))
+      return all([self._checkOnTop(bricks[0], b) for b in blocks])
 
     def getObjectPosition(self):
-      return list(map(self._getObjectPosition, self.blocks+self.bricks))
+      return list(map(self._getObjectPosition, self.objects))
 
   def _thunk():
     return BrickStackingEnv(config)
