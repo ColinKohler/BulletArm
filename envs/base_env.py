@@ -201,12 +201,13 @@ class BaseEnv(object):
     y_max = int(y + self.in_hand_size / 2)
 
     # Crop both heightmaps
-    crop = heightmap[y_min:y_max, x_min:x_max]
-    next_crop = next_heightmap[y_min:y_max, x_min:x_max]
+    crop = heightmap[x_min:x_max, y_min:y_max]
+    next_crop = next_heightmap[x_min:x_max, y_min:y_max]
 
     # Adjust the in-hand image to remove background objects
     next_max = np.max(next_crop)
     crop[crop >= next_max] -= next_max
 
-    crop = sk_transform.rotate(crop, rot)
+    # end_effector rotate counter clockwise along z, so in hand img rotate clockwise
+    crop = sk_transform.rotate(crop, np.rad2deg(-rot))
     return crop.reshape((self.in_hand_size, self.in_hand_size, 1))

@@ -23,7 +23,7 @@ def createBlockPickingEnv(simulator_base_env, config):
       pre_obj_grasped = self.obj_grasped
       self.takeAction(action)
       self.wait(100)
-      obs = self._getObservation()
+      obs = self._getObservation(action)
       done = self._checkTermination()
       if self.reward_type == 'dense':
         reward = 1.0 if self.obj_grasped > pre_obj_grasped else 0.0

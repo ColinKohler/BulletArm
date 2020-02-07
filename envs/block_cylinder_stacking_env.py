@@ -24,7 +24,7 @@ def createBlockCylinderStackingEnv(simulator_base_env, config):
     def step(self, action):
       self.takeAction(action)
       self.wait(100)
-      obs = self._getObservation()
+      obs = self._getObservation(action)
       done = self._checkTermination()
       if self.reward_type == 'dense':
         if not self.cylinder_stacked and self._getNumTopCylinder() == 1:
