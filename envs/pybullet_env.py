@@ -34,6 +34,11 @@ class PyBulletEnv(BaseEnv):
       config['perfect_place'] = False
     if 'workspace_check' not in config:
       config['workspace_check'] = 'box'
+    if 'in_hand_size' not in config:
+      config['in_hand_size'] = 24
+    if 'in_hand_mode' not in config:
+      config['in_hand_mode'] = 'sub'
+
     seed = config['seed']
     workspace = config['workspace']
     max_steps = config['max_steps']
@@ -47,7 +52,10 @@ class PyBulletEnv(BaseEnv):
     perfect_place = config['perfect_place']
     robot = config['robot']
     workspace_check = config['workspace_check']
-    super(PyBulletEnv, self).__init__(seed, workspace, max_steps, obs_size, action_sequence, pos_candidate)
+    in_hand_size = config['in_hand_size']
+    in_hand_mode = config['in_hand_mode']
+    super(PyBulletEnv, self).__init__(seed, workspace, max_steps, obs_size, action_sequence, pos_candidate,
+                                      in_hand_size, in_hand_mode)
 
     # Connect to pybullet and add data files to path
     if render:

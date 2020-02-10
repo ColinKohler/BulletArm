@@ -19,6 +19,10 @@ class NumpyEnv(BaseEnv):
       config['scale'] = 1.
     if 'pos_candidate' not in config:
       config['pos_candidate'] = None
+    if 'in_hand_size' not in config:
+      config['in_hand_size'] = 24
+    if 'in_hand_mode' not in config:
+      config['in_hand_mode'] = 'sub'
 
     seed = config['seed']
     workspace = config['workspace']
@@ -30,7 +34,10 @@ class NumpyEnv(BaseEnv):
     pick_rot = config['pick_rot']
     place_rot = config['place_rot']
     scale = config['scale']
-    super(NumpyEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence, pos_candidate)
+    in_hand_size = config['in_hand_size']
+    in_hand_mode = config['in_hand_mode']
+    super(NumpyEnv, self).__init__(seed, workspace, max_steps, heightmap_size, action_sequence, pos_candidate,
+                                   in_hand_size, in_hand_mode)
 
     self.scale = scale
     self.render = render

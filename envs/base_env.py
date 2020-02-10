@@ -8,7 +8,8 @@ class BaseEnv(object):
   '''
   Base Arm RL environment.
   '''
-  def __init__(self, seed, workspace, max_steps, heightmap_size, action_sequence='pxyr', pos_candidate=None):
+  def __init__(self, seed, workspace, max_steps, heightmap_size, action_sequence='pxyr', pos_candidate=None,
+               in_hand_size=24, in_hand_mode='sub'):
     """
     constructor of BaseEnv
     Args:
@@ -31,7 +32,8 @@ class BaseEnv(object):
 
     # Setup heightmap
     self.heightmap_size = heightmap_size
-    self.in_hand_size = 24
+    self.in_hand_size = in_hand_size
+    self.in_hand_mode = in_hand_mode
     self.heightmap_shape = (self.heightmap_size, self.heightmap_size, 1)
     self.heightmap_resolution = self.workspace_size / self.heightmap_size
 
@@ -202,11 +204,12 @@ class BaseEnv(object):
 
     # Crop both heightmaps
     crop = heightmap[x_min:x_max, y_min:y_max]
-    next_crop = next_heightmap[x_min:x_max, y_min:y_max]
+    if self.in_hand_mode == 'sub':
+      next_crop = next_heightmap[x_min:x_max, y_min:y_max]
 
-    # Adjust the in-hand image to remove background objects
-    next_max = np.max(next_crop)
-    crop[crop >= next_max] -= next_max
+      # Adjust the in-hand image to remove background objects
+      next_max = np.max(next_crop)
+      crop[crop >= next_max] -= next_max
 
     # end_effector rotate counter clockwise along z, so in hand img rotate clockwise
     crop = sk_transform.rotate(crop, np.rad2deg(-rot))

@@ -121,7 +121,10 @@ class BlockStructureBasePlanner(BasePlanner):
     :return: encoded action
     """
     existing_pos = [o.getXYPosition() for o in list(filter(lambda x: not self.isObjectHeld(x), self.env.objects))]
-    place_pos = self.getValidPositions(padding_dist, min_dist, existing_pos, 1)[0]
+    try:
+      place_pos = self.getValidPositions(padding_dist, min_dist, existing_pos, 1)[0]
+    except NoValidPositionException:
+      place_pos = self.getValidPositions(padding_dist, min_dist, [], 1)[0]
     x, y, z, r = place_pos[0], place_pos[1], self.env.place_offset, 0
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
