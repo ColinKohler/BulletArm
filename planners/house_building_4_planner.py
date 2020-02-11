@@ -4,6 +4,7 @@ from helping_hands_rl_envs.simulators import constants
 from itertools import permutations
 
 import numpy.random as npr
+import numpy as np
 
 class HouseBuilding4Planner(BlockStructureBasePlanner):
   def __init__(self, env, config):
@@ -73,7 +74,11 @@ class HouseBuilding4Planner(BlockStructureBasePlanner):
     if not self.checkFirstLayer():
       if self.getHoldingObjType() is constants.CUBE:
         blocks = list(filter(lambda x: not self.isObjectHeld(x), blocks))
-        other_object = blocks[npr.randint(len(blocks))]
+        positions = [o.getXYPosition() for o in blocks + bricks + roofs]
+        def sum_dist(obj):
+          return np.array(list(map(lambda p: np.linalg.norm(np.array(p) - obj.getXYPosition()), positions))).sum()
+        other_obj_idx = np.array(list(map(sum_dist, blocks))).argmax()
+        other_object = blocks[other_obj_idx]
         return self.placeNearAnother(other_object, self.getMaxBlockSize()*1.7, self.getMaxBlockSize()*1.8, self.getMaxBlockSize()*2, self.getMaxBlockSize()*3)
       else:
         return self.placeOnGround(self.getMaxBlockSize()*3, self.getMaxBlockSize()*3)
