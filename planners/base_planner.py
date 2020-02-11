@@ -13,11 +13,11 @@ class BasePlanner(object):
   def getNextAction(self):
     raise NotImplemented('Planners must implement this function')
 
-  def getStepLeft(self):
+  def getStepsLeft(self):
     raise NotImplemented('Planners must implement this function')
 
   def getValue(self):
-    return self.gamma**self.getStepLeft()
+    return self.gamma**self.getStepsLeft()
 
   def addNoiseToPos(self, x, y):
     # TODO: Would we ever want to include noise on the z-axis here?

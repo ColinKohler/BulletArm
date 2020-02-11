@@ -16,12 +16,12 @@ class BlockStructureBasePlanner(BasePlanner):
   def getNextAction(self):
     if self.isHolding():
       if npr.rand() < self.rand_pick_prob:
-        return self.getRandomPickingAction()
+        return self.getRandomPlacingAction()
       else:
         return self.getPlacingAction()
     else:
       if npr.rand() < self.rand_place_prob:
-        return self.getRandomPlacingAction()
+        return self.getRandomPickingAction()
       else:
         return self.getPickingAction()
 
