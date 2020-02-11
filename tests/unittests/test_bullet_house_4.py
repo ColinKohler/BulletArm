@@ -39,7 +39,12 @@ class TestBulletHouse4(unittest.TestCase):
     s = 0
     env.reset()
     while total < 1000:
-      states_, in_hands_, obs_, rewards, dones = env.step(env.getNextAction())
+      t0 = time.time()
+      action = env.getNextAction()
+      # print('plan time: {}'.format(time.time()-t0))
+      t0 = time.time()
+      states_, in_hands_, obs_, rewards, dones = env.step(action)
+      # print('step time: {}'.format(time.time()-t0))
       # plt.imshow(in_hands_.squeeze())
       # plt.colorbar()
       # plt.show()

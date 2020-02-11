@@ -70,9 +70,6 @@ class HouseBuilding3Planner(BlockStructureBasePlanner):
     roofs = list(filter(lambda x: self.env.object_types[x] == constants.ROOF, self.env.objects))
     return blocks, bricks, roofs
 
-  def dist_valid(self, d):
-      return 1.5 * self.env.max_block_size < d < 2 * self.env.max_block_size
-
   def checkFirstLayer(self):
     blocks, bricks, roofs = self.getObjs()
     block1_pos = blocks[0].getPosition()

@@ -30,17 +30,17 @@ class TestBulletHouse3(unittest.TestCase):
 
 
   def testPlanner2(self):
-    self.env_config['render'] = True
+    self.env_config['render'] = False
     self.env_config['reward_type'] = 'sparse'
     self.env_config['random_orientation'] = True
-    env = env_factory.createEnvs(1, 'rl', 'pybullet', 'house_building_3', self.env_config, {})
+    env = env_factory.createEnvs(10, 'rl', 'pybullet', 'house_building_3', self.env_config, {})
     total = 0
     s = 0
     env.reset()
     while total < 1000:
       states_, in_hands_, obs_, rewards, dones = env.step(env.getNextAction())
-      plt.imshow(in_hands_.squeeze())
-      plt.show()
+      # plt.imshow(in_hands_.squeeze())
+      # plt.show()
       if dones.sum():
         s += rewards.sum().int().item()
         total += dones.sum().int().item()
