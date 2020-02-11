@@ -33,6 +33,7 @@ class TestBulletHouse3(unittest.TestCase):
     self.env_config['render'] = False
     self.env_config['reward_type'] = 'sparse'
     self.env_config['random_orientation'] = True
+    self.env_config['robot'] = 'ur5'
     env = env_factory.createEnvs(10, 'rl', 'pybullet', 'house_building_3', self.env_config, {})
     total = 0
     s = 0
@@ -45,6 +46,9 @@ class TestBulletHouse3(unittest.TestCase):
         s += rewards.sum().int().item()
         total += dones.sum().int().item()
         print('{}/{}'.format(s, total))
+
+    ## 0.992 kuka
+    ## 0.989 ur5
 
   def testBlockNotValidTriangleOnBrick(self):
     self.env_config['seed'] = 2

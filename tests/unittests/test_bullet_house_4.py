@@ -31,10 +31,11 @@ class TestBulletHouse4(unittest.TestCase):
     env.close()
 
   def testPlanner2(self):
-    self.env_config['render'] = False
+    self.env_config['render'] = True
     self.env_config['reward_type'] = 'sparse'
     self.env_config['random_orientation'] = True
-    env = env_factory.createEnvs(10, 'rl', 'pybullet', 'house_building_4', self.env_config, {})
+    self.env_config['robot'] = 'ur5'
+    env = env_factory.createEnvs(1, 'rl', 'pybullet', 'house_building_4', self.env_config, {})
     total = 0
     s = 0
     env.reset()
@@ -52,3 +53,6 @@ class TestBulletHouse4(unittest.TestCase):
         s += rewards.sum().int().item()
         total += dones.sum().int().item()
         print('{}/{}'.format(s, total))
+
+    ## 0.837 kuka
+    ## 0.951 ur5

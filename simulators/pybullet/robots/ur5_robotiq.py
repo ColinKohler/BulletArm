@@ -100,7 +100,7 @@ class UR5_Robotiq(RobotBase):
     self.gripper_joint_indices = [self.gripper_joints['robotiq_85_left_knuckle_joint'].id,
                                   self.gripper_joints['robotiq_85_right_knuckle_joint'].id]
 
-  def closeGripper(self):
+  def closeGripper(self, max_it=1000):
     ''''''
     self._sendGripperCommand(self.gripper_joint_limit[0])
     target = self.gripper_joint_limit[0]
@@ -109,12 +109,13 @@ class UR5_Robotiq(RobotBase):
     while abs(target-p1) + abs(target-p2) > 0.001:
       pb.stepSimulation()
       it += 1
-      if it > 1000:
+      if it > max_it:
         return False
 
       f1, f2 = self._getGripperJointForce()
       if f1 >= 1 and f2 >= 1:
         self._sendGripperCommand(p1)
+        self._sendTipCommand(p1-0.01)
         return False
 
       p1, p2 = self._getGripperJointPosition()
@@ -157,8 +158,8 @@ class UR5_Robotiq(RobotBase):
     return p1, p2
 
   def _getGripperJointForce(self):
-    f1 = pb.getJointState(self.id, self.gripper_joints['robotiq_85_left_inner_knuckle_joint'].id)[3]
-    f2 = pb.getJointState(self.id, self.gripper_joints['robotiq_85_right_inner_knuckle_joint'].id)[3]
+    f1 = pb.getJointState(self.id, self.gripper_joints['robotiq_85_left_finger_tip_joint'].id)[3]
+    f2 = pb.getJointState(self.id, self.gripper_joints['robotiq_85_right_finger_tip_joint'].id)[3]
     return f1, f2
 
   def _sendGripperCommand(self, target):
@@ -167,10 +168,27 @@ class UR5_Robotiq(RobotBase):
                              pb.POSITION_CONTROL,
                              targetPosition=target,
                              force=self.gripper_joints[self.gripper_main_control_joint_name].maxForce,
-                             maxVelocity=1)
+                             positionGain=0.02,
+                             velocityGain=1.0)
     for i in range(len(self.gripper_mimic_joint_name)):
       joint = self.gripper_joints[self.gripper_mimic_joint_name[i]]
       pb.setJointMotorControl2(self.id, joint.id, pb.POSITION_CONTROL,
                                targetPosition=target * self.gripper_mimic_multiplier[i],
                                force=joint.maxForce,
-                               maxVelocity=1)
+                               positionGain=0.02,
+                               velocityGain=1.0)
+  def _sendTipCommand(self, target):
+    pb.setJointMotorControl2(self.id,
+                             self.gripper_joints['robotiq_85_left_finger_tip_joint'].id,
+                             pb.POSITION_CONTROL,
+                             targetPosition=target * self.gripper_mimic_multiplier[-2],
+                             force=self.gripper_joints['robotiq_85_left_finger_tip_joint'].maxForce,
+                             positionGain=0.02,
+                             velocityGain=1.0)
+    pb.setJointMotorControl2(self.id,
+                             self.gripper_joints['robotiq_85_right_finger_tip_joint'].id,
+                             pb.POSITION_CONTROL,
+                             targetPosition=target * self.gripper_mimic_multiplier[-1],
+                             force=self.gripper_joints['robotiq_85_right_finger_tip_joint'].maxForce,
+                             positionGain=0.02,
+                             velocityGain=1.0)
