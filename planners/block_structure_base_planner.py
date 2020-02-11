@@ -143,18 +143,14 @@ class BlockStructureBasePlanner(BasePlanner):
     sample_range = [[another_obj_position[0] - max_dist_to_another, another_obj_position[0] + max_dist_to_another],
                     [another_obj_position[1] - max_dist_to_another, another_obj_position[1] + max_dist_to_another]]
     existing_pos = [o.getXYPosition() for o in list(filter(lambda x: not self.isObjectHeld(x) and not another_obj == x, self.env.objects))]
-    # for i in range(10):
-    #   try:
-    #     place_pos = self.getValidPositions(padding_dist, min_dist, existing_pos, 1, sample_range=sample_range)[0]
-    #   except NoValidPositionException:
-    #     continue
-    #   dist = np.linalg.norm(np.array(another_obj_position[:-1]) - np.array(place_pos))
-    #   if min_dist_to_another < dist < max_dist_to_another:
-    #     break
-    try:
-      place_pos = self.getValidPositions(padding_dist, min_dist, existing_pos, 1, sample_range=sample_range)[0]
-    except NoValidPositionException:
-      pass
+    for i in range(1000):
+      try:
+        place_pos = self.getValidPositions(padding_dist, min_dist, existing_pos, 1, sample_range=sample_range)[0]
+      except NoValidPositionException:
+        continue
+      dist = np.linalg.norm(np.array(another_obj_position[:-1]) - np.array(place_pos))
+      if min_dist_to_another < dist < max_dist_to_another:
+        break
     x, y, z, r = place_pos[0], place_pos[1], self.env.place_offset, 0
     slope, intercept, r_value, p_value, std_err = scipy.stats.linregress([x, another_obj_position[0]], [y, another_obj_position[1]])
     r = np.arctan(slope) + np.pi / 2
