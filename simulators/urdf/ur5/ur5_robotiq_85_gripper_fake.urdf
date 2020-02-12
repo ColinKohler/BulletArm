@@ -302,11 +302,11 @@
     <child link="simple_gripper_base"/>
   </joint>
   <link name="simple_gripper_base">
-    <visual>
-      <geometry>
-        <box size="0.085 0.025 0.005"/>
-      </geometry>
-    </visual>
+    <!--<visual>-->
+      <!--<geometry>-->
+        <!--<box size="0.085 0.025 0.005"/>-->
+      <!--</geometry>-->
+    <!--</visual>-->
     <collision>
       <origin rpy="0 0 0" xyz="0.0 0.0 0.02"/>
       <geometry>

@@ -33,7 +33,7 @@ class TestBulletHouse3(unittest.TestCase):
     self.env_config['render'] = False
     self.env_config['reward_type'] = 'sparse'
     self.env_config['random_orientation'] = True
-    self.env_config['robot'] = 'ur5'
+    self.env_config['robot'] = 'ur5_robotiq'
     env = env_factory.createEnvs(10, 'rl', 'pybullet', 'house_building_3', self.env_config, {})
     total = 0
     s = 0
@@ -49,6 +49,7 @@ class TestBulletHouse3(unittest.TestCase):
 
     ## 0.992 kuka
     ## 0.989 ur5
+    ## 0.995 ur5 robotiq
 
   def testBlockNotValidTriangleOnBrick(self):
     self.env_config['seed'] = 2
