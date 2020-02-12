@@ -108,18 +108,16 @@ class UR5_Robotiq(RobotBase):
     self.gripper_closed = True
     it = 0
     while (limit-p1) + (limit-p2) > 0.001:
-    # while p1 < 0.036:
+      self._setRobotiqPosition((p1 + p2) / 2)
       pb.stepSimulation()
       it += 1
       p1_, p2_ = self._getGripperJointPosition()
       if it > max_it or (abs(p1-p1_)<0.0001 and abs(p2-p2_)<0.0001):
         mean = (p1+p2)/2 + 0.01
         self._sendGripperCommand(mean, mean)
-        self._setRobotiqPosition(mean - 0.01)
         return False
       p1 = p1_
       p2 = p2_
-    self._setRobotiqPosition(limit)
     return True
 
   def checkGripperClosed(self):
@@ -137,8 +135,8 @@ class UR5_Robotiq(RobotBase):
     self._sendGripperCommand(limit, limit)
     self.gripper_closed = False
     it = 0
-    self._setRobotiqPosition(limit)
     while p1 > 0.0:
+      self._setRobotiqPosition((p1 + p2) / 2)
       pb.stepSimulation()
       it += 1
       if it > 100:
@@ -173,3 +171,8 @@ class UR5_Robotiq(RobotBase):
     for i, jn in enumerate(self.robotiq_controlJoints):
       motor = self.robotiq_joints[jn].id
       pb.resetJointState(self.id, motor, target*self.robotiq_mimic_multiplier[i])
+      pb.setJointMotorControl2(self.id,
+                               motor,
+                               pb.POSITION_CONTROL,
+                               targetPosition=target*self.robotiq_mimic_multiplier[i],
+                               force=100)
