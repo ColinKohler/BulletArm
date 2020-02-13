@@ -58,8 +58,14 @@ def worker(remote, parent_remote, env_fn, planner_fn):
         path = data
         env.saveEnvToFile(path)
       elif cmd == 'load_from_file':
-        path = data
-        env.loadEnvFromFile(path)
+        try:
+          path = data
+          env.loadEnvFromFile(path)
+        except Exception as e:
+          print('EnvRunner worker load failed: {}'.format(e))
+          remote.send(False)
+        else:
+          remote.send(True)
       else:
         raise NotImplementerError
   except KeyboardInterrupt:
@@ -201,6 +207,7 @@ class RLRunner(object):
   def loadFromFile(self, path):
     for i, remote in enumerate(self.remotes):
       remote.send(('load_from_file', os.path.join(path, str(i))))
+    return np.array([remote.recv() for remote in self.remotes]).all()
 
   def getObjPositions(self):
     for remote in self.remotes:
