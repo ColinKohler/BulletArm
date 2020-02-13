@@ -63,7 +63,7 @@ class UR5_Robotiq(RobotBase):
     self.robotiq_mimic_multiplier = [1, 1, 1, 1, -1, -1]
     self.robotiq_joints = AttrDict()
 
-  def reset(self):
+  def initialize(self):
     ''''''
     ur5_urdf_filepath = os.path.join(self.root_dir, 'simulators/urdf/ur5/ur5_robotiq_85_gripper_fake.urdf')
     self.id = pb.loadURDF(ur5_urdf_filepath, [0,0,0], [0,0,0,1])
@@ -98,6 +98,11 @@ class UR5_Robotiq(RobotBase):
         singleInfo = jointInfo(jointID, jointName, jointType, jointLowerLimit, jointUpperLimit, jointMaxForce,
                                jointMaxVelocity)
         self.robotiq_joints[singleInfo.name] = singleInfo
+
+  def reset(self):
+    self.gripper_closed = False
+    self.holding_obj = None
+    [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
 
   def closeGripper(self, max_it=100):
     ''''''

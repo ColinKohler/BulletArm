@@ -113,7 +113,9 @@ class PyBulletEnv(BaseEnv):
     self.state = {}
     self.pb_state = None
 
-  def reset(self):
+    self.initialize()
+
+  def initialize(self):
     ''''''
     pb.resetSimulation()
     pb.setTimeStep(self._timestep)
@@ -122,7 +124,7 @@ class PyBulletEnv(BaseEnv):
     self.table_id = pb.loadURDF('plane.urdf', [0,0,0])
 
     # Load the UR5 and set it to the home positions
-    self.robot.reset()
+    self.robot.initialize()
 
     # Reset episode vars
     self.objects = list()
@@ -133,6 +135,22 @@ class PyBulletEnv(BaseEnv):
     self.last_action = None
 
     # Step simulation
+    pb.stepSimulation()
+
+    return self._getObservation()
+
+  def reset(self):
+    for o in self.objects:
+      pb.removeBody(o.object_id)
+    self.robot.reset()
+    self.objects = list()
+    self.object_types = {}
+    self.heightmap = None
+    self.current_episode_steps = 1
+    self.last_action = None
+    self.state = {}
+    self.pb_state = None
+
     pb.stepSimulation()
 
     return self._getObservation()
