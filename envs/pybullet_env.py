@@ -156,11 +156,13 @@ class PyBulletEnv(BaseEnv):
     return self._getObservation()
 
   def getStateDict(self):
+    self.robot.saveState()
     state = {'current_episode_steps': copy.deepcopy(self.current_episode_steps),
              'objects': copy.deepcopy(self.objects),
              'object_types': copy.deepcopy(self.object_types),
              'heightmap': copy.deepcopy(self.heightmap),
-             'robot_state': copy.deepcopy(self.robot.state)
+             'robot_state': copy.deepcopy(self.robot.state),
+             'random_state': np.random.get_state()
              }
     return state
 
@@ -171,10 +173,10 @@ class PyBulletEnv(BaseEnv):
     self.heightmap = state['heightmap']
     self.robot.state = state['robot_state']
     self.robot.restoreState()
+    np.random.set_state(state['random_state'])
 
   def saveState(self):
     self.pb_state = pb.saveState()
-    self.robot.saveState()
     self.state = self.getStateDict()
 
   def restoreState(self):
@@ -185,14 +187,7 @@ class PyBulletEnv(BaseEnv):
     bullet_file = os.path.join(path, 'env.bullet')
     pickle_file = os.path.join(path, 'env.pickle')
     pb.saveBullet(bullet_file)
-    self.robot.saveState()
-    state = {
-      'heightmap': copy.deepcopy(self.heightmap),
-      'current_episode_steps': copy.deepcopy(self.current_episode_steps),
-      'objects': copy.deepcopy(self.objects),
-      'robot_state': copy.deepcopy(self.robot.state),
-      'random_state': np.random.get_state()
-    }
+    state = self.getStateDict()
     with open(pickle_file, 'wb') as f:
       pickle.dump(state, f)
 
@@ -202,12 +197,7 @@ class PyBulletEnv(BaseEnv):
     pb.restoreState(fileName=bullet_file)
     with open(pickle_file, 'rb') as f:
       state = pickle.load(f)
-    self.heightmap = state['heightmap']
-    self.current_episode_steps = state['current_episode_steps']
-    self.objects = state['objects']
-    self.robot.state = state['robot_state']
-    np.random.set_state(state['random_state'])
-    self.robot.restoreState()
+    self.restoreStateDict(state)
 
   def takeAction(self, action):
     motion_primative, x, y, z, rot = self._decodeAction(action)
