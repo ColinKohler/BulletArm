@@ -37,6 +37,9 @@ class TestBulletHouse3(unittest.TestCase):
     self.assertEqual(env.getStepLeft(), 3)
 
     env.saveToFile('save')
+    #TODO: loading only works after a hard reset (by calling initialize).
+    #      Might want to add an option to do hard/soft reset.
+    #      Currently not an issue because loading only happens after hard reset
     env.reset()
     env.loadFromFile('save')
 
