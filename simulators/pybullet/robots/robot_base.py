@@ -153,7 +153,7 @@ class RobotBase:
     close_enough = False
     outer_it = 0
     threshold = 1e-3
-    max_outer_it = 100
+    max_outer_it = 10
     max_inner_it = 1000
 
     while not close_enough and outer_it < max_outer_it:
