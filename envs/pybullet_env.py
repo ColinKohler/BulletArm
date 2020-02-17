@@ -85,8 +85,7 @@ class PyBulletEnv(BaseEnv):
     self.pick_pre_offset = 0.15
     self.pick_offset = 0.005
     self.place_pre_offset = 0.15
-    # TODO: this might need to be changed to be based on robot types
-    self.place_offset = self.block_scale_range[1]*self.block_original_size-0.005
+    self.place_offset = self.block_scale_range[1]*self.block_original_size
 
     # Setup camera parameters
     self.view_matrix = pb.computeViewMatrixFromYawPitchRoll([workspace[0].mean(), workspace[1].mean(), 0], 1.0, -90, -90, 0, 2)

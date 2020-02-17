@@ -69,20 +69,19 @@ class TestBulletHouse1(unittest.TestCase):
     env.close()
 
 
-  def testPlanner2(self):
-    self.env_config['render'] = False
-    self.env_config['reward_type'] = 'sparse'
-    self.env_config['random_orientation'] = True
-    self.env_config['robot'] = 'ur5_robotiq'
-    self.env_config['num_objects'] = 5
-
-    env = env_factory.createEnvs(10, 'rl', 'pybullet', 'house_building_1', self.env_config, {})
-    total = 0
-    s = 0
-    env.reset()
-    while total < 1000:
-      states_, in_hands_, obs_, rewards, dones = env.step(env.getNextAction())
-      if dones.sum():
-        s += rewards.sum().int().item()
-        total += dones.sum().int().item()
-        print('{}/{}'.format(s, total))
+  # def testPlanner2(self):
+  #   self.env_config['render'] = False
+  #   self.env_config['reward_type'] = 'sparse'
+  #   self.env_config['random_orientation'] = True
+  #   self.env_config['num_objects'] = 4
+  #
+  #   env = env_factory.createEnvs(10, 'rl', 'pybullet', 'house_building_1', self.env_config, {})
+  #   total = 0
+  #   s = 0
+  #   env.reset()
+  #   while total < 1000:
+  #     states_, in_hands_, obs_, rewards, dones = env.step(env.getNextAction())
+  #     if dones.sum():
+  #       s += rewards.sum().int().item()
+  #       total += dones.sum().int().item()
+  #       print('{}/{}'.format(s, total))
