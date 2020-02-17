@@ -66,7 +66,7 @@ class UR5_Robotiq(RobotBase):
   def initialize(self):
     ''''''
     ur5_urdf_filepath = os.path.join(self.root_dir, 'simulators/urdf/ur5/ur5_robotiq_85_gripper_fake.urdf')
-    self.id = pb.loadURDF(ur5_urdf_filepath, [0,0,0], [0,0,0,1])
+    self.id = pb.loadURDF(ur5_urdf_filepath, [0,0,0.1], [0,0,0,1])
     # self.is_holding = False
     self.gripper_closed = False
     self.holding_obj = None
@@ -118,7 +118,7 @@ class UR5_Robotiq(RobotBase):
       it += 1
       p1_, p2_ = self._getGripperJointPosition()
       if it > max_it or (abs(p1-p1_)<0.0001 and abs(p2-p2_)<0.0001):
-        mean = (p1+p2)/2 + 0.01
+        mean = (p1+p2)/2 + 0.005
         self._sendGripperCommand(mean, mean)
         return False
       p1 = p1_

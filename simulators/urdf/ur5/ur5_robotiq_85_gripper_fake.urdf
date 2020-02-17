@@ -336,14 +336,14 @@
   <link name="simple_gripper_right_finger">
     <visual>
       <geometry>
-        <box size="0.005 0.025 0.06"/>
+        <box size="0.005 0.02 0.06"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0.0"/>
       <geometry>
         <!--<box size="0.005 0.005 0.0375"/>-->
-        <box size="0.005 0.025 0.06"/>
+        <box size="0.005 0.02 0.06"/>
       </geometry>
     </collision>
     <inertial>
@@ -369,14 +369,14 @@
   <link name="simple_gripper_left_finger">
     <visual>
       <geometry>
-        <box size="0.005 0.025 0.06"/>
+        <box size="0.005 0.02 0.06"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0.0"/>
       <geometry>
         <!--<box size="0.005 0.005 0.0375"/>-->
-        <box size="0.005 0.025 0.06"/>
+        <box size="0.005 0.02 0.06"/>
       </geometry>
     </collision>
     <inertial>
