@@ -51,7 +51,7 @@ class Kuka(RobotBase):
     #     -0.299912, 0.000000, -0.000043, 0.299960, 0.000000, -0.000200
     # ]
 
-    self.gripper_joint_limit = [0, 0.3]
+    self.gripper_joint_limit = [0, 0.2]
 
   def initialize(self):
     ''''''
