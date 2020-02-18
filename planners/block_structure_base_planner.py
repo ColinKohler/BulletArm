@@ -225,3 +225,7 @@ class BlockStructureBasePlanner(BasePlanner):
     objects = objects[sorted_inds]
     object_poses = object_poses[sorted_inds]
     return objects, object_poses
+
+  def isAdjacent(self, obj_1, obj_2):
+    return np.allclose(obj_1.getZPosition(), obj_2.getZPosition(), atol=0.01) and \
+           self.getDistance(obj_1, obj_2) < 2.2 * self.getMaxBlockSize()

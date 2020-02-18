@@ -520,6 +520,15 @@ class PyBulletEnv(BaseEnv):
       return False
     return top_obj.isTouching(bottom_obj)
 
+  def _getDistance(self, obj1, obj2):
+    position1 = obj1.getPosition()
+    position2 = obj2.getPosition()
+    return np.linalg.norm(np.array(position1) - np.array(position2))
+
+  def _checkAdjacent(self, obj_1, obj_2):
+    return np.allclose(obj_1.getZPosition(), obj_2.getZPosition(), atol=0.01) and \
+           self._getDistance(obj_1, obj_2) < 2.2 * self.max_block_size
+
   def _checkInBetween(self, obj0, obj1, obj2, threshold=None):
     if not threshold:
       threshold = self.max_block_size

@@ -40,7 +40,7 @@ class BasePlanner(object):
     if obj_type is not None:
       return list(filter(lambda x: self.env.object_types[x] == obj_type, self.env.objects))
     else:
-      return self.env.objects
+      return list(filter(lambda x: not self.isObjectHeld(x), self.env.objects))
 
   def getObjectsOnTopOf(self, bottom_obj):
     return list(filter(lambda x: self.checkOnTopOf(bottom_obj, x), self.getObjects()))
