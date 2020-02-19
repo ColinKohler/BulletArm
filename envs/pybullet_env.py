@@ -432,11 +432,7 @@ class PyBulletEnv(BaseEnv):
     return T
 
   def _isObjectHeld(self, obj):
-    if obj in self.objects:
-      block_position = obj.getPosition()
-      rest_pose = self._getRestPoseMatrix()
-      return block_position[2] > rest_pose[2, -1] - 0.25
-    return False
+    return self.robot.holding_obj == obj
 
   def _removeObject(self, obj):
     if obj in self.objects:
