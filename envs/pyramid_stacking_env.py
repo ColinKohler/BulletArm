@@ -49,7 +49,7 @@ def createPyramidStackingEnv(simulator_base_env, config):
       mask = np.array([True] * self.num_obj)
       mask[np.argmax(obj_z)] = False
       bottom_objs = np.array(self.objects)[mask]
-      return self._checkInBetween(top_obj, bottom_objs[0], bottom_objs[1]) and \
+      return self._checkInBetween(top_obj, bottom_objs[0], bottom_objs[1], threshold=0.01) and \
              self._checkAdjacent(bottom_objs[0], bottom_objs[1])
 
   def _thunk():

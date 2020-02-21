@@ -31,8 +31,8 @@ class PyramidStackingPlanner(BlockStructureBasePlanner):
       return self.placeOnTopOfMultiple(objects)
     else:
       return self.placeNearAnother(npr.choice(objects),
+                                   self.getMaxBlockSize()*1.4,
                                    self.getMaxBlockSize()*1.5,
-                                   self.getMaxBlockSize()*1.6,
                                    self.getMaxBlockSize()*2,
                                    self.getMaxBlockSize()*3)
 
@@ -43,13 +43,15 @@ class PyramidStackingPlanner(BlockStructureBasePlanner):
       return 0
 
     objects = self.getObjects()
-    if len(objects == 3):
+    # No objects in hand
+    if len(objects) == 3:
       if self.isAdjacent(objects[0], objects[1]) or \
          self.isAdjacent(objects[1], objects[2]) or \
          self.isAdjacent(objects[0], objects[2]):
         return 2
       else:
         return 4
+    # Object in hand
     if len(objects) == 2:
       if self.isAdjacent(objects[0], objects[1]):
         return 1

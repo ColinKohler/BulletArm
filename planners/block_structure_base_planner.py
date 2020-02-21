@@ -33,8 +33,8 @@ class BlockStructureBasePlanner(BasePlanner):
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
   def getRandomPlacingAction(self):
-    x = npr.uniform(self.env.workspace[0, 0], self.env.workspace[0, 1])
-    y = npr.uniform(self.env.workspace[1, 0], self.env.workspace[1, 1])
+    x = npr.uniform(self.env.workspace[0, 0] + 0.025, self.env.workspace[0, 1] - 0.025)
+    y = npr.uniform(self.env.workspace[1, 0] + 0.025, self.env.workspace[1, 1] - 0.025)
     z = 0.
     r = npr.uniform(0., np.pi)
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
@@ -140,7 +140,7 @@ class BlockStructureBasePlanner(BasePlanner):
     sample_range = [[another_obj_position[0] - max_dist_to_another, another_obj_position[0] + max_dist_to_another],
                     [another_obj_position[1] - max_dist_to_another, another_obj_position[1] + max_dist_to_another]]
     existing_pos = [o.getXYPosition() for o in list(filter(lambda x: not self.isObjectHeld(x) and not another_obj == x, self.env.objects))]
-    for i in range(1000):
+    for i in range(100):
       try:
         place_pos = self.getValidPositions(padding_dist, min_dist, existing_pos, 1, sample_range=sample_range)[0]
       except NoValidPositionException:
@@ -228,4 +228,4 @@ class BlockStructureBasePlanner(BasePlanner):
 
   def isAdjacent(self, obj_1, obj_2):
     return np.allclose(obj_1.getZPosition(), obj_2.getZPosition(), atol=0.01) and \
-           self.getDistance(obj_1, obj_2) < 2.2 * self.getMaxBlockSize()
+           self.getDistance(obj_1, obj_2) < 2.0 * self.getMaxBlockSize()
