@@ -110,6 +110,7 @@ class PyBulletEnv(BaseEnv):
     self.heightmap = None
     self.current_episode_steps = 1
     self.last_action = None
+    self.last_obj = None
     self.state = {}
     self.pb_state = None
 
@@ -148,6 +149,7 @@ class PyBulletEnv(BaseEnv):
     self.heightmap = None
     self.current_episode_steps = 1
     self.last_action = None
+    self.last_obj = None
     self.state = {}
     self.pb_state = None
 
@@ -162,7 +164,9 @@ class PyBulletEnv(BaseEnv):
              'object_types': copy.deepcopy(self.object_types),
              'heightmap': copy.deepcopy(self.heightmap),
              'robot_state': copy.deepcopy(self.robot.state),
-             'random_state': np.random.get_state()
+             'random_state': np.random.get_state(),
+             'last_action': self.last_action,
+             'last_obj': self.last_obj
              }
     return state
 
@@ -171,6 +175,8 @@ class PyBulletEnv(BaseEnv):
     self.objects = state['objects']
     self.object_types = state['object_types']
     self.heightmap = state['heightmap']
+    self.last_action = state['last_action']
+    self.last_obj = state['last_obj']
     self.robot.state = state['robot_state']
     self.robot.restoreState()
     np.random.set_state(state['random_state'])
@@ -201,7 +207,8 @@ class PyBulletEnv(BaseEnv):
 
   def takeAction(self, action):
     motion_primative, x, y, z, rot = self._decodeAction(action)
-    self.last_action = [motion_primative, self.robot.holding_obj, x, y, z, rot]
+    self.last_action = action
+    self.last_obj = self.robot.holding_obj
 
     # Get transform for action
     pos = [x, y, z]
@@ -252,7 +259,8 @@ class PyBulletEnv(BaseEnv):
     [pb.stepSimulation() for _ in range(iteration)]
 
   def didBlockFall(self):
-    motion_primative, obj, x, y, z, rot = self.last_action
+    motion_primative, x, y, z, rot = self._decodeAction(self.last_action)
+    obj = self.last_obj
 
     return motion_primative == constants.PLACE_PRIMATIVE and \
            np.abs(z - obj.getPosition()[-1]) > obj.getHeight()

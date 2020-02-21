@@ -38,6 +38,12 @@ def worker(remote, parent_remote, env_fn, planner_fn):
       elif cmd == 'close':
         remote.close()
         break
+      elif cmd == 'get_obs':
+        action = data
+        if action is None:
+          action = env.last_action
+        obs = env._getObservation(action)
+        remote.send(obs)
       elif cmd == 'get_spaces':
         remote.send((env.obs_shape, env.action_space, env.action_shape))
       elif cmd == 'get_obj_positions':
@@ -243,6 +249,19 @@ class RLRunner(object):
     values = [remote.recv() for remote in self.remotes]
     values = torch.from_numpy(np.stack(values)).float()
     return values
+
+  def getObs(self, action=None):
+    for remote in self.remotes:
+      remote.send(('get_obs', action))
+
+    obs = [remote.recv() for remote in self.remotes]
+    states, hand_obs, depths = zip(*obs)
+
+    states = torch.from_numpy(np.stack(states).astype(float)).float()
+    hand_obs = torch.from_numpy(np.stack(hand_obs)).float()
+    depths = torch.from_numpy(np.stack(depths)).float()
+
+    return states, hand_obs, depths
 
   def didBlockFall(self):
     for remote in self.remotes:
