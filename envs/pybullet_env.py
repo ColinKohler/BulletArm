@@ -38,6 +38,8 @@ class PyBulletEnv(BaseEnv):
       config['in_hand_size'] = 24
     if 'in_hand_mode' not in config:
       config['in_hand_mode'] = 'sub'
+    if 'num_random_objects' not in config:
+      config['num_random_objects'] = 0
 
     seed = config['seed']
     workspace = config['workspace']
@@ -54,6 +56,7 @@ class PyBulletEnv(BaseEnv):
     workspace_check = config['workspace_check']
     in_hand_size = config['in_hand_size']
     in_hand_mode = config['in_hand_mode']
+    num_random_objects = config['num_random_objects']
     super(PyBulletEnv, self).__init__(seed, workspace, max_steps, obs_size, action_sequence, pos_candidate,
                                       in_hand_size, in_hand_mode)
 
@@ -116,6 +119,8 @@ class PyBulletEnv(BaseEnv):
 
     self.initialize()
 
+    self.num_random_objects = num_random_objects
+
   def initialize(self):
     ''''''
     pb.resetSimulation()
@@ -152,6 +157,14 @@ class PyBulletEnv(BaseEnv):
     self.last_obj = None
     self.state = {}
     self.pb_state = None
+
+    while True:
+      try:
+        self._generateShapes(constants.RANDOM, self.num_random_objects, random_orientation=True)
+      except Exception as e:
+        continue
+      else:
+        break
 
     pb.stepSimulation()
 
@@ -239,6 +252,8 @@ class PyBulletEnv(BaseEnv):
 
   def isSimValid(self):
     for obj in self.objects:
+      if self.object_types[obj] == constants.RANDOM:
+        continue
       if self._isObjectHeld(obj):
         continue
       p = obj.getPosition()
@@ -345,7 +360,7 @@ class PyBulletEnv(BaseEnv):
                            min_distance=None, padding=None, random_orientation=False):
     ''''''
     if padding is None:
-      if shape_type == constants.CUBE or shape_type == constants.TRIANGLE:
+      if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM):
         padding = self.max_block_size * 1.5
       elif shape_type == constants.BRICK:
         padding = self.max_block_size * 3.4
@@ -353,7 +368,7 @@ class PyBulletEnv(BaseEnv):
         padding = self.max_block_size * 3.4
 
     if min_distance is None:
-      if shape_type == constants.CUBE or shape_type == constants.TRIANGLE:
+      if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM):
         min_distance = self.max_block_size * 2.4
       elif shape_type == constants.BRICK:
         min_distance = self.max_block_size * 3.4
@@ -384,6 +399,8 @@ class PyBulletEnv(BaseEnv):
         handle = pb_obj_generation.generateTriangle(position, orientation, scale)
       elif shape_type == constants.ROOF:
         handle = pb_obj_generation.generateRoof(position, orientation, scale)
+      elif shape_type == constants.RANDOM:
+        handle = pb_obj_generation.generateRandomObj(position, orientation, scale)
       else:
         raise NotImplementedError
       shape_handles.append(handle)

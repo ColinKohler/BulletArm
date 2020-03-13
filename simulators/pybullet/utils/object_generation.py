@@ -9,6 +9,7 @@ from helping_hands_rl_envs.simulators.pybullet.objects.cube import Cube
 from helping_hands_rl_envs.simulators.pybullet.objects.brick import Brick
 from helping_hands_rl_envs.simulators.pybullet.objects.triangle import Triangle
 from helping_hands_rl_envs.simulators.pybullet.objects.roof import Roof
+from helping_hands_rl_envs.simulators.pybullet.objects.random_object import RandomObject
 
 def generateCube(pos, rot, scale):
   ''''''
@@ -28,3 +29,6 @@ def generateRoof(pos, rot, scale):
   # roof_urdf_filepath = os.path.join(root_dir, 'simulators/urdf/object/roof.urdf')
   # return pb.loadURDF(roof_urdf_filepath, basePosition=pos, baseOrientation=rot, globalScaling=scale)
   return Roof(pos, rot, scale)
+
+def generateRandomObj(pos, rot, scale):
+  return RandomObject(pos, rot, scale)

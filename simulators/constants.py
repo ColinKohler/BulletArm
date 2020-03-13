@@ -9,6 +9,7 @@ CONE = 3
 BRICK = 4
 TRIANGLE = 5
 ROOF = 6
+RANDOM = 7
 
 # Motion primatives
 NUM_PRIMATIVES = 2
