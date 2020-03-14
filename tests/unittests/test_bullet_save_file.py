@@ -17,7 +17,7 @@ class TestBulletHouse3(unittest.TestCase):
                 'workspace_check': 'point'}
 
   def test(self):
-    self.env_config['render'] = True
+    self.env_config['render'] = False
     self.env_config['seed'] = 2
     self.env_config['random_orientation'] = False
 
@@ -37,6 +37,8 @@ class TestBulletHouse3(unittest.TestCase):
     self.assertEqual(env.getStepLeft(), 3)
 
     env.saveToFile('save')
+    env.close()
+    env = env_factory.createEnvs(1, 'rl', 'pybullet', 'house_building_3', self.env_config)
     env.reset()
     env.loadFromFile('save')
 
@@ -51,5 +53,11 @@ class TestBulletHouse3(unittest.TestCase):
     action = env.getNextAction()
     states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepLeft(), 0)
+
+    env.saveToFile('save')
+    env.close()
+    env = env_factory.createEnvs(1, 'rl', 'pybullet', 'house_building_3', self.env_config)
+    env.reset()
+    env.loadFromFile('save')
 
     env.close()

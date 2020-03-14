@@ -16,11 +16,12 @@ class TestBulletHouse1(unittest.TestCase):
                 'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 3, 'random_orientation': False,
                 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
                 'workspace_check': 'point'}
+  planner_config = {'pos_noise': 0, 'rot_noise': 0}
 
   # env = createHouseBuilding1Env(PyBulletEnv, env_config)()
 
   def testStepLeft(self):
-    env = env_factory.createEnvs(1, 'rl', 'pybullet', 'house_building_1', self.env_config, {})
+    env = env_factory.createEnvs(1, 'rl', 'pybullet', 'house_building_1', self.env_config, self.planner_config)
     env.reset()
 
     position = env.getObjPositions()[0]
@@ -69,19 +70,20 @@ class TestBulletHouse1(unittest.TestCase):
     env.close()
 
 
-  # def testPlanner2(self):
-  #   self.env_config['render'] = False
-  #   self.env_config['reward_type'] = 'sparse'
-  #   self.env_config['random_orientation'] = True
-  #   self.env_config['num_objects'] = 4
-  #
-  #   env = env_factory.createEnvs(10, 'rl', 'pybullet', 'house_building_1', self.env_config, {})
-  #   total = 0
-  #   s = 0
-  #   env.reset()
-  #   while total < 1000:
-  #     states_, in_hands_, obs_, rewards, dones = env.step(env.getNextAction())
-  #     if dones.sum():
-  #       s += rewards.sum().int().item()
-  #       total += dones.sum().int().item()
-  #       print('{}/{}'.format(s, total))
+  def testPlanner2(self):
+    self.env_config['render'] = False
+    self.env_config['reward_type'] = 'sparse'
+    self.env_config['random_orientation'] = True
+    self.env_config['num_objects'] = 5
+    self.env_config['num_random_objects'] = 3
+
+    env = env_factory.createEnvs(10, 'rl', 'pybullet', 'house_building_1', self.env_config, self.planner_config)
+    total = 0
+    s = 0
+    env.reset()
+    while total < 1000:
+      states_, in_hands_, obs_, rewards, dones = env.step(env.getNextAction())
+      if dones.sum():
+        s += rewards.sum().int().item()
+        total += dones.sum().int().item()
+        print('{}/{}'.format(s, total))
