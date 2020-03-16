@@ -21,11 +21,14 @@ class TestBulletHouse1(unittest.TestCase):
   # env = createHouseBuilding1Env(PyBulletEnv, env_config)()
 
   def testStepLeft(self):
+    num_random_o = 2
+    self.env_config['num_random_objects'] = num_random_o
+    self.env_config['render'] = True
     env = env_factory.createEnvs(1, 'rl', 'pybullet', 'house_building_1', self.env_config, self.planner_config)
     env.reset()
 
     position = env.getObjPositions()[0]
-    action = [0, position[0][0], position[0][1], 0]
+    action = [0, position[0+num_random_o][0], position[0+num_random_o][1], 0]
     states_, in_hands_, obs_, rewards, dones = env.step(torch.tensor(action).unsqueeze(0), auto_reset=False)
     self.assertEqual(env.getStepLeft(), 5)
     self.assertEqual(dones, 0)
@@ -35,31 +38,31 @@ class TestBulletHouse1(unittest.TestCase):
     self.assertEqual(dones, 0)
 
     position = env.getObjPositions()[0]
-    action = [0, position[1][0], position[1][1], 0]
+    action = [0, position[1+num_random_o][0], position[1+num_random_o][1], 0]
     states_, in_hands_, obs_, rewards, dones = env.step(torch.tensor(action).unsqueeze(0), auto_reset=False)
     self.assertEqual(env.getStepLeft(), 3)
     self.assertEqual(dones, 0)
 
     position = env.getObjPositions()[0]
-    action = [1, position[1][0], position[1][1], 0]
+    action = [1, position[1+num_random_o][0], position[1+num_random_o][1], 0]
     states_, in_hands_, obs_, rewards, dones = env.step(torch.tensor(action).unsqueeze(0), auto_reset=False)
     self.assertEqual(env.getStepLeft(), 2)
     self.assertEqual(dones, 0)
 
     position = env.getObjPositions()[0]
-    action = [0, position[1][0], position[1][1], 0]
+    action = [0, position[1+num_random_o][0], position[1+num_random_o][1], 0]
     states_, in_hands_, obs_, rewards, dones = env.step(torch.tensor(action).unsqueeze(0), auto_reset=False)
     self.assertEqual(env.getStepLeft(), 3)
     self.assertEqual(dones, 0)
 
     position = env.getObjPositions()[0]
-    action = [1, position[1][0], position[1][1], 0]
+    action = [1, position[1+num_random_o][0], position[1+num_random_o][1], 0]
     states_, in_hands_, obs_, rewards, dones = env.step(torch.tensor(action).unsqueeze(0), auto_reset=False)
     self.assertEqual(env.getStepLeft(), 2)
     self.assertEqual(dones, 0)
 
     position = env.getObjPositions()[0]
-    action = [0, position[0][0], position[0][1], 0]
+    action = [0, position[0+num_random_o][0], position[0+num_random_o][1], 0]
     states_, in_hands_, obs_, rewards, dones = env.step(torch.tensor(action).unsqueeze(0), auto_reset=False)
     self.assertEqual(env.getStepLeft(), 1)
     self.assertEqual(dones, 0)

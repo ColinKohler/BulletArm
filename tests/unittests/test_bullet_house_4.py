@@ -17,7 +17,10 @@ class TestBulletHouse4(unittest.TestCase):
 
 
   def testPlanner(self):
-    self.env_config['seed'] = 2
+    self.env_config['seed'] = 0
+    num_random_o = 2
+    self.env_config['num_random_objects'] = num_random_o
+    self.env_config['render'] = True
     env = env_factory.createEnvs(1, 'rl', 'pybullet', 'house_building_4', self.env_config)
     env.reset()
     for i in range(9, -1, -1):

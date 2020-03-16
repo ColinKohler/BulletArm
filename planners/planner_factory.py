@@ -7,6 +7,7 @@ from helping_hands_rl_envs.planners.house_building_1_planner import HouseBuildin
 from helping_hands_rl_envs.planners.house_building_2_planner import HouseBuilding2Planner
 from helping_hands_rl_envs.planners.house_building_3_planner import HouseBuilding3Planner
 from helping_hands_rl_envs.planners.house_building_4_planner import HouseBuilding4Planner
+from helping_hands_rl_envs.planners.improvise_house_building_2_planner import ImproviseHouseBuilding2Planner
 
 AVAILABLE_PLANNER = ['random',
                      'play',
@@ -16,7 +17,8 @@ AVAILABLE_PLANNER = ['random',
                      'house_building_1',
                      'house_building_2',
                      'house_building_3',
-                     'house_building_4']
+                     'house_building_4',
+                     'improvise_house_building_2']
 
 def createPlanner(config):
   if 'planner_noise' not in config: config['planner_noise'] = None
@@ -39,3 +41,5 @@ def createPlanner(config):
     return lambda env: HouseBuilding3Planner(env, config)
   elif config['planner'] == 'house_building_4':
     return lambda env: HouseBuilding4Planner(env, config)
+  elif config['planner'] == 'improvise_house_building_2':
+    return lambda env: ImproviseHouseBuilding2Planner(env, config)

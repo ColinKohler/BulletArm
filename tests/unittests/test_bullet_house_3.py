@@ -53,7 +53,9 @@ class TestBulletHouse3(unittest.TestCase):
 
   def testBlockNotValidTriangleOnBrick(self):
     self.env_config['seed'] = 2
-    self.env_config['render'] = False
+    num_random_o = 2
+    self.env_config['num_random_objects'] = num_random_o
+    self.env_config['render'] = True
     self.env_config['random_orientation'] = False
 
     env = env_factory.createEnvs(1, 'rl', 'pybullet', 'house_building_3', self.env_config, {})
@@ -61,11 +63,11 @@ class TestBulletHouse3(unittest.TestCase):
 
     env.save()
     position = env.getObjPositions()[0]
-    action = torch.tensor([0, position[2][0], position[2][1], 0]).unsqueeze(0)
+    action = torch.tensor([0, position[2+num_random_o][0], position[2+num_random_o][1], 0]).unsqueeze(0)
     states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepLeft(), 7)
 
-    action = torch.tensor([1, position[3][0], position[3][1], 0]).unsqueeze(0)
+    action = torch.tensor([1, position[3+num_random_o][0], position[3+num_random_o][1], 0]).unsqueeze(0)
     states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepLeft(), 8)
 
@@ -89,7 +91,9 @@ class TestBulletHouse3(unittest.TestCase):
 
   def testBlockNotValidBrickOrRoofOnBlock(self):
     self.env_config['seed'] = 2
-    self.env_config['render'] = False
+    num_random_o = 2
+    self.env_config['num_random_objects'] = num_random_o
+    self.env_config['render'] = True
     self.env_config['random_orientation'] = False
 
     env = env_factory.createEnvs(1, 'rl', 'pybullet', 'house_building_3', self.env_config)
@@ -97,11 +101,11 @@ class TestBulletHouse3(unittest.TestCase):
 
     env.save()
     position = list(env.getObjPositions())[0]
-    action = torch.tensor([0, position[3][0], position[3][1], 0]).unsqueeze(0)
+    action = torch.tensor([0, position[3+num_random_o][0], position[3+num_random_o][1], 0]).unsqueeze(0)
     states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepLeft(), 7)
 
-    action = torch.tensor([1, position[0][0], position[0][1], 0]).unsqueeze(0)
+    action = torch.tensor([1, position[0+num_random_o][0], position[0+num_random_o][1], 0]).unsqueeze(0)
     states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepLeft(), 8)
 
@@ -115,11 +119,11 @@ class TestBulletHouse3(unittest.TestCase):
     env.restore()
 
     position = list(env.getObjPositions())[0]
-    action = torch.tensor([0, position[2][0], position[2][1], 0]).unsqueeze(0)
+    action = torch.tensor([0, position[2+num_random_o][0], position[2+num_random_o][1], 0]).unsqueeze(0)
     states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepLeft(), 7)
 
-    action = torch.tensor([1, position[0][0], position[0][1], 0]).unsqueeze(0)
+    action = torch.tensor([1, position[0+num_random_o][0], position[0+num_random_o][1], 0]).unsqueeze(0)
     states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepLeft(), 8)
 
@@ -136,26 +140,29 @@ class TestBulletHouse3(unittest.TestCase):
   def testBlockNotValidRoofOnBrickOnBlock(self):
     self.env_config['seed'] = 2
     self.env_config['random_orientation'] = False
+    num_random_o = 2
+    self.env_config['num_random_objects'] = num_random_o
+    self.env_config['render'] = True
 
     env = env_factory.createEnvs(1, 'rl', 'pybullet', 'house_building_3', self.env_config)
     env.reset()
 
     env.save()
     position = list(env.getObjPositions())[0]
-    action = torch.tensor([0, position[3][0], position[3][1], 0]).unsqueeze(0)
+    action = torch.tensor([0, position[3+num_random_o][0], position[3+num_random_o][1], 0]).unsqueeze(0)
     states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepLeft(), 7)
 
-    action = torch.tensor([1, position[0][0], position[0][1], 0]).unsqueeze(0)
+    action = torch.tensor([1, position[0+num_random_o][0], position[0+num_random_o][1], 0]).unsqueeze(0)
     states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepLeft(), 8)
 
     position = list(env.getObjPositions())[0]
-    action = torch.tensor([0, position[2][0], position[2][1], 0]).unsqueeze(0)
+    action = torch.tensor([0, position[2+num_random_o][0], position[2+num_random_o][1], 0]).unsqueeze(0)
     states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepLeft(), 9)
 
-    action = torch.tensor([1, position[0][0], position[0][1], 0]).unsqueeze(0)
+    action = torch.tensor([1, position[0+num_random_o][0], position[0+num_random_o][1], 0]).unsqueeze(0)
     states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepLeft(), 10)
 
@@ -178,8 +185,11 @@ class TestBulletHouse3(unittest.TestCase):
     env.close()
 
   def testBlockValidTriangleOnBrick(self):
-    self.env_config['seed'] = 2
+    self.env_config['seed'] = 1
     self.env_config['random_orientation'] = False
+    num_random_o = 2
+    self.env_config['num_random_objects'] = num_random_o
+    self.env_config['render'] = True
 
     env = env_factory.createEnvs(1, 'rl', 'pybullet', 'house_building_3', self.env_config)
     env.reset()
@@ -193,11 +203,11 @@ class TestBulletHouse3(unittest.TestCase):
     self.assertEqual(env.getStepLeft(), 4)
 
     position = list(env.getObjPositions())[0]
-    action = torch.tensor([0, position[2][0], position[2][1], np.pi / 2]).unsqueeze(0)
+    action = torch.tensor([0, position[2+num_random_o][0], position[2+num_random_o][1], 0]).unsqueeze(0)
     states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepLeft(), 5)
 
-    action = torch.tensor([1, position[3][0], position[3][1], np.pi / 2]).unsqueeze(0)
+    action = torch.tensor([1, position[3+num_random_o][0], position[3+num_random_o][1], 0]).unsqueeze(0)
     states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepLeft(), 6)
 
@@ -212,8 +222,11 @@ class TestBulletHouse3(unittest.TestCase):
     env.close()
 
   def testBlockValidBrickOrRoofOnBlock(self):
-    self.env_config['seed'] = 2
+    self.env_config['seed'] = 1
     self.env_config['random_orientation'] = False
+    num_random_o = 2
+    self.env_config['num_random_objects'] = num_random_o
+    self.env_config['render'] = True
 
     env = env_factory.createEnvs(1, 'rl', 'pybullet', 'house_building_3', self.env_config)
     env.reset()
@@ -228,11 +241,11 @@ class TestBulletHouse3(unittest.TestCase):
 
     env.save()
     position = list(env.getObjPositions())[0]
-    action = torch.tensor([0, position[3][0], position[3][1], np.pi / 2]).unsqueeze(0)
+    action = torch.tensor([0, position[3+num_random_o][0], position[3+num_random_o][1], 0]).unsqueeze(0)
     states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepLeft(), 3)
 
-    action = torch.tensor([1, position[0][0], position[0][1], np.pi / 2]).unsqueeze(0)
+    action = torch.tensor([1, position[0+num_random_o][0], position[0+num_random_o][1], 0]).unsqueeze(0)
     states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepLeft(), 4)
 
@@ -246,11 +259,11 @@ class TestBulletHouse3(unittest.TestCase):
     env.restore()
 
     position = list(env.getObjPositions())[0]
-    action = torch.tensor([0, position[2][0], position[2][1], np.pi / 2]).unsqueeze(0)
+    action = torch.tensor([0, position[2+num_random_o][0], position[2+num_random_o][1], 0]).unsqueeze(0)
     states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepLeft(), 5)
 
-    action = torch.tensor([1, position[0][0], position[0][1], np.pi / 2]).unsqueeze(0)
+    action = torch.tensor([1, position[0+num_random_o][0], position[0+num_random_o][1], 0]).unsqueeze(0)
     states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepLeft(), 6)
 
@@ -265,8 +278,11 @@ class TestBulletHouse3(unittest.TestCase):
     env.close()
 
   def testSuccess(self):
-    self.env_config['seed'] = 2
+    self.env_config['seed'] = 0
     self.env_config['random_orientation'] = False
+    num_random_o = 2
+    self.env_config['num_random_objects'] = num_random_o
+    self.env_config['render'] = True
 
     env = env_factory.createEnvs(1, 'rl', 'pybullet', 'house_building_3', self.env_config)
     env.reset()

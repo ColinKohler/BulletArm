@@ -19,7 +19,7 @@ def createImproviseHouseBuilding2Env(simulator_base_env, config):
 
     def step(self, action):
       self.takeAction(action)
-      self.wait(100)
+      self.wait(500)
       obs = self._getObservation(action)
       done = self._checkTermination()
       reward = 1.0 if done else 0.0
