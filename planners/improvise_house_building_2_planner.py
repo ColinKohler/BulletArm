@@ -23,7 +23,7 @@ class ImproviseHouseBuilding2Planner(BlockStructureBasePlanner):
       pos2 = obj2.getPosition()
       if pos1[-1] < self.getMaxBlockSize() and \
           pos2[-1] < self.getMaxBlockSize() and \
-          self.getDistance(obj1, obj2) < 2.2 * self.getMaxBlockSize():
+          self.getDistance(obj1, obj2) < 3 * self.getMaxBlockSize():
         return obj1, obj2
     return None, None
 
@@ -55,4 +55,4 @@ class ImproviseHouseBuilding2Planner(BlockStructureBasePlanner):
     else:
       npr.shuffle(rand_objs)
       other_obj = rand_objs[0]
-      return self.placeNearAnother(other_obj, 1.7*self.env.max_block_size, 1.8*self.env.max_block_size, self.env.max_block_size * 3, self.env.max_block_size * 3)
+      return self.placeNearAnother(other_obj, 1.7*self.env.max_block_size, 2.8*self.env.max_block_size, self.env.max_block_size * 3, self.env.max_block_size * 3, side_place=True)

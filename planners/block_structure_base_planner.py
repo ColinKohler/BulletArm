@@ -145,7 +145,7 @@ class BlockStructureBasePlanner(BasePlanner):
     x, y, z, r = place_pos[0], place_pos[1], self.env.place_offset, 0
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
-  def placeNearAnother(self, another_obj, min_dist_to_another, max_dist_to_another, padding_dist, min_dist):
+  def placeNearAnother(self, another_obj, min_dist_to_another, max_dist_to_another, padding_dist, min_dist, side_place=False):
     """
     place near another object, avoid existing objects except for another_obj
     :param another_obj: the object to place near to
@@ -170,7 +170,9 @@ class BlockStructureBasePlanner(BasePlanner):
         break
     x, y, z, r = place_pos[0], place_pos[1], self.env.place_offset, 0
     slope, intercept, r_value, p_value, std_err = scipy.stats.linregress([x, another_obj_position[0]], [y, another_obj_position[1]])
-    r = np.arctan(slope) + np.pi / 2
+    r = np.arctan(slope)
+    if not side_place:
+      r += np.pi / 2
     while r > np.pi:
       r -= np.pi
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
