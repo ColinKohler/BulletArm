@@ -30,5 +30,5 @@ def generateRoof(pos, rot, scale):
   # return pb.loadURDF(roof_urdf_filepath, basePosition=pos, baseOrientation=rot, globalScaling=scale)
   return Roof(pos, rot, scale)
 
-def generateRandomObj(pos, rot, scale):
-  return RandomObject(pos, rot, scale)
+def generateRandomObj(pos, rot, scale, z_scale=1):
+  return RandomObject(pos, rot, scale, z_scale)

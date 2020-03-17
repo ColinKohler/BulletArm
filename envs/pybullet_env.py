@@ -357,7 +357,7 @@ class PyBulletEnv(BaseEnv):
       raise NoValidPositionException
 
   def _generateShapes(self, shape_type=0, num_shapes=1, scale=None, pos=None, rot=None,
-                           min_distance=None, padding=None, random_orientation=False):
+                           min_distance=None, padding=None, random_orientation=False, z_scale=1):
     ''''''
     if padding is None:
       if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM):
@@ -400,7 +400,7 @@ class PyBulletEnv(BaseEnv):
       elif shape_type == constants.ROOF:
         handle = pb_obj_generation.generateRoof(position, orientation, scale)
       elif shape_type == constants.RANDOM:
-        handle = pb_obj_generation.generateRandomObj(position, orientation, scale)
+        handle = pb_obj_generation.generateRandomObj(position, orientation, scale, z_scale)
       else:
         raise NotImplementedError
       shape_handles.append(handle)

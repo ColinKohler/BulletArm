@@ -13,6 +13,7 @@ from helping_hands_rl_envs.envs.house_building_2_env import createHouseBuilding2
 from helping_hands_rl_envs.envs.house_building_3_env import createHouseBuilding3Env
 from helping_hands_rl_envs.envs.house_building_4_env import createHouseBuilding4Env
 from helping_hands_rl_envs.envs.improvise_houe_building_2 import createImproviseHouseBuilding2Env
+from helping_hands_rl_envs.envs.improvise_houe_building_3 import createImproviseHouseBuilding3Env
 from helping_hands_rl_envs.planners.planner_factory import createPlanner, AVAILABLE_PLANNER
 
 from helping_hands_rl_envs.rl_runner import RLRunner
@@ -68,6 +69,8 @@ def createEnvs(num_processes, runner_type, simulator, env_type, env_config, plan
     envs = [createHouseBuilding4Env(parent_env, env_configs[i]) for i in range(num_processes)]
   elif env_type == 'improvise_house_building_2':
     envs = [createImproviseHouseBuilding2Env(parent_env, env_configs[i]) for i in range(num_processes)]
+  elif env_type == 'improvise_house_building_3':
+    envs = [createImproviseHouseBuilding3Env(parent_env, env_configs[i]) for i in range(num_processes)]
   else:
     raise ValueError('Invalid environment type passed to factory.')
 
