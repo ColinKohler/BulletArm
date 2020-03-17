@@ -566,7 +566,7 @@ class PyBulletEnv(BaseEnv):
   def _checkOnTop(self, bottom_obj, top_obj):
     bottom_position = bottom_obj.getPosition()
     top_position = top_obj.getPosition()
-    if top_position[-1] - bottom_position[-1] < 0.9 * self.block_scale_range[0] * self.block_original_size:
+    if top_position[-1] - bottom_position[-1] < 0.5 * self.block_scale_range[0] * self.block_original_size:
       return False
     return top_obj.isTouching(bottom_obj)
 
