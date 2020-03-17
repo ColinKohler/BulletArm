@@ -19,7 +19,7 @@ class RandomObject(PybulletObject):
     urdf_filepath = found_object_directories[np.random.choice(np.arange(total_num_objects), 1)[0]]
     object_id = pb.loadURDF(urdf_filepath, basePosition=pos, baseOrientation=rot, globalScaling=scale)
 
-    super(RandomObject, self).__init__(constants.CUBE, object_id)
+    super(RandomObject, self).__init__(constants.RANDOM, object_id)
 
     self.block_original_size = 0.05
     self.block_size = 0.05 * scale
