@@ -13,7 +13,7 @@ class TestBulletHouse2(unittest.TestCase):
                           [-0.15, 0.15],
                           [0, 0.50]])
   env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 90, 'render': False, 'fast_mode': True,
-                'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 6, 'random_orientation': True,
+                'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 5, 'random_orientation': True,
                 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka'}
 
   # env = createHouseBuilding1Env(PyBulletEnv, env_config)()
