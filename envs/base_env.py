@@ -193,6 +193,8 @@ class BaseEnv(object):
     next_heightmap = np.pad(next_heightmap, int(self.in_hand_size / 2), 'constant', constant_values=0.0)
 
     x, y = self._getPixelsFromPos(x, y)
+    x = np.clip(x, self.in_hand_size / 2, self.heightmap_size-1-self.in_hand_size/2)
+    y = np.clip(y, self.in_hand_size / 2, self.heightmap_size-1-self.in_hand_size/2)
     x = x + int(self.in_hand_size / 2)
     y = y + int(self.in_hand_size / 2)
 
