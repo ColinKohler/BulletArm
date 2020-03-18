@@ -4,10 +4,10 @@ from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 
 def createImproviseHouseBuilding2Env(simulator_base_env, config):
-  # TODO: check in between
   class ImproviseHouseBuilding2Env(simulator_base_env):
     ''''''
     def __init__(self, config):
+      config['check_random_obj_valid'] = True
       if simulator_base_env is PyBulletEnv:
         super().__init__(config)
       else:

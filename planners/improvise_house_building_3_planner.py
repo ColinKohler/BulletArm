@@ -29,14 +29,14 @@ class ImproviseHouseBuilding3Planner(BlockStructureBasePlanner):
     for (obj1, obj2) in rand_obj_1_combs:
       pos1 = obj1.getPosition()
       pos2 = obj2.getPosition()
-      if pos1[-1] > 0.8*self.getMaxBlockSize() and pos2[-1] > 0.8*self.getMaxBlockSize() and self.isObjOnTop(obj1) and self.isObjOnTop(obj2)\
+      if pos1[-1] > 0.5*self.getMaxBlockSize() and pos2[-1] > 0.5*self.getMaxBlockSize() and self.isObjOnTop(obj1) and self.isObjOnTop(obj2)\
           and self.getDistance(obj1, obj2) < 3.2 * self.getMaxBlockSize():
         return obj1, obj2
 
     for obj1 in rand_objs_1:
       for obj2 in rand_objs_2:
         pos1 = obj1.getPosition()
-        if pos1[-1] > 0.8*self.getMaxBlockSize() and self.isObjOnTop(obj1) and self.isObjOnTop(obj2) \
+        if pos1[-1] > 0.5*self.getMaxBlockSize() and self.isObjOnTop(obj1) and self.isObjOnTop(obj2) \
             and self.getDistance(obj1, obj2) < 3.2 * self.getMaxBlockSize():
           return obj1, obj2
 
@@ -49,7 +49,7 @@ class ImproviseHouseBuilding3Planner(BlockStructureBasePlanner):
     for obj1 in rand_objs_1:
       for obj2 in rand_objs_2:
         pos1 = obj1.getPosition()
-        if pos1[-1] < 0.8*self.getMaxBlockSize() and self.isObjOnTop(obj1) and self.isObjOnTop(obj2) \
+        if pos1[-1] < 0.5*self.getMaxBlockSize() and self.isObjOnTop(obj1) and self.isObjOnTop(obj2) \
             and self.getDistance(obj1, obj2) < 3.2 * self.getMaxBlockSize():
           return obj1, obj2
 
@@ -58,7 +58,7 @@ class ImproviseHouseBuilding3Planner(BlockStructureBasePlanner):
       pos1 = obj1.getPosition()
       pos2 = obj2.getPosition()
       if self.getDistance(obj1, obj2) < 3.2 * self.getMaxBlockSize() and self.isObjOnTop(obj1) and self.isObjOnTop(obj2):
-        if pos2[-1] < 0.8*self.getMaxBlockSize():
+        if pos2[-1] < 0.5*self.getMaxBlockSize():
           return obj2, obj1
         else:
           return obj1, obj2

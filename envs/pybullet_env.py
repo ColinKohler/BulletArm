@@ -40,6 +40,8 @@ class PyBulletEnv(BaseEnv):
       config['in_hand_mode'] = 'sub'
     if 'num_random_objects' not in config:
       config['num_random_objects'] = 0
+    if 'check_random_obj_valid' not in config:
+      config['check_random_obj_valid'] = False
 
     seed = config['seed']
     workspace = config['workspace']
@@ -57,6 +59,7 @@ class PyBulletEnv(BaseEnv):
     in_hand_size = config['in_hand_size']
     in_hand_mode = config['in_hand_mode']
     num_random_objects = config['num_random_objects']
+    check_random_obj_valid = config['check_random_obj_valid']
     super(PyBulletEnv, self).__init__(seed, workspace, max_steps, obs_size, action_sequence, pos_candidate,
                                       in_hand_size, in_hand_mode)
 
@@ -120,6 +123,7 @@ class PyBulletEnv(BaseEnv):
     self.initialize()
 
     self.num_random_objects = num_random_objects
+    self.check_random_obj_valid = check_random_obj_valid
 
   def initialize(self):
     ''''''
@@ -252,7 +256,7 @@ class PyBulletEnv(BaseEnv):
 
   def isSimValid(self):
     for obj in self.objects:
-      if self.object_types[obj] == constants.RANDOM:
+      if not self.check_random_obj_valid and self.object_types[obj] == constants.RANDOM:
         continue
       if self._isObjectHeld(obj):
         continue

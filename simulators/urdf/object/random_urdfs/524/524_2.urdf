@@ -15,7 +15,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0" />
       <geometry>
-        <mesh filename="524.obj" scale="0.015 0.015 0.03" />
+        <mesh filename="524.obj" scale="0.015 0.015 0.02" />
       </geometry>
       <material name="blockmat">
         <color rgba="0.87 0.53 0.98 1" />
@@ -24,7 +24,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0" />
       <geometry>
-        <mesh filename="524.obj" scale="0.015 0.015 0.03" />
+        <mesh filename="524.obj" scale="0.015 0.015 0.02" />
       </geometry>
     </collision>
   </link>

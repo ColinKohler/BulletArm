@@ -5,10 +5,10 @@ from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 
 def createImproviseHouseBuilding3Env(simulator_base_env, config):
-  # TODO: check in between
   class ImproviseHouseBuilding3Env(simulator_base_env):
     ''''''
     def __init__(self, config):
+      config['check_random_obj_valid'] = True
       if simulator_base_env is PyBulletEnv:
         super().__init__(config)
       else:
@@ -38,7 +38,7 @@ def createImproviseHouseBuilding3Env(simulator_base_env, config):
         try:
           self._generateShapes(constants.ROOF, 1, random_orientation=self.random_orientation)
           for i in range(self.num_obj-1):
-            self._generateShapes(constants.RANDOM, 1, random_orientation=self.random_orientation, z_scale=npr.choice([1, 2]))
+            self._generateShapes(constants.RANDOM, 1, random_orientation=self.random_orientation, z_scale=npr.choice([1, 2], p=[0.75, 0.25]))
           # self._generateShapes(constants.RANDOM, 1, random_orientation=self.random_orientation,
           #                      z_scale=1)
           # self._generateShapes(constants.RANDOM, 1, random_orientation=self.random_orientation,
@@ -54,7 +54,7 @@ def createImproviseHouseBuilding3Env(simulator_base_env, config):
     def _checkTermination(self):
       rand_objs = list(filter(lambda x: self.object_types[x] == constants.RANDOM, self.objects))
       roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
-      if roofs[0].getZPosition() < self.min_block_size*1.7:
+      if roofs[0].getZPosition() < self.min_block_size:
         return False
 
       rand_obj_combs = combinations(rand_objs, 2)
