@@ -20,9 +20,9 @@ class TestBulletHouse2(unittest.TestCase):
   # env = createHouseBuilding1Env(PyBulletEnv, env_config)()
 
   def testPlanner(self):
-    self.env_config['render'] = True
+    self.env_config['render'] = False
 
-    env = env_factory.createEnvs(1, 'rl', 'pybullet', 'improvise_house_building_3', self.env_config, {})
+    env = env_factory.createEnvs(10, 'rl', 'pybullet', 'improvise_house_building_3', self.env_config, {})
     total = 0
     s = 0
     env.reset()
