@@ -1,3 +1,4 @@
+import time
 from copy import deepcopy
 import numpy.random as npr
 from itertools import combinations
@@ -20,7 +21,7 @@ def createImproviseHouseBuilding3Env(simulator_base_env, config):
 
     def step(self, action):
       self.takeAction(action)
-      self.wait(500)
+      self.wait(100)
       obs = self._getObservation(action)
       done = self._checkTermination()
       reward = 1.0 if done else 0.0

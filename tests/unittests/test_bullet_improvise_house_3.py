@@ -1,5 +1,6 @@
 import unittest
 import time
+from tqdm import tqdm
 import numpy as np
 import torch
 
@@ -25,11 +26,24 @@ class TestBulletHouse2(unittest.TestCase):
     env = env_factory.createEnvs(10, 'rl', 'pybullet', 'improvise_house_building_3', self.env_config, {})
     total = 0
     s = 0
+    step_times = []
     env.reset()
+    pbar = tqdm(total=1000)
     while total < 1000:
-      states_, in_hands_, obs_, rewards, dones = env.step(env.getNextAction())
+      t0 = time.time()
+      action = env.getNextAction()
+      t_plan = time.time() - t0
+      states_, in_hands_, obs_, rewards, dones = env.step(action)
+      t_action = time.time() - t0 - t_plan
+      t = time.time() - t0
+      step_times.append(t)
+
       if dones.sum():
         s += rewards.sum().int().item()
         total += dones.sum().int().item()
-        print('{}/{}'.format(s, total))
+
+      pbar.set_description(
+        '{}/{}, SR: {:.3f}, plan time: {:.2f}, action time: {:.2f}, avg step time: {:.2f}'
+          .format(s, total, float(s) / total if total != 0 else 0, t_plan, t_action, np.mean(step_times))
+      )
     env.close()
