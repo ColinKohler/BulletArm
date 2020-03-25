@@ -125,6 +125,8 @@ class PyBulletEnv(BaseEnv):
     self.num_random_objects = num_random_objects
     self.check_random_obj_valid = check_random_obj_valid
 
+    self.episode_count = 0
+
   def initialize(self):
     ''''''
     pb.resetSimulation()
@@ -150,6 +152,11 @@ class PyBulletEnv(BaseEnv):
     return self._getObservation()
 
   def reset(self):
+    self.episode_count += 1
+    if self.episode_count >= 10000:
+      self.initialize()
+      self.episode_count = 0
+
     for o in self.objects:
       pb.removeBody(o.object_id)
     self.robot.reset()
