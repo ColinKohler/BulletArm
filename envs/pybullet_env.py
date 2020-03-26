@@ -1,6 +1,7 @@
 import time
 import copy
 import numpy as np
+import scipy
 import numpy.random as npr
 
 import pybullet as pb
@@ -638,3 +639,69 @@ class PyBulletEnv(BaseEnv):
       rot[2] -= np.pi
 
     return rot
+
+  def generateImproviseH3(self):
+    lower_z1 = 0.01
+    lower_z2 = 0.025
+    hier_z = 0.02
+    roof_z = 0.05
+
+    def generate(pos, zscale=1):
+      handle = pb_obj_generation.generateRandomObj(pos,
+                                                   pb.getQuaternionFromEuler(
+                                                     [0., 0., 2 * np.pi * np.random.random_sample()]),
+                                                   npr.uniform(self.block_scale_range[0], self.block_scale_range[1]),
+                                                   zscale)
+      self.objects.append(handle)
+      self.object_types[handle] = constants.RANDOM
+
+    padding = self.max_block_size * 1.5
+    pos1 = self._getValidPositions(padding, 0, [], 1)[0]
+    min_dist = 1.7*self.max_block_size
+    max_dist = 2.8*self.max_block_size
+    sample_range = [[pos1[0] - max_dist, pos1[0] + max_dist],
+                    [pos1[1] - max_dist, pos1[1] + max_dist]]
+    for i in range(100):
+      try:
+        pos2 = self._getValidPositions(padding, min_dist, [pos1], 1, sample_range=sample_range)[0]
+      except NoValidPositionException:
+        continue
+      dist = np.linalg.norm(np.array(pos1) - np.array(pos2))
+      if min_dist < dist < max_dist:
+        break
+    
+    t = np.random.choice(4)
+    if t == 0:
+      generate([pos1[0], pos1[1], lower_z1], 1)
+      generate([pos1[0], pos1[1], lower_z2], 1)
+      generate([pos2[0], pos2[1], lower_z1], 1)
+      generate([pos2[0], pos2[1], lower_z2], 1)
+
+    elif t == 1:
+      generate([pos1[0], pos1[1], lower_z1], 1)
+      generate([pos1[0], pos1[1], lower_z2], 1)
+      generate([pos2[0], pos2[1], hier_z], 2)
+
+    elif t == 2:
+      generate([pos1[0], pos1[1], hier_z], 2)
+      generate([pos2[0], pos2[1], lower_z1], 1)
+      generate([pos2[0], pos2[1], lower_z2], 1)
+
+    elif t == 3:
+      generate([pos1[0], pos1[1], hier_z], 2)
+      generate([pos2[0], pos2[1], hier_z], 2)
+
+    obj_positions = np.array([pos1, pos2])
+    slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(obj_positions[:, 0], obj_positions[:, 1])
+    x, y = obj_positions.mean(0)
+    r = np.arctan(slope)
+    while r > np.pi:
+      r -= np.pi
+
+    h = pb_obj_generation.generateRoof([x, y, roof_z],
+                                            pb.getQuaternionFromEuler(
+                                              [0., 0., r]),
+                                            npr.uniform(self.block_scale_range[0], self.block_scale_range[1]))
+    self.objects.append(h)
+    self.object_types[h] = constants.ROOF
+    self.wait(50)
