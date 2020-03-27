@@ -1,12 +1,13 @@
 import time
 from copy import deepcopy
 import numpy.random as npr
+import numpy as np
 from itertools import combinations
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_deconstruct_env import PyBulletEnv, PyBulletDeconstructEnv
 from helping_hands_rl_envs.simulators import constants
 
 def createImproviseHouseBuilding3DeconstructEnv(simulator_base_env, config):
-  class ImproviseHouseBuilding3Env(simulator_base_env):
+  class ImproviseHouseBuilding3Env(PyBulletDeconstructEnv):
     ''''''
     def __init__(self, config):
       config['check_random_obj_valid'] = True
@@ -20,11 +21,12 @@ def createImproviseHouseBuilding3DeconstructEnv(simulator_base_env, config):
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
 
     def step(self, action):
+      reward = 1.0 if self.checkStructure() else 0.0
       self.takeAction(action)
       self.wait(100)
       obs = self._getObservation(action)
-      done = self._checkTermination()
-      reward = 1.0 if done else 0.0
+      motion_primative, x, y, z, rot = self._decodeAction(action)
+      done = motion_primative and self._checkTermination()
 
       if not done:
         done = self.current_episode_steps >= self.max_steps or not self.isSimValid()
@@ -37,9 +39,21 @@ def createImproviseHouseBuilding3DeconstructEnv(simulator_base_env, config):
       super(ImproviseHouseBuilding3Env, self).reset()
       self.generateImproviseH3()
 
+      while not self.checkStructure():
+        super(ImproviseHouseBuilding3Env, self).reset()
+        self.generateImproviseH3()
+
       return self._getObservation()
 
     def _checkTermination(self):
+      obj_combs = combinations(self.objects, 2)
+      for (obj1, obj2) in obj_combs:
+        dist = np.linalg.norm(np.array(obj1.getXYPosition()) - np.array(obj2.getXYPosition()))
+        if dist < 2.7*self.min_block_size:
+          return False
+      return True
+
+    def checkStructure(self):
       rand_objs = list(filter(lambda x: self.object_types[x] == constants.RANDOM, self.objects))
       roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
       if roofs[0].getZPosition() < 1.4*self.min_block_size:
