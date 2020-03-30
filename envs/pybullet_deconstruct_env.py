@@ -11,6 +11,7 @@ class PyBulletDeconstructEnv(PyBulletEnv):
   def __init__(self, config):
     super().__init__(config)
     self.pick_offset = -0.007
+    self.base_objs = []
 
   def _getObservation(self, action=None):
     ''''''
@@ -29,6 +30,10 @@ class PyBulletDeconstructEnv(PyBulletEnv):
 
     return self._isHolding(), in_hand_img, self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
+  def reset(self):
+    super().reset()
+    self.base_objs = []
+
   def generateImproviseH3(self):
     lower_z1 = 0.01
     lower_z2 = 0.025
@@ -43,6 +48,7 @@ class PyBulletDeconstructEnv(PyBulletEnv):
                                                    zscale)
       self.objects.append(handle)
       self.object_types[handle] = constants.RANDOM
+      self.base_objs.append(handle)
 
     padding = self.max_block_size * 1.5
     pos1 = self._getValidPositions(padding, 0, [], 1)[0]
@@ -71,14 +77,20 @@ class PyBulletDeconstructEnv(PyBulletEnv):
       generate([pos1[0], pos1[1], lower_z2], 1)
       generate([pos2[0], pos2[1], hier_z], 2)
 
+      self._generateShapes(constants.RANDOM, 1, random_orientation=True, z_scale=np.random.choice([1, 2]))
+
     elif t == 2:
       generate([pos1[0], pos1[1], hier_z], 2)
       generate([pos2[0], pos2[1], lower_z1], 1)
       generate([pos2[0], pos2[1], lower_z2], 1)
 
+      self._generateShapes(constants.RANDOM, 1, random_orientation=True, z_scale=np.random.choice([1, 2]))
+
     elif t == 3:
       generate([pos1[0], pos1[1], hier_z], 2)
       generate([pos2[0], pos2[1], hier_z], 2)
+
+      self._generateShapes(constants.RANDOM, 2, random_orientation=True, z_scale=np.random.choice([1, 2]))
 
     obj_positions = np.array([pos1, pos2])
     slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(obj_positions[:, 0], obj_positions[:, 1])
