@@ -23,7 +23,7 @@ class TestBulletHouse2(unittest.TestCase):
   def testPlanner(self):
     self.env_config['render'] = False
 
-    env = env_factory.createEnvs(10, 'rl', 'pybullet', 'improvise_house_building_3', self.env_config, {})
+    env = env_factory.createEnvs(20, 'rl', 'pybullet', 'improvise_house_building_3', self.env_config, {})
     total = 0
     s = 0
     step_times = []
@@ -46,4 +46,5 @@ class TestBulletHouse2(unittest.TestCase):
         '{}/{}, SR: {:.3f}, plan time: {:.2f}, action time: {:.2f}, avg step time: {:.2f}'
           .format(s, total, float(s) / total if total != 0 else 0, t_plan, t_action, np.mean(step_times))
       )
+      pbar.update(dones.sum().int().item())
     env.close()

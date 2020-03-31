@@ -53,7 +53,7 @@ class PyBulletDeconstructEnv(PyBulletEnv):
     padding = self.max_block_size * 1.5
     pos1 = self._getValidPositions(padding, 0, [], 1)[0]
     min_dist = 1.7 * self.max_block_size
-    max_dist = 2.8 * self.max_block_size
+    max_dist = 2.4 * self.max_block_size
     sample_range = [[pos1[0] - max_dist, pos1[0] + max_dist],
                     [pos1[1] - max_dist, pos1[1] + max_dist]]
     for i in range(100):

@@ -165,7 +165,7 @@ class BlockStructureBasePlanner(BasePlanner):
       place_pos = self.getValidPositions(padding_dist, min_dist, existing_pos, 1)[0]
     except NoValidPositionException:
       place_pos = self.getValidPositions(padding_dist, min_dist, [], 1)[0]
-    x, y, z, r = place_pos[0], place_pos[1], self.env.place_offset, 0
+    x, y, z, r = place_pos[0], place_pos[1], self.env.place_offset, np.pi*np.random.random_sample()
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def placeNearAnother(self, another_obj, min_dist_to_another, max_dist_to_another, padding_dist, min_dist, side_place=False):
