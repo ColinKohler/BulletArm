@@ -19,16 +19,14 @@ class RandomObject(PybulletObject):
     urdf_pattern = os.path.join(root_dir, constants.URDF_PATH, 'random_urdfs/*/*.urdf')
     found_object_directories = glob.glob(urdf_pattern)
     if z_scale == 2:
-      found_object_directories = list(filter(lambda x: re.search(r'(001|002|005|007|009|011|020|023|027|032|034|039|052'
-                                                                 r'|057|058|059|066|069|070|075|080|081|083|089|090|091'
-                                                                 r'|114|115|116|118|122|131|137|142|143|145|149|154|157'
-                                                                 r'|159|161|163|176|182|183|187|190|191|199|200)_2\.urdf', x),
+      found_object_directories = list(filter(lambda x: re.search(r'(002|005|027|032|034|039|059|066|070|075|080|083|091'
+                                                                 r'|116|118|122|131|137|142|143|145|149|154|176|183|187'
+                                                                 r'|199|200)_2\.urdf', x),
                                              found_object_directories))
     else:
-      found_object_directories = list(filter(lambda x: re.search(r'(001|002|005|007|009|011|020|023|027|032|034|039|052'
-                                                                 r'|057|058|059|066|069|070|075|080|081|083|089|090|091'
-                                                                 r'|114|115|116|118|122|131|137|142|143|145|149|154|157'
-                                                                 r'|159|161|163|176|182|183|187|190|191|199|200)\.urdf', x),
+      found_object_directories = list(filter(lambda x: re.search(r'(002|005|027|032|034|039|059|066|070|075|080|083|091'
+                                                                 r'|116|118|122|131|137|142|143|145|149|154|176|183|187'
+                                                                 r'|199|200)\.urdf', x),
                                              found_object_directories))
     total_num_objects = len(found_object_directories)
     urdf_filepath = found_object_directories[np.random.choice(np.arange(total_num_objects), 1)[0]]
