@@ -273,7 +273,7 @@ class PyBulletEnv(BaseEnv):
 
     return self._isHolding(), in_hand_img, self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
-  def _getValidPositions(self, padding, min_distance, existing_positions, num_shapes, sample_range=None):
+  def _getValidPositions(self, border_padding, min_distance, existing_positions, num_shapes, sample_range=None):
     for _ in range(100):
       existing_positions_copy = copy.deepcopy(existing_positions)
       valid_positions = list()
@@ -287,21 +287,21 @@ class PyBulletEnv(BaseEnv):
           if is_position_valid:
             break
           if sample_range:
-            sample_range[0][0] = max(sample_range[0][0], self.workspace[0][0]+padding/2)
-            sample_range[0][1] = min(sample_range[0][1], self.workspace[0][1]-padding/2)
-            sample_range[1][0] = max(sample_range[1][0], self.workspace[1][0]+padding/2)
-            sample_range[1][1] = min(sample_range[1][1], self.workspace[1][1]-padding/2)
+            sample_range[0][0] = max(sample_range[0][0], self.workspace[0][0]+border_padding/2)
+            sample_range[0][1] = min(sample_range[0][1], self.workspace[0][1]-border_padding/2)
+            sample_range[1][0] = max(sample_range[1][0], self.workspace[1][0]+border_padding/2)
+            sample_range[1][1] = min(sample_range[1][1], self.workspace[1][1]-border_padding/2)
             position = [(sample_range[0][1] - sample_range[0][0]) * npr.random_sample() + sample_range[0][0],
                         (sample_range[1][1] - sample_range[1][0]) * npr.random_sample() + sample_range[1][0]]
           else:
-            position = [(x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2,
-                        (y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2]
+            position = [(x_extents - border_padding) * npr.random_sample() + self.workspace[0][0] + border_padding / 2,
+                        (y_extents - border_padding) * npr.random_sample() + self.workspace[1][0] +  border_padding / 2]
 
           if self.pos_candidate is not None:
             position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0] - position[0]).argmin()]
             position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1] - position[1]).argmin()]
-            if not (self.workspace[0][0]+padding/2 < position[0] < self.workspace[0][1]-padding/2 and
-                    self.workspace[1][0]+padding/2 < position[1] < self.workspace[1][1]-padding/2):
+            if not (self.workspace[0][0]+border_padding/2 < position[0] < self.workspace[0][1]-border_padding/2 and
+                    self.workspace[1][0]+border_padding/2 < position[1] < self.workspace[1][1]-border_padding/2):
               continue
 
           if existing_positions_copy:

@@ -125,6 +125,31 @@ class BlockStructureBasePlanner(BasePlanner):
     x, y, z, r = place_pos[0], place_pos[1], self.env.place_offset, 0
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
+  def placeAdjacent(self, obj, min_dist, max_dist, border_padding, obj_padding):
+    place_pos = self.getValidPositions(self.env.max_block_size * 2, self.env.max_block_size * 2, list(), 1)[0]
+    obj_position = obj.getPosition()
+    sample_range = [[obj_position[0] - max_dist, obj_position[0] + max_dist],
+                    [obj_position[1] - max_dist, obj_position[1] + max_dist]]
+    existing_pos = [o.getXYPosition() for o in list(filter(lambda x: not self.isObjectHeld(x) and not obj == x, self.env.objects))]
+
+    for i in range(100):
+      try:
+        place_pos = self.getValidPositions(border_padding, obj_padding, existing_pos, 1, sample_range=sample_range)[0]
+      except NoValidPositionException:
+        continue
+      dist = np.linalg.norm(np.array(obj_position[:-1]) - np.array(place_pos))
+      # if min_dist < dist < max_dist: print('{:.3f}:{:.3f} | {:.3f}:{:.3f}'.format(place_pos[0], obj_position[0], place_pos[1], obj_position[1]))
+      if min_dist < dist < max_dist and (np.allclose(place_pos[0], obj_position[0], atol=0.01) or np.allclose(place_pos[1], obj_position[1], atol=0.01)):
+        break
+
+    x, y, z, r = place_pos[0], place_pos[1], self.env.place_offset, 0
+    slope, intercept, r_value, p_value, std_err = scipy.stats.linregress([x, obj_position[0]], [y, obj_position[1]])
+    r = np.arctan(slope) + np.pi / 2
+    while r > np.pi:
+      r -= np.pi
+
+    return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
+
   def placeNearAnother(self, another_obj, min_dist_to_another, max_dist_to_another, padding_dist, min_dist):
     """
     place near another object, avoid existing objects except for another_obj
@@ -226,6 +251,17 @@ class BlockStructureBasePlanner(BasePlanner):
     object_poses = object_poses[sorted_inds]
     return objects, object_poses
 
-  def isAdjacent(self, obj_1, obj_2):
+  def isNear(self, obj_1, obj_2):
     return np.allclose(obj_1.getZPosition(), obj_2.getZPosition(), atol=0.01) and \
            self.getDistance(obj_1, obj_2) < 2.0 * self.getMaxBlockSize()
+
+  def isAdjacent(self, objects):
+    pos = np.array([o.getPosition() for o in objects])
+    if (pos[:,2].max() - pos[:,2].min()) > 0.01: return False
+
+    if np.allclose(pos[:,0], pos[0,0], atol=0.01):
+      return np.abs(pos[:,1].max() - pos[:,1].min()) < self.getMaxBlockSize() * 3
+    elif np.allclose(pos[:,1], pos[0,1], atol=0.01):
+      return np.abs(pos[:,0].max() - pos[:,0].min()) < self.getMaxBlockSize() * 3
+    else:
+      return False
