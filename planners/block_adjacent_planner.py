@@ -20,12 +20,12 @@ class BlockAdjacentPlanner(BlockStructureBasePlanner):
     else:
       obj_to_pick = npr.choice(objects)
 
-    pos, rot = obj_to_pick.getPose()
-    return self.encodeAction(constants.PICK_PRIMATIVE, pos[0], pos[1], pos[2], rot[-1])
+    pose = self.env.getObjectPoses([obj_to_pick])
+    return self.encodeAction(constants.PICK_PRIMATIVE, pose[0][0], pose[0][1], pose[0][2], pose[0][-1])
 
   def getPlacingAction(self):
     return self.placeAdjacent(npr.choice(self.getObjects()),
-                              self.getMaxBlockSize()*1.25,
+                              self.getMaxBlockSize()*1.0,
                               self.getMaxBlockSize()*1.5,
                               self.getMaxBlockSize()*2,
                               self.getMaxBlockSize()*2)

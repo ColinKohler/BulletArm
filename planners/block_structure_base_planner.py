@@ -260,8 +260,8 @@ class BlockStructureBasePlanner(BasePlanner):
     if (pos[:,2].max() - pos[:,2].min()) > 0.01: return False
 
     if np.allclose(pos[:,0], pos[0,0], atol=0.01):
-      return np.abs(pos[:,1].max() - pos[:,1].min()) < self.getMaxBlockSize() * 3
+      return np.abs(pos[:,1].max() - pos[:,1].min()) < self.getMaxBlockSize() * 2
     elif np.allclose(pos[:,1], pos[0,1], atol=0.01):
-      return np.abs(pos[:,0].max() - pos[:,0].min()) < self.getMaxBlockSize() * 3
+      return np.abs(pos[:,0].max() - pos[:,0].min()) < self.getMaxBlockSize() * 2
     else:
       return False

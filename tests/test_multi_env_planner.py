@@ -11,7 +11,7 @@ env_config = [{'env_type': 'block_stacking', 'workspace': workspace, 'max_steps'
               {'env_type': 'block_adjacent', 'workspace': workspace, 'max_steps': 10, 'obs_size': 128,
               'action_sequence': 'pxy', 'num_objects': 3, 'render': False, 'fast_mode': True}]
 
-planner_config = [{'planner_type': 'block_stacking', 'pos_noise': 0.0}, {'planner_type': 'block_adjacent', 'pos_noise': 0.0}]
+planner_config = [{'planner_type': 'block_stacking', 'pos_noise': 0.015}, {'planner_type': 'block_adjacent', 'pos_noise': 0.015}]
 envs = env_factory.createEnvs(1, 'data', 'pybullet', 'multi_task', env_config, planner_config=planner_config)
 
 for i in range(10):
