@@ -22,7 +22,8 @@ AVAILABLE_PLANNER = ['random',
                      'house_building_4',
                      'improvise_house_building_2',
                      'improvise_house_building_3',
-                     'improvise_house_building_3_deconstruct']
+                     'improvise_house_building_3_deconstruct',
+                     'random_picking']
 
 def createPlanner(config):
   if 'planner_noise' not in config: config['planner_noise'] = None
@@ -51,3 +52,5 @@ def createPlanner(config):
     return lambda env: ImproviseHouseBuilding3Planner(env, config)
   elif config['planner'] == 'improvise_house_building_3_deconstruct':
     return lambda env: ImproviseHouseBuilding3DeconstructPlanner(env, config)
+  elif config['planner'] == 'random_picking':
+    return lambda env: BlockPickingPlanner(env, config)

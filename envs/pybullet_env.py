@@ -476,7 +476,6 @@ class PyBulletEnv(BaseEnv):
       # pb.removeBody(obj)
       self._moveObjectOutWorkspace(obj)
       self.robot.openGripper()
-      self.objects.remove(obj)
 
   def _moveObjectOutWorkspace(self, obj):
     pos = [-0.50, 0, 0.25]
