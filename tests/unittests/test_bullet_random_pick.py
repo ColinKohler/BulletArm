@@ -13,7 +13,7 @@ class TestBulletRandomPick(unittest.TestCase):
   workspace = np.asarray([[0.35, 0.65],
                           [-0.15, 0.15],
                           [0, 0.50]])
-  env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 90, 'render': False, 'fast_mode': True,
+  env_config = {'workspace': workspace, 'max_steps': 5, 'obs_size': 90, 'render': False, 'fast_mode': True,
                 'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 5, 'random_orientation': True,
                 'reward_type': 'dense', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
                 'workspace_check': 'point'}
@@ -21,9 +21,9 @@ class TestBulletRandomPick(unittest.TestCase):
   # env = createHouseBuilding1Env(PyBulletEnv, env_config)()
 
   def testPlanner(self):
-    self.env_config['render'] = True
+    self.env_config['render'] = False
 
-    env = env_factory.createEnvs(1, 'rl', 'pybullet', 'random_picking', self.env_config, {})
+    env = env_factory.createEnvs(10, 'rl', 'pybullet', 'random_picking', self.env_config, {})
     total = 0
     s = 0
     step_times = []
@@ -38,13 +38,14 @@ class TestBulletRandomPick(unittest.TestCase):
       t = time.time() - t0
       step_times.append(t)
 
+      s += rewards.sum().int().item()
+
       if dones.sum():
-        s += rewards.sum().int().item()
         total += dones.sum().int().item()
 
-      pbar.set_description(
-        '{}/{}, SR: {:.3f}, plan time: {:.2f}, action time: {:.2f}, avg step time: {:.2f}'
-          .format(s, total, float(s) / total if total != 0 else 0, t_plan, t_action, np.mean(step_times))
-      )
+        pbar.set_description(
+          '{:.3f}, plan time: {:.2f}, action time: {:.2f}, avg step time: {:.2f}'
+            .format(float(s) / total if total != 0 else 0, t_plan, t_action, np.mean(step_times))
+        )
       pbar.update(dones.sum().int().item())
     env.close()
