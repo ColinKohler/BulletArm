@@ -76,6 +76,9 @@ class RobotBase:
         self.moveTo(pre_pos, pre_rot, dynamic)
       else:
         self.moveTo(pre_pos, pre_rot, True)
+        self.adjustGripperCommand()
+        for i in range(10):
+          pb.stepSimulation()
         self.holding_obj = self.getPickedObj(objects)
 
     else:
@@ -229,6 +232,10 @@ class RobotBase:
 
   @abstractmethod
   def _sendPositionCommand(self, commands):
+    raise NotImplementedError
+
+  @abstractmethod
+  def adjustGripperCommand(self):
     raise NotImplementedError
 
   def _setJointPoses(self, q_poses):

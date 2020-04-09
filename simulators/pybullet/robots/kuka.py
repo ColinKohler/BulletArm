@@ -92,11 +92,16 @@ class Kuka(RobotBase):
       p1_, p2_ = self._getGripperJointPosition()
       if it > max_it or (abs(p1 - p1_) < 0.0001 and abs(p2 - p2_) < 0.0001):
         mean = (p1 + p2) / 2 - 0.01
-        self._sendGripperCommand(mean, mean)
+        # self._sendGripperCommand(mean, mean)
         return False
       p1 = p1_
       p2 = p2_
     return True
+
+  def adjustGripperCommand(self):
+    p1, p2 = self._getGripperJointPosition()
+    mean = (p1 + p2) / 2 - 0.01
+    self._sendGripperCommand(mean, mean)
 
   def checkGripperClosed(self):
     limit = self.gripper_joint_limit[1]
