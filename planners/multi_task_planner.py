@@ -21,3 +21,6 @@ class MultiTaskPlanner(object):
 
   def getStepsLeft(self):
     return self.planners[self.env.env_types[self.env.active_env_id]].getStepsLeft()
+
+  def getValue(self):
+    return self.planners[self.env.env_types[self.env.active_env_id]].getValue()
