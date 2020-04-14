@@ -569,10 +569,10 @@ class PyBulletEnv(BaseEnv):
     angle = min(angle, np.pi / 2 - angle)
     return angle < np.pi / 12
 
-  def _checkObjUpright(self, obj):
+  def _checkObjUpright(self, obj, threshold=np.pi/9):
     triangle_rot = obj.getRotation()
     triangle_rot = pb.getEulerFromQuaternion(triangle_rot)
-    return abs(triangle_rot[0]) < np.pi/9 and abs(triangle_rot[1]) < np.pi/9
+    return abs(triangle_rot[0]) < threshold and abs(triangle_rot[1]) < threshold
 
   def _checkOnTop(self, bottom_obj, top_obj):
     bottom_position = bottom_obj.getPosition()

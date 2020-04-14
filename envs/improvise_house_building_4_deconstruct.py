@@ -3,11 +3,11 @@ from copy import deepcopy
 import numpy.random as npr
 import numpy as np
 from itertools import combinations
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_deconstruct_env import PyBulletEnv, PyBulletDeconstructEnv
 from helping_hands_rl_envs.simulators import constants
 
-def createImproviseHouseBuilding4Env(simulator_base_env, config):
-  class ImproviseHouseBuilding3Env(simulator_base_env):
+def createImproviseHouseBuilding4DeconstructEnv(simulator_base_env, config):
+  class ImproviseHouseBuilding4DeconstructEnv(PyBulletDeconstructEnv):
     ''''''
     def __init__(self, config):
       config['check_random_obj_valid'] = True
@@ -19,15 +19,14 @@ def createImproviseHouseBuilding4Env(simulator_base_env, config):
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
-      self.base_1_objs = []
-      self.base_2_objs = []
 
     def step(self, action):
+      reward = 1.0 if self.checkStructure() else 0.0
       self.takeAction(action)
       self.wait(100)
       obs = self._getObservation(action)
-      done = self._checkTermination()
-      reward = 1.0 if done else 0.0
+      motion_primative, x, y, z, rot = self._decodeAction(action)
+      done = motion_primative and self._checkTermination()
 
       if not done:
         done = self.current_episode_steps >= self.max_steps or not self.isSimValid()
@@ -35,35 +34,31 @@ def createImproviseHouseBuilding4Env(simulator_base_env, config):
 
       return obs, reward, done
 
-    def generateBasePair(self):
-      scale1 = np.random.uniform(1, 2)
-      scale2 = 3-scale1
-      return self._generateShapes(constants.RANDOM, 1, random_orientation=self.random_orientation, z_scale=scale1) + \
-             self._generateShapes(constants.RANDOM, 1, random_orientation=self.random_orientation, z_scale=scale2)
-
     def reset(self):
       ''''''
-      while True:
-        super(ImproviseHouseBuilding3Env, self).reset()
-        try:
-          self._generateShapes(constants.ROOF, 1, random_orientation=self.random_orientation)
-          self.base_1_objs = self.generateBasePair()
-          self.base_2_objs = self.generateBasePair()
-          for i in range(self.num_obj-5):
-            self._generateShapes(constants.RANDOM, 1, random_orientation=self.random_orientation, z_scale=np.random.uniform(1, 2))
+      super(ImproviseHouseBuilding4DeconstructEnv, self).reset()
+      self.generateImproviseH4()
 
-        except:
-          continue
-        else:
-          break
+      while not self.checkStructure():
+        super(ImproviseHouseBuilding4DeconstructEnv, self).reset()
+        self.generateImproviseH4()
+
       return self._getObservation()
 
     def _checkTermination(self):
+      obj_combs = combinations(self.objects, 2)
+      for (obj1, obj2) in obj_combs:
+        dist = np.linalg.norm(np.array(obj1.getXYPosition()) - np.array(obj2.getXYPosition()))
+        if dist < 2.7*self.min_block_size:
+          return False
+      return True
+
+    def checkStructure(self):
       rand_objs = list(filter(lambda x: self.object_types[x] == constants.RANDOM, self.objects))
       roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
-      if roofs[0].getZPosition() < 1.8*self.min_block_size:
+      if roofs[0].getZPosition() < 1.8 * self.min_block_size:
         return False
-      if not self._checkObjUpright(roofs[0], threshold=np.pi/20):
+      if not self._checkObjUpright(roofs[0], threshold=np.pi / 20):
         return False
 
       rand_obj_combs = combinations(rand_objs, 2)
@@ -77,6 +72,6 @@ def createImproviseHouseBuilding4Env(simulator_base_env, config):
       return self._checkObjUpright(roofs[0]) and super().isSimValid()
 
   def _thunk():
-    return ImproviseHouseBuilding3Env(config)
+    return ImproviseHouseBuilding4DeconstructEnv(config)
 
   return _thunk
