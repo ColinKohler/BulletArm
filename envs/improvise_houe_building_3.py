@@ -12,6 +12,9 @@ def createImproviseHouseBuilding3Env(simulator_base_env, config):
       config['check_random_obj_valid'] = True
       if simulator_base_env is PyBulletEnv:
         super().__init__(config)
+        self.block_scale_range = (0.6, 0.6)
+        self.min_block_size = self.block_original_size * self.block_scale_range[0]
+        self.max_block_size = self.block_original_size * self.block_scale_range[1]
       else:
         raise ValueError('Bad simulator base env specified.')
       self.simulator_base_env = simulator_base_env
