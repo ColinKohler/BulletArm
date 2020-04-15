@@ -47,7 +47,7 @@ class ImproviseHouseBuilding3DeconstructPlanner(BlockStructureBasePlanner):
 
   def getPickingAction(self):
     if self.env.checkStructure():
-      self.objs_to_remove = [o for o in self.env.objects]
+      self.objs_to_remove = [o for o in self.env.structure_objs]
     if not self.objs_to_remove:
       return self.pickTallestObjOnTop()
     return self.pickTallestObjOnTop(self.objs_to_remove)

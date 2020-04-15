@@ -11,7 +11,7 @@ class PyBulletDeconstructEnv(PyBulletEnv):
   def __init__(self, config):
     super().__init__(config)
     self.pick_offset = -0.007
-    self.base_objs = []
+    self.structure_objs = []
 
   def _getObservation(self, action=None):
     ''''''
@@ -32,7 +32,7 @@ class PyBulletDeconstructEnv(PyBulletEnv):
 
   def reset(self):
     super().reset()
-    self.base_objs = []
+    self.structure_objs = []
 
   def generateImproviseH3(self):
     lower_z1 = 0.01
@@ -48,7 +48,7 @@ class PyBulletDeconstructEnv(PyBulletEnv):
                                                    zscale)
       self.objects.append(handle)
       self.object_types[handle] = constants.RANDOM
-      self.base_objs.append(handle)
+      self.structure_objs.append(handle)
 
     padding = self.max_block_size * 1.5
     pos1 = self._getValidPositions(padding, 0, [], 1)[0]
@@ -105,6 +105,7 @@ class PyBulletDeconstructEnv(PyBulletEnv):
                                        npr.uniform(self.block_scale_range[0], self.block_scale_range[1]))
     self.objects.append(h)
     self.object_types[h] = constants.ROOF
+    self.structure_objs.append(h)
     self.wait(50)
 
   def generateImproviseH4(self):
@@ -118,7 +119,7 @@ class PyBulletDeconstructEnv(PyBulletEnv):
                                                    zscale)
       self.objects.append(handle)
       self.object_types[handle] = constants.RANDOM
-      self.base_objs.append(handle)
+      self.structure_objs.append(handle)
 
     padding = self.max_block_size * 1.5
     pos1 = self._getValidPositions(padding, 0, [], 1)[0]
@@ -160,6 +161,7 @@ class PyBulletDeconstructEnv(PyBulletEnv):
                                        npr.uniform(self.block_scale_range[0], self.block_scale_range[1]))
     self.objects.append(h)
     self.object_types[h] = constants.ROOF
+    self.structure_objs.append(h)
     self.wait(50)
 
 
