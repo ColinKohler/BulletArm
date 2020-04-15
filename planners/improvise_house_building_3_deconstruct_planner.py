@@ -13,6 +13,7 @@ from helping_hands_rl_envs.simulators import constants
 class ImproviseHouseBuilding3DeconstructPlanner(BlockStructureBasePlanner):
   def __init__(self, env, config):
     super(ImproviseHouseBuilding3DeconstructPlanner, self).__init__(env, config)
+    self.objs_to_remove = []
 
   def getStepLeft(self):
     return 100
@@ -31,8 +32,10 @@ class ImproviseHouseBuilding3DeconstructPlanner(BlockStructureBasePlanner):
     for obj, pose in zip(objects, object_poses):
       if self.isObjOnTop(obj):
         x, y, z, r = pose[0], pose[1], pose[2]+self.env.pick_offset, pose[5]
-        if obj in self.env.base_objs:
-          self.env.base_objs.remove(obj)
+        if obj in self.objs_to_remove:
+          self.objs_to_remove.remove(obj)
+        if self.env.object_types[obj] in [constants.ROOF, constants.TRIANGLE]:
+          side_grasp = True
         break
     if side_grasp:
       r += np.pi / 2
@@ -43,13 +46,11 @@ class ImproviseHouseBuilding3DeconstructPlanner(BlockStructureBasePlanner):
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
   def getPickingAction(self):
-    rand_objs = self.env.base_objs if len(self.env.base_objs)>0 else list(filter(lambda x: self.env.object_types[x] == constants.RANDOM, self.env.objects))
-    # rand_objs = list(filter(lambda x: self.env.object_types[x] == constants.RANDOM, self.env.objects))
-    roofs = list(filter(lambda x: self.env.object_types[x] == constants.ROOF, self.env.objects))
     if self.env.checkStructure():
-      return self.pickRandomObjOnTop(objects=roofs, side_grasp=True)
-    else:
-      return self.pickTallestObjOnTop(objects=rand_objs)
+      self.objs_to_remove = [o for o in self.env.objects]
+    if not self.objs_to_remove:
+      return self.pickTallestObjOnTop()
+    return self.pickTallestObjOnTop(self.objs_to_remove)
 
   def getPlacingAction(self):
     return self.placeOnGround(self.env.max_block_size * 2, self.env.max_block_size * 3)

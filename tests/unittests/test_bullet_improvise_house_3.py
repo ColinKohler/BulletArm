@@ -23,7 +23,7 @@ class TestBulletHouse2(unittest.TestCase):
   def testPlanner(self):
     self.env_config['render'] = False
 
-    env = env_factory.createEnvs(20, 'rl', 'pybullet', 'improvise_house_building_3', self.env_config, {})
+    env = env_factory.createEnvs(1, 'rl', 'pybullet', 'improvise_house_building_3', self.env_config, {})
     total = 0
     s = 0
     step_times = []

@@ -21,9 +21,9 @@ class TestBulletRandomPick(unittest.TestCase):
   # env = createHouseBuilding1Env(PyBulletEnv, env_config)()
 
   def testPlanner(self):
-    self.env_config['render'] = False
+    self.env_config['render'] = True
 
-    env = env_factory.createEnvs(10, 'rl', 'pybullet', 'random_picking', self.env_config, {})
+    env = env_factory.createEnvs(1, 'rl', 'pybullet', 'random_picking', self.env_config, {})
     total = 0
     s = 0
     step_times = []
