@@ -531,14 +531,9 @@ class PyBulletEnv(BaseEnv):
     for i, obj in enumerate(objects):
       if i == 0:
         continue
-      if self.object_types[obj] is constants.TRIANGLE:
-        if obj.getZPosition() - objects[i-1].getZPosition() < \
-            0.5*self.block_scale_range[0]*self.block_original_size:
-          return False
-      else:
-        if obj.getZPosition() - objects[i-1].getZPosition() < \
-            0.9*self.block_scale_range[0]*self.block_original_size:
-          return False
+      #TODO: not 100% sure about this
+      if not obj.isTouching(objects[i-1]):
+        return False
     return True
 
   def _checkPerfectGrasp(self, x, y, z, rot, objects):

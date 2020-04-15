@@ -18,6 +18,7 @@ from helping_hands_rl_envs.envs.improvise_house_building_4 import createImprovis
 from helping_hands_rl_envs.envs.improvise_houe_building_3_deconstruct import createImproviseHouseBuilding3DeconstructEnv
 from helping_hands_rl_envs.envs.improvise_house_building_4_deconstruct import createImproviseHouseBuilding4DeconstructEnv
 from helping_hands_rl_envs.envs.random_picking_env import createRandomPickingEnv
+from helping_hands_rl_envs.envs.random_stacking_env import createRandomStackingEnv
 
 from helping_hands_rl_envs.planners.planner_factory import createPlanner, AVAILABLE_PLANNER
 
@@ -84,6 +85,8 @@ def createEnvs(num_processes, runner_type, simulator, env_type, env_config, plan
     envs = [createImproviseHouseBuilding4DeconstructEnv(parent_env, env_configs[i]) for i in range(num_processes)]
   elif env_type == 'random_picking':
     envs = [createRandomPickingEnv(parent_env, env_configs[i]) for i in range(num_processes)]
+  elif env_type == 'random_stacking':
+    envs = [createRandomStackingEnv(parent_env, env_configs[i]) for i in range(num_processes)]
   else:
     raise ValueError('Invalid environment type passed to factory.')
 

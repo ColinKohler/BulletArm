@@ -6,7 +6,7 @@ import numpy.random as npr
 def createRandomPickingEnv(simulator_base_env, config):
   class RandomPickingEnv(simulator_base_env):
     def __init__(self, config):
-
+      config['check_random_obj_valid'] = True
       if simulator_base_env is PyBulletEnv:
         super().__init__(config)
       else:

@@ -14,7 +14,7 @@ from helping_hands_rl_envs.simulators import constants
 root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
 obj_pattern = os.path.join(root_dir, constants.URDF_PATH, 'random_urdfs/*/*.obj')
 found_object_directories = glob.glob(obj_pattern)
-found_object_directories = list(filter(lambda x: re.search(r'(002|005|027|032|059|066|070|075|080|083'
+found_object_directories = list(filter(lambda x: re.search(r'(002|005|027|032|066|075|083'
                                                            r'|116|118|131|137|142|143|149|154|176|187'
                                                            r'|199|200)\.obj', x),
                                        found_object_directories))
