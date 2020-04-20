@@ -53,4 +53,4 @@ class ImproviseHouseBuilding3DeconstructPlanner(BlockStructureBasePlanner):
     return self.pickTallestObjOnTop(self.objs_to_remove)
 
   def getPlacingAction(self):
-    return self.placeOnGround(self.env.max_block_size * 2, self.env.max_block_size * 3)
+    return self.placeOnGround(self.env.max_block_size * 2, self.env.max_block_size * 2.7)

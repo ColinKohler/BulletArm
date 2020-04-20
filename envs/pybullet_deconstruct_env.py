@@ -164,5 +164,24 @@ class PyBulletDeconstructEnv(PyBulletEnv):
     self.structure_objs.append(h)
     self.wait(50)
 
+  def generateH1(self):
+    padding = self.max_block_size * 1.5
+    pos = self._getValidPositions(padding, 0, [], 1)[0]
+    rot = pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()])
+    for i in range(self.num_obj-1):
+      handle = pb_obj_generation.generateCube((pos[0], pos[1], i*self.max_block_size+self.max_block_size/2),
+                                              rot,
+                                              npr.uniform(self.block_scale_range[0], self.block_scale_range[1]))
+      self.objects.append(handle)
+      self.object_types[handle] = constants.CUBE
+      self.structure_objs.append(handle)
+    handle = pb_obj_generation.generateTriangle(
+      (pos[0], pos[1], (self.num_obj-1) * self.max_block_size + self.max_block_size / 2),
+      rot,
+      npr.uniform(self.block_scale_range[0], self.block_scale_range[1]))
+    self.objects.append(handle)
+    self.object_types[handle] = constants.TRIANGLE
+    self.structure_objs.append(handle)
+    self.wait(50)
 
 
