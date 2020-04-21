@@ -34,7 +34,7 @@ class ImproviseHouseBuilding3DeconstructPlanner(BlockStructureBasePlanner):
         x, y, z, r = pose[0], pose[1], pose[2]+self.env.pick_offset, pose[5]
         if obj in self.objs_to_remove:
           self.objs_to_remove.remove(obj)
-        if self.env.object_types[obj] in [constants.ROOF, constants.TRIANGLE]:
+        if self.env.object_types[obj] in [constants.ROOF, constants.TRIANGLE, constants.BRICK]:
           side_grasp = True
         break
     if side_grasp:

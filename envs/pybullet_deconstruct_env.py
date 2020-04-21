@@ -184,4 +184,76 @@ class PyBulletDeconstructEnv(PyBulletEnv):
     self.structure_objs.append(handle)
     self.wait(50)
 
+  def generateObject(self, pos, rot, obj_type):
+    if obj_type == constants.CUBE:
+      handle = pb_obj_generation.generateCube(pos,
+                                              rot,
+                                              npr.uniform(self.block_scale_range[0], self.block_scale_range[1]))
+    elif obj_type == constants.BRICK:
+      handle = pb_obj_generation.generateBrick(pos,
+                                               rot,
+                                               npr.uniform(self.block_scale_range[0], self.block_scale_range[1]))
+    elif obj_type == constants.ROOF:
+      handle = pb_obj_generation.generateRoof(pos,
+                                              rot,
+                                              npr.uniform(self.block_scale_range[0], self.block_scale_range[1]))
+    elif obj_type == constants.TRIANGLE:
+      handle = pb_obj_generation.generateTriangle(pos,
+                                                  rot,
+                                                  npr.uniform(self.block_scale_range[0], self.block_scale_range[1]))
+    elif obj_type == constants.RANDOM:
+      handle = pb_obj_generation.generateRandomObj(pos,
+                                                   rot,
+                                                   npr.uniform(self.block_scale_range[0], self.block_scale_range[1]))
+    self.objects.append(handle)
+    self.object_types[handle] = obj_type
+    self.structure_objs.append(handle)
+
+  def generateH4(self):
+    padding = self.max_block_size * 1.5
+    pos1 = self._getValidPositions(padding, 0, [], 1)[0]
+    min_dist = 2.1 * self.max_block_size
+    max_dist = 2.2 * self.max_block_size
+    sample_range = [[pos1[0] - max_dist, pos1[0] + max_dist],
+                    [pos1[1] - max_dist, pos1[1] + max_dist]]
+    for i in range(100):
+      try:
+        pos2 = self._getValidPositions(padding, min_dist, [pos1], 1, sample_range=sample_range)[0]
+      except NoValidPositionException:
+        continue
+      dist = np.linalg.norm(np.array(pos1) - np.array(pos2))
+      if min_dist < dist < max_dist:
+        break
+
+    self.generateObject((pos1[0], pos1[1], self.max_block_size / 2),
+                        pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()]),
+                        constants.CUBE)
+
+    self.generateObject((pos2[0], pos2[1], self.max_block_size / 2),
+                        pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()]),
+                        constants.CUBE)
+
+    obj_positions = np.array([pos1, pos2])
+    slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(obj_positions[:, 0], obj_positions[:, 1])
+    x, y = obj_positions.mean(0)
+    r = np.arctan(slope)
+    while r > np.pi:
+      r -= np.pi
+
+    self.generateObject([x, y, self.max_block_size * 1.5],
+                        pb.getQuaternionFromEuler([0., 0., r]),
+                        constants.BRICK)
+
+    self.generateObject((pos1[0], pos1[1], self.max_block_size * 2.5),
+                        pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()]),
+                        constants.CUBE)
+
+    self.generateObject((pos2[0], pos2[1], self.max_block_size * 2.5),
+                        pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()]),
+                        constants.CUBE)
+
+    self.generateObject([x, y, self.max_block_size * 3.5],
+                        pb.getQuaternionFromEuler([0., 0., r]),
+                        constants.ROOF)
+    self.wait(50)
 

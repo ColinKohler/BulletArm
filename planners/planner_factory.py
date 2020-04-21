@@ -23,6 +23,7 @@ AVAILABLE_PLANNER = ['random',
                      'improvise_house_building_2',
                      'improvise_house_building_3',
                      'house_building_1_deconstruct',
+                     'house_building_4_deconstruct',
                      'improvise_house_building_3_deconstruct',
                      'improvise_house_building_4_deconstruct',
                      'random_picking',
@@ -54,6 +55,8 @@ def createPlanner(config):
   elif config['planner'] == 'improvise_house_building_3':
     return lambda env: ImproviseHouseBuilding3Planner(env, config)
   elif config['planner'] == 'house_building_1_deconstruct':
+    return lambda env: ImproviseHouseBuilding3DeconstructPlanner(env, config)
+  elif config['planner'] == 'house_building_4_deconstruct':
     return lambda env: ImproviseHouseBuilding3DeconstructPlanner(env, config)
   elif config['planner'] == 'improvise_house_building_3_deconstruct':
     return lambda env: ImproviseHouseBuilding3DeconstructPlanner(env, config)
