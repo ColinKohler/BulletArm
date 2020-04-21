@@ -7,7 +7,7 @@ from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 
 def createImproviseHouseBuilding4Env(simulator_base_env, config):
-  class ImproviseHouseBuilding3Env(simulator_base_env):
+  class ImproviseHouseBuilding4Env(simulator_base_env):
     ''''''
     def __init__(self, config):
       config['check_random_obj_valid'] = True
@@ -47,7 +47,7 @@ def createImproviseHouseBuilding4Env(simulator_base_env, config):
     def reset(self):
       ''''''
       while True:
-        super(ImproviseHouseBuilding3Env, self).reset()
+        super(ImproviseHouseBuilding4Env, self).reset()
         try:
           self._generateShapes(constants.ROOF, 1, random_orientation=self.random_orientation)
           self.base_1_objs = self.generateBasePair()
@@ -80,6 +80,6 @@ def createImproviseHouseBuilding4Env(simulator_base_env, config):
       return self._checkObjUpright(roofs[0]) and super().isSimValid()
 
   def _thunk():
-    return ImproviseHouseBuilding3Env(config)
+    return ImproviseHouseBuilding4Env(config)
 
   return _thunk

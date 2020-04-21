@@ -10,9 +10,9 @@ from helping_hands_rl_envs.planners.base_planner import BasePlanner
 from helping_hands_rl_envs.planners.block_structure_base_planner import BlockStructureBasePlanner
 from helping_hands_rl_envs.simulators import constants
 
-class ImproviseHouseBuilding3DeconstructPlanner(BlockStructureBasePlanner):
+class DeconstructPlanner(BlockStructureBasePlanner):
   def __init__(self, env, config):
-    super(ImproviseHouseBuilding3DeconstructPlanner, self).__init__(env, config)
+    super(DeconstructPlanner, self).__init__(env, config)
     self.objs_to_remove = []
 
   def getStepLeft(self):
