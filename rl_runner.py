@@ -60,6 +60,8 @@ def worker(remote, parent_remote, env_fn, planner_fn):
         remote.send(planner.getValue())
       elif cmd == 'get_step_left':
         remote.send(planner.getStepLeft())
+      elif cmd == 'get_empty_in_hand':
+        remote.send(env.getEmptyInHand())
       elif cmd == 'save_to_file':
         path = data
         env.saveEnvToFile(path)
@@ -273,6 +275,13 @@ class RLRunner(object):
   def setPosCandidate(self, pos_candidate):
     for remote in self.remotes:
       remote.send(('set_pos_candidate', pos_candidate))
+
+  def getEmptyInHand(self):
+    for remote in self.remotes:
+      remote.send(('get_empty_in_hand', None))
+    hand_obs = [remote.recv() for remote in self.remotes]
+    hand_obs = torch.from_numpy(np.stack(hand_obs)).float()
+    return hand_obs
 
   @staticmethod
   def getEnvGitHash():

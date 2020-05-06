@@ -229,7 +229,7 @@ class NumpyEnv(BaseEnv):
       in_hand_img = np.zeros((self.in_hand_size, self.in_hand_size, 1))
     else:
       motion_primative, x, y, z, rot = self._decodeAction(action)
-      in_hand_img = self.getInHandImage(old_heightmap, x, y, rot, self.heightmap)
+      in_hand_img = self.getInHandImage(old_heightmap, x, y, z, rot, self.heightmap)
 
     return self._isHolding(), in_hand_img, self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 

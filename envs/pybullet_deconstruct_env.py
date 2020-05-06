@@ -22,10 +22,10 @@ class PyBulletDeconstructEnv(PyBulletEnv):
     self.heightmap = image_arr[3] - np.min(image_arr[3])
 
     if action is None or self._isHolding() == True:
-      in_hand_img = np.zeros((self.in_hand_size, self.in_hand_size, 1))
+      in_hand_img = self.getEmptyInHand()
     else:
       motion_primative, x, y, z, rot = self._decodeAction(action)
-      in_hand_img = self.getInHandImage(self.heightmap, x, y, rot, old_heightmap)
+      in_hand_img = self.getInHandImage(self.heightmap, x, y, z, rot, old_heightmap)
 
 
     return self._isHolding(), in_hand_img, self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])

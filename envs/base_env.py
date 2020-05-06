@@ -187,7 +187,7 @@ class BaseEnv(object):
            p[1] > self.workspace[1][0] - 0.1 and p[1] < self.workspace[1][1] + 0.1 and \
            p[2] > self.workspace[2][0] and p[2] < self.workspace[2][1]
 
-  def getInHandImage(self, heightmap, x, y, rot, next_heightmap):
+  def getInHandImage(self, heightmap, x, y, z, rot, next_heightmap):
     # Pad heightmaps for grasps near the edges of the workspace
     heightmap = np.pad(heightmap, int(self.in_hand_size / 2), 'constant', constant_values=0.0)
     next_heightmap = np.pad(next_heightmap, int(self.in_hand_size / 2), 'constant', constant_values=0.0)
@@ -206,7 +206,7 @@ class BaseEnv(object):
 
     # Crop both heightmaps
     crop = heightmap[x_min:x_max, y_min:y_max]
-    if self.in_hand_mode == 'sub':
+    if self.in_hand_mode.find('sub') > -1:
       next_crop = next_heightmap[x_min:x_max, y_min:y_max]
 
       # Adjust the in-hand image to remove background objects
@@ -215,4 +215,29 @@ class BaseEnv(object):
 
     # end_effector rotate counter clockwise along z, so in hand img rotate clockwise
     crop = sk_transform.rotate(crop, np.rad2deg(-rot))
-    return crop.reshape((self.in_hand_size, self.in_hand_size, 1))
+
+    if self.in_hand_mode.find('proj') > -1:
+      return self.getInHandOccupancyGridProj(crop, z, rot)
+    else:
+      return crop.reshape((self.in_hand_size, self.in_hand_size, 1))
+
+  def getInHandOccupancyGridProj(self, crop, z, rot):
+    crop = np.round(crop, 5)
+
+    occupancy = np.zeros((self.in_hand_size, self.in_hand_size, self.in_hand_size))
+    for i in range(occupancy.shape[0]):
+      height = z+(self.in_hand_size/2-i)*self.heightmap_resolution
+      if height > 0:
+        occupancy[i] = crop > height
+      else:
+        occupancy[i] = np.zeros((self.in_hand_size, self.in_hand_size))
+
+    projection = np.stack((occupancy.sum(0), occupancy.sum(1), occupancy.sum(2)))
+    projection = np.rollaxis(projection, 0, 3)
+    return projection
+
+  def getEmptyInHand(self):
+    if self.in_hand_mode.find('proj') > -1:
+      return np.zeros((self.in_hand_size, self.in_hand_size, 3))
+    else:
+      return np.zeros((self.in_hand_size, self.in_hand_size, 1))
