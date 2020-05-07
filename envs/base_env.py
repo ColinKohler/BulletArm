@@ -224,13 +224,12 @@ class BaseEnv(object):
   def getInHandOccupancyGridProj(self, crop, z, rot):
     crop = np.round(crop, 5)
 
-    occupancy = np.zeros((self.in_hand_size, self.in_hand_size, self.in_hand_size))
-    for i in range(occupancy.shape[0]):
-      height = z+(self.in_hand_size/2-i)*self.heightmap_resolution
-      if height > 0:
-        occupancy[i] = crop > height
-      else:
-        occupancy[i] = np.zeros((self.in_hand_size, self.in_hand_size))
+    zs = np.array([z+(self.in_hand_size/2-i)*self.heightmap_resolution for i in range(self.in_hand_size)])
+    zs = zs.reshape((-1, 1, 1))
+    zs = zs.repeat(self.in_hand_size, 1).repeat(self.in_hand_size, 2)
+    zs[zs<self.heightmap_resolution] = 100
+    c = crop.reshape(1, self.in_hand_size, self.in_hand_size).repeat(self.in_hand_size, 0)
+    occupancy = c > zs
 
     projection = np.stack((occupancy.sum(0), occupancy.sum(1), occupancy.sum(2)))
     projection = np.rollaxis(projection, 0, 3)
