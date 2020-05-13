@@ -9,16 +9,19 @@ import helping_hands_rl_envs
 from helping_hands_rl_envs.simulators.pybullet.objects.pybullet_object import PybulletObject
 from helping_hands_rl_envs.simulators import constants
 
-class Cube(PybulletObject):
+class Cylinder(PybulletObject):
   def __init__(self, pos, rot, scale):
     root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
-    urdf_filepath = os.path.join(root_dir, constants.URDF_PATH, 'cube.urdf')
+    urdf_filepath = os.path.join(root_dir, constants.URDF_PATH, '8.urdf')
     object_id = pb.loadURDF(urdf_filepath, basePosition=pos, baseOrientation=rot, globalScaling=scale)
 
-    super(Cube, self).__init__(constants.CUBE, object_id)
+    super(Cylinder, self).__init__(constants.CUBE, object_id)
 
+    self.original_height = 0.025
     self.original_size = 0.05
-    self.size = 0.05 * scale
+
+    self.height = self.original_height * scale
+    self.size = self.original_size * scale
 
   def getHeight(self):
-    return self.size
+    return self.height

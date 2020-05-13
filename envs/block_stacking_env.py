@@ -14,6 +14,7 @@ def createBlockStackingEnv(simulator_base_env, config):
         raise ValueError('Bad simulator base env specified.')
 
       self.simulator_base_env = simulator_base_env
+      self.object_type = config['object_type'] if 'object_type' in config else 'cube'
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
@@ -34,7 +35,16 @@ def createBlockStackingEnv(simulator_base_env, config):
     def reset(self):
       ''''''
       super(BlockStackingEnv, self).reset()
-      self._generateShapes(constants.CUBE, self.num_obj, random_orientation=self.random_orientation)
+
+      # TODO: Move this to a utils file somewhere and set this in the init fn
+      if self.object_type == 'cube':
+        object_type = constants.CUBE
+      elif self.object_type == 'cylinder':
+        object_type = constants.CYLINDER
+      else:
+        raise ValueError('Invalid object type specified. Must be \'cube\' or \'cylinder\'')
+
+      self._generateShapes(object_type, self.num_obj, random_orientation=self.random_orientation)
       return self._getObservation()
 
     def _checkTermination(self):

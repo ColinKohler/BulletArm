@@ -327,16 +327,24 @@ class PyBulletEnv(BaseEnv):
         padding = self.max_block_size * 1.5
       elif shape_type == constants.BRICK:
         padding = self.max_block_size * 3.4
+      elif shape_type == constants.CYLINDER:
+        padding = self.max_block_size * 1.5
       elif shape_type == constants.ROOF:
         padding = self.max_block_size * 3.4
+      else:
+        raise ValueError('Attempted to generate invalid shape.')
 
     if min_distance is None:
       if shape_type == constants.CUBE or shape_type == constants.TRIANGLE:
         min_distance = self.max_block_size * 2.4
       elif shape_type == constants.BRICK:
         min_distance = self.max_block_size * 3.4
+      elif shape_type == constants.CYLINDER:
+        min_distance = self.max_block_size * 2.4
       elif shape_type == constants.ROOF:
         min_distance = self.max_block_size * 3.4
+      else:
+        raise ValueError('Attempted to generate invalid shape.')
 
     shape_handles = list()
     positions = [o.getXYPosition() for o in self.objects]
@@ -358,6 +366,8 @@ class PyBulletEnv(BaseEnv):
         handle = pb_obj_generation.generateCube(position, orientation, scale)
       elif shape_type == constants.BRICK:
         handle = pb_obj_generation.generateBrick(position, orientation, scale)
+      elif shape_type == constants.CYLINDER:
+        handle = pb_obj_generation.generateCylinder(position, orientation, scale)
       elif shape_type == constants.TRIANGLE:
         handle = pb_obj_generation.generateTriangle(position, orientation, scale)
       elif shape_type == constants.ROOF:
@@ -472,14 +482,9 @@ class PyBulletEnv(BaseEnv):
     for i, obj in enumerate(objects):
       if i == 0:
         continue
-      if self.object_types[obj] is constants.TRIANGLE:
-        if obj.getZPosition() - objects[i-1].getZPosition() < \
-            0.5*self.block_scale_range[0]*self.block_original_size:
-          return False
-      else:
-        if obj.getZPosition() - objects[i-1].getZPosition() < \
-            0.9*self.block_scale_range[0]*self.block_original_size:
-          return False
+      #TODO: not 100% sure about this
+      if not obj.isTouching(objects[i-1]):
+        return False
     return True
 
   def _checkPerfectGrasp(self, x, y, z, rot, objects):

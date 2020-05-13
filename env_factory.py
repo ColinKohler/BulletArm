@@ -86,7 +86,9 @@ def createEnvs(num_processes, runner_type, simulator, env_type, env_config, plan
   else:
     raise ValueError('Invalid environment type passed to factory.')
 
-  if env_type in AVAILABLE_PLANNER:
+  if 'planner_type' in planner_config:
+    planner_type = planner_config['planner_type']
+  elif env_type in AVAILABLE_PLANNER:
     planner_type = env_type
   else:
     planner_type = 'random'

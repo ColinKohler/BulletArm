@@ -19,3 +19,12 @@ class PlayPlanner(BasePlanner):
     if self.rot_noise: rot = self.addNoiseToRot(rot)
 
     return self.env._encodeAction(primative, x, y, z, r)
+
+  # TODO: This is for block stacking so its weird to have this here
+  def getStepsLeft(self):
+    if not self.isSimValid():
+      return 100
+    step_left = 2 * (self.getNumTopBlock() - 1)
+    if self.isHolding():
+      step_left -= 1
+    return step_left

@@ -31,7 +31,7 @@ class BaseEnv(object):
 
     # Setup heightmap
     self.heightmap_size = heightmap_size
-    self.in_hand_size = 24
+    self.in_hand_size = 32
     self.heightmap_shape = (self.heightmap_size, self.heightmap_size, 1)
     self.heightmap_resolution = self.workspace_size / self.heightmap_size
 
