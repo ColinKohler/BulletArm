@@ -15,6 +15,8 @@ def createMultiTaskEnv(simulator_base_env, configs):
         elif config['env_type'] == 'block_adjacent':
           self.envs.append(createBlockAdjacentEnv(simulator_base_env, config)())
           self.env_types.append('block_adjacent')
+        else:
+          raise ValueError('Env type not implemented in Multi-task env.')
 
       self.active_env_id = 0
       # TODO: This second env type list is probably not needed

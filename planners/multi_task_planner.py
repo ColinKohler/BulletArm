@@ -18,6 +18,8 @@ class MultiTaskPlanner(object):
         self.planners.append(BlockAdjacentPlanner(env.envs[i], config))
       elif config['planner_type'] == 'play':
         self.planners.append(PlayPlanner(env.envs[i], config))
+      else:
+        raise ValueError('Planner type not implemented in Multi-task planner')
 
   def getNextAction(self):
     return self.planners[self.env.active_env_id].getNextAction()
