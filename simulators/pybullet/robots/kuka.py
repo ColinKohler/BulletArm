@@ -132,7 +132,7 @@ class Kuka(RobotBase):
     return True
 
   def _calculateIK(self, pos, rot):
-    return pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)[:7]
+    return pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot, maxNumIterations=50)[:7]
 
   def _getGripperJointPosition(self):
     p1 = -pb.getJointState(self.id, 8)[0]

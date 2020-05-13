@@ -61,7 +61,8 @@ class RobotBase:
     # Setup pre-grasp pos and default orientation
     self.openGripper()
     pre_pos = copy.copy(pos)
-    pre_pos[2] += offset
+    m = np.array(pb.getMatrixFromQuaternion(rot)).reshape(3, 3)
+    pre_pos -= m[:, 2] * offset
     # rot = pb.getQuaternionFromEuler([np.pi/2.,-np.pi,np.pi/2])
     pre_rot = rot
 
@@ -92,7 +93,8 @@ class RobotBase:
     ''''''
     # Setup pre-grasp pos and default orientation
     pre_pos = copy.copy(pos)
-    pre_pos[2] += offset
+    m = np.array(pb.getMatrixFromQuaternion(rot)).reshape(3, 3)
+    pre_pos -= m[:, 2] * offset
     pre_rot = rot
 
     # Move to pre-grasp pose and then grasp pose
