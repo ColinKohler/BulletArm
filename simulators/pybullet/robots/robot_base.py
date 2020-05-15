@@ -81,13 +81,13 @@ class RobotBase:
         for i in range(10):
           pb.stepSimulation()
         self.holding_obj = self.getPickedObj(objects)
+      self.moveToJ(self.home_positions_joint, dynamic)
+      self.checkGripperClosed()
 
     else:
       self.moveTo(pos, rot, dynamic)
       self.holding_obj = self.getPickedObj(objects)
-
-    self.moveToJ(self.home_positions_joint, dynamic)
-    self.checkGripperClosed()
+      self.moveToJ(self.home_positions_joint, dynamic)
 
   def place(self, pos, rot, offset, dynamic=True, simulate_grasp=True):
     ''''''
@@ -196,6 +196,17 @@ class RobotBase:
     obj_rot_ = transformations.quaternion_from_matrix(oTobj_)
 
     self.holding_obj.resetPose(obj_pos_, obj_rot_)
+
+  def getEndToHoldingObj(self):
+    if not self.holding_obj:
+      return None
+    end_pos = self._getEndEffectorPosition()
+    end_rot = self._getEndEffectorRotation()
+    obj_pos, obj_rot = self.holding_obj.getPose()
+    oTend = pybullet_util.getMatrix(end_pos, end_rot)
+    oTobj = pybullet_util.getMatrix(obj_pos, obj_rot)
+    endTobj = np.linalg.inv(oTend).dot(oTobj)
+    return endTobj
 
   def _teleportArmWithObjJointPose(self, joint_pose):
     if not self.holding_obj:

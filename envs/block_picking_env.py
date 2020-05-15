@@ -67,8 +67,8 @@ def createBlockPickingEnv(simulator_base_env, config):
           return False
       return False
 
-    def _getObservation(self):
-      state, in_hand, obs = super(BlockPickingEnv, self)._getObservation()
+    def _getObservation(self, action=None):
+      state, in_hand, obs = super(BlockPickingEnv, self)._getObservation(action)
       return 0, in_hand, obs
 
   def _thunk():

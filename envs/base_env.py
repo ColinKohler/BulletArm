@@ -1,5 +1,6 @@
 import numpy as np
 import numpy.random  as npr
+from scipy.ndimage import median_filter
 import skimage.transform as sk_transform
 
 from helping_hands_rl_envs.simulators import constants
@@ -83,10 +84,52 @@ class BaseEnv(object):
     x = action[x_idx]
     y = action[y_idx]
     z = action[z_idx] if z_idx != -1 else self._getPrimativeHeight(motion_primative, x, y)
-    rot = action[rot_idx] if rot_idx != -1 else 0
+    rz, ry, rx = 0, np.pi, 0
+    if self.action_sequence.count('r') <= 1:
+      rz = action[rot_idx] if rot_idx != -1 else 0
+      ry = np.pi
+      rx = 0
+    elif self.action_sequence.count('r') == 2:
+      rz = action[rot_idx]
+      ry = np.pi
+      rx = action[rot_idx+1]
+    elif self.action_sequence.count('r') == 3:
+      rz = action[rot_idx]
+      ry = action[rot_idx + 1]
+      rx = action[rot_idx + 2]
+
+    # [-pi, 0] is easier for the arm(kuka) to execute
+    # while rz < -np.pi:
+    #   rz += np.pi
+    # while rz > 0:
+    #   rz -= np.pi
+    rot = (rx, ry, rz)
+
     return motion_primative, x, y, z, rot
 
   def _encodeAction(self, primitive, x, y, z, r):
+    if hasattr(r, '__len__'):
+      assert len(r) in [1, 2, 3]
+      if len(r) == 1:
+        rz = r[0]
+        ry = np.pi
+        rx = 0
+      elif len(r) == 2:
+        rz = r[0]
+        ry = np.pi
+        rx = r[1]
+      else:
+        rz = r[0]
+        ry = r[1]
+        rx = r[2]
+    else:
+      rz = r
+      ry = np.pi
+      rx = 0
+    while rz > np.pi * 2:
+      rz -= np.pi * 2
+    while rz < 0:
+      rz += np.pi * 2
     primitive_idx, x_idx, y_idx, z_idx, rot_idx = map(lambda a: self.action_sequence.find(a),
                                                       ['p', 'x', 'y', 'z', 'r'])
     action = np.zeros(len(self.action_sequence), dtype=np.float)
@@ -99,7 +142,16 @@ class BaseEnv(object):
     if z_idx != -1:
       action[z_idx] = z
     if rot_idx != -1:
-      action[rot_idx] = r
+      if self.action_sequence.count('r') == 1:
+        action[rot_idx] = rz
+      elif self.action_sequence.count('r') == 2:
+        action[rot_idx] = rz
+        action[rot_idx+1] = rx
+      elif self.action_sequence.count('r') == 3:
+        action[rot_idx] = rz
+        action[rot_idx+1] = ry
+        action[rot_idx+2] = rx
+
     return action
 
   def _checkTermination(self):
@@ -188,6 +240,7 @@ class BaseEnv(object):
            p[2] > self.workspace[2][0] and p[2] < self.workspace[2][1]
 
   def getInHandImage(self, heightmap, x, y, z, rot, next_heightmap):
+    (rx, ry, rz) = rot
     # Pad heightmaps for grasps near the edges of the workspace
     heightmap = np.pad(heightmap, int(self.in_hand_size / 2), 'constant', constant_values=0.0)
     next_heightmap = np.pad(next_heightmap, int(self.in_hand_size / 2), 'constant', constant_values=0.0)
@@ -214,7 +267,7 @@ class BaseEnv(object):
       crop[crop >= next_max] -= next_max
 
     # end_effector rotate counter clockwise along z, so in hand img rotate clockwise
-    crop = sk_transform.rotate(crop, np.rad2deg(-rot))
+    crop = sk_transform.rotate(crop, np.rad2deg(-rz))
 
     if self.in_hand_mode.find('proj') > -1:
       return self.getInHandOccupancyGridProj(crop, z, rot)
@@ -222,14 +275,34 @@ class BaseEnv(object):
       return crop.reshape((self.in_hand_size, self.in_hand_size, 1))
 
   def getInHandOccupancyGridProj(self, crop, z, rot):
+    rx, ry, rz = rot
+    # crop = zoom(crop, 2)
     crop = np.round(crop, 5)
+    size = self.in_hand_size
 
-    zs = np.array([z+(self.in_hand_size/2-i)*self.heightmap_resolution for i in range(self.in_hand_size)])
+    zs = np.array([z+(size/2-i)*(self.heightmap_resolution) for i in range(size)])
     zs = zs.reshape((-1, 1, 1))
-    zs = zs.repeat(self.in_hand_size, 1).repeat(self.in_hand_size, 2)
-    zs[zs<self.heightmap_resolution] = 100
-    c = crop.reshape(1, self.in_hand_size, self.in_hand_size).repeat(self.in_hand_size, 0)
-    occupancy = c > zs
+    zs = zs.repeat(size, 1).repeat(size, 2)
+    zs[zs<-(self.heightmap_resolution)] = 100
+    c = crop.reshape(1, size, size).repeat(size, 0)
+    ori_occupancy = c > zs
+
+    # transform into points
+    point = np.argwhere(ori_occupancy)
+    # center
+    point = point - size/2
+    R = np.array([[np.cos(-rx), 0, np.sin(-rx)],
+                  [0, 1, 0],
+                  [-np.sin(-rx), 0, np.cos(-rx)]])
+    point = R.dot(point.T)
+    point = point + size/2
+    point = np.round(point).astype(int)
+    point = point.T[(point.T < size).all(1)].T
+
+    occupancy = np.zeros((size, size, size))
+    occupancy[point[0], point[1], point[2]] = 1
+    occupancy = median_filter(occupancy, size=2)
+    occupancy = np.ceil(occupancy)
 
     projection = np.stack((occupancy.sum(0), occupancy.sum(1), occupancy.sum(2)))
     projection = np.rollaxis(projection, 0, 3)

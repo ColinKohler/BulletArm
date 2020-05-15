@@ -21,6 +21,8 @@ from helping_hands_rl_envs.envs.improvise_house_building_3_deconstruct_env impor
 from helping_hands_rl_envs.envs.improvise_house_building_4_deconstruct_env import createImproviseHouseBuilding4DeconstructEnv
 from helping_hands_rl_envs.envs.random_picking_env import createRandomPickingEnv
 from helping_hands_rl_envs.envs.random_stacking_env import createRandomStackingEnv
+from helping_hands_rl_envs.envs.random_float_picking_env import createRandomFloatPickingEnv
+from helping_hands_rl_envs.envs.cube_float_picking_env import createCubeFloatPickingEnv
 
 from helping_hands_rl_envs.planners.planner_factory import createPlanner, AVAILABLE_PLANNER
 
@@ -93,6 +95,10 @@ def createEnvs(num_processes, runner_type, simulator, env_type, env_config, plan
     envs = [createRandomPickingEnv(parent_env, env_configs[i]) for i in range(num_processes)]
   elif env_type == 'random_stacking':
     envs = [createRandomStackingEnv(parent_env, env_configs[i]) for i in range(num_processes)]
+  elif env_type == 'random_float_picking':
+    envs = [createRandomFloatPickingEnv(parent_env, env_configs[i]) for i in range(num_processes)]
+  elif env_type == 'cube_float_picking':
+    envs = [createCubeFloatPickingEnv(parent_env, env_configs[i]) for i in range(num_processes)]
   else:
     raise ValueError('Invalid environment type passed to factory.')
 

@@ -237,12 +237,7 @@ class PyBulletEnv(BaseEnv):
 
     # Get transform for action
     pos = [x, y, z]
-    # [-pi, 0] is easier for the arm(kuka) to execute
-    while rot < -np.pi:
-      rot += np.pi
-    while rot > 0:
-      rot -= np.pi
-    rot_q = pb.getQuaternionFromEuler([0, np.pi, rot])
+    rot_q = pb.getQuaternionFromEuler(rot)
 
     # Take action specfied by motion primative
     if motion_primative == constants.PICK_PRIMATIVE:
@@ -368,6 +363,13 @@ class PyBulletEnv(BaseEnv):
     else:
       raise NoValidPositionException
 
+  def _getInitializeOrientation(self, random_orientation):
+    if random_orientation:
+      orientation = pb.getQuaternionFromEuler([0, 0, 2 * np.pi * np.random.random_sample()])
+    else:
+      orientation = pb.getQuaternionFromEuler([0., 0., np.pi / 2])
+    return orientation
+
   def _generateShapes(self, shape_type=0, num_shapes=1, scale=None, pos=None, rot=None,
                            min_distance=None, padding=None, random_orientation=False, z_scale=1):
     ''''''
@@ -395,11 +397,8 @@ class PyBulletEnv(BaseEnv):
       return None
 
     for position in valid_positions:
-      position.append(0.05)
-      if random_orientation:
-        orientation = pb.getQuaternionFromEuler([0., 0., 2*np.pi*np.random.random_sample()])
-      else:
-        orientation = pb.getQuaternionFromEuler([0., 0., np.pi / 2])
+      position.append(0.03)
+      orientation = self._getInitializeOrientation(random_orientation)
       if not scale:
         scale = npr.uniform(self.block_scale_range[0], self.block_scale_range[1])
 
@@ -473,8 +472,9 @@ class PyBulletEnv(BaseEnv):
 
   def _removeObject(self, obj):
     if obj in self.objects:
-      # pb.removeBody(obj)
-      self._moveObjectOutWorkspace(obj)
+      pb.removeBody(obj.object_id)
+      # self._moveObjectOutWorkspace(obj)
+      self.objects.remove(obj)
       self.robot.openGripper()
 
   def _moveObjectOutWorkspace(self, obj):
@@ -627,10 +627,10 @@ class PyBulletEnv(BaseEnv):
     rot = list(pb.getEulerFromQuaternion(rot))
 
     # TODO: This normalization should be improved
-    while rot[2] < 0:
-      rot[2] += np.pi
-    while rot[2] > np.pi:
-      rot[2] -= np.pi
+    # while rot[2] < 0:
+    #   rot[2] += np.pi
+    # while rot[2] > np.pi:
+    #   rot[2] -= np.pi
 
     return rot
 

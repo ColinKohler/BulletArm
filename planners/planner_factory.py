@@ -10,6 +10,7 @@ from helping_hands_rl_envs.planners.house_building_4_planner import HouseBuildin
 from helping_hands_rl_envs.planners.improvise_house_building_2_planner import ImproviseHouseBuilding2Planner
 from helping_hands_rl_envs.planners.improvise_house_building_3_planner import ImproviseHouseBuilding3Planner
 from helping_hands_rl_envs.planners.deconstruct_planner import DeconstructPlanner
+from helping_hands_rl_envs.planners.float_picking_planner import FloatPickingPlanner
 
 AVAILABLE_PLANNER = ['random',
                      'play',
@@ -27,7 +28,9 @@ AVAILABLE_PLANNER = ['random',
                      'improvise_house_building_3_deconstruct',
                      'improvise_house_building_4_deconstruct',
                      'random_picking',
-                     'random_stacking']
+                     'random_stacking',
+                     'random_float_picking',
+                     'cube_float_picking']
 
 def createPlanner(config):
   if 'planner_noise' not in config: config['planner_noise'] = None
@@ -66,3 +69,7 @@ def createPlanner(config):
     return lambda env: BlockPickingPlanner(env, config)
   elif config['planner'] == 'random_stacking':
     return lambda env: BlockStackingPlanner(env, config)
+  elif config['planner'] == 'random_float_picking':
+    return lambda env: FloatPickingPlanner(env, config)
+  elif config['planner'] == 'cube_float_picking':
+    return lambda env: FloatPickingPlanner(env, config)

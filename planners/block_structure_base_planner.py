@@ -62,10 +62,7 @@ class BlockStructureBasePlanner(BasePlanner):
         break
     if side_grasp:
       r += np.pi / 2
-      while r < 0:
-        r += np.pi
-      while r > np.pi:
-        r -= np.pi
+
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
   def pickSecondTallestObjOnTop(self, objects=None, side_grasp=False):
@@ -85,10 +82,7 @@ class BlockStructureBasePlanner(BasePlanner):
         break
     if side_grasp:
       r += np.pi / 2
-      while r < 0:
-        r += np.pi
-      while r > np.pi:
-        r -= np.pi
+
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
   def pickShortestObjOnTop(self, objects=None, side_grasp=False):
@@ -108,10 +102,7 @@ class BlockStructureBasePlanner(BasePlanner):
         break
     if side_grasp:
       r += np.pi / 2
-      while r < 0:
-        r += np.pi
-      while r > np.pi:
-        r -= np.pi
+
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
   def pickRandomObjOnTop(self, objects=None, side_grasp=False):
@@ -126,10 +117,7 @@ class BlockStructureBasePlanner(BasePlanner):
         break
     if side_grasp:
       r += np.pi / 2
-      while r < 0:
-        r += np.pi
-      while r > np.pi:
-        r -= np.pi
+
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
   def placeOnHighestObj(self, objects=None, side_place=False):
@@ -147,10 +135,7 @@ class BlockStructureBasePlanner(BasePlanner):
         break
     if side_place:
       r += np.pi / 2
-      while r < 0:
-        r += np.pi
-      while r > np.pi:
-        r -= np.pi
+
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def placeOnGround(self, padding_dist, min_dist):
@@ -196,8 +181,7 @@ class BlockStructureBasePlanner(BasePlanner):
     r = np.arctan(slope)
     if not side_place:
       r += np.pi / 2
-    while r > np.pi:
-      r -= np.pi
+
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def placeOnTopOfMultiple(self, bottom_objs):
@@ -211,8 +195,7 @@ class BlockStructureBasePlanner(BasePlanner):
     x, y, z = obj_positions.mean(0)
     z += +self.env.place_offset
     r = np.arctan(slope) + np.pi / 2
-    while r > np.pi:
-      r -= np.pi
+
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def placeOn(self, bottom_obj, bottom_obj_length, num_slots=2):
@@ -248,8 +231,7 @@ class BlockStructureBasePlanner(BasePlanner):
 
     z = bottom_pos[2] + self.env.place_offset
     r = bottom_rot + np.pi / 2
-    while r > np.pi:
-      r -= np.pi
+
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def getSortedObjPoses(self, roll=False, objects=None, ascend=False):
