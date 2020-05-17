@@ -121,19 +121,21 @@ class PyBulletEnv(BaseEnv):
     self.state = {}
     self.pb_state = None
 
-    self.initialize()
+    self.initialized = False
 
     self.num_random_objects = num_random_objects
     self.check_random_obj_valid = check_random_obj_valid
 
     self.episode_count = 0
 
+    self.gravity = (0, 0, -10)
+
   def initialize(self):
     ''''''
     pb.resetSimulation()
     pb.setTimeStep(self._timestep)
 
-    pb.setGravity(0, 0, -10)
+    pb.setGravity(*self.gravity)
     self.table_id = pb.loadURDF('plane.urdf', [0,0,0])
 
     # Load the UR5 and set it to the home positions
@@ -153,6 +155,9 @@ class PyBulletEnv(BaseEnv):
     return self._getObservation()
 
   def reset(self):
+    if not self.initialized:
+      self.initialize()
+      self.initialized = True
     self.episode_count += 1
     if self.episode_count >= 1000:
       self.initialize()

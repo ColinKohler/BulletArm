@@ -199,7 +199,7 @@ class RobotBase:
 
   def getEndToHoldingObj(self):
     if not self.holding_obj:
-      return None
+      return np.zeros((4, 4))
     end_pos = self._getEndEffectorPosition()
     end_rot = self._getEndEffectorRotation()
     obj_pos, obj_rot = self.holding_obj.getPose()

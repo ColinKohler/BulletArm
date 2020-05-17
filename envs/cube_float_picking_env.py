@@ -1,6 +1,7 @@
 from copy import deepcopy
 import pybullet as pb
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.simulators.pybullet.robots.kuka_float_pick import KukaFloatPick
 from helping_hands_rl_envs.simulators import constants
 import numpy.random as npr
 import numpy as np
@@ -18,10 +19,10 @@ def createCubeFloatPickingEnv(simulator_base_env, config):
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
       self.obj_grasped = 0
-      self.obj_succeed = 0
       self.rx_range = (-np.pi/4, np.pi/4)
+      self.robot = KukaFloatPick()
 
-      pb.setGravity(0, 0, 0)
+      self.gravity = (0, 0, 0)
 
     def _getInitializeOrientation(self, random_orientation):
       if random_orientation:
@@ -33,15 +34,15 @@ def createCubeFloatPickingEnv(simulator_base_env, config):
       return orientation
 
     def step(self, action):
-      pre_obj_succeed = self.obj_succeed
+      pre_obj_grasped = self.obj_grasped
       self.takeAction(action)
       self.wait(100)
       obs = self._getObservation(action)
       done = self._checkTermination()
       if self.reward_type == 'dense':
-        reward = 1.0 if self.obj_succeed > pre_obj_succeed else 0.0
+        reward = 1.0 if self.obj_grasped > pre_obj_grasped else 0.0
       else:
-        reward = 1.0 if self.obj_succeed == self.num_obj else 0.0
+        reward = 1.0 if done else 0.0
 
       if not done:
         done = self.current_episode_steps >= self.max_steps or not self.isSimValid()
@@ -55,13 +56,12 @@ def createCubeFloatPickingEnv(simulator_base_env, config):
         super(CubeFloatPickingEnv, self).reset()
         try:
           for i in range(self.num_obj):
-            self._generateShapes(constants.CUBE, 1, random_orientation=self.random_orientation, z_scale=npr.choice([1, 2], p=[0.75, 0.25]))
+            self._generateShapes(constants.CUBE, 1, random_orientation=self.random_orientation, padding=self.max_block_size*3)
         except:
           continue
         else:
           break
       self.obj_grasped = 0
-      self.obj_succeed = 0
       return self._getObservation()
 
     def saveState(self):
@@ -77,10 +77,6 @@ def createCubeFloatPickingEnv(simulator_base_env, config):
       for obj in self.objects:
         if self._isObjectHeld(obj):
           self.obj_grasped += 1
-          endToObj = self.robot.getEndToHoldingObj()
-          endToObj = np.abs(endToObj)
-          if endToObj is not None and (endToObj.max(1) > 0.98).all():
-            self.obj_succeed += 1
           self._removeObject(obj)
           if self.obj_grasped == self.num_obj:
             return True
@@ -89,7 +85,7 @@ def createCubeFloatPickingEnv(simulator_base_env, config):
 
     def _getObservation(self, action=None):
       state, in_hand, obs = super(CubeFloatPickingEnv, self)._getObservation(action)
-      return 0, in_hand, obs
+      return 0, np.zeros_like(in_hand), obs
 
   def _thunk():
     return CubeFloatPickingEnv(config)
