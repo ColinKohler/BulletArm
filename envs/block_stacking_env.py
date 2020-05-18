@@ -33,8 +33,14 @@ def createBlockStackingEnv(simulator_base_env, config):
 
     def reset(self):
       ''''''
-      super(BlockStackingEnv, self).reset()
-      self._generateShapes(constants.CUBE, self.num_obj, random_orientation=self.random_orientation)
+      while True:
+        super(BlockStackingEnv, self).reset()
+        try:
+          self._generateShapes(constants.CUBE, self.num_obj, random_orientation=self.random_orientation)
+        except Exception as e:
+          continue
+        else:
+          break
       return self._getObservation()
 
     def _checkTermination(self):
