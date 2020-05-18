@@ -19,7 +19,7 @@ def createCubeFloatPickingEnv(simulator_base_env, config):
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
       self.obj_grasped = 0
-      self.rx_range = (-np.pi/4, np.pi/4)
+      self.rx_range = (-np.pi/8, np.pi/8)
       self.robot = KukaFloatPick()
 
       self.gravity = (0, 0, 0)
