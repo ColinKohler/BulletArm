@@ -9,7 +9,7 @@ from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 
 from helping_hands_rl_envs import env_factory
 
-class TestBulletRandomPick(unittest.TestCase):
+class TestBulletRandomFloatPick(unittest.TestCase):
   workspace = np.asarray([[0.35, 0.65],
                           [-0.15, 0.15],
                           [0, 0.50]])
@@ -21,9 +21,14 @@ class TestBulletRandomPick(unittest.TestCase):
   # env = createHouseBuilding1Env(PyBulletEnv, env_config)()
 
   def testPlanner(self):
-    self.env_config['render'] = True
+    self.env_config['render'] = False
+    self.env_config['reward_type'] = 'sparse'
+    self.env_config['random_orientation'] = True
+    self.env_config['num_objects'] = 5
+    self.env_config['action_sequence'] = 'xyzrp'
+    self.env_config['in_hand_mode'] = 'proj'
 
-    env = env_factory.createEnvs(1, 'rl', 'pybullet', 'random_picking', self.env_config, {})
+    env = env_factory.createEnvs(10, 'rl', 'pybullet', 'random_picking', self.env_config, {})
     total = 0
     s = 0
     step_times = []

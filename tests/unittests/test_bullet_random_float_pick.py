@@ -21,22 +21,23 @@ class TestBulletRandomFloatPick(unittest.TestCase):
   # env = createHouseBuilding1Env(PyBulletEnv, env_config)()
 
   def testPlanner(self):
-    self.env_config['render'] = False
+    self.env_config['render'] = True
     self.env_config['reward_type'] = 'sparse'
     self.env_config['random_orientation'] = True
     self.env_config['num_objects'] = 5
-    self.env_config['action_sequence'] = 'xyzrrp'
+    self.env_config['action_sequence'] = 'xyrrp'
     self.env_config['in_hand_mode'] = 'proj'
 
-    env = env_factory.createEnvs(10, 'rl', 'pybullet', 'cube_float_picking', self.env_config, {})
+    env = env_factory.createEnvs(1, 'rl', 'pybullet', 'cube_float_picking', self.env_config, {})
     total = 0
     s = 0
     step_times = []
-    env.reset()
+    state, obs, in_hand = env.reset()
     pbar = tqdm(total=1000)
     while total < 1000:
       t0 = time.time()
       action = env.getNextAction()
+      action[:, 2] += np.pi/16
       # action[:,3] += np.pi/8
       t_plan = time.time() - t0
       states_, in_hands_, obs_, rewards, dones = env.step(action)
