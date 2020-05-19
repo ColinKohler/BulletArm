@@ -1,4 +1,5 @@
 from copy import deepcopy
+import numpy as np
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 import numpy.random as npr
@@ -69,7 +70,7 @@ def createRandomPickingEnv(simulator_base_env, config):
 
     def _getObservation(self, action=None):
       state, in_hand, obs = super(RandomPickingEnv, self)._getObservation(action)
-      return 0, in_hand, obs
+      return 0, np.zeros_like(in_hand), obs
 
   def _thunk():
     return RandomPickingEnv(config)
