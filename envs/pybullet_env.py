@@ -473,8 +473,9 @@ class PyBulletEnv(BaseEnv):
 
   def _removeObject(self, obj):
     if obj in self.objects:
-      # pb.removeBody(obj)
-      self._moveObjectOutWorkspace(obj)
+      pb.removeBody(obj.object_id)
+      # self._moveObjectOutWorkspace(obj)
+      self.objects.remove(obj)
       self.robot.openGripper()
 
   def _moveObjectOutWorkspace(self, obj):
