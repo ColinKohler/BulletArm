@@ -297,7 +297,7 @@ class BaseEnv(object):
     point = R.dot(point.T)
     point = point + size/2
     point = np.round(point).astype(int)
-    point = point.T[(point.T < size).all(1)].T
+    point = point.T[(np.logical_and(0 < point.T, point.T < size)).all(1)].T
 
     occupancy = np.zeros((size, size, size))
     occupancy[point[0], point[1], point[2]] = 1
