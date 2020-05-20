@@ -13,6 +13,7 @@ from helping_hands_rl_envs.simulators.pybullet.robots.kuka import Kuka
 from helping_hands_rl_envs.simulators.pybullet.robots.ur5_robotiq import UR5_Robotiq
 import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
 from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.simulators.pybullet.objects.pybullet_object import PybulletObject
 
 import pickle
 import os
@@ -533,7 +534,7 @@ class PyBulletEnv(BaseEnv):
       if i == 0:
         continue
       #TODO: not 100% sure about this
-      if not obj.isTouching(objects[i-1]):
+      if not obj.isTouching(objects[i-1]) or obj.isTouching(PybulletObject(-1, self.table_id)):
         return False
     return True
 
