@@ -17,7 +17,7 @@ class BrickStackingPlanner(BlockStructureBasePlanner):
     bricks = self.getObjects(obj_type=constants.BRICK)
     return self.placeOn(bricks[0], 3*self.getMaxBlockSize(), len(self.getObjects(obj_type=constants.CUBE)))
 
-  def getStepLeft(self):
+  def getStepsLeft(self):
     if not self.isSimValid():
       return 100
     step_left = 2*(len(self.getObjects(obj_type=constants.CUBE)) - reduce(lambda x, y: x+y, [len(self.getObjectsOnTopOf(x)) for x in self.getObjects(obj_type=constants.BRICK)]))

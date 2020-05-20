@@ -17,7 +17,7 @@ while not done:
   plt.imshow(obs.squeeze(), cmap='gray'); plt.show()
   action = envs.getNextAction()
   state_, hand_obs_, obs_, reward, done, valid = envs.step(action)
-  print(reward)
+  print(envs.didBlockFall())
 
   obs = obs_
   hand_obs = hand_obs_

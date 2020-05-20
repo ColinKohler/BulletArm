@@ -70,7 +70,7 @@ class PyBulletEnv(BaseEnv):
 
     # TODO: Move this somewhere it makes sense
     self.block_original_size = 0.05
-    self.block_scale_range = (0.6, 0.7)
+    self.block_scale_range = (0.3, 0.9)
     self.min_block_size = self.block_original_size * self.block_scale_range[0]
     self.max_block_size = self.block_original_size * self.block_scale_range[1]
 
@@ -236,11 +236,12 @@ class PyBulletEnv(BaseEnv):
       return
     [pb.stepSimulation() for _ in range(iteration)]
 
+  # TODO: This does not work w/cylinders
   def didBlockFall(self):
     motion_primative, obj, x, y, z, rot = self.last_action
 
     return motion_primative == constants.PLACE_PRIMATIVE and \
-           np.abs(z - obj.getPosition()[-1]) > obj.getHeight()
+           np.linalg.norm(np.array(obj.getXYPosition()) - np.array([x,y])) > obj.size / 2.
 
   def _isPointInWorkspace(self, p):
     '''

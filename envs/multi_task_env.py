@@ -1,4 +1,5 @@
 from helping_hands_rl_envs.envs.block_stacking_env import createBlockStackingEnv
+from helping_hands_rl_envs.envs.brick_stacking_env import createBrickStackingEnv
 from helping_hands_rl_envs.envs.block_adjacent_env import createBlockAdjacentEnv
 
 def createMultiTaskEnv(simulator_base_env, configs):
@@ -12,6 +13,9 @@ def createMultiTaskEnv(simulator_base_env, configs):
         if config['env_type'] == 'block_stacking':
           self.envs.append(createBlockStackingEnv(simulator_base_env, config)())
           self.env_types.append('block_stacking')
+        elif config['env_type'] == 'brick_stacking':
+          self.envs.append(createBrickStackingEnv(simulator_base_env, config)())
+          self.env_types.append('brick_stacking')
         elif config['env_type'] == 'block_adjacent':
           self.envs.append(createBlockAdjacentEnv(simulator_base_env, config)())
           self.env_types.append('block_adjacent')
