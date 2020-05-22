@@ -18,10 +18,11 @@ def createTiltBlockStackingEnv(simulator_base_env, config):
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
-      self.rx_range = (0, np.pi/4)
-      self.tilt_plane_rx = 0
-      self.tilt_plane_id = -1
+      self.rx_range = (0, np.pi/6)
+      self.tilt_plain_rx = 0
+      self.tilt_plain_id = -1
       self.pick_rx = 0
+      self.tilt_border = -0.05
 
     def step(self, action):
       motion_primative, x, y, z, rot = self._decodeAction(action)
@@ -42,12 +43,23 @@ def createTiltBlockStackingEnv(simulator_base_env, config):
     def reset(self):
       ''''''
       while True:
+        if self.tilt_plain_id > -1:
+          pb.removeBody(self.tilt_plain_id)
         super(TiltBlockStackingEnv, self).reset()
-        self.tilt_plane_rx = (self.rx_range[1] - self.rx_range[0]) * np.random.random_sample() + self.rx_range[0]
-        self.tilt_plane_id = pb.loadURDF('plane.urdf', [0, -0.1, 0], pb.getQuaternionFromEuler([self.tilt_plane_rx, 0, 0]),
-                                 globalScaling=0.01)
+        self.tilt_plain_rx = (self.rx_range[1] - self.rx_range[0]) * np.random.random_sample() + self.rx_range[0]
+        self.tilt_plain_id = pb.loadURDF('plane.urdf', [0.5 * (self.workspace[0][1] + self.workspace[0][0]), self.tilt_border, 0], pb.getQuaternionFromEuler([self.tilt_plain_rx, 0, 0]),
+                                         globalScaling=0.005)
         try:
-          self._generateShapes(constants.CUBE, self.num_obj, random_orientation=self.random_orientation, padding=self.max_block_size*4)
+          base_pos = self._getValidPositions(self.max_block_size*2, self.max_block_size*3, [], 1, sample_range=[self.workspace[0], [self.workspace[1][0], self.tilt_border-0.02]])
+          for position in base_pos:
+            position.append(0.05)
+          self._generateShapes(constants.CUBE, 1, random_orientation=self.random_orientation, pos=base_pos)
+          other_pos = self._getValidPositions(self.max_block_size*3, self.max_block_size*3, [], self.num_obj-1, sample_range=[self.workspace[0], [self.tilt_border+0.02, self.workspace[1][1]]])
+          for position in other_pos:
+            position.append(0.04+np.tan(self.tilt_plain_rx) * position[1])
+          orientations = [pb.getQuaternionFromEuler([self.tilt_plain_rx, 0, 0]) for _ in range(self.num_obj-1)]
+
+          self._generateShapes(constants.CUBE, self.num_obj-1, random_orientation=False, pos=other_pos, rot=orientations)
         except:
           continue
         else:
@@ -58,9 +70,6 @@ def createTiltBlockStackingEnv(simulator_base_env, config):
       ''''''
       return self._checkStack()
 
-    def _getObservation(self, action=None):
-      state, in_hand, obs = super(TiltBlockStackingEnv, self)._getObservation(action)
-      return 1, in_hand, obs
 
   def _thunk():
     return TiltBlockStackingEnv(config)

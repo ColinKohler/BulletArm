@@ -324,6 +324,7 @@ class PyBulletEnv(BaseEnv):
 
   def _getValidPositions(self, padding, min_distance, existing_positions, num_shapes, sample_range=None):
     existing_positions_copy = copy.deepcopy(existing_positions)
+    sample_range = copy.deepcopy(sample_range)
     valid_positions = list()
     for i in range(num_shapes):
       # Generate random drop config
@@ -397,13 +398,22 @@ class PyBulletEnv(BaseEnv):
     shape_handles = list()
     positions = [o.getXYPosition() for o in self.objects]
 
-    valid_positions = self._getValidPositions(padding, min_distance, positions, num_shapes)
-    if valid_positions is None:
-      return None
+    if pos is None:
+      valid_positions = self._getValidPositions(padding, min_distance, positions, num_shapes)
+      if valid_positions is None:
+        return None
+      for position in valid_positions:
+        position.append(0.03)
+    else:
+      valid_positions = pos
 
-    for position in valid_positions:
-      position.append(0.03)
-      orientation = self._getInitializeOrientation(random_orientation)
+    if rot is None:
+      orientations = [self._getInitializeOrientation(random_orientation) for _ in range(num_shapes)]
+    else:
+      orientations = rot
+
+
+    for position, orientation in zip(valid_positions, orientations):
       if not scale:
         scale = npr.uniform(self.block_scale_range[0], self.block_scale_range[1])
 
