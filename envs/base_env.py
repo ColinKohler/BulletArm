@@ -227,7 +227,7 @@ class BaseEnv(object):
     zs = np.array([z+(self.in_hand_size/2-i)*self.heightmap_resolution for i in range(self.in_hand_size)])
     zs = zs.reshape((-1, 1, 1))
     zs = zs.repeat(self.in_hand_size, 1).repeat(self.in_hand_size, 2)
-    zs[zs<self.heightmap_resolution] = 100
+    zs[zs<-self.heightmap_resolution] = 100
     c = crop.reshape(1, self.in_hand_size, self.in_hand_size).repeat(self.in_hand_size, 0)
     occupancy = c > zs
 
