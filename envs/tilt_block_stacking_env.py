@@ -20,9 +20,12 @@ def createTiltBlockStackingEnv(simulator_base_env, config):
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
       self.rx_range = (0, np.pi/6)
       self.tilt_plain_rx = 0
+      self.tilt_plain2_rx = 0
       self.tilt_plain_id = -1
+      self.tilt_plain2_id = -1
       self.pick_rx = 0
-      self.tilt_border = -0.05
+      self.tilt_border = 0.05
+      self.tilt_border2 = -0.05
 
     def step(self, action):
       motion_primative, x, y, z, rot = self._decodeAction(action)
@@ -45,22 +48,38 @@ def createTiltBlockStackingEnv(simulator_base_env, config):
       while True:
         if self.tilt_plain_id > -1:
           pb.removeBody(self.tilt_plain_id)
+        if self.tilt_plain2_id > -1:
+          pb.removeBody(self.tilt_plain2_id)
+
         super(TiltBlockStackingEnv, self).reset()
         self.tilt_plain_rx = (self.rx_range[1] - self.rx_range[0]) * np.random.random_sample() + self.rx_range[0]
         self.tilt_plain_id = pb.loadURDF('plane.urdf', [0.5 * (self.workspace[0][1] + self.workspace[0][0]), self.tilt_border, 0], pb.getQuaternionFromEuler([self.tilt_plain_rx, 0, 0]),
                                          globalScaling=0.005)
+        self.tilt_plain2_rx = (self.rx_range[0] - self.rx_range[1]) * np.random.random_sample() + self.rx_range[0]
+        self.tilt_plain2_id = pb.loadURDF('plane.urdf',
+                                         [0.5 * (self.workspace[0][1] + self.workspace[0][0]), self.tilt_border2, 0],
+                                         pb.getQuaternionFromEuler([self.tilt_plain2_rx, 0, 0]),
+                                         globalScaling=0.005)
         try:
-          base_pos = self._getValidPositions(self.max_block_size*2, self.max_block_size*3, [], 1, sample_range=[self.workspace[0], [self.workspace[1][0], self.tilt_border-0.02]])
+          base_pos = self._getValidPositions(self.max_block_size*2, self.max_block_size*3, [], 1, sample_range=[self.workspace[0], [self.tilt_border2+0.02, self.tilt_border-0.02]])
           for position in base_pos:
             position.append(0.05)
           self._generateShapes(constants.CUBE, 1, random_orientation=self.random_orientation, pos=base_pos)
-          other_pos = self._getValidPositions(self.max_block_size*3, self.max_block_size*3, [], self.num_obj-1, sample_range=[self.workspace[0], [self.tilt_border+0.02, self.workspace[1][1]]])
-          for position in other_pos:
-            position.append(0.04+np.tan(self.tilt_plain_rx) * position[1])
-          orientations = [pb.getQuaternionFromEuler([self.tilt_plain_rx, 0, 0]) for _ in range(self.num_obj-1)]
 
-          self._generateShapes(constants.CUBE, self.num_obj-1, random_orientation=False, pos=other_pos, rot=orientations)
-        except:
+          n1 = int((self.num_obj-1) / 2)
+          n2 = int((self.num_obj-1) - n1)
+          other_pos = self._getValidPositions(self.max_block_size*3, self.max_block_size*3, [], n1, sample_range=[self.workspace[0], [self.tilt_border+0.02, self.workspace[1][1]]])
+          for position in other_pos:
+            position.append(0.04 + np.tan(self.tilt_plain_rx) * position[1])
+          orientations = [pb.getQuaternionFromEuler([self.tilt_plain_rx, 0, 0]) for _ in range(self.num_obj - 1)]
+          self._generateShapes(constants.CUBE, n1, random_orientation=False, pos=other_pos, rot=orientations)
+
+          other_pos = self._getValidPositions(self.max_block_size*3, self.max_block_size*3, [], n2, sample_range=[self.workspace[0], [self.workspace[1][0], self.tilt_border2-0.02]])
+          for position in other_pos:
+            position.append(0.04 + np.tan(-self.tilt_plain2_rx) * -position[1])
+          orientations = [pb.getQuaternionFromEuler([self.tilt_plain2_rx, 0, 0]) for _ in range(self.num_obj - 1)]
+          self._generateShapes(constants.CUBE, n2, random_orientation=False, pos=other_pos, rot=orientations)
+        except Exception as e:
           continue
         else:
           break

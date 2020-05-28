@@ -21,14 +21,14 @@ class TestBulletTilt(unittest.TestCase):
   # env = createHouseBuilding1Env(PyBulletEnv, env_config)()
 
   def testPlanner(self):
-    self.env_config['render'] = False
+    self.env_config['render'] = True
     self.env_config['reward_type'] = 'sparse'
     self.env_config['random_orientation'] = True
     self.env_config['num_objects'] = 4
     self.env_config['action_sequence'] = 'xyrrp'
     self.env_config['in_hand_mode'] = 'proj'
 
-    env = env_factory.createEnvs(10, 'rl', 'pybullet', 'tilt_block_stacking', self.env_config, {})
+    env = env_factory.createEnvs(1, 'rl', 'pybullet', 'tilt_block_stacking', self.env_config, {})
     total = 0
     s = 0
     step_times = []

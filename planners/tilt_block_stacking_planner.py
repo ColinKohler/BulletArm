@@ -47,7 +47,7 @@ class TiltBlockStackingPlanner(BlockStructureBasePlanner):
   #   return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, (rz, rx))
 
   def getPickingAction(self):
-    objects = list(filter(lambda o: o.getPosition()[1] > self.env.tilt_border, self.env.objects))
+    objects = list(filter(lambda o: o.getPosition()[1] > self.env.tilt_border or o.getPosition()[1] < self.env.tilt_border2, self.env.objects))
     if len(objects) == 0:
       objects = self.env.objects
 
@@ -64,7 +64,7 @@ class TiltBlockStackingPlanner(BlockStructureBasePlanner):
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, (rz, -rx))
 
   def getPlacingAction(self):
-    objects = list(filter(lambda o: o.getPosition()[1] < self.env.tilt_border, self.env.objects))
+    objects = list(filter(lambda o: self.env.tilt_border2 < o.getPosition()[1] < self.env.tilt_border, self.env.objects))
     if objects:
       return self.placeOnHighestObj(objects)
     else:
