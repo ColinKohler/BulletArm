@@ -48,7 +48,7 @@ def createHouseBuilding5Env(simulator_base_env, config):
       while True:
         super(HouseBuilding5Env, self).reset()
         try:
-          self._generateShapes(constants.TRIANGLE, int(self.num_obj/2), random_orientation=self.random_orientation)
+          self._generateShapes(constants.CYLINDER, int(self.num_obj/2), random_orientation=self.random_orientation)
           self._generateShapes(constants.CUBE, int(self.num_obj/2), random_orientation=self.random_orientation)
         except Exception as e:
           continue
@@ -58,14 +58,14 @@ def createHouseBuilding5Env(simulator_base_env, config):
 
     def getNStackedPairs(self):
       blocks = list(filter(lambda x: self.object_types[x] == constants.CUBE and self._isObjOnGround(x), self.objects))
-      triangles = list(filter(lambda x: self.object_types[x] == constants.TRIANGLE, self.objects))
+      cylinders = list(filter(lambda x: self.object_types[x] == constants.CYLINDER, self.objects))
 
       n = 0
 
       for block in blocks:
-        for triangle in triangles:
-          if self._checkOnTop(block, triangle):
-            triangles.remove(triangle)
+        for cylinder in cylinders:
+          if self._checkOnTop(block, cylinder):
+            cylinders.remove(cylinder)
             n += 1
             break
 
@@ -79,9 +79,9 @@ def createHouseBuilding5Env(simulator_base_env, config):
       return list(map(self._getObjectPosition, self.objects))
 
     def isSimValid(self):
-      triangles = list(filter(lambda x: self.object_types[x] == constants.TRIANGLE, self.objects))
-      for triangle in triangles:
-        if not self._checkObjUpright(triangle):
+      cylinders = list(filter(lambda x: self.object_types[x] == constants.CYLINDER, self.objects))
+      for cylinder in cylinders:
+        if not self._checkObjUpright(cylinder):
           return False
       return super().isSimValid()
 

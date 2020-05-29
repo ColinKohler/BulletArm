@@ -373,7 +373,7 @@ class PyBulletEnv(BaseEnv):
                            min_distance=None, padding=None, random_orientation=False, z_scale=1):
     ''''''
     if padding is None:
-      if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM):
+      if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER):
         padding = self.max_block_size * 1.5
       elif shape_type == constants.BRICK:
         padding = self.max_block_size * 3.4
@@ -381,7 +381,7 @@ class PyBulletEnv(BaseEnv):
         padding = self.max_block_size * 3.4
 
     if min_distance is None:
-      if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM):
+      if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER):
         min_distance = self.max_block_size * 2.4
       elif shape_type == constants.BRICK:
         min_distance = self.max_block_size * 3.4
@@ -412,6 +412,8 @@ class PyBulletEnv(BaseEnv):
         handle = pb_obj_generation.generateTriangle(position, orientation, scale)
       elif shape_type == constants.ROOF:
         handle = pb_obj_generation.generateRoof(position, orientation, scale)
+      elif shape_type == constants.CYLINDER:
+        handle = pb_obj_generation.generateCylinder(position, orientation, scale)
       elif shape_type == constants.RANDOM:
         handle = pb_obj_generation.generateRandomObj(position, orientation, scale, z_scale)
       else:
