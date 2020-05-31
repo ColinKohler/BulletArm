@@ -13,6 +13,7 @@ from helping_hands_rl_envs.planners.deconstruct_planner import DeconstructPlanne
 from helping_hands_rl_envs.planners.float_picking_planner import FloatPickingPlanner
 from helping_hands_rl_envs.planners.block_placing_planner import BlockPlacingPlanner
 from helping_hands_rl_envs.planners.tilt_block_stacking_planner import TiltBlockStackingPlanner
+from helping_hands_rl_envs.planners.tilt_deconstruct_planner import TiltDeconstructPlanner
 
 AVAILABLE_PLANNER = ['random',
                      'play',
@@ -34,7 +35,8 @@ AVAILABLE_PLANNER = ['random',
                      'random_float_picking',
                      'cube_float_picking',
                      'block_placing',
-                     'tilt_block_stacking']
+                     'tilt_block_stacking',
+                     'tilt_house_building_1_deconstruct']
 
 def createPlanner(config):
   if 'planner_noise' not in config: config['planner_noise'] = None
@@ -81,3 +83,5 @@ def createPlanner(config):
     return lambda env: BlockPlacingPlanner(env, config)
   elif config['planner'] == 'tilt_block_stacking':
     return lambda env: TiltBlockStackingPlanner(env, config)
+  elif config['planner'] == 'tilt_house_building_1_deconstruct':
+    return lambda env: TiltDeconstructPlanner(env, config)
