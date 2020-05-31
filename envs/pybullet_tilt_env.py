@@ -19,7 +19,7 @@ class PyBulletTiltEnv(PyBulletEnv):
     self.tilt_border = 0.035
     self.tilt_border2 = -0.035
 
-  def generateTiltAndObj(self, obj_dict):
+  def resetWithTiltAndObj(self, obj_dict):
     while True:
       if self.tilt_plain_id > -1:
         pb.removeBody(self.tilt_plain_id)
