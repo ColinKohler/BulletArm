@@ -32,7 +32,7 @@ class HouseBuilding1Planner(BlockStructureBasePlanner):
       return self.pickSecondTallestObjOnTop(objects=blocks)
     # blocks stacked, pick triangle
     else:
-      return self.pickSecondTallestObjOnTop(objects=triangles, side_grasp=True)
+      return self.pickSecondTallestObjOnTop(objects=triangles)
 
   def getPlacingAction(self):
     blocks = list(filter(lambda x: self.env.object_types[x] == constants.CUBE, self.env.objects))

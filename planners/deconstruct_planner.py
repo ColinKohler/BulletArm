@@ -18,11 +18,10 @@ class DeconstructPlanner(BlockStructureBasePlanner):
   def getStepLeft(self):
     return 100
 
-  def pickTallestObjOnTop(self, objects=None, side_grasp=False):
+  def pickTallestObjOnTop(self, objects=None):
     """
     pick up the highest object that is on top
     :param objects: pool of objects
-    :param side_grasp: grasp on the side of the object (90 degree), should be true for triangle, brick, etc
     :return: encoded action
     """
     if objects is None: objects = self.env.objects
@@ -34,11 +33,7 @@ class DeconstructPlanner(BlockStructureBasePlanner):
         x, y, z, r = pose[0], pose[1], pose[2]+self.env.pick_offset, pose[5]
         if obj in self.objs_to_remove:
           self.objs_to_remove.remove(obj)
-        if self.env.object_types[obj] in [constants.ROOF, constants.TRIANGLE, constants.BRICK]:
-          side_grasp = True
         break
-    if side_grasp:
-      r += np.pi / 2
       while r < 0:
         r += np.pi
       while r > np.pi:

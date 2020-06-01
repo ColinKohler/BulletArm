@@ -90,13 +90,13 @@ class HouseBuilding3Planner(BlockStructureBasePlanner):
     if not self.checkFirstLayer():
       # block pos not valid, and roof on brick => pick roof
       if self.checkOnTopOf(bricks[0], roofs[0]):
-        return self.pickSecondTallestObjOnTop(objects=roofs, side_grasp=True)
+        return self.pickSecondTallestObjOnTop(objects=roofs)
       # block pos not valid, and brick on top of any block => pick brick
       elif self.checkOnTopOf(blocks[0], bricks[0]) or self.checkOnTopOf(blocks[1], bricks[0]):
-        return self.pickSecondTallestObjOnTop(objects=bricks, side_grasp=True)
+        return self.pickSecondTallestObjOnTop(objects=bricks)
       # block pos not valid, and roof on top of any block => pick roof
       elif self.checkOnTopOf(blocks[0], roofs[0]) or self.checkOnTopOf(blocks[1], roofs[0]):
-        return self.pickSecondTallestObjOnTop(objects=roofs, side_grasp=True)
+        return self.pickSecondTallestObjOnTop(objects=roofs)
       # block pos not valid, adjust block pos => pick block
       else:
         return self.pickSecondTallestObjOnTop(objects=blocks)
@@ -107,17 +107,17 @@ class HouseBuilding3Planner(BlockStructureBasePlanner):
       if not self.checkSecondLayer():
         # block pos valid, brick is not on top, roof on top of brick => pick roof
         if self.checkOnTopOf(bricks[0], roofs[0]):
-          return self.pickSecondTallestObjOnTop(objects=roofs, side_grasp=True)
+          return self.pickSecondTallestObjOnTop(objects=roofs)
         # block pos valid, brick is not on top, and roof on top of any block => pick roof
         elif self.checkOnTopOf(blocks[0], roofs[0]) or self.checkOnTopOf(blocks[1], roofs[0]):
-          return self.pickSecondTallestObjOnTop(objects=roofs, side_grasp=True)
+          return self.pickSecondTallestObjOnTop(objects=roofs)
         # block pos valid, brick is not on top => pick brick
         else:
-          return self.pickSecondTallestObjOnTop(objects=bricks, side_grasp=True)
+          return self.pickSecondTallestObjOnTop(objects=bricks)
 
       # second layer done
       else:
-        return self.pickSecondTallestObjOnTop(objects=roofs, side_grasp=True)
+        return self.pickSecondTallestObjOnTop(objects=roofs)
 
   def getPlacingAction(self):
     blocks, bricks, roofs = self.getObjs()
@@ -138,7 +138,7 @@ class HouseBuilding3Planner(BlockStructureBasePlanner):
         return self.placeOnGround(self.getMaxBlockSize()*3, self.getMaxBlockSize()*3)
       # holding roof, block and brick pos valid => place roof on top
       else:
-        return self.placeOnHighestObj(bricks, side_place=True)
+        return self.placeOnHighestObj(bricks)
     # holding block, place block on valid pos
     else:
       if self.isObjectHeld(blocks[0]):

@@ -62,11 +62,11 @@ class HouseBuilding4Planner(BlockStructureBasePlanner):
     if not self.checkFirstLayer():
       return self.pickSecondTallestObjOnTop(objects=level1_blocks+level2_blocks)
     elif not self.checkSecondLayer():
-      return self.pickSecondTallestObjOnTop(objects=bricks, side_grasp=True)
+      return self.pickSecondTallestObjOnTop(objects=bricks)
     elif not self.checkThirdLayer():
       return self.pickSecondTallestObjOnTop(objects=level2_blocks)
     else:
-      return self.pickSecondTallestObjOnTop(objects=roofs, side_grasp=True)
+      return self.pickSecondTallestObjOnTop(objects=roofs)
     
   def getPlacingAction(self):
     level1_blocks, level2_blocks, bricks, roofs = self.getObjs()

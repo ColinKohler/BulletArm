@@ -61,7 +61,7 @@ class HouseBuilding2Planner(BlockStructureBasePlanner):
       return self.pickSecondTallestObjOnTop(objects=blocks)
     # block pos valid, pick roof
     else:
-      return self.pickSecondTallestObjOnTop(objects=roofs, side_grasp=True)
+      return self.pickSecondTallestObjOnTop(objects=roofs)
 
   def getPlacingAction(self):
     blocks = list(filter(lambda x: self.env.object_types[x] == constants.CUBE, self.env.objects))

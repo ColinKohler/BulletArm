@@ -233,7 +233,7 @@ class PyBulletDeconstructEnv(PyBulletEnv):
     obj_positions = np.array([pos1, pos2])
     slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(obj_positions[:, 0], obj_positions[:, 1])
     x, y = obj_positions.mean(0)
-    r = np.arctan(slope)
+    r = np.arctan(slope) + np.pi/2
     while r > np.pi:
       r -= np.pi
 
