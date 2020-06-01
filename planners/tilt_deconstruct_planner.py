@@ -18,11 +18,10 @@ class TiltDeconstructPlanner(BlockStructureBasePlanner):
   def getStepLeft(self):
     return 100
 
-  def pickTallestObjOnTop(self, objects=None, side_grasp=False):
+  def pickTallestObjOnTop(self, objects=None):
     """
     pick up the highest object that is on top
     :param objects: pool of objects
-    :param side_grasp: grasp on the side of the object (90 degree), should be true for triangle, brick, etc
     :return: encoded action
     """
     if objects is None: objects = self.env.objects
@@ -34,11 +33,7 @@ class TiltDeconstructPlanner(BlockStructureBasePlanner):
         x, y, z, r = pose[0], pose[1], pose[2]+self.env.pick_offset, pose[5]
         if obj in self.objs_to_remove:
           self.objs_to_remove.remove(obj)
-        if self.env.object_types[obj] in [constants.ROOF, constants.TRIANGLE, constants.BRICK]:
-          side_grasp = True
         break
-    if side_grasp:
-      r += np.pi / 2
       while r < 0:
         r += 2*np.pi
       while r > 2*np.pi:
@@ -68,13 +63,16 @@ class TiltDeconstructPlanner(BlockStructureBasePlanner):
       place_pos = self.getValidPositions(padding_dist, min_dist, existing_pos, 1)[0]
     except NoValidPositionException:
       place_pos = self.getValidPositions(padding_dist, min_dist, [], 1)[0]
-    x, y, z, rz = place_pos[0], place_pos[1], self.env.place_offset, 0
+    x, y, z = place_pos[0], place_pos[1], self.env.place_offset
     if place_pos[1] < self.env.tilt_border2:
       rx = -self.env.tilt_plain2_rx
+      rz = 0
     elif place_pos[1] > self.env.tilt_border:
       rx = -self.env.tilt_plain_rx
+      rz = 0
     else:
       rx = 0
+      rz = np.random.random()*np.pi*2
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, (rz, rx))
 
   def getPickingAction(self):

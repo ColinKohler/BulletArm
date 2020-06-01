@@ -45,11 +45,10 @@ class BlockStructureBasePlanner(BasePlanner):
   def getPlacingAction(self):
     raise NotImplemented('Planners must implement this function')
 
-  def pickTallestObjOnTop(self, objects=None, side_grasp=False):
+  def pickTallestObjOnTop(self, objects=None):
     """
     pick up the highest object that is on top
     :param objects: pool of objects
-    :param side_grasp: grasp on the side of the object (90 degree), should be true for triangle, brick, etc
     :return: encoded action
     """
     if objects is None: objects = self.env.objects
@@ -60,16 +59,13 @@ class BlockStructureBasePlanner(BasePlanner):
       if self.isObjOnTop(obj):
         x, y, z, r = pose[0], pose[1], pose[2]+self.env.pick_offset, pose[5]
         break
-    if side_grasp:
-      r += np.pi / 2
 
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
-  def pickSecondTallestObjOnTop(self, objects=None, side_grasp=False):
+  def pickSecondTallestObjOnTop(self, objects=None):
     """
     pick up the second highest object that is on top
     :param objects: pool of objects
-    :param side_grasp: grasp on the side of the object (90 degree), should be true for triangle, brick, etc
     :return: encoded action
     """
     if objects is None: objects = self.env.objects
@@ -80,16 +76,13 @@ class BlockStructureBasePlanner(BasePlanner):
       if self.isObjOnTop(obj):
         x, y, z, r = pose[0], pose[1], pose[2]+self.env.pick_offset, pose[5]
         break
-    if side_grasp:
-      r += np.pi / 2
 
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
-  def pickShortestObjOnTop(self, objects=None, side_grasp=False):
+  def pickShortestObjOnTop(self, objects=None,):
     """
     pick up the shortest object that is on top
     :param objects: pool of objects
-    :param side_grasp: grasp on the side of the object (90 degree), should be true for triangle, brick, etc
     :return: encoded action
     """
     if objects is None: objects = self.env.objects
@@ -100,12 +93,10 @@ class BlockStructureBasePlanner(BasePlanner):
       if self.isObjOnTop(obj):
         x, y, z, r = pose[0], pose[1], pose[2] + self.env.pick_offset, pose[5]
         break
-    if side_grasp:
-      r += np.pi / 2
 
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
-  def pickRandomObjOnTop(self, objects=None, side_grasp=False):
+  def pickRandomObjOnTop(self, objects=None):
     if objects is None: objects = self.env.objects
     npr.shuffle(objects)
     object_poses = self.env.getObjectPoses(objects)
@@ -115,12 +106,10 @@ class BlockStructureBasePlanner(BasePlanner):
       if self.isObjOnTop(obj):
         x, y, z, r = pose[0], pose[1], pose[2] + self.env.pick_offset, pose[5]
         break
-    if side_grasp:
-      r += np.pi / 2
 
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
-  def placeOnHighestObj(self, objects=None, side_place=False):
+  def placeOnHighestObj(self, objects=None):
     """
     place on the highest object
     :param objects: pool of objects
@@ -133,9 +122,6 @@ class BlockStructureBasePlanner(BasePlanner):
       if not self.isObjectHeld(obj):
         x, y, z, r = pose[0], pose[1], pose[2]+self.env.place_offset, pose[5]
         break
-    if side_place:
-      r += np.pi / 2
-
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def placeOnGround(self, padding_dist, min_dist):
@@ -153,7 +139,7 @@ class BlockStructureBasePlanner(BasePlanner):
     x, y, z, r = place_pos[0], place_pos[1], self.env.place_offset, np.pi*np.random.random_sample()
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
-  def placeNearAnother(self, another_obj, min_dist_to_another, max_dist_to_another, padding_dist, min_dist, side_place=False):
+  def placeNearAnother(self, another_obj, min_dist_to_another, max_dist_to_another, padding_dist, min_dist):
     """
     place near another object, avoid existing objects except for another_obj
     :param another_obj: the object to place near to
@@ -179,8 +165,6 @@ class BlockStructureBasePlanner(BasePlanner):
     x, y, z, r = place_pos[0], place_pos[1], self.env.place_offset, 0
     slope, intercept, r_value, p_value, std_err = scipy.stats.linregress([x, another_obj_position[0]], [y, another_obj_position[1]])
     r = np.arctan(slope)
-    if not side_place:
-      r += np.pi / 2
 
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
@@ -211,7 +195,7 @@ class BlockStructureBasePlanner(BasePlanner):
     """
     assert num_slots > 0
     if num_slots == 1:
-      return self.placeOnHighestObj([bottom_obj], side_place=True)
+      return self.placeOnHighestObj([bottom_obj])
     bottom_pos, bottom_rot = bottom_obj.getPose()
     bottom_rot = pb.getEulerFromQuaternion(bottom_rot)[2]
     v = np.array([[np.cos(bottom_rot), np.sin(bottom_rot)]]).repeat(num_slots, 0)

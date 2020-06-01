@@ -40,7 +40,7 @@ class ImproviseHouseBuilding2Planner(BlockStructureBasePlanner):
     if obj1 is None:
       return self.pickRandomObjOnTop(objects=rand_objs)
     else:
-      return self.pickRandomObjOnTop(objects=roofs, side_grasp=True)
+      return self.pickRandomObjOnTop(objects=roofs)
 
   def getPlacingAction(self):
     rand_objs = list(filter(lambda x: self.env.object_types[x] == constants.RANDOM and not self.isObjectHeld(x), self.env.objects))
@@ -55,4 +55,4 @@ class ImproviseHouseBuilding2Planner(BlockStructureBasePlanner):
     else:
       npr.shuffle(rand_objs)
       other_obj = rand_objs[0]
-      return self.placeNearAnother(other_obj, 1.7*self.env.max_block_size, 2.8*self.env.max_block_size, self.env.max_block_size * 3, self.env.max_block_size * 3, side_place=True)
+      return self.placeNearAnother(other_obj, 1.7*self.env.max_block_size, 2.8*self.env.max_block_size, self.env.max_block_size * 3, self.env.max_block_size * 3)

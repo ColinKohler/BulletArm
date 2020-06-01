@@ -9,7 +9,7 @@ class BlockPlacingPlanner(BlockStructureBasePlanner):
   def __init__(self, env, config):
     super(BlockPlacingPlanner, self).__init__(env, config)
 
-  def placeOnHighestObj(self, objects=None, side_place=False):
+  def placeOnHighestObj(self, objects=None):
     """
     place on the highest object
     :param objects: pool of objects
@@ -22,8 +22,6 @@ class BlockPlacingPlanner(BlockStructureBasePlanner):
       if not self.isObjectHeld(obj):
         x, y, z, rz = pose[0], pose[1], pose[2]+self.env.place_offset, pose[5]
         break
-    if side_place:
-      rz += np.pi / 2
     rx = self.env.pick_rx
 
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, (rz, rx))
