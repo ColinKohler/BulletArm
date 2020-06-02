@@ -27,8 +27,8 @@ class UR5_Robotiq(RobotBase):
     super(UR5_Robotiq, self).__init__()
     # Setup arm and gripper variables
     self.max_forces = [150, 150, 150, 28, 28, 28, 30, 30]
-    self.gripper_close_force = [30] * 2
-    self.gripper_open_force = [30] * 2
+    self.gripper_close_force = [10] * 2
+    self.gripper_open_force = [10] * 2
     self.end_effector_index = 18
 
     self.home_positions = [0., 0., -2.137, 1.432, -0.915, -1.591, 0.071, 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]
@@ -41,12 +41,14 @@ class UR5_Robotiq(RobotBase):
     self.gripper_joint_limit = [0.715 - math.asin((self.gripper_open_length_limit[0] - 0.010) / 0.1143),
                                 0.715 - math.asin((self.gripper_open_length_limit[1] - 0.010) / 0.1143)]
 
-    self.controlJoints = ["robotiq_85_left_knuckle_joint",
-                     "robotiq_85_right_knuckle_joint",
-                     "robotiq_85_left_inner_knuckle_joint",
-                     "robotiq_85_right_inner_knuckle_joint",
-                     "robotiq_85_left_finger_tip_joint",
-                     "robotiq_85_right_finger_tip_joint"]
+    self.controlJoints = [
+      "robotiq_85_left_knuckle_joint",
+      "robotiq_85_right_knuckle_joint",
+      "robotiq_85_left_inner_knuckle_joint",
+      "robotiq_85_right_inner_knuckle_joint",
+      "robotiq_85_left_finger_tip_joint",
+      "robotiq_85_right_finger_tip_joint"
+    ]
     self.gripper_main_control_joint_name = "robotiq_85_left_inner_knuckle_joint"
     self.gripper_mimic_joint_name = [
       "robotiq_85_right_knuckle_joint",
@@ -57,7 +59,6 @@ class UR5_Robotiq(RobotBase):
     ]
     self.gripper_mimic_multiplier = [1, 1, 1, -1, -1]
     self.gripper_joints = AttrDict()
-
 
     self.holding_obj = None
     self.gripper_closed = False
@@ -167,10 +168,10 @@ class UR5_Robotiq(RobotBase):
                              pb.POSITION_CONTROL,
                              targetPosition=target,
                              force=self.gripper_joints[self.gripper_main_control_joint_name].maxForce,
-                             maxVelocity=1)
+                             maxVelocity=0.4)
     for i in range(len(self.gripper_mimic_joint_name)):
       joint = self.gripper_joints[self.gripper_mimic_joint_name[i]]
       pb.setJointMotorControl2(self.id, joint.id, pb.POSITION_CONTROL,
                                targetPosition=target * self.gripper_mimic_multiplier[i],
                                force=joint.maxForce,
-                               maxVelocity=1)
+                               maxVelocity=0.4)

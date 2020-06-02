@@ -8,7 +8,7 @@ import helping_hands_rl_envs.env_factory as env_factory
 workspace = np.array([[0.35, 0.65], [-0.15, 0.15], [0, 1]])
 env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 128, 'action_sequence': 'pxy',
               'num_objects': 3, 'planner': 'play', 'render': False, 'fast_mode': True}
-planner_config = {'planner_type': 'play', 'pos_noise': 0.0}
+planner_config = {'planner_type': 'play', 'pos_noise': 0.005, 'rand_place_prob': 0.1, 'rand_pick_prob': 0.1}
 envs = env_factory.createEnvs(1, 'data', 'pybullet', 'block_stacking', env_config, planner_config=planner_config)
 
 for _ in range(100):

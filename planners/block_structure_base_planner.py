@@ -15,29 +15,15 @@ class BlockStructureBasePlanner(BasePlanner):
 
   def getNextAction(self):
     if self.isHolding():
-      if npr.rand() < self.rand_pick_prob:
+      if npr.rand() < self.rand_place_prob:
         return self.getRandomPlacingAction()
       else:
         return self.getPlacingAction()
     else:
-      if npr.rand() < self.rand_place_prob:
+      if npr.rand() < self.rand_pick_prob:
         return self.getRandomPickingAction()
       else:
         return self.getPickingAction()
-
-  def getRandomPickingAction(self):
-    x = npr.uniform(self.env.workspace[0, 0] + 0.025, self.env.workspace[0, 1] - 0.025)
-    y = npr.uniform(self.env.workspace[1, 0] + 0.025, self.env.workspace[1, 1] - 0.025)
-    z = 0.
-    r = npr.uniform(0., np.pi)
-    return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
-
-  def getRandomPlacingAction(self):
-    x = npr.uniform(self.env.workspace[0, 0] + 0.025, self.env.workspace[0, 1] - 0.025)
-    y = npr.uniform(self.env.workspace[1, 0] + 0.025, self.env.workspace[1, 1] - 0.025)
-    z = 0.
-    r = npr.uniform(0., np.pi)
-    return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def getPickingAction(self):
     raise NotImplemented('Planners must implement this function')

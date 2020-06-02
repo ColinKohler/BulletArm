@@ -51,9 +51,9 @@ class Kuka(RobotBase):
     #     -0.299912, 0.000000, -0.000043, 0.299960, 0.000000, -0.000200
     # ]
 
-    self.gripper_joint_limit = [0, 0.2]
+    self.gripper_joint_limit = [0, 0.3]
 
-  def initialize(self):
+  def reset(self):
     ''''''
     ur5_urdf_filepath = os.path.join(self.root_dir, 'simulators/urdf/kuka/kuka_with_gripper2.sdf')
     self.id = pb.loadSDF(ur5_urdf_filepath)[0]
@@ -74,11 +74,6 @@ class Kuka(RobotBase):
         self.arm_joint_names.append(str(joint_info[1]))
         self.arm_joint_indices.append(i)
 
-  def reset(self):
-    self.gripper_closed = False
-    self.holding_obj = None
-    [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
-
   def closeGripper(self, max_it=100):
     ''''''
     p1, p2 = self._getGripperJointPosition()
@@ -92,16 +87,11 @@ class Kuka(RobotBase):
       p1_, p2_ = self._getGripperJointPosition()
       if it > max_it or (abs(p1 - p1_) < 0.0001 and abs(p2 - p2_) < 0.0001):
         mean = (p1 + p2) / 2 - 0.01
-        # self._sendGripperCommand(mean, mean)
+        self._sendGripperCommand(mean, mean)
         return False
       p1 = p1_
       p2 = p2_
     return True
-
-  def adjustGripperCommand(self):
-    p1, p2 = self._getGripperJointPosition()
-    mean = (p1 + p2) / 2 - 0.01
-    self._sendGripperCommand(mean, mean)
 
   def checkGripperClosed(self):
     limit = self.gripper_joint_limit[1]

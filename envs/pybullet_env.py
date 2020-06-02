@@ -70,7 +70,8 @@ class PyBulletEnv(BaseEnv):
 
     # TODO: Move this somewhere it makes sense
     self.block_original_size = 0.05
-    self.block_scale_range = (0.3, 0.9)
+    # self.block_scale_range = (0.6, 0.7)
+    self.block_scale_range = (0.4, 0.9)
     self.min_block_size = self.block_original_size * self.block_scale_range[0]
     self.max_block_size = self.block_original_size * self.block_scale_range[1]
 
@@ -105,8 +106,11 @@ class PyBulletEnv(BaseEnv):
     self.state = {}
     self.pb_state = None
 
-  def reset(self):
-    ''''''
+    self.initialize()
+
+  def initialize(self):
+    self.episode_count = 0
+
     pb.resetSimulation()
     pb.setTimeStep(self._timestep)
 
@@ -114,7 +118,19 @@ class PyBulletEnv(BaseEnv):
     self.table_id = pb.loadURDF('plane.urdf', [0,0,0])
 
     # Load the UR5 and set it to the home positions
-    self.robot.reset()
+    self.robot.initialize()
+
+    pb.stepSimulation()
+
+  def reset(self):
+    ''''''
+    self.episode_count += 1
+    if self.episode_count >= 1000:
+      self.initialize()
+      self.episode_count = 0
+
+    for o in self.objects:
+      pb.removeBody(o.object_id)
 
     # Reset episode vars
     self.objects = list()

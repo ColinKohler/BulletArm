@@ -76,9 +76,6 @@ class RobotBase:
         self.moveTo(pre_pos, pre_rot, dynamic)
       else:
         self.moveTo(pre_pos, pre_rot, True)
-        self.adjustGripperCommand()
-        for i in range(10):
-          pb.stepSimulation()
         self.holding_obj = self.getPickedObj(objects)
 
     else:
@@ -97,20 +94,24 @@ class RobotBase:
 
     # Move to pre-grasp pose and then grasp pose
     self.moveTo(pre_pos, pre_rot, dynamic)
+    time.sleep(5)
     if simulate_grasp:
-      self.moveTo(pos, rot, True, pos_th=1e-5)
+      self.moveTo(pos, rot, True)
     else:
       self.moveTo(pos, rot, dynamic)
+    time.sleep(5)
 
     # Grasp object and lift up to pre pose
     self.openGripper()
+    time.sleep(5)
     self.holding_obj = None
     self.moveTo(pre_pos, pre_rot, dynamic)
+    time.sleep(5)
     self.moveToJ(self.home_positions_joint, dynamic)
 
-  def moveTo(self, pos, rot, dynamic=True, pos_th=1e-3, rot_th=1e-3):
+  def moveTo(self, pos, rot, dynamic=True):
     if dynamic or not self.holding_obj:
-      self._moveToCartesianPose(pos, rot, dynamic, pos_th, rot_th)
+      self._moveToCartesianPose(pos, rot, dynamic)
     else:
       self._teleportArmWithObj(pos, rot)
 
@@ -139,7 +140,7 @@ class RobotBase:
       joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
       joint_pos = list(zip(*joint_state))[0]
       n_it = 0
-      while not np.allclose(joint_pos, target_pose, atol=1e-5) and n_it < max_it:
+      while not np.allclose(joint_pos, target_pose, atol=1e-2) and n_it < max_it:
         pb.stepSimulation()
         n_it += 1
         # Check to see if the arm can't move any close to the desired joint position
@@ -152,11 +153,12 @@ class RobotBase:
     else:
       self._setJointPoses(target_pose)
 
-  def _moveToCartesianPose(self, pos, rot, dynamic=True, pos_th=1e-3, rot_th=1e-3):
+  def _moveToCartesianPose(self, pos, rot, dynamic=True):
     close_enough = False
     outer_it = 0
+    threshold = 1e-3
     max_outer_it = 100
-    max_inner_it = 10000
+    max_inner_it = 1000
 
     while not close_enough and outer_it < max_outer_it:
       ik_solve = self._calculateIK(pos, rot)
@@ -165,9 +167,7 @@ class RobotBase:
       ls = pb.getLinkState(self.id, self.end_effector_index)
       new_pos = list(ls[4])
       new_rot = list(ls[5])
-      close_enough = np.allclose(np.array(new_pos), pos, atol=pos_th) and \
-                     np.allclose(np.array(new_rot), rot, atol=rot_th)
-      # close_enough = np.allclose(np.array(new_pos + new_rot), np.array(list(pos) + list(rot)), atol=threshold)
+      close_enough = np.allclose(np.array(new_pos + new_rot), np.array(list(pos) + list(rot)), atol=threshold)
       outer_it += 1
 
   @abstractmethod
@@ -233,10 +233,6 @@ class RobotBase:
 
   @abstractmethod
   def _sendPositionCommand(self, commands):
-    raise NotImplementedError
-
-  @abstractmethod
-  def adjustGripperCommand(self):
     raise NotImplementedError
 
   def _setJointPoses(self, q_poses):

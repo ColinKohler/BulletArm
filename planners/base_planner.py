@@ -1,6 +1,8 @@
 import numpy as np
 import numpy.random as npr
 
+from helping_hands_rl_envs.simulators import constants
+
 class BasePlanner(object):
   def __init__(self, env, config):
     self.env = env
@@ -22,14 +24,29 @@ class BasePlanner(object):
   def addNoiseToPos(self, x, y):
     # TODO: Would we ever want to include noise on the z-axis here?
     if self.pos_noise:
-      x = np.clip(x + npr.normal(0.0, self.pos_noise), self.env.workspace[0,0], self.env.workspace[0,1])
-      y = np.clip(y + npr.normal(0.0, self.pos_noise), self.env.workspace[1,0], self.env.workspace[1,1])
+      x = np.clip(x + npr.uniform(0.0, self.pos_noise), self.env.workspace[0,0], self.env.workspace[0,1])
+      y = np.clip(y + npr.uniform(0.0, self.pos_noise), self.env.workspace[1,0], self.env.workspace[1,1])
     return x, y
 
   def addNoiseToRot(self, rot):
     if self.rot_noise:
       rot = np.clip(rot + npr.uniform(-self.rot_noise, self.rot_noise), 0., np.pi)
     return rot
+
+  def getRandomPickingAction(self):
+    x = npr.uniform(self.env.workspace[0, 0] + 0.025, self.env.workspace[0, 1] - 0.025)
+    y = npr.uniform(self.env.workspace[1, 0] + 0.025, self.env.workspace[1, 1] - 0.025)
+    z = 0.
+    r = npr.uniform(0., np.pi)
+    return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
+
+  def getRandomPlacingAction(self):
+    x = npr.uniform(self.env.workspace[0, 0] + 0.025, self.env.workspace[0, 1] - 0.025)
+    y = npr.uniform(self.env.workspace[1, 0] + 0.025, self.env.workspace[1, 1] - 0.025)
+    z = 0.
+    r = npr.uniform(0., np.pi)
+    return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
+
 
   def encodeAction(self, primitive, x, y, z, r):
     if self.pos_noise: x, y = self.addNoiseToPos(x, y)
