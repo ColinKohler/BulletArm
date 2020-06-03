@@ -20,7 +20,7 @@ for _ in range(100):
   s = 0
   while not done:
     s+=1
-    # plt.imshow(obs.squeeze(), cmap='gray', vmin=0.0, vmax=0.1); plt.show()
+    plt.imshow(obs.squeeze(), cmap='gray', vmin=0.0, vmax=0.1); plt.show()
     action = envs.getNextAction()
     state_, hand_obs_, obs_, reward, done, valid = envs.step(action)
 
@@ -35,7 +35,7 @@ for _ in range(100):
     obs = obs_
     hand_obs = hand_obs_
 
-  # plt.imshow(obs.squeeze(), cmap='gray', vmin=0.0, vmax=0.1); plt.show()
+  plt.imshow(obs.squeeze(), cmap='gray', vmin=0.0, vmax=0.1); plt.show()
 
 print(success)
 print(other)

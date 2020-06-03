@@ -125,14 +125,14 @@ class PyBulletEnv(BaseEnv):
   def reset(self):
     ''''''
     self.episode_count += 1
-    if self.episode_count >= 1000:
+    if self.episode_count >= 1:
       self.initialize()
-      self.episode_count = 0
-
-    for o in self.objects:
-      pb.removeBody(o.object_id)
+    else:
+      for o in self.objects:
+        pb.removeBody(o.object_id)
 
     # Reset episode vars
+    self.robot.reset()
     self.objects = list()
     self.object_types = {}
 
