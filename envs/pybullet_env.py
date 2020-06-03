@@ -115,7 +115,6 @@ class PyBulletEnv(BaseEnv):
     self.table_id = pb.loadURDF('plane.urdf', [0,0,0])
 
     # Load the UR5 and set it to the home positions
-    self.robot.initialize()
     self.robot.reset()
 
     # Reset episode vars
