@@ -106,11 +106,8 @@ class PyBulletEnv(BaseEnv):
     self.state = {}
     self.pb_state = None
 
-    self.initialize()
-
-  def initialize(self):
-    self.episode_count = 0
-
+  def reset(self):
+    ''''''
     pb.resetSimulation()
     pb.setTimeStep(self._timestep)
 
@@ -119,20 +116,9 @@ class PyBulletEnv(BaseEnv):
 
     # Load the UR5 and set it to the home positions
     self.robot.initialize()
-
-    pb.stepSimulation()
-
-  def reset(self):
-    ''''''
-    self.episode_count += 1
-    if self.episode_count >= 1:
-      self.initialize()
-    else:
-      for o in self.objects:
-        pb.removeBody(o.object_id)
+    self.robot.reset()
 
     # Reset episode vars
-    self.robot.reset()
     self.objects = list()
     self.object_types = {}
 
