@@ -26,7 +26,9 @@ from helping_hands_rl_envs.envs.cube_float_picking_env import createCubeFloatPic
 from helping_hands_rl_envs.envs.block_placing_env import createBlockPlacingEnv
 from helping_hands_rl_envs.envs.tilt_block_stacking_env import createTiltBlockStackingEnv
 from helping_hands_rl_envs.envs.tilt_house_building_1_env import createTiltHouseBuilding1Env
+from helping_hands_rl_envs.envs.tilt_house_building_4_env import createTiltHouseBuilding4Env
 from helping_hands_rl_envs.envs.tilt_house_building_1_deconstruct_env import createTiltHouseBuilding1DeconstructEnv
+from helping_hands_rl_envs.envs.tilt_house_building_4_deconstruct_env import createTiltHouseBuilding4DeconstructEnv
 
 from helping_hands_rl_envs.planners.planner_factory import createPlanner, AVAILABLE_PLANNER
 
@@ -109,8 +111,12 @@ def createEnvs(num_processes, runner_type, simulator, env_type, env_config, plan
     envs = [createTiltBlockStackingEnv(parent_env, env_configs[i]) for i in range(num_processes)]
   elif env_type == 'tilt_house_building_1':
     envs = [createTiltHouseBuilding1Env(parent_env, env_configs[i]) for i in range(num_processes)]
+  elif env_type == 'tilt_house_building_4':
+    envs = [createTiltHouseBuilding4Env(parent_env, env_configs[i]) for i in range(num_processes)]
   elif env_type == 'tilt_house_building_1_deconstruct':
     envs = [createTiltHouseBuilding1DeconstructEnv(parent_env, env_configs[i]) for i in range(num_processes)]
+  elif env_type == 'tilt_house_building_4_deconstruct':
+    envs = [createTiltHouseBuilding4DeconstructEnv(parent_env, env_configs[i]) for i in range(num_processes)]
 
 
   else:
