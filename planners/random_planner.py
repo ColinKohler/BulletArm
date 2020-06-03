@@ -12,9 +12,9 @@ class RandomPlanner(BasePlanner):
 
     if self.env.action_has_primative:
       primative = npr.randint(self.env.num_primatives)
-      return np.concatenate(([primative], location))
+      return self.encodeAction(primative, location[0], location[1], 0, 0)
     else:
-      return location
+      return self.encodeAction(0, location[0], location[1], 0, 0)
 
   def getStepLeft(self):
     return 100
