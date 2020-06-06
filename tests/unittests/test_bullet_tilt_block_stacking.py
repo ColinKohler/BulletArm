@@ -25,7 +25,7 @@ class TestBulletTilt(unittest.TestCase):
     self.env_config['reward_type'] = 'sparse'
     self.env_config['random_orientation'] = True
     self.env_config['num_objects'] = 4
-    self.env_config['action_sequence'] = 'xyrrp'
+    self.env_config['action_sequence'] = 'xyzrrp'
     self.env_config['in_hand_mode'] = 'proj'
 
     env = env_factory.createEnvs(1, 'rl', 'pybullet', 'tilt_block_stacking', self.env_config, {})

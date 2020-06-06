@@ -12,8 +12,8 @@ def createTiltHouseBuilding4DeconstructEnv(simulator_base_env, config):
     def __init__(self, config):
       if simulator_base_env is PyBulletEnv:
         super().__init__(config)
-        self.pick_offset = 0.005
-        self.place_offset = 0.02
+        self.pick_offset = 0.01
+        self.place_offset = 0.022
         self.block_scale_range = (0.6, 0.6)
         self.min_block_size = self.block_original_size * self.block_scale_range[0]
         self.max_block_size = self.block_original_size * self.block_scale_range[1]

@@ -13,7 +13,7 @@ def createTiltHouseBuilding1DeconstructEnv(simulator_base_env, config):
       if simulator_base_env is PyBulletEnv:
         super().__init__(config)
         self.pick_offset = 0.01
-        self.place_offset = 0.02
+        self.place_offset = 0.022
 
       else:
         raise ValueError('Bad simulator base env specified.')

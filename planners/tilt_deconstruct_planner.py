@@ -63,15 +63,15 @@ class TiltDeconstructPlanner(BlockStructureBasePlanner):
       place_pos = self.getValidPositions(padding_dist, min_dist, existing_pos, 1)[0]
     except NoValidPositionException:
       place_pos = self.getValidPositions(padding_dist, min_dist, [], 1)[0]
-    x, y, z = place_pos[0], place_pos[1], self.env.max_block_size
+    x, y, z = place_pos[0], place_pos[1], self.env.place_offset
     if place_pos[1] < self.env.tilt_border2:
       rx = -self.env.tilt_plain2_rx
       rz = 0
-      z += np.tan(-self.env.tilt_plain2_rx) * - place_pos[1]
+      z += np.tan(-self.env.tilt_plain2_rx) * - (place_pos[1]-self.env.tilt_border2)
     elif place_pos[1] > self.env.tilt_border:
       rx = -self.env.tilt_plain_rx
       rz = 0
-      z += np.tan(self.env.tilt_plain_rx) * place_pos[1]
+      z += np.tan(self.env.tilt_plain_rx) * (place_pos[1]-self.env.tilt_border)
     else:
       rx = 0
       rz = np.random.random()*np.pi*2
