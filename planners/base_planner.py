@@ -8,7 +8,8 @@ class BasePlanner(object):
     self.env = env
     self.rand_pick_prob = config['rand_pick_prob'] if 'rand_pick_prob' in config else 0.0
     self.rand_place_prob = config['rand_place_prob'] if 'rand_place_prob' in config else 0.0
-    self.pos_noise = config['pos_noise'] if 'pos_noise' in config else None
+    self.pick_noise = config['pick_noise'] if 'pick_noise' in config else None
+    self.place_noise = config['place_noise'] if 'place_noise' in config else None
     self.rot_noise = config['rot_noise'] if 'rot_noise' in config else None
     self.gamma = config['gamma']  if 'gamma' in config else 0.9
 
@@ -21,11 +22,13 @@ class BasePlanner(object):
   def getValue(self):
     return self.gamma**self.getStepsLeft()
 
-  def addNoiseToPos(self, x, y):
-    # TODO: Would we ever want to include noise on the z-axis here?
-    if self.pos_noise:
-      x = np.clip(x + npr.uniform(0.0, self.pos_noise), self.env.workspace[0,0], self.env.workspace[0,1])
-      y = np.clip(y + npr.uniform(0.0, self.pos_noise), self.env.workspace[1,0], self.env.workspace[1,1])
+  def addNoiseToPos(self, x, y, primative):
+    if primative == constants.PICK_PRIMATIVE and self.pick_noise:
+      x = np.clip(x + npr.uniform(-self.pick_noise, self.pick_noise), self.env.workspace[0,0], self.env.workspace[0,1])
+      y = np.clip(y + npr.uniform(-self.pick_noise, self.pick_noise), self.env.workspace[1,0], self.env.workspace[1,1])
+    elif primative == constants.PLACE_PRIMATIVE and self.place_noise:
+      x = np.clip(x + npr.uniform(-self.place_noise, self.place_noise), self.env.workspace[0,0], self.env.workspace[0,1])
+      y = np.clip(y + npr.uniform(-self.place_noise, self.place_noise), self.env.workspace[1,0], self.env.workspace[1,1])
     return x, y
 
   def addNoiseToRot(self, rot):
@@ -47,9 +50,8 @@ class BasePlanner(object):
     r = npr.uniform(0., np.pi)
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
-
   def encodeAction(self, primitive, x, y, z, r):
-    if self.pos_noise: x, y = self.addNoiseToPos(x, y)
+    x, y = self.addNoiseToPos(x, y, primitive)
     if self.rot_noise: r = self.addNoiseToRot(r)
     return self.env._encodeAction(primitive, x, y, z, r)
 

@@ -70,8 +70,8 @@ class PyBulletEnv(BaseEnv):
 
     # TODO: Move this somewhere it makes sense
     self.block_original_size = 0.05
-    # self.block_scale_range = (0.6, 0.7)
-    self.block_scale_range = (0.4, 0.9)
+    self.block_scale_range = (0.6, 0.7)
+    # self.block_scale_range = (0.4, 0.9)
     self.min_block_size = self.block_original_size * self.block_scale_range[0]
     self.max_block_size = self.block_original_size * self.block_scale_range[1]
 

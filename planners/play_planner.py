@@ -27,10 +27,7 @@ class PlayPlanner(BasePlanner):
     x, y, z, r = pose[0], pose[1], pose[2], pose[5]
     primative = constants.PLACE_PRIMATIVE if self.env._isHolding() else constants.PICK_PRIMATIVE
 
-    x, y = self.addNoiseToPos(x, y)
-    r = self.addNoiseToRot(r)
-
-    return self.env._encodeAction(primative, x, y, z, r)
+    return self.encodeAction(primative, x, y, z, r)
 
   # TODO: This is for block stacking so its weird to have this here
   def getStepsLeft(self):
