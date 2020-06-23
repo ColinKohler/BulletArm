@@ -62,7 +62,7 @@ def createTiltImproviseHouseBuilding3DeconstructEnv(simulator_base_env, config):
     def checkStructure(self):
       rand_objs = list(filter(lambda x: self.object_types[x] == constants.RANDOM, self.objects))
       roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
-      if roofs[0].getZPosition() < 1.34 * self.min_block_size:
+      if roofs[0].getZPosition() < 1.32 * self.min_block_size:
         return False
 
       rand_obj_combs = combinations(rand_objs, 2)

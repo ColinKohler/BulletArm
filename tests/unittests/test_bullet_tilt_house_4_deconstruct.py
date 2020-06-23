@@ -44,7 +44,7 @@ class TestBulletHouse4Deconstruct(unittest.TestCase):
 
       for i in range(num_processes):
         if dones[i]:
-          if steps[i] <= 2*(num_objects[i]-1):
+          if steps[i] <= 2*(num_objects[i]):
             s += 1
           total += 1
           steps[i] = 0

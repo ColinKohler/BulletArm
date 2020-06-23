@@ -39,22 +39,7 @@ def createTiltImproviseHouseBuilding3Env(simulator_base_env, config):
 
     def resetWithTiltAndObj(self, obj_dict):
       while True:
-        if self.tilt_plain_id > -1:
-          pb.removeBody(self.tilt_plain_id)
-        if self.tilt_plain2_id > -1:
-          pb.removeBody(self.tilt_plain2_id)
-
-        super(PyBulletTiltEnv, self).reset()
-        self.tilt_plain_rx = (self.rx_range[1] - self.rx_range[0]) * np.random.random_sample() + self.rx_range[0]
-        self.tilt_plain_id = pb.loadURDF('plane.urdf',
-                                         [0.5 * (self.workspace[0][1] + self.workspace[0][0]), self.tilt_border, 0],
-                                         pb.getQuaternionFromEuler([self.tilt_plain_rx, 0, 0]),
-                                         globalScaling=0.005)
-        self.tilt_plain2_rx = (self.rx_range[0] - self.rx_range[1]) * np.random.random_sample() + self.rx_range[0]
-        self.tilt_plain2_id = pb.loadURDF('plane.urdf',
-                                          [0.5 * (self.workspace[0][1] + self.workspace[0][0]), self.tilt_border2, 0],
-                                          pb.getQuaternionFromEuler([self.tilt_plain2_rx, 0, 0]),
-                                          globalScaling=0.005)
+        self.resetTilt()
         try:
           existing_pos = []
           for t in obj_dict:
@@ -92,6 +77,7 @@ def createTiltImproviseHouseBuilding3Env(simulator_base_env, config):
           break
 
     def reset(self):
+      super().reset()
       obj_dict = {
         constants.ROOF: 1,
         constants.RANDOM: self.num_obj-1

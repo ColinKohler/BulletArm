@@ -9,18 +9,9 @@ from helping_hands_rl_envs.envs.pybullet_tilt_env import PyBulletTiltEnv
 import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
 from helping_hands_rl_envs.simulators import constants
 
-class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv):
+class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
   def __init__(self, config):
     super().__init__(config)
-
-    self.rx_range = (0, np.pi / 6)
-    self.tilt_plain_rx = 0
-    self.tilt_plain2_rx = 0
-    self.tilt_plain_id = -1
-    self.tilt_plain2_id = -1
-    self.pick_rx = 0
-    self.tilt_border = 0.035
-    self.tilt_border2 = -0.035
 
   def _getObservation(self, action=None):
     ''''''
@@ -42,35 +33,26 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv):
     return self._isHolding(), in_hand_img, self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
 
-  def resetTilt(self):
-    if self.tilt_plain_id > -1:
-      pb.removeBody(self.tilt_plain_id)
-    if self.tilt_plain2_id > -1:
-      pb.removeBody(self.tilt_plain2_id)
-
-    self.tilt_plain_rx = (self.rx_range[1] - self.rx_range[0]) * np.random.random_sample() + self.rx_range[0]
-    self.tilt_plain_id = pb.loadURDF('plane.urdf',
-                                     [0.5 * (self.workspace[0][1] + self.workspace[0][0]), self.tilt_border, 0],
-                                     pb.getQuaternionFromEuler([self.tilt_plain_rx, 0, 0]),
-                                     globalScaling=0.005)
-    self.tilt_plain2_rx = (self.rx_range[0] - self.rx_range[1]) * np.random.random_sample() + self.rx_range[0]
-    self.tilt_plain2_id = pb.loadURDF('plane.urdf',
-                                      [0.5 * (self.workspace[0][1] + self.workspace[0][0]), self.tilt_border2, 0],
-                                      pb.getQuaternionFromEuler([self.tilt_plain2_rx, 0, 0]),
-                                      globalScaling=0.005)
-
-  def initialize(self):
-    super().initialize()
-    self.tilt_plain_id = -1
-    self.tilt_plain2_id = -1
+  # def initialize(self):
+  #   super().initialize()
+  #   self.tilt_plain_id = -1
+  #   self.tilt_plain2_id = -1
 
   def reset(self):
     super().reset()
     self.resetTilt()
 
+  def isPosOffTilt(self, pos):
+    y1 = np.tan(self.tilt_rz) * pos[0] - (self.workspace[0].mean() * np.tan(self.tilt_rz) - self.tilt_border)
+    y2 = np.tan(self.tilt_rz) * pos[0] - (self.workspace[0].mean() * np.tan(self.tilt_rz) + self.tilt_border)
+    return y2+0.02*np.cos(self.tilt_rz) < pos[1] < y1-0.02*np.cos(self.tilt_rz)
+
   def generateH1(self):
     padding = self.max_block_size * 1.5
-    pos = self._getValidPositions(padding, 0, [], 1, sample_range=[self.workspace[0], [self.tilt_border2+0.02, self.tilt_border-0.02]])[0]
+    while True:
+      pos = self._getValidPositions(padding, 0, [], 1)[0]
+      if self.isPosOffTilt(pos):
+        break
     rot = pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()])
     for i in range(self.num_obj-1):
       handle = pb_obj_generation.generateCube((pos[0], pos[1], i*self.max_block_size+self.max_block_size/2),
@@ -90,19 +72,21 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv):
 
   def generateH4(self):
     padding = self.max_block_size * 1.5
-    pos1 = self._getValidPositions(padding, 0, [], 1, sample_range=[self.workspace[0], [self.tilt_border2+0.02, self.tilt_border-0.02]])[0]
+    while True:
+      pos1 = self._getValidPositions(padding, 0, [], 1)[0]
+      if self.isPosOffTilt(pos1):
+        break
     min_dist = 2.1 * self.max_block_size
     max_dist = 2.2 * self.max_block_size
     sample_range = [[pos1[0] - max_dist, pos1[0] + max_dist],
-                    [max(pos1[1] - max_dist, self.tilt_border2 + 0.02),
-                     min(pos1[1] + max_dist, self.tilt_border - 0.02)]]
-    for i in range(100):
+                    [pos1[1] - max_dist, pos1[1] + max_dist]]
+    for i in range(1000):
       try:
         pos2 = self._getValidPositions(padding, min_dist, [pos1], 1, sample_range=sample_range)[0]
       except NoValidPositionException:
         continue
       dist = np.linalg.norm(np.array(pos1) - np.array(pos2))
-      if min_dist < dist < max_dist:
+      if min_dist < dist < max_dist and self.isPosOffTilt(pos2):
         break
 
     self.generateObject((pos1[0], pos1[1], self.max_block_size / 2),
@@ -157,19 +141,21 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv):
       self.structure_objs.append(handle)
 
     padding = self.max_block_size * 1.5
-    pos1 = self._getValidPositions(padding, 0, [], 1, sample_range=[self.workspace[0], [self.tilt_border2+0.02, self.tilt_border-0.02]])[0]
+    while True:
+      pos1 = self._getValidPositions(padding, 0, [], 1)[0]
+      if self.isPosOffTilt(pos1):
+        break
     min_dist = 1.7 * self.max_block_size
     max_dist = 2.4 * self.max_block_size
     sample_range = [[pos1[0] - max_dist, pos1[0] + max_dist],
-                    [max(pos1[1] - max_dist, self.tilt_border2 + 0.02),
-                     min(pos1[1] + max_dist, self.tilt_border - 0.02)]]
-    for i in range(100):
+                    [pos1[1] - max_dist, pos1[1] + max_dist]]
+    for i in range(1000):
       try:
         pos2 = self._getValidPositions(padding, min_dist, [pos1], 1, sample_range=sample_range)[0]
       except NoValidPositionException:
         continue
       dist = np.linalg.norm(np.array(pos1) - np.array(pos2))
-      if min_dist < dist < max_dist:
+      if min_dist < dist < max_dist and self.isPosOffTilt(pos2):
         break
 
     t = np.random.choice(4)

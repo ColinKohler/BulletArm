@@ -27,8 +27,7 @@ class TestBulletHouse1Deconstruct(unittest.TestCase):
     total = 0
     s = 0
     step_times = []
-    while True:
-      env.reset()
+    env.reset()
     pbar = tqdm(total=1000)
     steps = [0 for i in range(num_processes)]
     while total < 1000:
@@ -45,7 +44,7 @@ class TestBulletHouse1Deconstruct(unittest.TestCase):
 
       for i in range(num_processes):
         if dones[i]:
-          if steps[i] <= 2*(num_objects[i]-1):
+          if steps[i] <= 2*(num_objects[i]):
             s += 1
           total += 1
           steps[i] = 0

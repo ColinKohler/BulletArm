@@ -19,22 +19,38 @@ class PyBulletTiltEnv(PyBulletEnv):
     self.tilt_border = 0.035
     self.tilt_border2 = -0.035
 
+    self.tilt_rz = 0
+
+  def initialize(self):
+    super().initialize()
+    self.tilt_plain_id = -1
+    self.tilt_plain2_id = -1
+
+  def resetTilt(self):
+    self.tilt_rz = -np.pi / 2 + np.random.random_sample() * np.pi
+    if self.tilt_plain_id > -1:
+      pb.removeBody(self.tilt_plain_id)
+    if self.tilt_plain2_id > -1:
+      pb.removeBody(self.tilt_plain2_id)
+
+    self.tilt_plain_rx = (self.rx_range[1] - self.rx_range[0]) * np.random.random_sample() + self.rx_range[0]
+    self.tilt_plain_id = pb.loadURDF('plane.urdf',
+                                     [self.workspace[0].mean() - self.tilt_border * np.sin(self.tilt_rz),
+                                      self.tilt_border * np.cos(self.tilt_rz),
+                                      0],
+                                     pb.getQuaternionFromEuler([self.tilt_plain_rx, 0, self.tilt_rz]),
+                                     globalScaling=0.002)
+    self.tilt_plain2_rx = (self.rx_range[0] - self.rx_range[1]) * np.random.random_sample() + self.rx_range[0]
+    self.tilt_plain2_id = pb.loadURDF('plane.urdf',
+                                      [self.workspace[0].mean() + self.tilt_border * np.sin(self.tilt_rz),
+                                       -self.tilt_border * np.cos(self.tilt_rz),
+                                       0],
+                                      pb.getQuaternionFromEuler([self.tilt_plain2_rx, 0, self.tilt_rz]),
+                                      globalScaling=0.002)
+
   def resetWithTiltAndObj(self, obj_dict):
     while True:
-      if self.tilt_plain_id > -1:
-        pb.removeBody(self.tilt_plain_id)
-      if self.tilt_plain2_id > -1:
-        pb.removeBody(self.tilt_plain2_id)
-
-      super(PyBulletTiltEnv, self).reset()
-      self.tilt_plain_rx = (self.rx_range[1] - self.rx_range[0]) * np.random.random_sample() + self.rx_range[0]
-      self.tilt_plain_id = pb.loadURDF('plane.urdf', [0.5 * (self.workspace[0][1] + self.workspace[0][0]), self.tilt_border, 0], pb.getQuaternionFromEuler([self.tilt_plain_rx, 0, 0]),
-                                       globalScaling=0.005)
-      self.tilt_plain2_rx = (self.rx_range[0] - self.rx_range[1]) * np.random.random_sample() + self.rx_range[0]
-      self.tilt_plain2_id = pb.loadURDF('plane.urdf',
-                                       [0.5 * (self.workspace[0][1] + self.workspace[0][0]), self.tilt_border2, 0],
-                                       pb.getQuaternionFromEuler([self.tilt_plain2_rx, 0, 0]),
-                                       globalScaling=0.005)
+      self.resetTilt()
       try:
         existing_pos = []
         for t in obj_dict:
@@ -52,40 +68,20 @@ class PyBulletTiltEnv(PyBulletEnv):
           orientations = []
           existing_pos.extend(deepcopy(other_pos))
           for position in other_pos:
-            if position[1] < self.tilt_border2:
-              position.append(0.01 + np.tan(-self.tilt_plain2_rx) * -position[1])
-              orientations.append(pb.getQuaternionFromEuler([self.tilt_plain2_rx, 0, 0]))
-            elif position[1] > self.tilt_border:
-              position.append(0.01 + np.tan(self.tilt_plain_rx) * position[1])
-              orientations.append(pb.getQuaternionFromEuler([self.tilt_plain_rx, 0, 0]))
+            y1 = np.tan(self.tilt_rz) * position[0] - (self.workspace[0].mean()*np.tan(self.tilt_rz) - self.tilt_border)
+            y2 = np.tan(self.tilt_rz) * position[0] - (self.workspace[0].mean()*np.tan(self.tilt_rz) + self.tilt_border)
+            if position[1] > y1:
+              d = (position[1] - y1) * np.cos(self.tilt_rz)
+              position.append(0.02+np.tan(self.tilt_plain_rx) * d)
+              orientations.append(pb.getQuaternionFromEuler([self.tilt_plain_rx, 0, self.tilt_rz]))
+            elif position[1] < y2:
+              d = (y2 - position[1]) * np.cos(self.tilt_rz)
+              position.append(0.02+np.tan(-self.tilt_plain2_rx) * d)
+              orientations.append(pb.getQuaternionFromEuler([self.tilt_plain2_rx, 0, self.tilt_rz]))
             else:
               position.append(0.02)
               orientations.append(pb.getQuaternionFromEuler([0, 0, np.random.random()*np.pi*2]))
           self._generateShapes(t, obj_dict[t], random_orientation=False, pos=other_pos, rot=orientations)
-
-        # existing_pos = []
-        # count = 0
-        # for t in obj_dict:
-        #   for i in range(obj_dict[t]):
-        #     if np.random.random() > 0.5:
-        #       other_pos = self._getValidPositions(self.max_block_size * 3, self.max_block_size * 3, existing_pos, 1,
-        #                                           sample_range=[self.workspace[0],
-        #                                                         [self.tilt_border + 0.02, self.workspace[1][1]]])
-        #       existing_pos.extend(deepcopy(other_pos))
-        #       for position in other_pos:
-        #         position.append(0.04 + np.tan(self.tilt_plain_rx) * position[1])
-        #       orientations = [pb.getQuaternionFromEuler([self.tilt_plain_rx, 0, 0])]
-        #
-        #     else:
-        #       other_pos = self._getValidPositions(self.max_block_size * 3, self.max_block_size * 3, existing_pos, 1,
-        #                                           sample_range=[self.workspace[0],
-        #                                                         [self.workspace[1][0], self.tilt_border2 - 0.02]])
-        #       existing_pos.extend(deepcopy(other_pos))
-        #       for position in other_pos:
-        #         position.append(0.04 + np.tan(-self.tilt_plain2_rx) * -position[1])
-        #       orientations = [pb.getQuaternionFromEuler([self.tilt_plain2_rx, 0, 0])]
-        #     self._generateShapes(t, 1, random_orientation=False, pos=other_pos, rot=orientations)
-        #     count += 1
       except Exception as e:
         continue
       else:
