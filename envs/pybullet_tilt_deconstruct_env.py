@@ -12,6 +12,8 @@ from helping_hands_rl_envs.simulators import constants
 class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
   def __init__(self, config):
     super().__init__(config)
+    self.pick_offset = 0.01
+    self.place_offset = 0.02
 
   def _getObservation(self, action=None):
     ''''''
@@ -25,8 +27,9 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
       in_hand_img = self.getEmptyInHand()
     else:
       motion_primative, x, y, z, rot = self._decodeAction(action)
-      # z is set for a placing action, here eliminate the place offset and put the pick offset
-      z = z - self.place_offset - self.pick_offset
+      if self.action_sequence.find('z') == -1:
+        # z is set for a placing action, here eliminate the place offset and put the pick offset
+        z = z - self.place_offset - self.pick_offset
       in_hand_img = self.getInHandImage(self.heightmap, x, y, z, rot, old_heightmap)
 
 

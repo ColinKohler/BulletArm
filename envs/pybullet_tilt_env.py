@@ -3,6 +3,7 @@ import pybullet as pb
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators.pybullet.robots.kuka_float_pick import KukaFloatPick
 from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 import numpy.random as npr
 import numpy as np
 
@@ -20,6 +21,10 @@ class PyBulletTiltEnv(PyBulletEnv):
     self.tilt_border2 = -0.035
 
     self.tilt_rz = 0
+
+    self.block_scale_range = (0.6, 0.6)
+    self.min_block_size = self.block_original_size * self.block_scale_range[0]
+    self.max_block_size = self.block_original_size * self.block_scale_range[1]
 
   def initialize(self):
     super().initialize()
@@ -54,15 +59,8 @@ class PyBulletTiltEnv(PyBulletEnv):
       try:
         existing_pos = []
         for t in obj_dict:
-          if t in (constants.CUBE, constants.TRIANGLE, constants.RANDOM):
-            padding = self.max_block_size * 1.5
-            min_distance = self.max_block_size * 2.4
-          elif t in (constants.BRICK, constants.ROOF):
-            padding = self.max_block_size * 3.4
-            min_distance = self.max_block_size * 3.4
-          else:
-            padding = self.max_block_size * 1.5
-            min_distance = self.max_block_size * 2.4
+          padding = pybullet_util.getPadding(t, self.max_block_size)
+          min_distance = pybullet_util.getMinDistance(t, self.max_block_size)
 
           other_pos = self._getValidPositions(padding, min_distance, existing_pos, obj_dict[t])
           orientations = []

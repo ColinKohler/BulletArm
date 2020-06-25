@@ -9,6 +9,7 @@ from helping_hands_rl_envs.planners.block_stacking_planner import BlockStackingP
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
 from helping_hands_rl_envs.planners.block_structure_base_planner import BlockStructureBasePlanner
 from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 
 class TiltDeconstructPlanner(BlockStructureBasePlanner):
   def __init__(self, env, config):
@@ -27,7 +28,7 @@ class TiltDeconstructPlanner(BlockStructureBasePlanner):
     if objects is None: objects = self.env.objects
     objects, object_poses = self.getSortedObjPoses(objects=objects)
 
-    x, y, z, r = object_poses[0][0], object_poses[0][1], object_poses[0][2]+self.env.pick_offset, object_poses[0][5]
+    x, y, z, r = object_poses[0][0], object_poses[0][1], object_poses[0][2], object_poses[0][5]
     for obj, pose in zip(objects, object_poses):
       if self.isObjOnTop(obj):
         x, y, z, r = pose[0], pose[1], pose[2]+self.env.pick_offset, pose[5]
@@ -48,17 +49,6 @@ class TiltDeconstructPlanner(BlockStructureBasePlanner):
     :return: encoded action
     """
     existing_pos = [o.getXYPosition() for o in list(filter(lambda x: not self.isObjectHeld(x), self.env.objects))]
-    # if np.random.random() > 0.5:
-    #   sample_range = [self.env.workspace[0], [self.env.tilt_border + 0.02, self.env.workspace[1][1]]]
-    # else:
-    #   sample_range = [self.env.workspace[0], [self.env.workspace[1][0], self.env.tilt_border2 - 0.02]]
-    # try:
-    #   place_pos = self.getValidPositions(padding_dist, min_dist, existing_pos, 1, sample_range)[0]
-    # except NoValidPositionException:
-    #   try:
-    #     place_pos = self.getValidPositions(padding_dist, min_dist, existing_pos, 1)[0]
-    #   except NoValidPositionException:
-    #     place_pos = self.getValidPositions(padding_dist, min_dist, [], 1)[0]
     try:
       place_pos = self.getValidPositions(padding_dist, min_dist, existing_pos, 1)[0]
     except NoValidPositionException:
@@ -80,17 +70,32 @@ class TiltDeconstructPlanner(BlockStructureBasePlanner):
       rx = 0
       rz = np.random.random() * np.pi * 2
 
-    # if place_pos[1] < self.env.tilt_border2:
-    #   rx = -self.env.tilt_plain2_rx
-    #   rz = 0
-    #   z += np.tan(-self.env.tilt_plain2_rx) * - (place_pos[1]-self.env.tilt_border2)
-    # elif place_pos[1] > self.env.tilt_border:
-    #   rx = -self.env.tilt_plain_rx
-    #   rz = 0
-    #   z += np.tan(self.env.tilt_plain_rx) * (place_pos[1]-self.env.tilt_border)
-    # else:
-    #   rx = 0
-    #   rz = np.random.random()*np.pi*2
+    return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, (rz, rx))
+
+  def placeOnTilt(self, padding_dist, min_dist):
+    existing_pos = [o.getXYPosition() for o in list(filter(lambda x: not self.isObjectHeld(x), self.env.objects))]
+    while True:
+      try:
+        place_pos = self.getValidPositions(padding_dist, min_dist, existing_pos, 1)[0]
+      except NoValidPositionException:
+        place_pos = self.getValidPositions(padding_dist, min_dist, [], 1)[0]
+      x, y, z = place_pos[0], place_pos[1], self.env.place_offset
+      y1 = np.tan(self.env.tilt_rz) * x - (self.env.workspace[0].mean() * np.tan(self.env.tilt_rz) - self.env.tilt_border)
+      y2 = np.tan(self.env.tilt_rz) * x - (self.env.workspace[0].mean() * np.tan(self.env.tilt_rz) + self.env.tilt_border)
+      if y > y1:
+        rx = -self.env.tilt_plain_rx
+        rz = self.env.tilt_rz
+        d = (y - y1) * np.cos(self.env.tilt_rz)
+        z += np.tan(self.env.tilt_plain_rx) * d
+        break
+      elif y < y2:
+        rx = -self.env.tilt_plain2_rx
+        rz = self.env.tilt_rz
+        d = (y2 - y) * np.cos(self.env.tilt_rz)
+        z += np.tan(-self.env.tilt_plain2_rx) * d
+        break
+      else:
+        continue
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, (rz, rx))
 
   def getPickingAction(self):
@@ -101,4 +106,8 @@ class TiltDeconstructPlanner(BlockStructureBasePlanner):
     return self.pickTallestObjOnTop(self.objs_to_remove)
 
   def getPlacingAction(self):
-    return self.placeOnGround(self.env.max_block_size * 2, self.env.max_block_size * 2.7)
+    padding = pybullet_util.getPadding(self.getHoldingObjType(), self.env.max_block_size)
+    min_distance = pybullet_util.getMinDistance(self.getHoldingObjType(), self.env.max_block_size)
+    if len(self.objs_to_remove) == 0:
+      return self.placeOnTilt(padding, min_distance)
+    return self.placeOnGround(padding, min_distance)
