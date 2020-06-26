@@ -95,10 +95,10 @@ class PyBulletEnv(BaseEnv):
     self.place_offset = self.block_scale_range[1]*self.block_original_size
 
     # Setup camera parameters
-    self.view_matrix = pb.computeViewMatrixFromYawPitchRoll([workspace[0].mean(), workspace[1].mean(), 0], 1.0, -90, -90, 0, 2)
+    self.view_matrix = pb.computeViewMatrixFromYawPitchRoll([workspace[0].mean(), workspace[1].mean(), 0], 10.0, -90, -90, 0, 2)
     workspace_x_offset = (workspace[0][1] - workspace[0][0])/2
     workspace_y_offset = (workspace[1][1] - workspace[1][0])/2
-    self.proj_matrix = pb.computeProjectionMatrix(-workspace_x_offset, workspace_x_offset, -workspace_y_offset, workspace_y_offset, -1.0, 10.0)
+    self.proj_matrix = pb.computeProjectionMatrix(-workspace_x_offset, workspace_x_offset, -workspace_y_offset, workspace_y_offset, -10.0, 100.0)
 
     # Rest pose for arm
     rot = pb.getQuaternionFromEuler([0, np.pi, 0])
@@ -311,7 +311,7 @@ class PyBulletEnv(BaseEnv):
 
     image_arr = pb.getCameraImage(width=self.heightmap_size, height=self.heightmap_size,
                                   viewMatrix=self.view_matrix, projectionMatrix=self.proj_matrix)
-    self.heightmap = image_arr[3] - np.min(image_arr[3])
+    self.heightmap = (image_arr[3] - np.min(image_arr[3])) * 10
 
     if action is None or self._isHolding() == False:
       in_hand_img = self.getEmptyInHand()
