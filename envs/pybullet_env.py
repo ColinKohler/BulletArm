@@ -96,10 +96,12 @@ class PyBulletEnv(BaseEnv):
     self.place_offset = self.block_scale_range[1]*self.block_original_size
 
     # Setup camera parameters
-    self.view_matrix = pb.computeViewMatrixFromYawPitchRoll([workspace[0].mean(), workspace[1].mean(), 0], 10.0, -90, -90, 0, 2)
     workspace_x_offset = (workspace[0][1] - workspace[0][0])/2
     workspace_y_offset = (workspace[1][1] - workspace[1][0])/2
+    self.view_matrix = pb.computeViewMatrixFromYawPitchRoll([workspace[0].mean(), workspace[1].mean(), 0], 10, -90, -90, 0, 2)
     self.proj_matrix = pb.computeProjectionMatrix(-workspace_x_offset, workspace_x_offset, -workspace_y_offset, workspace_y_offset, -10.0, 100.0)
+    # self.view_matrix = pb.computeViewMatrixFromYawPitchRoll([workspace[0].mean(), workspace[1].mean(), 0], 3, -90, -90, 0, 2)
+    # self.proj_matrix = pb.computeProjectionMatrixFOV(5.7, 1, 2, 3.01)
 
     # Rest pose for arm
     rot = pb.getQuaternionFromEuler([0, np.pi, 0])
@@ -306,13 +308,21 @@ class PyBulletEnv(BaseEnv):
            self.workspace[1][0] < p[1] < self.workspace[1][1] and \
            self.workspace[2][0] < p[2] < self.workspace[2][1]
 
+  def _getHeightmap(self):
+    image_arr = pb.getCameraImage(width=self.heightmap_size, height=self.heightmap_size,
+                                  viewMatrix=self.view_matrix, projectionMatrix=self.proj_matrix)
+    depthImg = image_arr[3]
+    # far = 3.01
+    # near = 2
+    far = 100
+    near = -10
+    depth = far * near / (far - (far - near) * depthImg)
+    return depth.max() - depth
+
   def _getObservation(self, action=None):
     ''''''
     old_heightmap = self.heightmap
-
-    image_arr = pb.getCameraImage(width=self.heightmap_size, height=self.heightmap_size,
-                                  viewMatrix=self.view_matrix, projectionMatrix=self.proj_matrix)
-    self.heightmap = (image_arr[3] - np.min(image_arr[3])) * 10
+    self.heightmap = self._getHeightmap()
 
     if action is None or self._isHolding() == False:
       in_hand_img = self.getEmptyInHand()
