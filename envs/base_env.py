@@ -130,6 +130,10 @@ class BaseEnv(object):
       rz -= np.pi * 2
     while rz < 0:
       rz += np.pi * 2
+    if rz > np.pi:
+      rz -= np.pi
+      rx = -rx
+      ry = -ry
     primitive_idx, x_idx, y_idx, z_idx, rot_idx = map(lambda a: self.action_sequence.find(a),
                                                       ['p', 'x', 'y', 'z', 'r'])
     action = np.zeros(len(self.action_sequence), dtype=np.float)
