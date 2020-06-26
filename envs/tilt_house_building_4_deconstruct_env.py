@@ -12,11 +12,6 @@ def createTiltHouseBuilding4DeconstructEnv(simulator_base_env, config):
     def __init__(self, config):
       if simulator_base_env is PyBulletEnv:
         super().__init__(config)
-        self.pick_offset = 0.01
-        self.place_offset = 0.022
-        self.block_scale_range = (0.6, 0.6)
-        self.min_block_size = self.block_original_size * self.block_scale_range[0]
-        self.max_block_size = self.block_original_size * self.block_scale_range[1]
       else:
         raise ValueError('Bad simulator base env specified.')
       self.simulator_base_env = simulator_base_env
@@ -50,7 +45,9 @@ def createTiltHouseBuilding4DeconstructEnv(simulator_base_env, config):
       return self._getObservation()
 
     def _checkTermination(self):
-      if self.current_episode_steps < 12:
+      if np.random.random() < 0.5 and self.current_episode_steps < 12:
+        return False
+      elif self.current_episode_steps < 10:
         return False
       obj_combs = combinations(self.objects, 2)
       for (obj1, obj2) in obj_combs:
