@@ -18,10 +18,7 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
   def _getObservation(self, action=None):
     ''''''
     old_heightmap = self.heightmap
-
-    image_arr = pb.getCameraImage(width=self.heightmap_size, height=self.heightmap_size,
-                                  viewMatrix=self.view_matrix, projectionMatrix=self.proj_matrix)
-    self.heightmap = image_arr[3] - np.min(image_arr[3])
+    self.heightmap = self._getHeightmap()
 
     if action is None or self._isHolding() == True:
       in_hand_img = self.getEmptyInHand()
