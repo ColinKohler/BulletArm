@@ -12,6 +12,7 @@ class PyBulletDeconstructEnv(PyBulletEnv):
     super().__init__(config)
     self.pick_offset = -0.007
     self.structure_objs = []
+    self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
 
   def _getObservation(self, action=None):
     ''''''
@@ -211,8 +212,12 @@ class PyBulletDeconstructEnv(PyBulletEnv):
     pos1 = self._getValidPositions(padding, 0, [], 1)[0]
     min_dist = 2.1 * self.max_block_size
     max_dist = 2.2 * self.max_block_size
-    sample_range = [[pos1[0] - max_dist, pos1[0] + max_dist],
-                    [pos1[1] - max_dist, pos1[1] + max_dist]]
+    if self.random_orientation:
+      sample_range = [[pos1[0] - max_dist, pos1[0] + max_dist],
+                      [pos1[1] - max_dist, pos1[1] + max_dist]]
+    else:
+      sample_range = [[pos1[0] - 0.005, pos1[0] + 0.005],
+                      [pos1[1] - max_dist, pos1[1] + max_dist]]
     for i in range(100):
       try:
         pos2 = self._getValidPositions(padding, min_dist, [pos1], 1, sample_range=sample_range)[0]
@@ -222,18 +227,25 @@ class PyBulletDeconstructEnv(PyBulletEnv):
       if min_dist < dist < max_dist:
         break
 
+    if self.random_orientation:
+      rot1 = pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()])
+      rot2 = pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()])
+    else:
+      rot1 = pb.getQuaternionFromEuler([0., 0., 0])
+      rot2 = pb.getQuaternionFromEuler([0., 0., 0])
+
     self.generateObject((pos1[0], pos1[1], self.max_block_size / 2),
-                        pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()]),
+                        rot1,
                         constants.CUBE)
 
     self.generateObject((pos2[0], pos2[1], self.max_block_size / 2),
-                        pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()]),
+                        rot2,
                         constants.CUBE)
 
     obj_positions = np.array([pos1, pos2])
     slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(obj_positions[:, 0], obj_positions[:, 1])
     x, y = obj_positions.mean(0)
-    r = np.arctan(slope) + np.pi/2
+    r = np.arctan(slope) + np.pi/2 if self.random_orientation else 0
     while r > np.pi:
       r -= np.pi
 
@@ -241,12 +253,19 @@ class PyBulletDeconstructEnv(PyBulletEnv):
                         pb.getQuaternionFromEuler([0., 0., r]),
                         constants.BRICK)
 
+    if self.random_orientation:
+      rot1 = pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()])
+      rot2 = pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()])
+    else:
+      rot1 = pb.getQuaternionFromEuler([0., 0., 0])
+      rot2 = pb.getQuaternionFromEuler([0., 0., 0])
+
     self.generateObject((pos1[0], pos1[1], self.max_block_size * 2.5),
-                        pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()]),
+                        rot1,
                         constants.CUBE)
 
     self.generateObject((pos2[0], pos2[1], self.max_block_size * 2.5),
-                        pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()]),
+                        rot2,
                         constants.CUBE)
 
     self.generateObject([x, y, self.max_block_size * 3.5],

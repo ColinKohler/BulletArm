@@ -9,6 +9,7 @@ class BasePlanner(object):
     self.pos_noise = config['pos_noise'] if 'pos_noise' in config else None
     self.rot_noise = config['rot_noise'] if 'rot_noise' in config else None
     self.gamma = config['gamma']  if 'gamma' in config else 0.9
+    self.random_orientation = config['random_orientation'] if 'random_orientation' in config else True
 
   def getNextAction(self):
     raise NotImplemented('Planners must implement this function')

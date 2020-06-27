@@ -38,6 +38,8 @@ class DeconstructPlanner(BlockStructureBasePlanner):
         r += np.pi
       while r > np.pi:
         r -= np.pi
+    if not self.random_orientation:
+      r = 0
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
   def getPickingAction(self):

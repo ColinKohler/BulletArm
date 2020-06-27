@@ -14,16 +14,17 @@ class TestBulletHouse4Deconstruct(unittest.TestCase):
                           [-0.15, 0.15],
                           [0, 0.50]])
   env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 90, 'render': False, 'fast_mode': True,
-                'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 5, 'random_orientation': True,
+                'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 5, 'random_orientation': False,
                 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
                 'workspace_check': 'point'}
+  planner_config = {'random_orientation': False}
 
   # env = createHouseBuilding1Env(PyBulletEnv, env_config)()
 
   def testPlanner(self):
     self.env_config['render'] = True
     num_processes = 1
-    env = env_factory.createEnvs(num_processes, 'rl', 'pybullet', 'house_building_4_deconstruct', self.env_config, {})
+    env = env_factory.createEnvs(num_processes, 'rl', 'pybullet', 'house_building_4_deconstruct', self.env_config, self.planner_config)
     total = 0
     s = 0
     step_times = []
