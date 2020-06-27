@@ -410,7 +410,7 @@ class PyBulletEnv(BaseEnv):
       if random_orientation:
         orientation = pb.getQuaternionFromEuler([0., 0., 2*np.pi*np.random.random_sample()])
       else:
-        orientation = pb.getQuaternionFromEuler([0., 0., np.pi / 2])
+        orientation = pb.getQuaternionFromEuler([0., 0., 0])
       if not scale:
         scale = npr.uniform(self.block_scale_range[0], self.block_scale_range[1])
 
