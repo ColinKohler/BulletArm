@@ -52,6 +52,10 @@ class PyBulletTiltEnv(PyBulletEnv):
                                        0],
                                       pb.getQuaternionFromEuler([self.tilt_plain2_rx, 0, self.tilt_rz]),
                                       globalScaling=0.002)
+  def isPosOffTilt(self, pos):
+    y1 = np.tan(self.tilt_rz) * pos[0] - (self.workspace[0].mean() * np.tan(self.tilt_rz) - self.tilt_border)
+    y2 = np.tan(self.tilt_rz) * pos[0] - (self.workspace[0].mean() * np.tan(self.tilt_rz) + self.tilt_border)
+    return y2+0.02*np.cos(self.tilt_rz) < pos[1] < y1-0.02*np.cos(self.tilt_rz)
 
   def resetWithTiltAndObj(self, obj_dict):
     while True:
@@ -61,8 +65,16 @@ class PyBulletTiltEnv(PyBulletEnv):
         for t in obj_dict:
           padding = pybullet_util.getPadding(t, self.max_block_size)
           min_distance = pybullet_util.getMinDistance(t, self.max_block_size)
-
-          other_pos = self._getValidPositions(padding, min_distance, existing_pos, obj_dict[t])
+          if t == constants.CUBE:
+            while True:
+              off_tilt_pos = self._getValidPositions(padding, min_distance, existing_pos, 1)
+              if self.isPosOffTilt(off_tilt_pos[0]):
+                break
+            existing_pos.extend(off_tilt_pos)
+            other_pos = self._getValidPositions(padding, min_distance, existing_pos, obj_dict[t]-1)
+            other_pos.extend(off_tilt_pos)
+          else:
+            other_pos = self._getValidPositions(padding, min_distance, existing_pos, obj_dict[t])
           orientations = []
           existing_pos.extend(deepcopy(other_pos))
           for position in other_pos:

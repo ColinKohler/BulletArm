@@ -46,9 +46,9 @@ def createTiltHouseBuilding1DeconstructEnv(simulator_base_env, config):
       return self._getObservation()
 
     def _checkTermination(self):
-      if np.random.random() < 0.5 and self.current_episode_steps < self.num_obj*2:
-        return False
-      elif self.current_episode_steps < (self.num_obj-1)*2:
+      # if np.random.random() < 0.5 and self.current_episode_steps < self.num_obj*2:
+      #   return False
+      if self.current_episode_steps < (self.num_obj-1)*2:
         return False
       obj_combs = combinations(self.objects, 2)
       for (obj1, obj2) in obj_combs:

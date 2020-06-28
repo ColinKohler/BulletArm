@@ -42,11 +42,6 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     super().reset()
     self.resetTilt()
 
-  def isPosOffTilt(self, pos):
-    y1 = np.tan(self.tilt_rz) * pos[0] - (self.workspace[0].mean() * np.tan(self.tilt_rz) - self.tilt_border)
-    y2 = np.tan(self.tilt_rz) * pos[0] - (self.workspace[0].mean() * np.tan(self.tilt_rz) + self.tilt_border)
-    return y2+0.02*np.cos(self.tilt_rz) < pos[1] < y1-0.02*np.cos(self.tilt_rz)
-
   def generateH1(self):
     padding = self.max_block_size * 1.5
     while True:
