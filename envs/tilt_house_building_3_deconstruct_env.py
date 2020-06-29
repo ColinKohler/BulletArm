@@ -6,8 +6,8 @@ from itertools import combinations
 from helping_hands_rl_envs.envs.pybullet_tilt_deconstruct_env import PyBulletEnv, PyBulletTiltDeconstructEnv
 from helping_hands_rl_envs.simulators import constants
 
-def createTiltHouseBuilding4DeconstructEnv(simulator_base_env, config):
-  class TiltHouseBuilding4DeconstructEnv(PyBulletTiltDeconstructEnv):
+def createTiltHouseBuilding3DeconstructEnv(simulator_base_env, config):
+  class TiltHouseBuilding3DeconstructEnv(PyBulletTiltDeconstructEnv):
     ''''''
     def __init__(self, config):
       if simulator_base_env is PyBulletEnv:
@@ -35,17 +35,17 @@ def createTiltHouseBuilding4DeconstructEnv(simulator_base_env, config):
 
     def reset(self):
       ''''''
-      super(TiltHouseBuilding4DeconstructEnv, self).reset()
-      self.generateH4()
+      super(TiltHouseBuilding3DeconstructEnv, self).reset()
+      self.generateH3()
 
       while not self.checkStructure():
-        super(TiltHouseBuilding4DeconstructEnv, self).reset()
-        self.generateH4()
+        super(TiltHouseBuilding3DeconstructEnv, self).reset()
+        self.generateH3()
 
       return self._getObservation()
 
     def _checkTermination(self):
-      if self.current_episode_steps < 10:
+      if self.current_episode_steps < 6:
         return False
       obj_combs = combinations(self.objects, 2)
       for (obj1, obj2) in obj_combs:
@@ -59,23 +59,22 @@ def createTiltHouseBuilding4DeconstructEnv(simulator_base_env, config):
       bricks = list(filter(lambda x: self.object_types[x] == constants.BRICK, self.objects))
       roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
 
-      level1_blocks = list(filter(self._isObjOnGround, blocks))
-      if len(level1_blocks) != 2:
+      top_blocks = []
+      for block in blocks:
+        if self._isObjOnTop(block, blocks):
+          top_blocks.append(block)
+      if len(top_blocks) != 2:
         return False
-
-      level2_blocks = list(set(blocks) - set(level1_blocks))
-      return self._checkOnTop(level1_blocks[0], bricks[0]) and \
-             self._checkOnTop(level1_blocks[1], bricks[0]) and \
-             self._checkOnTop(bricks[0], level2_blocks[0]) and \
-             self._checkOnTop(bricks[0], level2_blocks[1]) and \
-             self._checkOnTop(level2_blocks[0], roofs[0]) and \
-             self._checkOnTop(level2_blocks[1], roofs[0]) and \
-             self._checkOriSimilar([bricks[0], roofs[0]]) and \
-             self._checkInBetween(bricks[0], level1_blocks[0], level1_blocks[1]) and \
-             self._checkInBetween(roofs[0], level2_blocks[0], level2_blocks[1]) and \
-             self._checkInBetween(bricks[0], level2_blocks[0], level2_blocks[1])
+      if self._checkOnTop(top_blocks[0], bricks[0]) and \
+          self._checkOnTop(top_blocks[1], bricks[0]) and \
+          self._checkOnTop(bricks[0], roofs[0]) and \
+          self._checkOriSimilar([bricks[0], roofs[0]]) and \
+          self._checkInBetween(bricks[0], blocks[0], blocks[1]) and \
+          self._checkInBetween(roofs[0], blocks[0], blocks[1]):
+        return True
+      return False
 
   def _thunk():
-    return TiltHouseBuilding4DeconstructEnv(config)
+    return TiltHouseBuilding3DeconstructEnv(config)
 
   return _thunk

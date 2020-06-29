@@ -7,14 +7,11 @@ from helping_hands_rl_envs.simulators import constants
 import numpy.random as npr
 import numpy as np
 
-def createTiltHouseBuilding2Env(simulator_base_env, config):
-  class TiltHouseBuilding2Env(PyBulletTiltEnv):
+def createTiltHouseBuilding3Env(simulator_base_env, config):
+  class TiltHouseBuilding3Env(PyBulletTiltEnv):
     def __init__(self, config):
       if simulator_base_env is PyBulletEnv:
         super().__init__(config)
-        self.block_scale_range = (0.6, 0.6)
-        self.min_block_size = self.block_original_size * self.block_scale_range[0]
-        self.max_block_size = self.block_original_size * self.block_scale_range[1]
       else:
         raise ValueError('Bad simulator base env specified.')
       self.simulator_base_env = simulator_base_env
@@ -40,6 +37,7 @@ def createTiltHouseBuilding2Env(simulator_base_env, config):
       # super().reset()
       obj_dict = {
         constants.ROOF: 1,
+        constants.BRICK: 1,
         constants.CUBE: 2
       }
       self.resetWithTiltAndObj(obj_dict)
@@ -47,14 +45,25 @@ def createTiltHouseBuilding2Env(simulator_base_env, config):
 
     def _checkTermination(self):
       blocks = list(filter(lambda x: self.object_types[x] == constants.CUBE, self.objects))
+      bricks = list(filter(lambda x: self.object_types[x] == constants.BRICK, self.objects))
       roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
 
-      if self._checkOnTop(blocks[0], roofs[0]) and self._checkOnTop(blocks[1], roofs[0]):
+      top_blocks = []
+      for block in blocks:
+        if self._isObjOnTop(block, blocks):
+          top_blocks.append(block)
+      if len(top_blocks) != 2:
+        return False
+      if self._checkOnTop(top_blocks[0], bricks[0]) and \
+          self._checkOnTop(top_blocks[1], bricks[0]) and \
+          self._checkOnTop(bricks[0], roofs[0]) and \
+          self._checkOriSimilar([bricks[0], roofs[0]]) and \
+          self._checkInBetween(bricks[0], blocks[0], blocks[1]) and \
+          self._checkInBetween(roofs[0], blocks[0], blocks[1]):
         return True
       return False
 
-
   def _thunk():
-    return TiltHouseBuilding2Env(config)
+    return TiltHouseBuilding3Env(config)
 
   return _thunk

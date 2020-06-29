@@ -9,12 +9,12 @@ from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 
 from helping_hands_rl_envs import env_factory
 
-class TestBulletHouse4Deconstruct(unittest.TestCase):
+class TestBulletHouse3Deconstruct(unittest.TestCase):
   workspace = np.asarray([[0.35, 0.65],
                           [-0.15, 0.15],
                           [0, 0.50]])
-  env_config = {'workspace': workspace, 'max_steps': 20, 'obs_size': 90, 'render': False, 'fast_mode': True,
-                'seed': 0, 'action_sequence': 'pxyzrr', 'num_objects': 6, 'random_orientation': True,
+  env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 90, 'render': False, 'fast_mode': True,
+                'seed': 0, 'action_sequence': 'pxyzrr', 'num_objects': 4, 'random_orientation': True,
                 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
                 'workspace_check': 'point'}
 
@@ -23,7 +23,7 @@ class TestBulletHouse4Deconstruct(unittest.TestCase):
   def testPlanner(self):
     self.env_config['render'] = True
     num_processes = 1
-    env = env_factory.createEnvs(num_processes, 'rl', 'pybullet', 'tilt_house_building_4_deconstruct', self.env_config, {})
+    env = env_factory.createEnvs(num_processes, 'rl', 'pybullet', 'tilt_house_building_3_deconstruct', self.env_config, {})
     total = 0
     s = 0
     step_times = []

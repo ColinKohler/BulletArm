@@ -35,7 +35,7 @@ def createTiltHouseBuilding1Env(simulator_base_env, config):
       return obs, reward, done
 
     def reset(self):
-      super().reset()
+      # super().reset()
       obj_dict = {
         constants.TRIANGLE: 1,
         constants.CUBE: self.num_obj-1,

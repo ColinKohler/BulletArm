@@ -1,6 +1,6 @@
 from copy import deepcopy
 import pybullet as pb
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv, NoValidPositionException
 from helping_hands_rl_envs.simulators.pybullet.robots.kuka_float_pick import KukaFloatPick
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
@@ -59,6 +59,7 @@ class PyBulletTiltEnv(PyBulletEnv):
 
   def resetWithTiltAndObj(self, obj_dict):
     while True:
+      super().reset()
       self.resetTilt()
       try:
         existing_pos = []
@@ -66,10 +67,12 @@ class PyBulletTiltEnv(PyBulletEnv):
           padding = pybullet_util.getPadding(t, self.max_block_size)
           min_distance = pybullet_util.getMinDistance(t, self.max_block_size)
           if t == constants.CUBE:
-            while True:
+            for i in range(100):
               off_tilt_pos = self._getValidPositions(padding, min_distance, existing_pos, 1)
               if self.isPosOffTilt(off_tilt_pos[0]):
                 break
+            if i == 100:
+              raise NoValidPositionException
             existing_pos.extend(off_tilt_pos)
             other_pos = self._getValidPositions(padding, min_distance, existing_pos, obj_dict[t]-1)
             other_pos.extend(off_tilt_pos)

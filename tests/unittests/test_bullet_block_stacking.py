@@ -33,10 +33,10 @@ class TestBulletHouse1(unittest.TestCase):
   def testPlanner2(self):
     self.env_config['render'] = False
     self.env_config['reward_type'] = 'sparse'
-    self.env_config['random_orientation'] = True
+    self.env_config['random_orientation'] = False
     self.env_config['num_objects'] = 4
 
-    env = env_factory.createEnvs(20, 'rl', 'pybullet', 'block_stacking', self.env_config, {'half_rotation': True})
+    env = env_factory.createEnvs(1, 'rl', 'pybullet', 'block_stacking', self.env_config, {'half_rotation': True})
     total = 0
     s = 0
     states, in_hands, obs = env.reset()
@@ -44,16 +44,16 @@ class TestBulletHouse1(unittest.TestCase):
       action = env.getNextAction()
       states_, in_hands_, obs_, rewards, dones = env.step(action)
 
-      # pixel_x = ((action[0, 1] - self.workspace[0][0]) / self.heightmap_resolution).long()
-      # pixel_y = ((action[0, 2] - self.workspace[1][0]) / self.heightmap_resolution).long()
-      # pixel_x = torch.clamp(pixel_x, 0, 90 - 1).item()
-      # pixel_y = torch.clamp(pixel_y, 0, 90 - 1).item()
-      # fig, axs = plt.subplots(1, 2, figsize=(10,5))
-      # axs[0].imshow(obs.squeeze())
-      # axs[1].imshow(obs_.squeeze())
-      # axs[0].scatter(pixel_y, pixel_x, c='r')
-      # axs[1].scatter(pixel_y, pixel_x, c='r')
-      # fig.show()
+      pixel_x = ((action[0, 1] - self.workspace[0][0]) / self.heightmap_resolution).long()
+      pixel_y = ((action[0, 2] - self.workspace[1][0]) / self.heightmap_resolution).long()
+      pixel_x = torch.clamp(pixel_x, 0, 90 - 1).item()
+      pixel_y = torch.clamp(pixel_y, 0, 90 - 1).item()
+      fig, axs = plt.subplots(1, 2, figsize=(10,5))
+      axs[0].imshow(obs.squeeze())
+      axs[1].imshow(obs_.squeeze())
+      axs[0].scatter(pixel_y, pixel_x, c='r')
+      axs[1].scatter(pixel_y, pixel_x, c='r')
+      fig.show()
 
       obs = obs_
       if dones.sum():
