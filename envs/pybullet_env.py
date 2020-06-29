@@ -70,7 +70,7 @@ class PyBulletEnv(BaseEnv):
 
     # TODO: Move this somewhere it makes sense
     self.block_original_size = 0.05
-    self.block_scale_range = (0.5, 0.6)
+    self.block_scale_range = (0.6, 0.7)
     # self.block_scale_range = (0.4, 0.9)
     self.min_block_size = self.block_original_size * self.block_scale_range[0]
     self.max_block_size = self.block_original_size * self.block_scale_range[1]
@@ -83,18 +83,30 @@ class PyBulletEnv(BaseEnv):
     # Setup camera parameters
     ws_mx = workspace[0].mean()
     ws_my = workspace[1].mean()
-    cam_z = 10.0
+    ws_size = (workspace[0][1] - workspace[0][0])
+    diam = ws_size / 2.
+    cam_z = 1. + diam
     self.view_matrix = pb.computeViewMatrix(
       cameraEyePosition=[ws_mx, ws_my, cam_z],
       cameraTargetPosition=[ws_mx, ws_my, 0],
       cameraUpVector=[-1, 0, 0]
     )
 
-    self.near = cam_z - 0.1
-    self.far = cam_z + 0.01
-    ws_size = (workspace[0][1] - workspace[0][0])
-    self.fov = np.degrees(2 * np.arctan((ws_size / 2) / self.far))
-    self.proj_matrix = pb.computeProjectionMatrixFOV(self.fov, 1, self.near, self.far)
+    left = -diam
+    right = diam
+    bottom = -diam
+    top = diam
+    self.near = 1.0
+    self.far = self.near+diam
+    # self.fov = np.degrees(2 * np.arctan((ws_size / 2) / self.far))
+    # self.proj_matrix = pb.computeProjectionMatrixFOV(self.fov, 1, self.near, self.far)
+    # self.proj_matrix = pb.computeProjectionMatrix(left, right, bottom, top, self.near, self.far)
+    self.proj_matrix = np.array([[2/(right-left), 0,              0,                         -((right+left)/(right-left))],
+                                 [0,              2/(top-bottom), 0,                         -((top+bottom)/(top-bottom))],
+                                 [0,              0,              -(2/(self.far-self.near)), -((self.far+self.near)/(self.far-self.near))],
+                                 [0,              0,              0,                          1]])
+    self.proj_matrix = tuple(self.proj_matrix.T.reshape(-1))
+    # print(np.array(self.proj_matrix).reshape(4,4).T)
 
     # Rest pose for arm
     rot = pb.getQuaternionFromEuler([0, np.pi, 0])
@@ -272,7 +284,7 @@ class PyBulletEnv(BaseEnv):
     old_heightmap = self.heightmap
 
     image_arr = pb.getCameraImage(width=self.heightmap_size, height=self.heightmap_size,
-                                  viewMatrix=self.view_matrix, projectionMatrix=self.proj_matrix)
+                                  viewMatrix=self.view_matrix, projectionMatrix=self.proj_matrix, renderer=pb.ER_TINY_RENDERER)
     self.heightmap = self.far * self.near / (self.far - (self.far - self.near) * image_arr[3])
     self.heightmap = np.abs(self.heightmap - np.max(self.heightmap))
 
