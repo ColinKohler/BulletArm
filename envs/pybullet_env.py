@@ -70,7 +70,7 @@ class PyBulletEnv(BaseEnv):
 
     # TODO: Move this somewhere it makes sense
     self.block_original_size = 0.05
-    self.block_scale_range = (0.6, 0.7)
+    self.block_scale_range = (0.5, 0.6)
     # self.block_scale_range = (0.4, 0.9)
     self.min_block_size = self.block_original_size * self.block_scale_range[0]
     self.max_block_size = self.block_original_size * self.block_scale_range[1]
@@ -81,10 +81,20 @@ class PyBulletEnv(BaseEnv):
     self.place_offset = self.block_scale_range[1]*self.block_original_size
 
     # Setup camera parameters
-    self.view_matrix = pb.computeViewMatrixFromYawPitchRoll([workspace[0].mean(), workspace[1].mean(), 0], 1.0, -90, -90, 0, 2)
-    workspace_x_offset = (workspace[0][1] - workspace[0][0])/2
-    workspace_y_offset = (workspace[1][1] - workspace[1][0])/2
-    self.proj_matrix = pb.computeProjectionMatrix(-workspace_x_offset, workspace_x_offset, -workspace_y_offset, workspace_y_offset, -1.0, 10.0)
+    ws_mx = workspace[0].mean()
+    ws_my = workspace[1].mean()
+    cam_z = 10.0
+    self.view_matrix = pb.computeViewMatrix(
+      cameraEyePosition=[ws_mx, ws_my, cam_z],
+      cameraTargetPosition=[ws_mx, ws_my, 0],
+      cameraUpVector=[-1, 0, 0]
+    )
+
+    self.near = cam_z - 0.1
+    self.far = cam_z + 0.01
+    ws_size = (workspace[0][1] - workspace[0][0])
+    self.fov = np.degrees(2 * np.arctan((ws_size / 2) / self.far))
+    self.proj_matrix = pb.computeProjectionMatrixFOV(self.fov, 1, self.near, self.far)
 
     # Rest pose for arm
     rot = pb.getQuaternionFromEuler([0, np.pi, 0])
@@ -192,11 +202,11 @@ class PyBulletEnv(BaseEnv):
     pos = [x, y, z]
     rot_q = pb.getQuaternionFromEuler([0, np.pi, -rot])
     # [-pi, 0] is easier for the arm(kuka) to execute
-    # while rot < -np.pi:
-    #   rot += np.pi
-    # while rot > 0:
-    #   rot -= np.pi
-    # rot_q = pb.getQuaternionFromEuler([0, np.pi, rot])
+    while rot < -np.pi:
+      rot += np.pi
+    while rot > 0:
+      rot -= np.pi
+    rot_q = pb.getQuaternionFromEuler([0, np.pi, rot])
 
     # Take action specfied by motion primative
     if motion_primative == constants.PICK_PRIMATIVE:
@@ -263,15 +273,14 @@ class PyBulletEnv(BaseEnv):
 
     image_arr = pb.getCameraImage(width=self.heightmap_size, height=self.heightmap_size,
                                   viewMatrix=self.view_matrix, projectionMatrix=self.proj_matrix)
-    self.heightmap = image_arr[3] - np.min(image_arr[3])
-    self.heightmap = self.heightmap.T
+    self.heightmap = self.far * self.near / (self.far - (self.far - self.near) * image_arr[3])
+    self.heightmap = np.abs(self.heightmap - np.max(self.heightmap))
 
     if action is None or self._isHolding() == False:
       in_hand_img = np.zeros((self.in_hand_size, self.in_hand_size, 1))
     else:
       motion_primative, x, y, z, rot = self._decodeAction(action)
       in_hand_img = self.getInHandImage(old_heightmap, x, y, rot, self.heightmap)
-
 
     return self._isHolding(), in_hand_img, self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 

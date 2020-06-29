@@ -142,8 +142,8 @@ class BaseEnv(object):
       - y: Y coordinate
     Returns: (x, y) in pixels corresponding to coordinates
     '''
-    x_pixel = (x - self.workspace[0][0]) / self.heightmap_resolution
-    y_pixel = (y - self.workspace[1][0]) / self.heightmap_resolution
+    x_pixel = (y - self.workspace[1][0]) / self.heightmap_resolution
+    y_pixel = (x - self.workspace[0][0]) / self.heightmap_resolution
 
     return int(x_pixel), int(y_pixel)
 

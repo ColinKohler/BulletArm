@@ -139,7 +139,7 @@ class RobotBase:
       joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
       joint_pos = list(zip(*joint_state))[0]
       n_it = 0
-      while not np.allclose(joint_pos, target_pose, atol=1e-5) and n_it < max_it:
+      while not np.allclose(joint_pos, target_pose, atol=1e-2) and n_it < max_it:
         pb.stepSimulation()
         n_it += 1
         # Check to see if the arm can't move any close to the desired joint position
@@ -155,8 +155,8 @@ class RobotBase:
   def _moveToCartesianPose(self, pos, rot, dynamic=True, pos_th=1e-3, rot_th=1e-3):
     close_enough = False
     outer_it = 0
-    max_outer_it = 100
-    max_inner_it = 10000
+    max_outer_it = 10
+    max_inner_it = 1000
 
     while not close_enough and outer_it < max_outer_it:
       ik_solve = self._calculateIK(pos, rot)
