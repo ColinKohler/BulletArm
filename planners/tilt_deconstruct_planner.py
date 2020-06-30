@@ -106,8 +106,6 @@ class TiltDeconstructPlanner(BlockStructureBasePlanner):
     return self.pickTallestObjOnTop(self.objs_to_remove)
 
   def getPlacingAction(self):
-    padding = pybullet_util.getPadding(self.getHoldingObjType(), self.env.max_block_size)
-    min_distance = pybullet_util.getMinDistance(self.getHoldingObjType(), self.env.max_block_size)
     if len(self.objs_to_remove) == 0:
-      return self.placeOnTilt(padding, min_distance)
-    return self.placeOnGround(padding, min_distance)
+      return self.placeOnTilt(self.env.max_block_size * 2, self.env.max_block_size * 2.7)
+    return self.placeOnGround(self.env.max_block_size * 2, self.env.max_block_size * 2.7)
