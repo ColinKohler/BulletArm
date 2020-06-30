@@ -72,12 +72,12 @@ class RobotBase:
       self.moveTo(pos, rot, True)
       # Grasp object and lift up to pre pose
       gripper_fully_closed = self.closeGripper()
+      self.adjustGripperCommand()
       if gripper_fully_closed:
         self.openGripper()
         self.moveTo(pre_pos, pre_rot, dynamic)
       else:
         self.moveTo(pre_pos, pre_rot, True)
-        self.adjustGripperCommand()
         for i in range(10):
           pb.stepSimulation()
         self.holding_obj = self.getPickedObj(objects)
