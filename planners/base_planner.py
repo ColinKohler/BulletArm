@@ -23,12 +23,25 @@ class BasePlanner(object):
     return self.gamma**self.getStepsLeft()
 
   def addNoiseToPos(self, x, y, primative):
+    signs = [-1, 1]
     if primative == constants.PICK_PRIMATIVE and self.pick_noise:
-      x = np.clip(x + npr.uniform(-self.pick_noise, self.pick_noise), self.env.workspace[0,0], self.env.workspace[0,1])
-      y = np.clip(y + npr.uniform(-self.pick_noise, self.pick_noise), self.env.workspace[1,0], self.env.workspace[1,1])
+      x_noise = npr.choice(signs) * npr.uniform(self.pick_noise[0], self.pick_noise[1])
+      y_noise = npr.choice(signs) * npr.uniform(self.pick_noise[0], self.pick_noise[1])
+
+      print(x_noise)
+      print(y_noise)
+
+      x = np.clip(x + x_noise, self.env.workspace[0,0], self.env.workspace[0,1])
+      y = np.clip(y + y_noise, self.env.workspace[1,0], self.env.workspace[1,1])
     elif primative == constants.PLACE_PRIMATIVE and self.place_noise:
-      x = np.clip(x + npr.uniform(-self.place_noise, self.place_noise), self.env.workspace[0,0], self.env.workspace[0,1])
-      y = np.clip(y + npr.uniform(-self.place_noise, self.place_noise), self.env.workspace[1,0], self.env.workspace[1,1])
+      x_noise = npr.choice(signs) * npr.uniform(self.place_noise[0], self.place_noise[1])
+      y_noise = npr.choice(signs) * npr.uniform(self.place_noise[0], self.place_noise[1])
+
+      print(x_noise)
+      print(y_noise)
+
+      x = np.clip(x + x_noise, self.env.workspace[0,0], self.env.workspace[0,1])
+      y = np.clip(y + y_noise, self.env.workspace[1,0], self.env.workspace[1,1])
     return x, y
 
   def addNoiseToRot(self, rot):
