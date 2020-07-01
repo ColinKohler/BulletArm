@@ -12,8 +12,8 @@ from helping_hands_rl_envs.simulators import constants
 class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
   def __init__(self, config):
     super().__init__(config)
-    self.pick_offset = 0.01
-    self.place_offset = 0.02
+    self.pick_offset = 0.0
+    self.place_offset = 0.01
 
   def _getObservation(self, action=None):
     ''''''
