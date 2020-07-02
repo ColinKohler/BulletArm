@@ -166,6 +166,8 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     self.wait(50)
 
   def generateImproviseH3(self):
+    # TODO: fix this
+
     lower_z1 = 0.01
     lower_z2 = 0.025
     hier_z = 0.02
@@ -246,6 +248,7 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     self.wait(50)
 
   def generateImproviseH4(self):
+    # TODO: fix this
     roof_z = 0.06
     def generate(pos, zscale=1):
       handle = pb_obj_generation.generateRandomObj(pos,

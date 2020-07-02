@@ -21,7 +21,7 @@ class TestBulletHouse4Deconstruct(unittest.TestCase):
   # env = createHouseBuilding1Env(PyBulletEnv, env_config)()
 
   def testPlanner(self):
-    self.env_config['render'] = True
+    self.env_config['render'] = False
     num_processes = 1
     env = env_factory.createEnvs(num_processes, 'rl', 'pybullet', 'tilt_house_building_4_deconstruct', self.env_config, {})
     total = 0

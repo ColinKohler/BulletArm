@@ -49,23 +49,25 @@ class TiltDeconstructPlanner(BlockStructureBasePlanner):
     :return: encoded action
     """
     existing_pos = [o.getXYPosition() for o in list(filter(lambda x: not self.isObjectHeld(x), self.env.objects))]
-    try:
-      place_pos = self.getValidPositions(padding_dist, min_dist, existing_pos, 1)[0]
-    except NoValidPositionException:
-      place_pos = self.getValidPositions(padding_dist, min_dist, [], 1)[0]
-    x, y, z = place_pos[0], place_pos[1], self.env.place_offset
-    y1 = np.tan(self.env.tilt_rz) * x - (self.env.workspace[0].mean() * np.tan(self.env.tilt_rz) - self.env.tilt_border)
-    y2 = np.tan(self.env.tilt_rz) * x - (self.env.workspace[0].mean() * np.tan(self.env.tilt_rz) + self.env.tilt_border)
+    for i in range(100):
+      try:
+        place_pos = self.getValidPositions(padding_dist, min_dist, existing_pos, 1)[0]
+      except NoValidPositionException:
+        place_pos = self.getValidPositions(padding_dist, min_dist, [], 1)[0]
+      x, y, z = place_pos[0], place_pos[1], self.env.place_offset
+      if self.env.isPosDistToTiltValid((x, y), self.getHoldingObjType()):
+        break
+    y1, y2 = self.env.getY1Y2fromX(x)
     if y > y1:
       rx = -self.env.tilt_plain_rx
       rz = self.env.tilt_rz
       d = (y - y1) * np.cos(self.env.tilt_rz)
-      z += np.tan(self.env.tilt_plain_rx) * d
+      z += (self.env.tilt_z1 + np.tan(self.env.tilt_plain_rx) * d)
     elif y < y2:
       rx = -self.env.tilt_plain2_rx
       rz = self.env.tilt_rz
       d = (y2 - y) * np.cos(self.env.tilt_rz)
-      z += np.tan(-self.env.tilt_plain2_rx) * d
+      z += (self.env.tilt_z2 + np.tan(-self.env.tilt_plain2_rx) * d)
     else:
       rx = 0
       rz = np.random.random() * np.pi * 2
@@ -80,8 +82,7 @@ class TiltDeconstructPlanner(BlockStructureBasePlanner):
       except NoValidPositionException:
         place_pos = self.getValidPositions(padding_dist, min_dist, [], 1)[0]
       x, y, z = place_pos[0], place_pos[1], self.env.place_offset
-      y1 = np.tan(self.env.tilt_rz) * x - (self.env.workspace[0].mean() * np.tan(self.env.tilt_rz) - self.env.tilt_border)
-      y2 = np.tan(self.env.tilt_rz) * x - (self.env.workspace[0].mean() * np.tan(self.env.tilt_rz) + self.env.tilt_border)
+      y1, y2 = self.env.getY1Y2fromX(x)
       if y > y1:
         rx = -self.env.tilt_plain_rx
         rz = self.env.tilt_rz
@@ -106,6 +107,6 @@ class TiltDeconstructPlanner(BlockStructureBasePlanner):
     return self.pickTallestObjOnTop(self.objs_to_remove)
 
   def getPlacingAction(self):
-    if len(self.objs_to_remove) == 0:
-      return self.placeOnTilt(self.env.max_block_size * 2, self.env.max_block_size * 2.7)
+    # if len(self.objs_to_remove) == 0:
+    #   return self.placeOnTilt(self.env.max_block_size * 2, self.env.max_block_size * 2.7)
     return self.placeOnGround(self.env.max_block_size * 2, self.env.max_block_size * 2.7)
