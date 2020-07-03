@@ -79,8 +79,7 @@ class PyBulletEnv(BaseEnv):
     self.pick_pre_offset = 0.10
     self.pick_offset = 0.005
     self.place_pre_offset = 0.10
-    self.place_offset = self.block_scale_range[1]*self.block_original_size # 0.025
-    # print(self.block_scale_range[1]*self.block_original_size)
+    self.place_offset = self.block_scale_range[1]*self.block_original_size
 
     # Setup camera parameters
     ws_mx = workspace[0].mean()
