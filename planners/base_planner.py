@@ -13,6 +13,8 @@ class BasePlanner(object):
     self.rot_noise = config['rot_noise'] if 'rot_noise' in config else None
     self.gamma = config['gamma']  if 'gamma' in config else 0.9
 
+    npr.seed(env.seed)
+
   def getNextAction(self):
     raise NotImplemented('Planners must implement this function')
 
@@ -36,6 +38,7 @@ class BasePlanner(object):
 
       x = np.clip(x + x_noise, self.env.workspace[0,0], self.env.workspace[0,1])
       y = np.clip(y + y_noise, self.env.workspace[1,0], self.env.workspace[1,1])
+
     return x, y
 
   def addNoiseToRot(self, rot):

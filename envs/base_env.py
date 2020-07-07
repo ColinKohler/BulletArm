@@ -21,7 +21,8 @@ class BaseEnv(object):
 
     """
     # Set random numpy seed
-    npr.seed(seed)
+    self.seed = seed
+    npr.seed(self.seed)
 
     # Setup environment
     self.workspace = workspace
@@ -82,6 +83,7 @@ class BaseEnv(object):
     y = action[y_idx]
     z = action[z_idx] if z_idx != -1 else self._getPrimativeHeight(motion_primative, x, y)
     rot = action[rot_idx] if rot_idx != -1 else 0
+    # rot = 0.
     return motion_primative, x, y, z, rot
 
   def _encodeAction(self, primitive, x, y, z, r):
@@ -98,6 +100,7 @@ class BaseEnv(object):
       action[z_idx] = z
     if rot_idx != -1:
       action[rot_idx] = r
+
     return action
 
   def _checkTermination(self):
@@ -145,7 +148,7 @@ class BaseEnv(object):
     x_pixel = (y - self.workspace[1][0]) / self.heightmap_resolution
     y_pixel = (x - self.workspace[0][0]) / self.heightmap_resolution
 
-    return int(x_pixel), int(y_pixel)
+    return round(x_pixel), round(y_pixel)
 
   def _isObjectOnCandidatePose(self, obj):
     '''
@@ -209,6 +212,6 @@ class BaseEnv(object):
     crop[crop >= next_max] -= next_max
 
     # end_effector rotate counter clockwise along z, so in hand img rotate clockwise
-    # crop = sk_transform.rotate(crop, np.rad2deg(-rot))
-    crop = sk_transform.rotate(crop, rot)
+    crop = sk_transform.rotate(crop, np.rad2deg(-rot))
+
     return crop.reshape((self.in_hand_size, self.in_hand_size, 1))

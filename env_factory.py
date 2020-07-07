@@ -35,9 +35,9 @@ def createEnvs(num_processes, runner_type, simulator, env_type, env_config, plan
   # TODO: This should also be cleaned up so env config is always the same
   if isinstance(env_config, list):
     for config in env_config:
-      if 'action_sequence' not in env_config:
+      if 'action_sequence' not in config:
         config['action_sequence'] = 'pxyr'
-      if 'simulate_grasp' not in env_config:
+      if 'simulate_grasp' not in config:
         config['simulate_grasp'] = True
   else:
     if 'action_sequence' not in env_config:
@@ -46,13 +46,13 @@ def createEnvs(num_processes, runner_type, simulator, env_type, env_config, plan
       env_config['simulate_grasp'] = True
 
   # Clone env config and generate random seeds for the different processes
-  env_configs = [copy.copy(env_config) for _ in range(num_processes)]
+  env_configs = [copy.deepcopy(env_config) for _ in range(num_processes)]
   for i, env_config in enumerate(env_configs):
-    if isinstance(env_config, list):
+    if isinstance(env_config, list): # Multi task
       for config in env_config:
-        config['seed'] = config['seed'] + i if 'seed' in config else npr.randint(100)
+        config['seed'] = config['seed'] + i if 'seed' in config else npr.randint(1000)
     else:
-      env_config['seed'] = env_config['seed'] + i if 'seed' in env_config else npr.randint(100)
+      env_config['seed'] = env_config['seed'] + i if 'seed' in env_config else npr.randint(1000)
 
   # Set the super environment and add details to the configs as needed
   if simulator == 'pybullet':
