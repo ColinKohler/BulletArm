@@ -13,7 +13,7 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
   def __init__(self, config):
     super().__init__(config)
     self.pick_offset = 0.0
-    self.place_offset = 0.01
+    self.place_offset = 0.015
 
   def _getObservation(self, action=None):
     ''''''
@@ -41,6 +41,22 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
   def reset(self):
     super().reset()
     self.resetTilt()
+
+  def generateS(self):
+    padding = self.max_block_size * 1.5
+    while True:
+      pos = self._getValidPositions(padding, 0, [], 1)[0]
+      if self.isPosOffTilt(pos):
+        break
+    rot = pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()])
+    for i in range(self.num_obj):
+      handle = pb_obj_generation.generateCube((pos[0], pos[1], i * self.max_block_size + self.max_block_size / 2),
+                                              rot,
+                                              npr.uniform(self.block_scale_range[0], self.block_scale_range[1]))
+      self.objects.append(handle)
+      self.object_types[handle] = constants.CUBE
+      self.structure_objs.append(handle)
+    self.wait(50)
 
   def generateH1(self):
     padding = self.max_block_size * 1.5

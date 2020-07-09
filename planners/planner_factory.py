@@ -36,6 +36,7 @@ AVAILABLE_PLANNER = ['random',
                      'cube_float_picking',
                      'block_placing',
                      'tilt_block_stacking',
+                     'tilt_block_stacking_deconstruct',
                      'tilt_house_building_1_deconstruct',
                      'tilt_house_building_3_deconstruct',
                      'tilt_house_building_4_deconstruct',
@@ -87,6 +88,8 @@ def createPlanner(config):
     return lambda env: BlockPlacingPlanner(env, config)
   elif config['planner'] == 'tilt_block_stacking':
     return lambda env: TiltBlockStackingPlanner(env, config)
+  elif config['planner'] == 'tilt_block_stacking_deconstruct':
+    return lambda env: TiltDeconstructPlanner(env, config)
   elif config['planner'] == 'tilt_house_building_1_deconstruct':
     return lambda env: TiltDeconstructPlanner(env, config)
   elif config['planner'] == 'tilt_house_building_3_deconstruct':
