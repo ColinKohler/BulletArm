@@ -14,6 +14,7 @@ class Cube(PybulletObject):
     root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
     urdf_filepath = os.path.join(root_dir, constants.URDF_PATH, 'cube.urdf')
     object_id = pb.loadURDF(urdf_filepath, basePosition=pos, baseOrientation=rot, globalScaling=scale)
+    pb.changeDynamics(object_id, -1, linearDamping=0, angularDamping=0, activationState=pb.ACTIVATION_STATE_DISABLE_SLEEPING, collisionMargin=0.004)
 
     super(Cube, self).__init__(constants.CUBE, object_id)
 

@@ -41,7 +41,7 @@ def worker(remote, parent_remote, env_fn, planner_fn):
       elif cmd == 'get_steps_left':
         remote.send(planner.getStepsLeft())
       else:
-        raise NotImplementerError
+        raise NotImplementedError
   except KeyboardInterrupt:
     print('EnvRunner worker: caught keyboard interrupt')
 
@@ -57,8 +57,8 @@ class DataRunner(object):
     self.waiting = False
     self.closed = False
 
-    num_envs = len(env_fns)
-    self.remotes, self.worker_remotes = zip(*[Pipe() for _ in range(num_envs)])
+    self.num_envs = len(env_fns)
+    self.remotes, self.worker_remotes = zip(*[Pipe() for _ in range(self.num_envs)])
     self.processes = [Process(target=worker, args=(worker_remote, remote, env_fn, planner_fn))
                       for (worker_remote, remote, env_fn, planner_fn) in zip(self.worker_remotes, self.remotes, env_fns, planner_fns)]
     self.num_processes = len(self.processes)

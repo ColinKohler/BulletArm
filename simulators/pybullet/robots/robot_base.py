@@ -67,7 +67,6 @@ class RobotBase:
 
     # Move to pre-grasp pose and then grasp pose
     self.moveTo(pre_pos, pre_rot, dynamic)
-
     if simulate_grasp:
       self.moveTo(pos, rot, True)
       # Grasp object and lift up to pre pose

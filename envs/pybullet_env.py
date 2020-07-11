@@ -58,7 +58,7 @@ class PyBulletEnv(BaseEnv):
     self.dynamic = not fast_mode
 
     # Environment specific variables
-    self._timestep = 1. / 240.
+    self._timestep = 1. / 360.
     if robot == 'ur5':
       self.robot = UR5_Simple()
     elif robot == 'ur5_robotiq':
@@ -70,7 +70,7 @@ class PyBulletEnv(BaseEnv):
 
     # TODO: Move this somewhere it makes sense
     self.block_original_size = 0.05
-    self.block_scale_range = (0.6, 0.7)
+    self.block_scale_range = (0.7, 0.7)
     self.min_block_size = self.block_original_size * self.block_scale_range[0]
     self.max_block_size = self.block_original_size * self.block_scale_range[1]
 
@@ -130,6 +130,8 @@ class PyBulletEnv(BaseEnv):
   def reset(self):
     ''''''
     pb.resetSimulation()
+    # pb.setPhysicsEngineParameter(numSubSteps=2, numSolverIterations=200, constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_SI)
+    # pb.setPhysicsEngineParameter(numSubSteps=2, numSolverIterations=200, constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_DANTZIG)
     pb.setTimeStep(self._timestep)
 
     pb.setGravity(0, 0, -10)
@@ -262,8 +264,11 @@ class PyBulletEnv(BaseEnv):
   def didBlockFall(self):
     motion_primative, obj, x, y, z, rot = self.last_action
 
-    return motion_primative == constants.PLACE_PRIMATIVE and \
-           np.linalg.norm(np.array(obj.getXYPosition()) - np.array([x,y])) > obj.size / 2.
+    if obj:
+      return motion_primative == constants.PLACE_PRIMATIVE and \
+             np.linalg.norm(np.array(obj.getXYPosition()) - np.array([x,y])) > obj.size / 2.
+    else:
+      return False
 
   def _isPointInWorkspace(self, p):
     '''
