@@ -184,12 +184,16 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
   def generateImproviseH3(self):
     # TODO: fix this
 
-    lower_z1 = 0.01
-    lower_z2 = 0.025
-    hier_z = 0.02
-    roof_z = 0.05
+    lower_z1 = 0.01 * 0.5
+    lower_z2 = 0.01 * 1.5
+    hier_z = 0.02 * 0.5
+    roof_z = 0.02 + 0.015
 
     def generate(pos, zscale=1):
+      if zscale == 1:
+        zscale = constants.z_scale_1
+      elif zscale == 2:
+        zscale = constants.z_scale_2
       handle = pb_obj_generation.generateRandomObj(pos,
                                                    pb.getQuaternionFromEuler(
                                                      [0., 0., 2 * np.pi * np.random.random_sample()]),
@@ -229,20 +233,20 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
       generate([pos1[0], pos1[1], lower_z2], 1)
       generate([pos2[0], pos2[1], hier_z], 2)
 
-      self._generateShapes(constants.RANDOM, 1, random_orientation=True, z_scale=np.random.choice([1, 2]))
+      self._generateShapes(constants.RANDOM, 1, random_orientation=True, z_scale=np.random.choice([constants.z_scale_1, constants.z_scale_2]))
 
     elif t == 2:
       generate([pos1[0], pos1[1], hier_z], 2)
       generate([pos2[0], pos2[1], lower_z1], 1)
       generate([pos2[0], pos2[1], lower_z2], 1)
 
-      self._generateShapes(constants.RANDOM, 1, random_orientation=True, z_scale=np.random.choice([1, 2]))
+      self._generateShapes(constants.RANDOM, 1, random_orientation=True, z_scale=np.random.choice([constants.z_scale_1, constants.z_scale_2]))
 
     elif t == 3:
       generate([pos1[0], pos1[1], hier_z], 2)
       generate([pos2[0], pos2[1], hier_z], 2)
 
-      self._generateShapes(constants.RANDOM, 2, random_orientation=True, z_scale=np.random.choice([1, 2]))
+      self._generateShapes(constants.RANDOM, 2, random_orientation=True, z_scale=np.random.choice([constants.z_scale_1, constants.z_scale_2]))
 
     obj_positions = np.array([pos1, pos2])
     slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(obj_positions[:, 0], obj_positions[:, 1])

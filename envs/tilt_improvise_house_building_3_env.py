@@ -1,9 +1,10 @@
 from copy import deepcopy
 import pybullet as pb
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv, NoValidPositionException
 from helping_hands_rl_envs.envs.pybullet_tilt_env import PyBulletTiltEnv
 from helping_hands_rl_envs.simulators.pybullet.robots.kuka_float_pick import KukaFloatPick
 from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 import numpy.random as npr
 from itertools import combinations
 import numpy as np
@@ -13,9 +14,6 @@ def createTiltImproviseHouseBuilding3Env(simulator_base_env, config):
     def __init__(self, config):
       if simulator_base_env is PyBulletEnv:
         super().__init__(config)
-        self.block_scale_range = (0.6, 0.6)
-        self.min_block_size = self.block_original_size * self.block_scale_range[0]
-        self.max_block_size = self.block_original_size * self.block_scale_range[1]
       else:
         raise ValueError('Bad simulator base env specified.')
       self.simulator_base_env = simulator_base_env
@@ -39,36 +37,46 @@ def createTiltImproviseHouseBuilding3Env(simulator_base_env, config):
 
     def resetWithTiltAndObj(self, obj_dict):
       while True:
+        super().reset()
         self.resetTilt()
         try:
           existing_pos = []
           for t in obj_dict:
-            if t in (constants.CUBE, constants.TRIANGLE, constants.RANDOM):
-              padding = self.max_block_size * 1.5
-              min_distance = self.max_block_size * 2.4
-            elif t in (constants.BRICK, constants.ROOF):
-              padding = self.max_block_size * 3.4
-              min_distance = self.max_block_size * 3.4
-            else:
-              padding = self.max_block_size * 1.5
-              min_distance = self.max_block_size * 2.4
+            padding = pybullet_util.getPadding(t, self.max_block_size)
+            min_distance = pybullet_util.getMinDistance(t, self.max_block_size)
+            for j in range(100):
+              if t == constants.RANDOM:
+                for i in range(100):
+                  off_tilt_pos = self._getValidPositions(padding, min_distance, existing_pos, 1)
+                  if self.isPosOffTilt(off_tilt_pos[0]):
+                    break
+                if i == 100:
+                  raise NoValidPositionException
+                other_pos = self._getValidPositions(padding, min_distance, existing_pos + off_tilt_pos, obj_dict[t] - 1)
+                other_pos.extend(off_tilt_pos)
+              else:
+                other_pos = self._getValidPositions(padding, min_distance, existing_pos, obj_dict[t])
+              if all(map(lambda p: self.isPosDistToTiltValid(p, t), other_pos)):
+                break
 
-            other_pos = self._getValidPositions(padding, min_distance, existing_pos, obj_dict[t])
             orientations = []
             existing_pos.extend(deepcopy(other_pos))
             for position in other_pos:
-              if position[1] < self.tilt_border2:
-                position.append(0.01 + np.tan(-self.tilt_plain2_rx) * -position[1])
-                orientations.append(pb.getQuaternionFromEuler([self.tilt_plain2_rx, 0, 0]))
-              elif position[1] > self.tilt_border:
-                position.append(0.01 + np.tan(self.tilt_plain_rx) * position[1])
-                orientations.append(pb.getQuaternionFromEuler([self.tilt_plain_rx, 0, 0]))
+              y1, y2 = self.getY1Y2fromX(position[0])
+              if position[1] > y1:
+                d = (position[1] - y1) * np.cos(self.tilt_rz)
+                position.append(self.tilt_z1 + 0.02 + np.tan(self.tilt_plain_rx) * d)
+                orientations.append(pb.getQuaternionFromEuler([self.tilt_plain_rx, 0, self.tilt_rz]))
+              elif position[1] < y2:
+                d = (y2 - position[1]) * np.cos(self.tilt_rz)
+                position.append(self.tilt_z2 + 0.02 + np.tan(-self.tilt_plain2_rx) * d)
+                orientations.append(pb.getQuaternionFromEuler([self.tilt_plain2_rx, 0, self.tilt_rz]))
               else:
                 position.append(0.02)
                 orientations.append(pb.getQuaternionFromEuler([0, 0, np.random.random() * np.pi * 2]))
             if t == constants.RANDOM:
               for i in range(obj_dict[t]):
-                self._generateShapes(t, 1, random_orientation=False, pos=other_pos[i:i+1], rot=orientations[i:i+1], z_scale=npr.choice([1, 2], p=[0.75, 0.25]))
+                self._generateShapes(t, 1, random_orientation=False, pos=other_pos[i:i+1], rot=orientations[i:i+1], z_scale=npr.choice([constants.z_scale_1, constants.z_scale_2], p=[0.75, 0.25]))
             else:
               self._generateShapes(t, obj_dict[t], random_orientation=False, pos=other_pos, rot=orientations)
         except Exception as e:
@@ -88,7 +96,7 @@ def createTiltImproviseHouseBuilding3Env(simulator_base_env, config):
     def _checkTermination(self):
       rand_objs = list(filter(lambda x: self.object_types[x] == constants.RANDOM, self.objects))
       roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
-      if roofs[0].getZPosition() < 1.34 * self.min_block_size:
+      if roofs[0].getZPosition() < self.min_block_size:
         return False
 
       rand_obj_combs = combinations(rand_objs, 2)

@@ -13,9 +13,9 @@ class TestBulletHouse1(unittest.TestCase):
   workspace = np.asarray([[0.35, 0.65],
                           [-0.15, 0.15],
                           [0, 0.50]])
-  env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 90, 'render': False, 'fast_mode': True,
+  env_config = {'workspace': workspace, 'max_steps': 2, 'obs_size': 90, 'render': False, 'fast_mode': True,
                 'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 4, 'random_orientation': False,
-                'reward_type': 'step_left', 'simulate_grasp': False, 'perfect_grasp': False, 'robot': 'kuka',
+                'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
                 'workspace_check': 'point'}
   heightmap_resolution = 0.3 / 90
 
@@ -34,14 +34,16 @@ class TestBulletHouse1(unittest.TestCase):
     self.env_config['render'] = True
     self.env_config['reward_type'] = 'sparse'
     self.env_config['random_orientation'] = False
-    self.env_config['num_objects'] = 4
+    self.env_config['num_objects'] = 2
 
     env = env_factory.createEnvs(1, 'rl', 'pybullet', 'block_stacking', self.env_config, {'half_rotation': True})
     total = 0
     s = 0
     states, in_hands, obs = env.reset()
-    while total < 1000:
+    while total < 100:
       action = env.getNextAction()
+      # action[action[:,0]==1, 1] += 0.018
+      # action[action[:,0]==1, 2] += 0.018
       states_, in_hands_, obs_, rewards, dones = env.step(action)
 
       # pixel_x = ((action[0, 1] - self.workspace[0][0]) / self.heightmap_resolution).long()

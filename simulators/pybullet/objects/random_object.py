@@ -24,7 +24,7 @@ class RandomObject(PybulletObject):
   def __init__(self, pos, rot, scale, z_scale=1):
     self.z_scale = z_scale
     obj_filepath = found_object_directories[np.random.choice(np.arange(total_num_objects), 1)[0]]
-    mesh_scale = [0.012 * scale, 0.012 * scale, 0.01 * scale * z_scale]
+    mesh_scale = [0.01 * scale, 0.01 * scale, 0.01 * scale * z_scale]
     visualShapeId = pb.createVisualShape(shapeType=pb.GEOM_MESH,
                                          fileName=obj_filepath,
                                          rgbaColor=[np.random.random(), np.random.random(), np.random.random(), 1],
