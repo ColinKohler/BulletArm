@@ -130,8 +130,7 @@ class PyBulletEnv(BaseEnv):
   def reset(self):
     ''''''
     pb.resetSimulation()
-    pb.setPhysicsEngineParameter(numSubSteps=0, numSolverIterations=200, solverResidualThreshold=1e-10, constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_SI)
-    # pb.setPhysicsEngineParameter(numSolverIterations=1000, solverResidualThreshold=1e-10, constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_DANTZIG)
+    pb.setPhysicsEngineParameter(numSubSteps=0, numSolverIterations=100, solverResidualThreshold=1e-7, constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_SI)
     pb.setTimeStep(self._timestep)
 
     pb.setGravity(0, 0, -10)
