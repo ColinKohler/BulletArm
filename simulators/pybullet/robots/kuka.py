@@ -86,7 +86,7 @@ class Kuka(RobotBase):
       it += 1
       p1_, p2_ = self._getGripperJointPosition()
       if it > max_it or (abs(p1 - p1_) < 0.0001 and abs(p2 - p2_) < 0.0001):
-        mean = (p1 + p2) / 2 - 0.01
+        mean = (p1 + p2) / 2 - 0.001
         # self._sendGripperCommand(mean, mean)
         return False
       p1 = p1_
@@ -95,7 +95,7 @@ class Kuka(RobotBase):
 
   def adjustGripperCommand(self):
     p1, p2 = self._getGripperJointPosition()
-    mean = (p1 + p2) / 2 - 0.01
+    mean = (p1 + p2) / 2 - 0.001
     self._sendGripperCommand(mean, mean)
 
   def checkGripperClosed(self):
@@ -112,9 +112,11 @@ class Kuka(RobotBase):
     target = self.gripper_joint_limit[1]
     self._sendGripperCommand(target, target)
     self.gripper_closed = False
-    self.holding_obj = None
     it = 0
+    if self.holding_obj: pos = self.holding_obj.getPosition()
     while abs(target-p1) + abs(target-p2) > 0.001:
+      if self.holding_obj and it < 5:
+        self.holding_obj.resetPose(pos, pb.getQuaternionFromEuler([0., 0., 0.]))
       pb.stepSimulation()
       it += 1
       if it > 100:
@@ -127,7 +129,7 @@ class Kuka(RobotBase):
     return True
 
   def _calculateIK(self, pos, rot):
-    return pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)[:7]
+    return pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot, jointDamping=self.jd)[:7]
 
   def _getGripperJointPosition(self):
     p1 = -pb.getJointState(self.id, 8)[0]
@@ -140,44 +142,12 @@ class Kuka(RobotBase):
     pb.setJointMotorControlArray(self.id, self.arm_joint_indices, pb.POSITION_CONTROL, commands,
                                  targetVelocities=[0.]*num_motors,
                                  forces=[self.max_force]*num_motors,
-                                 positionGains=[0.02]*num_motors,
+                                 positionGains=[0.01]*num_motors,
                                  velocityGains=[1.0]*num_motors)
-    # for i in range(num_motors):
-    #   pb.setJointMotorControl2(bodyUniqueId=self.id,
-    #                            jointIndex=i,
-    #                            controlMode=pb.POSITION_CONTROL,
-    #                            targetPosition=commands[i],
-    #                            targetVelocity=0,
-    #                            force=self.max_force,
-    #                            maxVelocity=self.max_velocity,
-    #                            positionGain=0.3,
-    #                            velocityGain=1)
 
   def _sendGripperCommand(self, target_pos1, target_pos2):
-    # pb.setJointMotorControl2(self.id,
-    #                          7,
-    #                          pb.POSITION_CONTROL,
-    #                          targetPosition=target_pos,
-    #                          force=self.max_force)
-    pb.setJointMotorControl2(self.id,
-                             8,
-                             pb.POSITION_CONTROL,
-                             targetPosition=-target_pos1,
-                             force=self.finger_a_force)
-    pb.setJointMotorControl2(self.id,
-                             11,
-                             pb.POSITION_CONTROL,
-                             targetPosition=target_pos2,
-                             force=self.finger_b_force)
-
-    pb.setJointMotorControl2(self.id,
-                             10,
-                             pb.POSITION_CONTROL,
-                             targetPosition=0,
-                             force=self.finger_tip_force)
-    pb.setJointMotorControl2(self.id,
-                             13,
-                             pb.POSITION_CONTROL,
-                             targetPosition=0,
-                             force=self.finger_tip_force)
-
+    pb.setJointMotorControlArray(self.id,
+                                 [8, 11, 10, 13],
+                                 pb.POSITION_CONTROL,
+                                 [-target_pos1, target_pos2, 0, 0],
+                                 forces=[self.finger_a_force, self.finger_b_force,  self.finger_tip_force, self.finger_tip_force])

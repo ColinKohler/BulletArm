@@ -58,7 +58,7 @@ class PyBulletEnv(BaseEnv):
     self.dynamic = not fast_mode
 
     # Environment specific variables
-    self._timestep = 1. / 360.
+    self._timestep = 1. / 240.
     if robot == 'ur5':
       self.robot = UR5_Simple()
     elif robot == 'ur5_robotiq':
@@ -70,7 +70,7 @@ class PyBulletEnv(BaseEnv):
 
     # TODO: Move this somewhere it makes sense
     self.block_original_size = 0.05
-    self.block_scale_range = (1.0, 1.0)
+    self.block_scale_range = (0.7, 0.7)
     self.min_block_size = self.block_original_size * self.block_scale_range[0]
     self.max_block_size = self.block_original_size * self.block_scale_range[1]
 
@@ -130,12 +130,13 @@ class PyBulletEnv(BaseEnv):
   def reset(self):
     ''''''
     pb.resetSimulation()
-    # pb.setPhysicsEngineParameter(numSubSteps=2, numSolverIterations=200, constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_SI)
-    # pb.setPhysicsEngineParameter(numSubSteps=2, numSolverIterations=200, constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_DANTZIG)
+    pb.setPhysicsEngineParameter(numSubSteps=0, numSolverIterations=200, solverResidualThreshold=1e-10, constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_SI)
+    # pb.setPhysicsEngineParameter(numSolverIterations=1000, solverResidualThreshold=1e-10, constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_DANTZIG)
     pb.setTimeStep(self._timestep)
 
     pb.setGravity(0, 0, -10)
     self.table_id = pb.loadURDF('plane.urdf', [0,0,0])
+    pb.changeDynamics(self.table_id, -1, linearDamping=0.04, angularDamping=0.04, restitution=0, contactStiffness=3000, contactDamping=100)
 
     # Load the UR5 and set it to the home positions
     self.robot.reset()
@@ -256,8 +257,8 @@ class PyBulletEnv(BaseEnv):
     return True
 
   def wait(self, iteration):
-    if not self.simulate_grasp and self._isHolding():
-      return
+    # if not self.simulate_grasp and self._isHolding():
+    #   return
     [pb.stepSimulation() for _ in range(iteration)]
 
   # TODO: This does not work w/cylinders
@@ -381,7 +382,7 @@ class PyBulletEnv(BaseEnv):
       return None
 
     for position in valid_positions:
-      position.append(0.05)
+      position.append(0.020)
       if random_orientation:
         orientation = pb.getQuaternionFromEuler([0., 0., 2*np.pi*np.random.random_sample()])
       else:
@@ -407,7 +408,7 @@ class PyBulletEnv(BaseEnv):
     for h in shape_handles:
       self.object_types[h] = shape_type
 
-    self.wait(50)
+    self.wait(1000)
     return shape_handles
 
   def getObjects(self):

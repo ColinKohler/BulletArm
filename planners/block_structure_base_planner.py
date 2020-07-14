@@ -86,7 +86,7 @@ class BlockStructureBasePlanner(BasePlanner):
     """
     if objects is None: objects = self.env.objects
     objects, object_poses = self.getSortedObjPoses(objects=objects)
-    x, y, z, r = object_poses[0][0], object_poses[0][1], object_poses[0][2]+self.env.place_offset, object_poses[0][5]
+    x, y, z, r = object_poses[0][0], object_poses[0][1], object_poses[0][2], object_poses[0][5]
     for obj, pose in zip(objects, object_poses):
       if not self.isObjectHeld(obj):
         x, y, z, r = pose[0], pose[1], pose[2]+self.env.place_offset, pose[5]

@@ -30,17 +30,11 @@ class BasePlanner(object):
       x_noise = npr.choice(signs) * npr.uniform(self.pick_noise[0], self.pick_noise[1])
       y_noise = npr.choice(signs) * npr.uniform(self.pick_noise[0], self.pick_noise[1])
 
-      # x_noise = 0.005
-      # y_noise = 0.005
-
       x = np.clip(x + x_noise, self.env.workspace[0,0], self.env.workspace[0,1])
       y = np.clip(y + y_noise, self.env.workspace[1,0], self.env.workspace[1,1])
     elif primative == constants.PLACE_PRIMATIVE and self.place_noise:
       x_noise = npr.choice(signs) * npr.uniform(self.place_noise[0], self.place_noise[1])
       y_noise = npr.choice(signs) * npr.uniform(self.place_noise[0], self.place_noise[1])
-
-      # x_noise = 0.010
-      # y_noise = 0.010
 
       x = np.clip(x + x_noise, self.env.workspace[0,0], self.env.workspace[0,1])
       y = np.clip(y + y_noise, self.env.workspace[1,0], self.env.workspace[1,1])

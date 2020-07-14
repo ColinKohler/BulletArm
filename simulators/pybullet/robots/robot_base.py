@@ -68,18 +68,19 @@ class RobotBase:
     # Move to pre-grasp pose and then grasp pose
     self.moveTo(pre_pos, pre_rot, dynamic)
     if simulate_grasp:
-      self.moveTo(pos, rot, True)
+      self.moveTo(pos, rot, True, pos_th=1e-3, rot_th=1e-3)
       # Grasp object and lift up to pre pose
       gripper_fully_closed = self.closeGripper()
       if gripper_fully_closed:
         self.openGripper()
         self.moveTo(pre_pos, pre_rot, dynamic)
       else:
-        self.moveTo(pre_pos, pre_rot, True)
         self.adjustGripperCommand()
         for i in range(10):
           pb.stepSimulation()
         self.holding_obj = self.getPickedObj(objects)
+
+        self.moveTo(pre_pos, pre_rot, True)
 
     else:
       self.moveTo(pos, rot, dynamic)
@@ -98,9 +99,9 @@ class RobotBase:
     # Move to pre-grasp pose and then grasp pose
     self.moveTo(pre_pos, pre_rot, dynamic)
     if simulate_grasp:
-      self.moveTo(pos, rot, True, pos_th=1e-5)
+      self.moveTo(pos, rot, True, pos_th=1e-3, rot_th=1e-3)
     else:
-      self.moveTo(pos, rot, dynamic)
+      self.moveTo(pos, rot, dynamic, pos_th=1e-3, rot_th=1e-3)
 
     # Grasp object and lift up to pre pose
     self.openGripper()
@@ -156,7 +157,7 @@ class RobotBase:
     close_enough = False
     outer_it = 0
     max_outer_it = 10
-    max_inner_it = 1000
+    max_inner_it = 100
 
     while not close_enough and outer_it < max_outer_it:
       ik_solve = self._calculateIK(pos, rot)
