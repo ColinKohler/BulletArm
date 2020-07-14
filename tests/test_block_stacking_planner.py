@@ -8,9 +8,9 @@ import helping_hands_rl_envs.env_factory as env_factory
 workspace = np.array([[0.30, 0.60], [-0.15, 0.15], [0, 1]])
 obs_size = 128
 plot = False
-render = True
+render = False
 env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': obs_size, 'action_sequence': 'pxy',
-              'num_objects': 3, 'render': render, 'fast_mode': True, 'simulate_grasps': False, 'robot': 'kuka', 'seed':10}
+              'num_objects': 2, 'render': render, 'fast_mode': True, 'simulate_grasps': False, 'robot': 'kuka', 'seed':10}
 planner_config = {'pick_noise': [0.000, 0.000], 'place_noise': [0.015, 0.015], 'rand_pick_prob': 0.0, 'rand_place_prob': 0.0}
 envs = env_factory.createEnvs(1, 'data', 'pybullet', 'block_stacking', env_config, planner_config=planner_config)
 heightmap_resolution = (workspace[0,1] - workspace[0,0]) / obs_size
