@@ -408,7 +408,7 @@ class PyBulletEnv(BaseEnv):
     for h in shape_handles:
       self.object_types[h] = shape_type
 
-    self.wait(1000)
+    self.wait(100)
     return shape_handles
 
   def getObjects(self):
