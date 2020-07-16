@@ -2,6 +2,8 @@ import pybullet as pb
 import numpy as np
 import scipy
 import numpy.random as npr
+from copy import deepcopy
+from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv, NoValidPositionException
 from helping_hands_rl_envs.envs.pybullet_deconstruct_env import PyBulletDeconstructEnv
@@ -181,6 +183,31 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
                         constants.ROOF)
     self.wait(50)
 
+  def addRandomObj(self, n):
+    existing_pos = self.getObjectPositions()[:, :2].tolist()
+    padding = pybullet_util.getPadding(constants.RANDOM, self.max_block_size)
+    min_distance = pybullet_util.getMinDistance(constants.RANDOM, self.max_block_size)
+    for j in range(100):
+      other_pos = self._getValidPositions(padding, min_distance, existing_pos, n)
+      if all(map(lambda p: self.isPosDistToTiltValid(p, constants.RANDOM), other_pos)):
+        break
+    orientations = []
+    existing_pos.extend(deepcopy(other_pos))
+    for position in other_pos:
+      y1, y2 = self.getY1Y2fromX(position[0])
+      if position[1] > y1:
+        d = (position[1] - y1) * np.cos(self.tilt_rz)
+        position.append(self.tilt_z1 + 0.02 + np.tan(self.tilt_plain_rx) * d)
+        orientations.append(pb.getQuaternionFromEuler([self.tilt_plain_rx, 0, self.tilt_rz]))
+      elif position[1] < y2:
+        d = (y2 - position[1]) * np.cos(self.tilt_rz)
+        position.append(self.tilt_z2 + 0.02 + np.tan(-self.tilt_plain2_rx) * d)
+        orientations.append(pb.getQuaternionFromEuler([self.tilt_plain2_rx, 0, self.tilt_rz]))
+      else:
+        position.append(0.02)
+        orientations.append(pb.getQuaternionFromEuler([0, 0, np.random.random() * np.pi * 2]))
+    self._generateShapes(constants.RANDOM, n, random_orientation=False, pos=other_pos, rot=orientations, z_scale=np.random.choice([constants.z_scale_1, constants.z_scale_2]))
+
   def generateImproviseH3(self):
     # TODO: fix this
 
@@ -188,6 +215,11 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     lower_z2 = 0.01 * 1.5
     hier_z = 0.02 * 0.5
     roof_z = 0.02 + 0.015
+
+    lower_z1 = self.max_block_size * 0.25
+    lower_z2 = self.max_block_size * 0.75
+    hier_z = self.max_block_size * 0.5
+    roof_z = self.max_block_size * 1.5
 
     def generate(pos, zscale=1):
       if zscale == 1:
@@ -232,21 +264,18 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
       generate([pos1[0], pos1[1], lower_z1], 1)
       generate([pos1[0], pos1[1], lower_z2], 1)
       generate([pos2[0], pos2[1], hier_z], 2)
-
-      self._generateShapes(constants.RANDOM, 1, random_orientation=True, z_scale=np.random.choice([constants.z_scale_1, constants.z_scale_2]))
+      self.addRandomObj(1)
 
     elif t == 2:
       generate([pos1[0], pos1[1], hier_z], 2)
       generate([pos2[0], pos2[1], lower_z1], 1)
       generate([pos2[0], pos2[1], lower_z2], 1)
-
-      self._generateShapes(constants.RANDOM, 1, random_orientation=True, z_scale=np.random.choice([constants.z_scale_1, constants.z_scale_2]))
+      self.addRandomObj(1)
 
     elif t == 3:
       generate([pos1[0], pos1[1], hier_z], 2)
       generate([pos2[0], pos2[1], hier_z], 2)
-
-      self._generateShapes(constants.RANDOM, 2, random_orientation=True, z_scale=np.random.choice([constants.z_scale_1, constants.z_scale_2]))
+      self.addRandomObj(2)
 
     obj_positions = np.array([pos1, pos2])
     slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(obj_positions[:, 0], obj_positions[:, 1])

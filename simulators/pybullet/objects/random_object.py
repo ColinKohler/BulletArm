@@ -38,5 +38,5 @@ class RandomObject(PybulletObject):
                                    baseVisualShapeIndex=visualShapeId,
                                    basePosition=pos,
                                    baseOrientation=rot)
-    pb.changeDynamics(object_id, -1, mass=0.1, lateralFriction=1.0, spinningFriction=0.0, rollingFriction=0.0)
+    pb.changeDynamics(object_id, -1, mass=0.1, lateralFriction=10.0, spinningFriction=0.0, rollingFriction=0.0)
     super(RandomObject, self).__init__(constants.RANDOM, object_id)
