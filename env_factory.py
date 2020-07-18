@@ -13,11 +13,13 @@ from helping_hands_rl_envs.envs.house_building_2_env import createHouseBuilding2
 from helping_hands_rl_envs.envs.house_building_3_env import createHouseBuilding3Env
 from helping_hands_rl_envs.envs.house_building_4_env import createHouseBuilding4Env
 from helping_hands_rl_envs.envs.house_building_5_env import createHouseBuilding5Env
+from helping_hands_rl_envs.envs.house_building_x_env import createHouseBuildingXEnv
 from helping_hands_rl_envs.envs.improvise_house_building_2_env import createImproviseHouseBuilding2Env
 from helping_hands_rl_envs.envs.improvise_house_building_3_env import createImproviseHouseBuilding3Env
 from helping_hands_rl_envs.envs.improvise_house_building_4_env import createImproviseHouseBuilding4Env
 from helping_hands_rl_envs.envs.house_building_1_deconstruct_env import createHouseBuilding1DeconstructEnv
 from helping_hands_rl_envs.envs.house_building_4_deconstruct_env import createHouseBuilding4DeconstructEnv
+from helping_hands_rl_envs.envs.house_building_x_deconstruct_env import createHouseBuildingXDeconstructEnv
 from helping_hands_rl_envs.envs.improvise_house_building_3_deconstruct_env import createImproviseHouseBuilding3DeconstructEnv
 from helping_hands_rl_envs.envs.improvise_house_building_4_deconstruct_env import createImproviseHouseBuilding4DeconstructEnv
 from helping_hands_rl_envs.envs.random_picking_env import createRandomPickingEnv
@@ -78,6 +80,8 @@ def createEnvs(num_processes, runner_type, simulator, env_type, env_config, plan
     envs = [createHouseBuilding4Env(parent_env, env_configs[i]) for i in range(num_processes)]
   elif env_type == 'house_building_5':
     envs = [createHouseBuilding5Env(parent_env, env_configs[i]) for i in range(num_processes)]
+  elif env_type == 'house_building_x':
+    envs = [createHouseBuildingXEnv(parent_env, env_configs[i]) for i in range(num_processes)]
   elif env_type == 'improvise_house_building_2':
     envs = [createImproviseHouseBuilding2Env(parent_env, env_configs[i]) for i in range(num_processes)]
   elif env_type == 'improvise_house_building_3':
@@ -88,6 +92,8 @@ def createEnvs(num_processes, runner_type, simulator, env_type, env_config, plan
     envs = [createHouseBuilding1DeconstructEnv(parent_env, env_configs[i]) for i in range(num_processes)]
   elif env_type == 'house_building_4_deconstruct':
     envs = [createHouseBuilding4DeconstructEnv(parent_env, env_configs[i]) for i in range(num_processes)]
+  elif env_type == 'house_building_x_deconstruct':
+    envs = [createHouseBuildingXDeconstructEnv(parent_env, env_configs[i]) for i in range(num_processes)]
   elif env_type == 'improvise_house_building_3_deconstruct':
     envs = [createImproviseHouseBuilding3DeconstructEnv(parent_env, env_configs[i]) for i in range(num_processes)]
   elif env_type == 'improvise_house_building_4_deconstruct':
