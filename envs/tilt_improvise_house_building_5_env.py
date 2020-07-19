@@ -9,8 +9,8 @@ import numpy.random as npr
 from itertools import combinations
 import numpy as np
 
-def createTiltImproviseHouseBuilding3Env(simulator_base_env, config):
-  class TiltImproviseHouseBuilding3Env(PyBulletTiltEnv):
+def createTiltImproviseHouseBuilding5Env(simulator_base_env, config):
+  class TiltImproviseHouseBuilding5Env(PyBulletTiltEnv):
     def __init__(self, config):
       if simulator_base_env is PyBulletEnv:
         super().__init__(config)
@@ -21,6 +21,9 @@ def createTiltImproviseHouseBuilding3Env(simulator_base_env, config):
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
       self.tilt_min_dist = 0.04
+
+      pb.setPhysicsEngineParameter(numSubSteps=0, numSolverIterations=200, solverResidualThreshold=1e-7,
+                                   constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_SI)
 
     def step(self, action):
       self.takeAction(action)
@@ -76,7 +79,10 @@ def createTiltImproviseHouseBuilding3Env(simulator_base_env, config):
                 orientations.append(pb.getQuaternionFromEuler([0, 0, np.random.random() * np.pi * 2]))
             if t == constants.RANDOM:
               for i in range(obj_dict[t]):
-                self._generateShapes(t, 1, random_orientation=False, pos=other_pos[i:i+1], rot=orientations[i:i+1], z_scale=npr.choice([constants.z_scale_1, constants.z_scale_2], p=[0.75, 0.25]))
+                zscale = np.random.uniform(2, 2.2)
+                scale = np.random.uniform(0.5, 0.7)
+                zscale = 0.6 * zscale / scale
+                self._generateShapes(t, 1, random_orientation=False, pos=other_pos[i:i+1], rot=orientations[i:i+1], scale=scale, z_scale=zscale)
             else:
               self._generateShapes(t, obj_dict[t], random_orientation=False, pos=other_pos, rot=orientations)
         except Exception as e:
@@ -96,7 +102,7 @@ def createTiltImproviseHouseBuilding3Env(simulator_base_env, config):
     def _checkTermination(self):
       rand_objs = list(filter(lambda x: self.object_types[x] == constants.RANDOM, self.objects))
       roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
-      if roofs[0].getZPosition() < 1.2*self.min_block_size:
+      if roofs[0].getZPosition() <  2.1 * self.min_block_size:
         return False
 
       rand_obj_combs = combinations(rand_objs, 2)
@@ -106,6 +112,6 @@ def createTiltImproviseHouseBuilding3Env(simulator_base_env, config):
       return False
 
   def _thunk():
-    return TiltImproviseHouseBuilding3Env(config)
+    return TiltImproviseHouseBuilding5Env(config)
 
   return _thunk

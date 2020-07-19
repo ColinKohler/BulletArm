@@ -469,10 +469,10 @@ class PyBulletEnv(BaseEnv):
       obj_poses.append(pos + rot)
     return np.array(obj_poses)
 
-  def getObjectPositions(self):
+  def getObjectPositions(self, omit_hold=True):
     obj_positions = list()
     for obj in self.objects:
-      if self._isObjectHeld(obj):
+      if omit_hold and self._isObjectHeld(obj):
         continue
       obj_positions.append(obj.getPosition())
     return np.array(obj_positions)

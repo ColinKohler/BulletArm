@@ -40,7 +40,8 @@ AVAILABLE_PLANNER = ['random',
                      'tilt_house_building_1_deconstruct',
                      'tilt_house_building_3_deconstruct',
                      'tilt_house_building_4_deconstruct',
-                     'tilt_improvise_house_building_3_deconstruct'
+                     'tilt_improvise_house_building_3_deconstruct',
+                     'tilt_improvise_house_building_5_deconstruct',
                      ]
 
 def createPlanner(config):
@@ -97,4 +98,6 @@ def createPlanner(config):
   elif config['planner'] == 'tilt_house_building_4_deconstruct':
     return lambda env: TiltDeconstructPlanner(env, config)
   elif config['planner'] == 'tilt_improvise_house_building_3_deconstruct':
+    return lambda env: TiltDeconstructPlanner(env, config)
+  elif config['planner'] == 'tilt_improvise_house_building_5_deconstruct':
     return lambda env: TiltDeconstructPlanner(env, config)

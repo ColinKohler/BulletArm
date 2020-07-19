@@ -16,6 +16,16 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     super().__init__(config)
     self.pick_offset = 0.0
     self.place_offset = 0.015
+    self.prev_obj_pos = ()
+
+  def takeAction(self, action):
+    self.prev_obj_pos = self.getObjectPositions(omit_hold=False)
+    super().takeAction(action)
+
+  def isSimValid(self):
+    curr_obj_pos = self.getObjectPositions(omit_hold=False)
+    dist = np.linalg.norm(curr_obj_pos - self.prev_obj_pos, axis=1)
+    return (dist > 0.005).sum() == 1 and super().isSimValid()
 
   def _getObservation(self, action=None):
     ''''''
@@ -221,14 +231,16 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     hier_z = self.max_block_size * 0.5
     roof_z = self.max_block_size * 1.5
 
-    def generate(pos, zscale=1):
+    def generate(pos, zscale=1, rz=None):
+      if rz is None:
+        rz = 2 * np.pi * np.random.random_sample()
       if zscale == 1:
         zscale = constants.z_scale_1
       elif zscale == 2:
         zscale = constants.z_scale_2
       handle = pb_obj_generation.generateRandomObj(pos,
                                                    pb.getQuaternionFromEuler(
-                                                     [0., 0., 2 * np.pi * np.random.random_sample()]),
+                                                     [0., 0., rz]),
                                                    npr.uniform(self.block_scale_range[0], self.block_scale_range[1]),
                                                    zscale)
       self.objects.append(handle)
@@ -238,9 +250,9 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     padding = self.max_block_size * 1.5
     while True:
       pos1 = self._getValidPositions(padding, 0, [], 1)[0]
-      if self.isPosOffTilt(pos1):
+      if self.isPosOffTilt(pos1, min_dist=0.03):
         break
-    min_dist = 1.7 * self.max_block_size
+    min_dist = 2.1 * self.max_block_size
     max_dist = 2.4 * self.max_block_size
     sample_range = [[pos1[0] - max_dist, pos1[0] + max_dist],
                     [pos1[1] - max_dist, pos1[1] + max_dist]]
@@ -250,32 +262,8 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
       except NoValidPositionException:
         continue
       dist = np.linalg.norm(np.array(pos1) - np.array(pos2))
-      if min_dist < dist < max_dist and self.isPosOffTilt(pos2):
+      if min_dist < dist < max_dist and self.isPosOffTilt(pos2, min_dist=0.03):
         break
-
-    t = np.random.choice(4)
-    if t == 0:
-      generate([pos1[0], pos1[1], lower_z1], 1)
-      generate([pos1[0], pos1[1], lower_z2], 1)
-      generate([pos2[0], pos2[1], lower_z1], 1)
-      generate([pos2[0], pos2[1], lower_z2], 1)
-
-    elif t == 1:
-      generate([pos1[0], pos1[1], lower_z1], 1)
-      generate([pos1[0], pos1[1], lower_z2], 1)
-      generate([pos2[0], pos2[1], hier_z], 2)
-      self.addRandomObj(1)
-
-    elif t == 2:
-      generate([pos1[0], pos1[1], hier_z], 2)
-      generate([pos2[0], pos2[1], lower_z1], 1)
-      generate([pos2[0], pos2[1], lower_z2], 1)
-      self.addRandomObj(1)
-
-    elif t == 3:
-      generate([pos1[0], pos1[1], hier_z], 2)
-      generate([pos2[0], pos2[1], hier_z], 2)
-      self.addRandomObj(2)
 
     obj_positions = np.array([pos1, pos2])
     slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(obj_positions[:, 0], obj_positions[:, 1])
@@ -286,6 +274,30 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
       r -= np.pi
     while r < 0:
       r += np.pi
+
+    t = np.random.choice(4)
+    if t == 0:
+      generate([pos1[0], pos1[1], lower_z1], 1, r)
+      generate([pos1[0], pos1[1], lower_z2], 1, r)
+      generate([pos2[0], pos2[1], lower_z1], 1, r)
+      generate([pos2[0], pos2[1], lower_z2], 1, r)
+
+    elif t == 1:
+      generate([pos1[0], pos1[1], lower_z1], 1, r)
+      generate([pos1[0], pos1[1], lower_z2], 1, r)
+      generate([pos2[0], pos2[1], hier_z], 2, r)
+      self.addRandomObj(1)
+
+    elif t == 2:
+      generate([pos1[0], pos1[1], hier_z], 2, r)
+      generate([pos2[0], pos2[1], lower_z1], 1, r)
+      generate([pos2[0], pos2[1], lower_z2], 1, r)
+      self.addRandomObj(1)
+
+    elif t == 3:
+      generate([pos1[0], pos1[1], hier_z], 2, r)
+      generate([pos2[0], pos2[1], hier_z], 2, r)
+      self.addRandomObj(2)
 
     h = pb_obj_generation.generateRoof([x, y, roof_z],
                                        pb.getQuaternionFromEuler(
@@ -351,6 +363,88 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     self.object_types[h] = constants.ROOF
     self.structure_objs.append(h)
     self.wait(50)
+
+  def generateImproviseH5(self):
+    # TODO: fix this
+    roof_z = 4.4*0.014 + 0.5*0.03
+    def generate(pos, scale=0.6, zscale=1, rz=None):
+      if rz is None:
+        rz = 2 * np.pi * np.random.random_sample()
+      # scale = np.random.uniform(0.5, 0.7)
+      # zscale = 0.6 * zscale / scale
+      handle = pb_obj_generation.generateRandomObj(pos,
+                                                   pb.getQuaternionFromEuler(
+                                                     [0., 0., rz]),
+                                                   scale,
+                                                   zscale)
+      self.objects.append(handle)
+      self.object_types[handle] = constants.RANDOM
+      self.structure_objs.append(handle)
+
+    padding = self.max_block_size * 1.5
+    while True:
+      pos1 = self._getValidPositions(padding, 0, [], 1)[0]
+      if self.isPosOffTilt(pos1, min_dist=0.03):
+        break
+    min_dist = 2.2 * self.max_block_size
+    max_dist = 2.4 * self.max_block_size
+    sample_range = [[pos1[0] - max_dist, pos1[0] + max_dist],
+                    [pos1[1] - max_dist, pos1[1] + max_dist]]
+    for i in range(1000):
+      try:
+        pos2 = self._getValidPositions(padding, min_dist, [pos1], 1, sample_range=sample_range)[0]
+      except NoValidPositionException:
+        continue
+      dist = np.linalg.norm(np.array(pos1) - np.array(pos2))
+      if min_dist < dist < max_dist and self.isPosOffTilt(pos2, min_dist=0.03):
+        break
+
+    base1_zscale1 = np.random.uniform(2, 2.2)
+    base1_zscale2 = np.random.uniform(2, 2.2)
+
+    base2_zscale1 = np.random.uniform(2, 2.2)
+    base2_zscale2 = np.random.uniform(2, 2.2)
+
+    base1_scale1 = np.random.uniform(0.6, 0.7)
+    base1_zscale1 = 0.6 * base1_zscale1 / base1_scale1
+
+    base1_scale2 = np.random.uniform(0.5, 0.6)
+    base1_zscale2 = 0.6 * base1_zscale2 / base1_scale2
+
+    base2_scale1 = np.random.uniform(0.6, 0.7)
+    base2_zscale1 = 0.6 * base2_zscale1 / base2_scale1
+
+    base2_scale2 = np.random.uniform(0.5, 0.6)
+    base2_zscale2 = 0.6 * base2_zscale2 / base2_scale2
+
+
+
+    obj_positions = np.array([pos1, pos2])
+    slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(obj_positions[:, 0], obj_positions[:, 1])
+    x, y = obj_positions.mean(0)
+    r = np.arctan(slope)
+    r -= np.pi / 2
+    while r > np.pi:
+      r -= np.pi
+    while r < 0:
+      r += np.pi
+
+    generate([pos1[0], pos1[1], base1_zscale1 * 0.007], base1_scale1, base1_zscale1, r)
+    generate([pos1[0], pos1[1], base1_zscale1 * 0.014 + base1_zscale2 * 0.007], base1_scale2, base1_zscale2, r)
+
+    generate([pos2[0], pos2[1], base2_zscale1 * 0.007], base2_scale1, base2_zscale1, r)
+    generate([pos2[0], pos2[1], base2_zscale1 * 0.014 + base2_zscale2 * 0.007], base2_scale2, base2_zscale2, r)
+
+
+
+    h = pb_obj_generation.generateRoof([x, y, roof_z],
+                                       pb.getQuaternionFromEuler(
+                                         [0., 0., r]),
+                                       npr.uniform(self.block_scale_range[0], self.block_scale_range[1]))
+    self.objects.append(h)
+    self.object_types[h] = constants.ROOF
+    self.structure_objs.append(h)
+    self.wait(100)
 
   def generateObject(self, pos, rot, obj_type):
     if obj_type == constants.CUBE:

@@ -26,6 +26,9 @@ class PyBulletTiltEnv(PyBulletEnv):
     self.tilt_z1 = 0
     self.tilt_z2 = 0
 
+    self.tilt_min_dist = 0.02
+    self.tilt_max_dist = 0.1
+
     self.tilt_rz = 0
 
     self.block_scale_range = (0.6, 0.6)
@@ -39,8 +42,8 @@ class PyBulletTiltEnv(PyBulletEnv):
 
   def resetTilt(self):
     self.tilt_rz = -np.pi / 2 + np.random.random_sample() * np.pi
-    self.tilt_border = np.random.random() * 0.08 + 0.02
-    self.tilt_border2 = np.random.random() * 0.08 + 0.02
+    self.tilt_border = np.random.random() * (self.tilt_max_dist - self.tilt_min_dist) + self.tilt_min_dist
+    self.tilt_border2 = np.random.random() * (self.tilt_max_dist - self.tilt_min_dist) + self.tilt_min_dist
     self.tilt_z1 = np.random.random()*0.01
     self.tilt_z2 = np.random.random()*0.01
 
@@ -71,9 +74,9 @@ class PyBulletTiltEnv(PyBulletEnv):
     y2 = np.tan(self.tilt_rz) * x - np.tan(self.tilt_rz) * (self.workspace[0].mean() + self.tilt_border2/np.sin(self.tilt_rz))
     return y1, y2    
   
-  def isPosOffTilt(self, pos):
+  def isPosOffTilt(self, pos, min_dist=0.02):
     y1, y2 = self.getY1Y2fromX(pos[0])
-    return y2+0.02/np.cos(self.tilt_rz) < pos[1] < y1-0.02/np.cos(self.tilt_rz)
+    return y2+min_dist/np.cos(self.tilt_rz) < pos[1] < y1-min_dist/np.cos(self.tilt_rz)
 
   def isPosDistToTiltValid(self, pos, obj_type):
     y1, y2 = self.getY1Y2fromX(pos[0])

@@ -44,7 +44,7 @@ class TestBulletHouse1(unittest.TestCase):
       action = env.getNextAction()
       # action[action[:,0]==1, 1] += 0.018
       # action[action[:,0]==1, 2] += 0.018
-      states_, in_hands_, obs_, rewards, dones = env.step(action)
+      states_, in_hands_, obs_, rewards, dones = env.step(action, False)
 
       # pixel_x = ((action[0, 1] - self.workspace[0][0]) / self.heightmap_resolution).long()
       # pixel_y = ((action[0, 2] - self.workspace[1][0]) / self.heightmap_resolution).long()
