@@ -405,16 +405,17 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     base2_zscale1 = np.random.uniform(2, 2.2)
     base2_zscale2 = np.random.uniform(2, 2.2)
 
-    base1_scale1 = np.random.uniform(0.6, 0.7)
-    base1_zscale1 = 0.6 * base1_zscale1 / base1_scale1
+    base1_scale1 = np.random.uniform(0.5, 0.7)
+    base1_scale2 = np.random.uniform(0.5, base1_scale1)
 
-    base1_scale2 = np.random.uniform(0.5, 0.6)
+    base2_scale1 = np.random.uniform(0.5, 0.7)
+    base2_scale2 = np.random.uniform(0.5, base2_scale1)
+
+
+    base1_zscale1 = 0.6 * base1_zscale1 / base1_scale1
     base1_zscale2 = 0.6 * base1_zscale2 / base1_scale2
 
-    base2_scale1 = np.random.uniform(0.6, 0.7)
     base2_zscale1 = 0.6 * base2_zscale1 / base2_scale1
-
-    base2_scale2 = np.random.uniform(0.5, 0.6)
     base2_zscale2 = 0.6 * base2_zscale2 / base2_scale2
 
 

@@ -33,7 +33,7 @@ class RandomObject(PybulletObject):
     #                                            fileName=obj_filepath,
     #                                            meshScale=mesh_scale)
     collisionShapeId = pb.createCollisionShape(shapeType=pb.GEOM_BOX,
-                                               halfExtents=[0.025*scale, 0.025*scale, 0.025*scale])
+                                               halfExtents=[0.024*scale, 0.024*scale, 0.024*scale])
     object_id = pb.createMultiBody(baseMass=0.1,
                                    baseInertialFramePosition=[0, 0, 0],
                                    baseCollisionShapeIndex=collisionShapeId,
