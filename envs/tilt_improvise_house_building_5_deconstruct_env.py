@@ -22,8 +22,8 @@ def createTiltImproviseHouseBuilding5DeconstructEnv(simulator_base_env, config):
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
       self.tilt_min_dist = 0.04
 
-      pb.setPhysicsEngineParameter(numSubSteps=0, numSolverIterations=200, solverResidualThreshold=1e-7,
-                                   constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_SI)
+      # pb.setPhysicsEngineParameter(numSubSteps=0, numSolverIterations=200, solverResidualThreshold=1e-7,
+      #                              constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_SI)
 
     def step(self, action):
       reward = 1.0 if self.checkStructure() else 0.0
@@ -63,7 +63,7 @@ def createTiltImproviseHouseBuilding5DeconstructEnv(simulator_base_env, config):
     def checkStructure(self):
       rand_objs = list(filter(lambda x: self.object_types[x] == constants.RANDOM, self.objects))
       roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
-      if roofs[0].getZPosition() <  2.1 * self.min_block_size:
+      if roofs[0].getZPosition() <  2.1 * self.min_block_size or not self._checkObjUpright(roofs[0], threshold=np.pi/18):
         return False
 
       rand_obj_combs = combinations(rand_objs, 2)
