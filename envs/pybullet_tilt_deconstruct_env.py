@@ -370,8 +370,6 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     def generate(pos, scale=0.6, zscale=1, rz=None):
       if rz is None:
         rz = 2 * np.pi * np.random.random_sample()
-      # scale = np.random.uniform(0.5, 0.7)
-      # zscale = 0.6 * zscale / scale
       handle = pb_obj_generation.generateRandomObj(pos,
                                                    pb.getQuaternionFromEuler(
                                                      [0., 0., rz]),
@@ -446,6 +444,140 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     self.object_types[h] = constants.ROOF
     self.structure_objs.append(h)
     self.wait(100)
+
+  def generateImproviseH6(self):
+    def generateRandom(pos, scale=0.6, zscale=1, rz=None):
+      if rz is None:
+        rz = 2 * np.pi * np.random.random_sample()
+      handle = pb_obj_generation.generateRandomObj(pos,
+                                                   pb.getQuaternionFromEuler(
+                                                     [0., 0., rz]),
+                                                   scale,
+                                                   zscale)
+      self.objects.append(handle)
+      self.object_types[handle] = constants.RANDOM
+      self.structure_objs.append(handle)
+
+    def generateBrick(pos, scale=0.6, rz=None):
+      if rz is None:
+        rz = 2 * np.pi * np.random.random_sample()
+      handle = pb_obj_generation.generateBrick(pos,
+                                               pb.getQuaternionFromEuler(
+                                                 [0., 0., rz]),
+                                               scale)
+      self.objects.append(handle)
+      self.object_types[handle] = constants.BRICK
+      self.structure_objs.append(handle)
+
+    padding = self.max_block_size * 1.5
+    while True:
+      pos1 = self._getValidPositions(padding, 0, [], 1)[0]
+      if self.isPosOffTilt(pos1):
+        break
+    min_dist = 2.1 * self.max_block_size
+    max_dist = 2.2 * self.max_block_size
+    sample_range = [[pos1[0] - max_dist, pos1[0] + max_dist],
+                    [pos1[1] - max_dist, pos1[1] + max_dist]]
+    for i in range(1000):
+      try:
+        pos2 = self._getValidPositions(padding, min_dist, [pos1], 1, sample_range=sample_range)[0]
+      except NoValidPositionException:
+        continue
+      dist = np.linalg.norm(np.array(pos1) - np.array(pos2))
+      if min_dist < dist < max_dist and self.isPosOffTilt(pos2):
+        break
+
+    base1_zscale = np.random.uniform(2, 2.2)
+    base2_zscale = np.random.uniform(2, 2.2)
+    base1_scale = np.random.uniform(0.5, 0.7)
+    base2_scale = np.random.uniform(0.5, 0.7)
+    base1_zscale = 0.6 * base1_zscale / base1_scale
+    base2_zscale = 0.6 * base2_zscale / base2_scale
+
+    brick_scale = np.random.uniform(0.5, 0.7)
+
+
+    obj_positions = np.array([pos1, pos2])
+    slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(obj_positions[:, 0], obj_positions[:, 1])
+    x, y = obj_positions.mean(0)
+    r = np.arctan(slope)
+    r -= np.pi / 2
+    while r > np.pi:
+      r -= np.pi
+    while r < 0:
+      r += np.pi
+
+
+    generateRandom([pos1[0], pos1[1], base1_zscale * 0.007], base1_scale, base1_zscale, r)
+    generateRandom([pos2[0], pos2[1], base1_zscale * 0.007], base2_scale, base2_zscale, r)
+
+    generateBrick([x, y, self.max_block_size * 1.5],
+                  brick_scale,
+                  r)
+
+    self.generateObject([x, y, self.max_block_size * 2.5],
+                        pb.getQuaternionFromEuler([0., 0., r]),
+                        constants.ROOF)
+    self.wait(100)
+    pass
+
+  def generateImproviseH2(self):
+    def generateRandom(pos, scale=0.6, zscale=1, rz=None):
+      if rz is None:
+        rz = 2 * np.pi * np.random.random_sample()
+      handle = pb_obj_generation.generateRandomObj(pos,
+                                                   pb.getQuaternionFromEuler(
+                                                     [0., 0., rz]),
+                                                   scale,
+                                                   zscale)
+      self.objects.append(handle)
+      self.object_types[handle] = constants.RANDOM
+      self.structure_objs.append(handle)
+
+    padding = self.max_block_size * 1.5
+    while True:
+      pos1 = self._getValidPositions(padding, 0, [], 1)[0]
+      if self.isPosOffTilt(pos1):
+        break
+    min_dist = 2.1 * self.max_block_size
+    max_dist = 2.2 * self.max_block_size
+    sample_range = [[pos1[0] - max_dist, pos1[0] + max_dist],
+                    [pos1[1] - max_dist, pos1[1] + max_dist]]
+    for i in range(1000):
+      try:
+        pos2 = self._getValidPositions(padding, min_dist, [pos1], 1, sample_range=sample_range)[0]
+      except NoValidPositionException:
+        continue
+      dist = np.linalg.norm(np.array(pos1) - np.array(pos2))
+      if min_dist < dist < max_dist and self.isPosOffTilt(pos2):
+        break
+
+    base1_zscale = np.random.uniform(2, 2.2)
+    base2_zscale = np.random.uniform(2, 2.2)
+    base1_scale = np.random.uniform(0.5, 0.7)
+    base2_scale = np.random.uniform(0.5, 0.7)
+    base1_zscale = 0.6 * base1_zscale / base1_scale
+    base2_zscale = 0.6 * base2_zscale / base2_scale
+
+    obj_positions = np.array([pos1, pos2])
+    slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(obj_positions[:, 0], obj_positions[:, 1])
+    x, y = obj_positions.mean(0)
+    r = np.arctan(slope)
+    r -= np.pi / 2
+    while r > np.pi:
+      r -= np.pi
+    while r < 0:
+      r += np.pi
+
+
+    generateRandom([pos1[0], pos1[1], base1_zscale * 0.007], base1_scale, base1_zscale, r)
+    generateRandom([pos2[0], pos2[1], base1_zscale * 0.007], base2_scale, base2_zscale, r)
+
+    self.generateObject([x, y, self.max_block_size * 1.5],
+                        pb.getQuaternionFromEuler([0., 0., r]),
+                        constants.ROOF)
+    self.wait(100)
+    pass
 
   def generateObject(self, pos, rot, obj_type):
     if obj_type == constants.CUBE:
