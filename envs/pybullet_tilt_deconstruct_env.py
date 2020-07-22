@@ -458,13 +458,13 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
       self.object_types[handle] = constants.RANDOM
       self.structure_objs.append(handle)
 
-    def generateBrick(pos, scale=0.6, rz=None):
+    def generateBrick(pos, rz=None, x_scale=0.6, y_scale=0.6, z_scale=0.6):
       if rz is None:
         rz = 2 * np.pi * np.random.random_sample()
-      handle = pb_obj_generation.generateBrick(pos,
-                                               pb.getQuaternionFromEuler(
-                                                 [0., 0., rz]),
-                                               scale)
+      handle = pb_obj_generation.generateRandomBrick(pos,
+                                                     pb.getQuaternionFromEuler(
+                                                       [0., 0., rz]),
+                                                     x_scale, y_scale, z_scale)
       self.objects.append(handle)
       self.object_types[handle] = constants.BRICK
       self.structure_objs.append(handle)
@@ -474,8 +474,8 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
       pos1 = self._getValidPositions(padding, 0, [], 1)[0]
       if self.isPosOffTilt(pos1):
         break
-    min_dist = 2.1 * self.max_block_size
-    max_dist = 2.2 * self.max_block_size
+    min_dist = 2.7 * self.max_block_size
+    max_dist = 2.8 * self.max_block_size
     sample_range = [[pos1[0] - max_dist, pos1[0] + max_dist],
                     [pos1[1] - max_dist, pos1[1] + max_dist]]
     for i in range(1000):
@@ -489,12 +489,14 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
 
     base1_zscale = np.random.uniform(2, 2.2)
     base2_zscale = np.random.uniform(2, 2.2)
-    base1_scale = np.random.uniform(0.5, 0.7)
-    base2_scale = np.random.uniform(0.5, 0.7)
+    base1_scale = np.random.uniform(0.6, 0.9)
+    base2_scale = np.random.uniform(0.6, 0.9)
     base1_zscale = 0.6 * base1_zscale / base1_scale
     base2_zscale = 0.6 * base2_zscale / base2_scale
 
-    brick_scale = np.random.uniform(0.5, 0.7)
+    brick_xscale = np.random.uniform(0.5, 0.7)
+    brick_yscale = np.random.uniform(0.5, 0.7)
+    brick_zscale = np.random.uniform(0.4, 0.7)
 
 
     obj_positions = np.array([pos1, pos2])
@@ -511,9 +513,7 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     generateRandom([pos1[0], pos1[1], base1_zscale * 0.007], base1_scale, base1_zscale, r)
     generateRandom([pos2[0], pos2[1], base1_zscale * 0.007], base2_scale, base2_zscale, r)
 
-    generateBrick([x, y, self.max_block_size * 1.5],
-                  brick_scale,
-                  r)
+    generateBrick([x, y, self.max_block_size * 1.5], r, brick_xscale, brick_yscale, brick_zscale)
 
     self.generateObject([x, y, self.max_block_size * 2.5],
                         pb.getQuaternionFromEuler([0., 0., r]),
@@ -539,8 +539,8 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
       pos1 = self._getValidPositions(padding, 0, [], 1)[0]
       if self.isPosOffTilt(pos1):
         break
-    min_dist = 2.1 * self.max_block_size
-    max_dist = 2.2 * self.max_block_size
+    min_dist = 2.7 * self.max_block_size
+    max_dist = 2.8 * self.max_block_size
     sample_range = [[pos1[0] - max_dist, pos1[0] + max_dist],
                     [pos1[1] - max_dist, pos1[1] + max_dist]]
     for i in range(1000):
@@ -554,8 +554,8 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
 
     base1_zscale = np.random.uniform(2, 2.2)
     base2_zscale = np.random.uniform(2, 2.2)
-    base1_scale = np.random.uniform(0.5, 0.7)
-    base2_scale = np.random.uniform(0.5, 0.7)
+    base1_scale = np.random.uniform(0.6, 0.9)
+    base2_scale = np.random.uniform(0.6, 0.9)
     base1_zscale = 0.6 * base1_zscale / base1_scale
     base2_zscale = 0.6 * base2_zscale / base2_scale
 

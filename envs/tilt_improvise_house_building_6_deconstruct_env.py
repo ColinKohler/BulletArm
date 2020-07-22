@@ -18,6 +18,7 @@ def createTiltImproviseHouseBuilding6DeconstructEnv(simulator_base_env, config):
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
+      self.tilt_min_dist = 0.03
 
     def step(self, action):
       reward = 1.0 if self.checkStructure() else 0.0

@@ -5,6 +5,7 @@ from helping_hands_rl_envs.envs.pybullet_tilt_env import PyBulletTiltEnv
 from helping_hands_rl_envs.simulators.pybullet.robots.kuka_float_pick import KukaFloatPick
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
+import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
 import numpy.random as npr
 from itertools import combinations
 import numpy as np
@@ -20,6 +21,7 @@ def createTiltImproviseHouseBuilding6Env(simulator_base_env, config):
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
+      self.tilt_min_dist = 0.03
 
     def step(self, action):
       self.takeAction(action)
@@ -76,13 +78,20 @@ def createTiltImproviseHouseBuilding6Env(simulator_base_env, config):
             if t == constants.RANDOM:
               for i in range(obj_dict[t]):
                 zscale = np.random.uniform(2, 2.2)
-                scale = np.random.uniform(0.5, 0.7)
+                scale = np.random.uniform(0.6, 0.9)
                 zscale = 0.6 * zscale / scale
                 self._generateShapes(t, 1, random_orientation=False, pos=other_pos[i:i+1], rot=orientations[i:i+1], scale=scale, z_scale=zscale)
             elif t == constants.BRICK:
               for i in range(obj_dict[t]):
-                scale = np.random.uniform(0.5, 0.7)
-                self._generateShapes(t, 1, random_orientation=False, pos=other_pos[i:i+1], rot=orientations[i:i+1], scale=scale)
+                brick_xscale = np.random.uniform(0.5, 0.7)
+                brick_yscale = np.random.uniform(0.5, 0.7)
+                brick_zscale = np.random.uniform(0.4, 0.7)
+                handle = pb_obj_generation.generateRandomBrick(other_pos[0],
+                                                               orientations[0],
+                                                               brick_xscale, brick_yscale, brick_zscale)
+                self.objects.append(handle)
+                self.object_types[handle] = constants.BRICK
+                # self._generateShapes(t, 1, random_orientation=False, pos=other_pos[i:i+1], rot=orientations[i:i+1], scale=scale)
 
             else:
               self._generateShapes(t, obj_dict[t], random_orientation=False, pos=other_pos, rot=orientations)

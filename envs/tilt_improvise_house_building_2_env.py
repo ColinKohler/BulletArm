@@ -19,7 +19,7 @@ def createTiltImproviseHouseBuilding2Env(simulator_base_env, config):
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
-
+      self.tilt_min_dist = 0.03
 
     def step(self, action):
       self.takeAction(action)
@@ -76,7 +76,7 @@ def createTiltImproviseHouseBuilding2Env(simulator_base_env, config):
             if t == constants.RANDOM:
               for i in range(obj_dict[t]):
                 zscale = np.random.uniform(2, 2.2)
-                scale = np.random.uniform(0.5, 0.7)
+                scale = np.random.uniform(0.6, 0.9)
                 zscale = 0.6 * zscale / scale
                 self._generateShapes(t, 1, random_orientation=False, pos=other_pos[i:i+1], rot=orientations[i:i+1], scale=scale, z_scale=zscale)
             elif t == constants.BRICK:
