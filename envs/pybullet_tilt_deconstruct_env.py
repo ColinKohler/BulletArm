@@ -472,7 +472,7 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     padding = self.max_block_size * 1.5
     while True:
       pos1 = self._getValidPositions(padding, 0, [], 1)[0]
-      if self.isPosOffTilt(pos1):
+      if self.isPosOffTilt(pos1, min_dist=0.03):
         break
     min_dist = 2.7 * self.max_block_size
     max_dist = 2.8 * self.max_block_size
@@ -484,7 +484,7 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
       except NoValidPositionException:
         continue
       dist = np.linalg.norm(np.array(pos1) - np.array(pos2))
-      if min_dist < dist < max_dist and self.isPosOffTilt(pos2):
+      if min_dist < dist < max_dist and self.isPosOffTilt(pos2, min_dist=0.03):
         break
 
     base1_zscale = np.random.uniform(2, 2.2)
@@ -537,7 +537,7 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     padding = self.max_block_size * 1.5
     while True:
       pos1 = self._getValidPositions(padding, 0, [], 1)[0]
-      if self.isPosOffTilt(pos1):
+      if self.isPosOffTilt(pos1, min_dist=0.03):
         break
     min_dist = 2.7 * self.max_block_size
     max_dist = 2.8 * self.max_block_size
@@ -549,7 +549,7 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
       except NoValidPositionException:
         continue
       dist = np.linalg.norm(np.array(pos1) - np.array(pos2))
-      if min_dist < dist < max_dist and self.isPosOffTilt(pos2):
+      if min_dist < dist < max_dist and self.isPosOffTilt(pos2, min_dist=0.03):
         break
 
     base1_zscale = np.random.uniform(2, 2.2)
