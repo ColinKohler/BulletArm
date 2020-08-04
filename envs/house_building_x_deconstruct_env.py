@@ -5,8 +5,8 @@ import numpy as np
 from itertools import combinations
 from helping_hands_rl_envs.envs.pybullet_deconstruct_env import PyBulletEnv, PyBulletDeconstructEnv
 from helping_hands_rl_envs.simulators import constants
-from utils.check_goal import CheckGoal
-from utils.gen_goal import GenGoal
+from .utils.check_goal import CheckGoal
+from .utils.gen_goal import GenGoal
 
 def createHouseBuildingXDeconstructEnv(simulator_base_env, config):
   class HouseBuildingXDeconstructEnv(PyBulletDeconstructEnv):
