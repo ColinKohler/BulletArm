@@ -24,10 +24,11 @@ def createHouseBuildingXDeconstructEnv(simulator_base_env, config):
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
+      self.additional_objects = not config['no_additional_objects'] if 'no_additional_objects' in config else True
 
       goal = config["goal_string"]
       self.check_goal = CheckGoal(goal, self)
-      self.gen_goal = GenGoal(goal, self)
+      self.gen_goal = GenGoal(goal, self, additional_objects=self.additional_objects)
 
     def step(self, action):
       reward = 1.0 if self.checkStructure() else 0.0
@@ -68,7 +69,10 @@ def createHouseBuildingXDeconstructEnv(simulator_base_env, config):
 
     def isSimValid(self):
       roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
-      return self._checkObjUpright(roofs[0]) and super().isSimValid()
+      if len(roofs) > 0:
+        return self._checkObjUpright(roofs[0]) and super().isSimValid()
+      else:
+        return super().isSimValid()
 
   def _thunk():
     return HouseBuildingXDeconstructEnv(config)
