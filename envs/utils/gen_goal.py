@@ -263,14 +263,35 @@ class GenGoal:
                         self.env._generateShapes(
                             constants.ROOF, num_roofs, random_orientation=self.env.random_orientation
                         )
+                except Exception as e:
+                    continue
+                else:
+                    break
+
+            for i in range(100):
+                try:
                     if num_bricks > 0:
                         self.env._generateShapes(
                             constants.BRICK, num_bricks, random_orientation=self.env.random_orientation
                         )
+                except Exception as e:
+                    continue
+                else:
+                    break
+
+            for i in range(100):
+                try:
                     if num_blocks > 0:
                         self.env._generateShapes(
                             constants.CUBE, num_blocks, random_orientation=self.env.random_orientation
                         )
+                except Exception as e:
+                    continue
+                else:
+                    break
+
+            for i in range(100):
+                try:
                     if num_triangles > 0:
                         self.env._generateShapes(
                             constants.TRIANGLE, num_triangles, random_orientation=self.env.random_orientation
