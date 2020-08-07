@@ -235,11 +235,15 @@ class GenGoal:
 
                 raise ValueError("Unknown object.")
 
-    def __init__(self, goal, env, additional_objects=True):
+    def __init__(self, goal, env, additional_objects=True, gen_blocks=4, gen_bricks=2, gen_triangles=1, gen_roofs=1):
 
         self.goal = goal
         self.env = env
         self.additional_objects = additional_objects
+        self.gen_blocks = gen_blocks
+        self.gen_bricks = gen_bricks
+        self.gen_triangles = gen_triangles
+        self.gen_roofs = gen_roofs
 
         self.parse_goal_()
 
@@ -251,55 +255,26 @@ class GenGoal:
 
         # I always want to have the same number of objects in the environment
         # this is for all possible structures of max_height=3, max_width=2 with a roof on top
-        num_blocks = 4 - self.num_blocks
-        num_bricks = 2 - self.num_bricks
-        num_triangles = 1 - self.num_triangles
-        num_roofs = 1 - self.num_roofs
+        num_blocks = self.gen_blocks - self.num_blocks
+        num_bricks = self.gen_bricks - self.num_bricks
+        num_triangles = self.gen_triangles - self.num_triangles
+        num_roofs = self.gen_roofs - self.num_roofs
 
         if self.additional_objects:
-            for i in range(100):
-                try:
-                    if num_roofs > 0:
-                        self.env._generateShapes(
-                            constants.ROOF, num_roofs, random_orientation=self.env.random_orientation
-                        )
-                except Exception as e:
-                    continue
-                else:
-                    break
-
-            for i in range(100):
-                try:
-                    if num_bricks > 0:
-                        self.env._generateShapes(
-                            constants.BRICK, num_bricks, random_orientation=self.env.random_orientation
-                        )
-                except Exception as e:
-                    continue
-                else:
-                    break
-
-            for i in range(100):
-                try:
-                    if num_blocks > 0:
-                        self.env._generateShapes(
-                            constants.CUBE, num_blocks, random_orientation=self.env.random_orientation
-                        )
-                except Exception as e:
-                    continue
-                else:
-                    break
-
-            for i in range(100):
-                try:
-                    if num_triangles > 0:
-                        self.env._generateShapes(
-                            constants.TRIANGLE, num_triangles, random_orientation=self.env.random_orientation
-                        )
-                except Exception as e:
-                    continue
-                else:
-                    break
+            # order matters!
+            # if you first put small blocks down, the place logic won't find a good spot for big objects
+            for obj_id, num in zip([constants.ROOF, constants.BRICK, constants.CUBE, constants.TRIANGLE],
+                                   [num_roofs, num_bricks, num_blocks, num_triangles]):
+                for i in range(100):
+                    try:
+                        if num > 0:
+                            self.env._generateShapes(
+                                obj_id, num, random_orientation=self.env.random_orientation
+                            )
+                    except Exception as e:
+                        continue
+                    else:
+                        break
 
             self.env.structure_objs = structure_objs
             self.env.num_obj = len(structure_objs)

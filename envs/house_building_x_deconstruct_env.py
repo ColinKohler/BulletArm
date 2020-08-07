@@ -28,7 +28,16 @@ def createHouseBuildingXDeconstructEnv(simulator_base_env, config):
 
       goal = config["goal_string"]
       self.check_goal = CheckGoal(goal, self)
-      self.gen_goal = GenGoal(goal, self, additional_objects=self.additional_objects)
+
+      kwargs = {
+        "additional_objects": self.additional_objects
+      }
+
+      for key in ["gen_blocks", "gen_bricks", "gen_triangles", "gen_roofs"]:
+        if key in config:
+          kwargs[key] = config[key]
+
+      self.gen_goal = GenGoal(goal, self, **kwargs)
 
     def step(self, action):
       reward = 1.0 if self.checkStructure() else 0.0
