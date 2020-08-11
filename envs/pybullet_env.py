@@ -157,7 +157,8 @@ class PyBulletEnv(BaseEnv):
 
   def reset(self):
     self.episode_count += 1
-    if self.episode_count >= 1: # change that
+    # TODO: objects sometimes don't get properly removed without hard resets
+    if self.episode_count >= 1:
       self.initialize()
       self.episode_count = 0
 
