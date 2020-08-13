@@ -19,6 +19,11 @@ def createHouseBuildingXEnv(simulator_base_env, config):
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
 
+      self.gen_blocks = config["gen_blocks"]
+      self.gen_bricks = config["gen_bricks"]
+      self.gen_triangles = config["gen_triangles"]
+      self.gen_roofs = config["gen_roofs"]
+
       goal = config["goal_string"]
       self.check_goal = CheckGoal(goal, self)
 
@@ -41,10 +46,10 @@ def createHouseBuildingXEnv(simulator_base_env, config):
         super(HouseBuildingXEnv, self).reset()
         try:
           # order matters!
-          self._generateShapes(constants.ROOF, 1, random_orientation=self.random_orientation)
-          self._generateShapes(constants.BRICK, 2, random_orientation=self.random_orientation)
-          self._generateShapes(constants.CUBE, 4, random_orientation=self.random_orientation)
-          self._generateShapes(constants.TRIANGLE, 1, random_orientation=self.random_orientation)
+          self._generateShapes(constants.ROOF, self.gen_roofs, random_orientation=self.random_orientation)
+          self._generateShapes(constants.BRICK, self.gen_bricks, random_orientation=self.random_orientation)
+          self._generateShapes(constants.CUBE, self.gen_blocks, random_orientation=self.random_orientation)
+          self._generateShapes(constants.TRIANGLE, self.gen_triangles, random_orientation=self.random_orientation)
         except Exception as e:
           continue
         else:
