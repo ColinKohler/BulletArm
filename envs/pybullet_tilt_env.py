@@ -4,6 +4,7 @@ from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv, NoValidPosition
 from helping_hands_rl_envs.simulators.pybullet.robots.kuka_float_pick import KukaFloatPick
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
+from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 import numpy.random as npr
 import numpy as np
 import sys
@@ -119,14 +120,25 @@ class PyBulletTiltEnv(PyBulletEnv):
             if position[1] > y1:
               d = (position[1] - y1) * np.cos(self.tilt_rz)
               position.append(self.tilt_z1 + 0.02+np.tan(self.tilt_plain_rx) * d)
-              orientations.append(pb.getQuaternionFromEuler([self.tilt_plain_rx, 0, self.tilt_rz]))
+              rx = self.tilt_plain_rx
+              rz = self.tilt_rz
+              # orientations.append(pb.getQuaternionFromEuler([self.tilt_plain_rx, 0, self.tilt_rz]))
             elif position[1] < y2:
               d = (y2 - position[1]) * np.cos(self.tilt_rz)
               position.append(self.tilt_z2 + 0.02+np.tan(-self.tilt_plain2_rx) * d)
-              orientations.append(pb.getQuaternionFromEuler([self.tilt_plain2_rx, 0, self.tilt_rz]))
+              rx = self.tilt_plain2_rx
+              rz = self.tilt_rz
+              # orientations.append(pb.getQuaternionFromEuler([self.tilt_plain2_rx, 0, self.tilt_rz]))
             else:
               position.append(0.02)
-              orientations.append(pb.getQuaternionFromEuler([0, 0, np.random.random()*np.pi*2]))
+              # orientations.append(pb.getQuaternionFromEuler([0, 0, np.random.random()*np.pi*2]))
+              rx = 0
+              rz = np.random.random() * np.pi * 2
+            T = transformations.euler_matrix(rz, 0, rx)
+            T_random = transformations.euler_matrix(np.random.random() * np.pi, 0, 0)
+            T = T_random.dot(T)
+            rz, ry, rx = transformations.euler_from_matrix(T)
+            orientations.append(pb.getQuaternionFromEuler([rx, ry, rz]))
           self._generateShapes(t, obj_dict[t], random_orientation=False, pos=other_pos, rot=orientations)
       except Exception as e:
         continue

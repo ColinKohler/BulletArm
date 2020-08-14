@@ -10,6 +10,7 @@ from helping_hands_rl_envs.planners.base_planner import BasePlanner
 from helping_hands_rl_envs.planners.block_structure_base_planner import BlockStructureBasePlanner
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
+from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 
 class TiltDeconstructPlanner(BlockStructureBasePlanner):
   def __init__(self, env, config):
@@ -59,12 +60,12 @@ class TiltDeconstructPlanner(BlockStructureBasePlanner):
         break
     y1, y2 = self.env.getY1Y2fromX(x)
     if y > y1:
-      rx = -self.env.tilt_plain_rx
+      rx = self.env.tilt_plain_rx
       rz = self.env.tilt_rz
       d = (y - y1) * np.cos(self.env.tilt_rz)
       z += (self.env.tilt_z1 + np.tan(self.env.tilt_plain_rx) * d)
     elif y < y2:
-      rx = -self.env.tilt_plain2_rx
+      rx = self.env.tilt_plain2_rx
       rz = self.env.tilt_rz
       d = (y2 - y) * np.cos(self.env.tilt_rz)
       z += (self.env.tilt_z2 + np.tan(-self.env.tilt_plain2_rx) * d)
@@ -72,7 +73,16 @@ class TiltDeconstructPlanner(BlockStructureBasePlanner):
       rx = 0
       rz = np.random.random() * np.pi * 2
 
-    return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, (rz, rx))
+    T = transformations.euler_matrix(rz, 0, rx)
+    T_random = transformations.euler_matrix(np.random.random()*np.pi, 0, 0)
+    T = T_random.dot(T)
+    rz, ry, rx = transformations.euler_from_matrix(T)
+    # if np.abs(ry) > np.pi/6:
+    #   print('ry: {}'.format(ry))
+    # if np.abs(rx) > np.pi/6:
+    #   print('rx: {}'.format(rx))
+
+    return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, (rz, ry, rx))
 
   def placeOnTilt(self, padding_dist, min_dist):
     existing_pos = [o.getXYPosition() for o in list(filter(lambda x: not self.isObjectHeld(x), self.env.objects))]

@@ -4,6 +4,9 @@ from scipy.ndimage import median_filter
 import skimage.transform as sk_transform
 
 from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.simulators.pybullet.utils import transformations
+
+import matplotlib.pyplot as plt
 
 class BaseEnv(object):
   '''
@@ -87,11 +90,11 @@ class BaseEnv(object):
     rz, ry, rx = 0, np.pi, 0
     if self.action_sequence.count('r') <= 1:
       rz = action[rot_idx] if rot_idx != -1 else 0
-      ry = np.pi
+      ry = 0
       rx = 0
     elif self.action_sequence.count('r') == 2:
       rz = action[rot_idx]
-      ry = np.pi
+      ry = 0
       rx = action[rot_idx+1]
     elif self.action_sequence.count('r') == 3:
       rz = action[rot_idx]
@@ -116,11 +119,11 @@ class BaseEnv(object):
       assert len(r) in [1, 2, 3]
       if len(r) == 1:
         rz = r[0]
-        ry = np.pi
+        ry = 0
         rx = 0
       elif len(r) == 2:
         rz = r[0]
-        ry = np.pi
+        ry = 0
         rx = r[1]
       else:
         rz = r[0]
@@ -128,7 +131,7 @@ class BaseEnv(object):
         rx = r[2]
     else:
       rz = r
-      ry = np.pi
+      ry = 0
       rx = 0
     while rz > np.pi * 2:
       rz -= np.pi * 2
@@ -274,12 +277,11 @@ class BaseEnv(object):
       next_max = np.max(next_crop)
       crop[crop >= next_max] -= next_max
 
-    # end_effector rotate counter clockwise along z, so in hand img rotate clockwise
-    crop = sk_transform.rotate(crop, np.rad2deg(-rz))
-
     if self.in_hand_mode.find('proj') > -1:
       return self.getInHandOccupancyGridProj(crop, z, rot)
     else:
+      # end_effector rotate counter clockwise along z, so in hand img rotate clockwise
+      crop = sk_transform.rotate(crop, np.rad2deg(-rz))
       return crop.reshape((self.in_hand_size, self.in_hand_size, 1))
 
   def getInHandOccupancyGridProj(self, crop, z, rot):
@@ -298,11 +300,12 @@ class BaseEnv(object):
     # transform into points
     point = np.argwhere(ori_occupancy)
     # center
-    point = point - size/2
-    R = np.array([[np.cos(-rx), 0, np.sin(-rx)],
-                  [0, 1, 0],
-                  [-np.sin(-rx), 0, np.cos(-rx)]])
-    point = R.dot(point.T)
+    ori_point = point - size/2
+    R = transformations.euler_matrix(-rz, -ry, -rx)[:3, :3]
+    # R = np.array([[np.cos(-rx), 0, np.sin(-rx)],
+    #               [0, 1, 0],
+    #               [-np.sin(-rx), 0, np.cos(-rx)]])
+    point = R.dot(ori_point.T)
     point = point + size/2
     point = np.round(point).astype(int)
     point = point.T[(np.logical_and(0 < point.T, point.T < size)).all(1)].T
@@ -314,6 +317,11 @@ class BaseEnv(object):
 
     projection = np.stack((occupancy.sum(0), occupancy.sum(1), occupancy.sum(2)))
     projection = np.rollaxis(projection, 0, 3)
+    # fig, axs = plt.subplots(1, 3, figsize=(15, 5))
+    # axs[0].imshow(projection[:, :, 0])
+    # axs[1].imshow(projection[:, :, 1])
+    # axs[2].imshow(projection[:, :, 2])
+    # fig.show()
     return projection
 
   def getEmptyInHand(self):
