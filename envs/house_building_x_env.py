@@ -38,7 +38,6 @@ def createHouseBuildingXEnv(simulator_base_env, config):
         self.check_goal_labels = [CheckGoalCustomLabels(g, self) for g in self.custom_label_goals]
 
     def step(self, action):
-
       if self.get_custom_labels:
         if self.previous_candidates is None:
           # we want to compare the env state before and after place action to label it
@@ -55,7 +54,7 @@ def createHouseBuildingXEnv(simulator_base_env, config):
       self.current_episode_steps += 1
 
       if self.get_custom_labels:
-        if obs[0]:
+        if action[3] == 0.0:
           # get labels for pick action
           labels = [obj.get_label_pick() for obj in self.check_goal_labels]
           self.previous_candidates = [obj.get_place_candidate_dict() for obj in self.check_goal_labels]
