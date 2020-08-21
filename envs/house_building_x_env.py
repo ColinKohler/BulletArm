@@ -98,7 +98,10 @@ def createHouseBuildingXEnv(simulator_base_env, config):
 
     def isSimValid(self):
       roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
-      return self._checkObjUpright(roofs[0]) and super().isSimValid()
+      if len(roofs) > 0:
+        return self._checkObjUpright(roofs[0]) and super().isSimValid()
+      else:
+        return super().isSimValid()
 
   def _thunk():
     return HouseBuildingXEnv(config)
