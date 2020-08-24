@@ -21,6 +21,7 @@ def createHouseBuildingXEnv(simulator_base_env, config):
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
       self.get_custom_labels = config['get_custom_labels'] if 'get_custom_labels' in config else False
       self.custom_label_goals = config['custom_label_goals'] if 'custom_label_goals' in config else None
+      self.check_roof_upright = config['check_roof_upright'] if 'check_roof_upright' in config else True
       self.previous_candidates = None
 
       self.gen_blocks = config["gen_blocks"]
@@ -98,7 +99,7 @@ def createHouseBuildingXEnv(simulator_base_env, config):
 
     def isSimValid(self):
       roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
-      if len(roofs) > 0:
+      if len(roofs) > 0 and self.check_roof_upright:
         return self._checkObjUpright(roofs[0]) and super().isSimValid()
       else:
         return super().isSimValid()
