@@ -110,6 +110,34 @@ class RobotBase:
     self.moveTo(pre_pos, pre_rot, dynamic)
     self.moveToJ(self.home_positions_joint, dynamic)
 
+  def pull(self, pos, rot, offset, dynamic=True):
+    pre_pos = copy.copy(pos)
+    post_pos = copy.copy(pos)
+    m = np.array(pb.getMatrixFromQuaternion(rot)).reshape(3, 3)
+    pre_pos += m[:, 2] * offset
+    post_anchor = m[:, 2]
+    # post_offset = offset / (post_anchor[0] + post_anchor[1])
+    a = post_anchor[0] ** 2 / (post_anchor[0] ** 2 + post_anchor[1] ** 2+1e-5)
+    b = post_anchor[1] ** 2 / (post_anchor[0] ** 2 + post_anchor[1] ** 2+1e-5)
+    a = a**0.5
+    b = b**0.5
+    if post_anchor[0] < 0:
+      a = -a
+    if post_anchor[1] < 0:
+      b = -b
+    post_anchor[0] = a
+    post_anchor[1] = b
+    post_anchor[2] = 0
+    post_pos += post_anchor * offset
+    self.moveTo(pre_pos, rot, dynamic)
+    self.moveTo(pos, rot, True)
+    self.closeGripper()
+    self.moveTo(post_pos, rot, True)
+    self.openGripper()
+    self.moveToJ(self.home_positions_joint, dynamic)
+
+
+
   def moveTo(self, pos, rot, dynamic=True):
     if dynamic or not self.holding_obj:
       self._moveToCartesianPose(pos, rot, dynamic)

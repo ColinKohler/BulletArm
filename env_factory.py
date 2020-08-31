@@ -41,6 +41,7 @@ from helping_hands_rl_envs.envs.tilt_improvise_house_building_2_deconstruct_env 
 from helping_hands_rl_envs.envs.tilt_improvise_house_building_3_deconstruct_env import createTiltImproviseHouseBuilding3DeconstructEnv
 from helping_hands_rl_envs.envs.tilt_improvise_house_building_5_deconstruct_env import createTiltImproviseHouseBuilding5DeconstructEnv
 from helping_hands_rl_envs.envs.tilt_improvise_house_building_6_deconstruct_env import createTiltImproviseHouseBuilding6DeconstructEnv
+from helping_hands_rl_envs.envs.drawer_opening_env import createDrawerOpeningEnv
 
 from helping_hands_rl_envs.planners.planner_factory import createPlanner, AVAILABLE_PLANNER
 
@@ -153,6 +154,8 @@ def createEnvs(num_processes, runner_type, simulator, env_type, env_config, plan
     envs = [createTiltImproviseHouseBuilding5DeconstructEnv(parent_env, env_configs[i]) for i in range(num_processes)]
   elif env_type == 'tilt_improvise_house_building_6_deconstruct':
     envs = [createTiltImproviseHouseBuilding6DeconstructEnv(parent_env, env_configs[i]) for i in range(num_processes)]
+  elif env_type == 'drawer_opening':
+    envs = [createDrawerOpeningEnv(parent_env, env_configs[i]) for i in range(num_processes)]
 
   else:
     raise ValueError('Invalid environment type passed to factory.')

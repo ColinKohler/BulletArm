@@ -10,12 +10,19 @@ class Drawer:
     self.root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
     self.id = None
 
-  def initialize(self, pos=(0,0,0)):
+  def initialize(self, pos=(0,0,0), rot=(0,0,0,1)):
     drawer_urdf_filepath = os.path.join(self.root_dir, 'simulators/urdf/drawer.urdf')
-    self.id = pb.loadURDF(drawer_urdf_filepath, pos, globalScaling=0.5)
+    self.id = pb.loadURDF(drawer_urdf_filepath, pos, rot, globalScaling=0.5)
 
-  def getHandlePositions(self):
+  def remove(self):
+    pb.removeBody(self.id)
+    self.id = None
+
+  def getHandlePosition(self):
     return pb.getLinkState(self.id, 9)[4]
 
   def reset(self):
     pb.resetJointState(self.id, 1, 0)
+
+  def isDrawerOpen(self):
+    return pb.getJointState(self.id, 1)[0] > 0.15
