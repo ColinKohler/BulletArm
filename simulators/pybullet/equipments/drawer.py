@@ -26,3 +26,6 @@ class Drawer:
 
   def isDrawerOpen(self):
     return pb.getJointState(self.id, 1)[0] > 0.15
+
+  def isDrawerClosed(self):
+    return pb.getJointState(self.id, 1)[0] < 0.02

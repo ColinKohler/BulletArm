@@ -16,6 +16,8 @@ from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 from helping_hands_rl_envs.simulators.pybullet.utils import object_generation
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 
+from helping_hands_rl_envs.simulators import constants
+
 class Kuka(RobotBase):
   '''
 
@@ -24,9 +26,6 @@ class Kuka(RobotBase):
     super().__init__()
     self.max_velocity = .35
     self.max_force = 200.
-    self.finger_a_force = 2
-    self.finger_b_force = 2
-    self.finger_tip_force = 2
     self.end_effector_index = 14
     self.gripper_index = 7
 
@@ -79,11 +78,15 @@ class Kuka(RobotBase):
     self.holding_obj = None
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
 
-  def closeGripper(self, max_it=100):
+  def closeGripper(self, max_it=100, primative=constants.PICK_PRIMATIVE):
     ''''''
+    if primative == constants.PULL_PRIMATIVE:
+      force = 20
+    else:
+      force = 2
     p1, p2 = self._getGripperJointPosition()
     target = self.gripper_joint_limit[0]
-    self._sendGripperCommand(target, target)
+    self._sendGripperCommand(target, target, force)
     self.gripper_closed = True
     it = 0
     while abs(target-p1) + abs(target-p2) > 0.001:
@@ -158,7 +161,7 @@ class Kuka(RobotBase):
     #                            positionGain=0.3,
     #                            velocityGain=1)
 
-  def _sendGripperCommand(self, target_pos1, target_pos2):
+  def _sendGripperCommand(self, target_pos1, target_pos2, force=2):
     # pb.setJointMotorControl2(self.id,
     #                          7,
     #                          pb.POSITION_CONTROL,
@@ -168,21 +171,21 @@ class Kuka(RobotBase):
                              8,
                              pb.POSITION_CONTROL,
                              targetPosition=-target_pos1,
-                             force=self.finger_a_force)
+                             force=force)
     pb.setJointMotorControl2(self.id,
                              11,
                              pb.POSITION_CONTROL,
                              targetPosition=target_pos2,
-                             force=self.finger_b_force)
+                             force=force)
 
     pb.setJointMotorControl2(self.id,
                              10,
                              pb.POSITION_CONTROL,
                              targetPosition=0,
-                             force=self.finger_tip_force)
+                             force=force)
     pb.setJointMotorControl2(self.id,
                              13,
                              pb.POSITION_CONTROL,
                              targetPosition=0,
-                             force=self.finger_tip_force)
+                             force=force)
 

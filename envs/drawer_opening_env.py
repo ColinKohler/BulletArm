@@ -33,7 +33,7 @@ def createDrawerOpeningEnv(simulator_base_env, config):
 
     def step(self, action):
       motion_primative, x, y, z, rot = self._decodeAction(action)
-      action = self._encodeAction(constants.PULL_DRAWER_PRIMATIVE, x, y, z, rot)
+      action = self._encodeAction(constants.PULL_PRIMATIVE, x, y, z, rot)
       self.takeAction(action)
       self.wait(100)
       obs = self._getObservation(action)
@@ -41,7 +41,7 @@ def createDrawerOpeningEnv(simulator_base_env, config):
       reward = 1.0 if done else 0.0
 
       if not done:
-        done = self.current_episode_steps >= self.max_steps or not self.isSimValid() or self.drawer.isDrawerOpen()
+        done = self.current_episode_steps >= self.max_steps or not self.isSimValid() or not self.drawer.isDrawerClosed()
       self.current_episode_steps += 1
 
       return obs, reward, done

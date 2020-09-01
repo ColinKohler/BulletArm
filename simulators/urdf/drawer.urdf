@@ -361,14 +361,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <box size="0.06 0.02 0.02"/>
+        <box size="0.06 0.04 0.04"/>
       </geometry>
       <material name="omni/White"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0.0"/>
       <geometry>
-        <box size="0.06 0.02 0.02"/>
+        <box size="0.06 0.04 0.04"/>
       </geometry>
     </collision>
     <inertial>
@@ -380,7 +380,7 @@
     </inertial>
   </link>
   <joint name="d_2_hl" type="fixed">
-    <origin rpy="0 0 0" xyz="0.38 -0.085 0"/>
+    <origin rpy="0 0 0" xyz="0.38 -0.1 0"/>
     <parent link="drawer"/>
     <child link="handle_left"/>
   </joint>
@@ -388,14 +388,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <box size="0.06 0.02 0.02"/>
+        <box size="0.06 0.04 0.04"/>
       </geometry>
       <material name="omni/White"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0.0"/>
       <geometry>
-        <box size="0.06 0.02 0.02"/>
+        <box size="0.06 0.04 0.04"/>
       </geometry>
     </collision>
     <inertial>
@@ -407,7 +407,7 @@
     </inertial>
   </link>
   <joint name="d_2_hr" type="fixed">
-    <origin rpy="0 0 0" xyz="0.38 0.085 0"/>
+    <origin rpy="0 0 0" xyz="0.38 0.1 0"/>
     <parent link="drawer"/>
     <child link="handle_right"/>
   </joint>
@@ -415,14 +415,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <box size="0.02 0.19 0.02"/>
+        <box size="0.04 0.24 0.04"/>
       </geometry>
       <material name="omni/White"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0.0"/>
       <geometry>
-        <box size="0.02 0.19 0.02"/>
+        <box size="0.04 0.24 0.04"/>
       </geometry>
     </collision>
     <inertial>
@@ -433,7 +433,7 @@
       <inertia ixx="0.0009125" ixy="0" ixz="0" iyy="2e-05" iyz="0" izz="0.0009125"/>
     </inertial>
     <contact>
-      <lateral_friction value="2000.0"/>
+      <lateral_friction value="200.0"/>
       <spinning_friction value="0.0"/>
       <rolling_friction value="0.0"/>
     </contact>

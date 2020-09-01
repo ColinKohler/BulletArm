@@ -15,6 +15,7 @@ import time
 from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 from helping_hands_rl_envs.simulators.pybullet.utils import object_generation
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
+from helping_hands_rl_envs.simulators import constants
 
 class RobotBase:
   def __init__(self):
@@ -112,27 +113,12 @@ class RobotBase:
 
   def pull(self, pos, rot, offset, dynamic=True):
     pre_pos = copy.copy(pos)
-    post_pos = copy.copy(pos)
     m = np.array(pb.getMatrixFromQuaternion(rot)).reshape(3, 3)
     pre_pos += m[:, 2] * offset
-    post_anchor = m[:, 2]
-    # post_offset = offset / (post_anchor[0] + post_anchor[1])
-    a = post_anchor[0] ** 2 / (post_anchor[0] ** 2 + post_anchor[1] ** 2+1e-5)
-    b = post_anchor[1] ** 2 / (post_anchor[0] ** 2 + post_anchor[1] ** 2+1e-5)
-    a = a**0.5
-    b = b**0.5
-    if post_anchor[0] < 0:
-      a = -a
-    if post_anchor[1] < 0:
-      b = -b
-    post_anchor[0] = a
-    post_anchor[1] = b
-    post_anchor[2] = 0
-    post_pos += post_anchor * offset
     self.moveTo(pre_pos, rot, dynamic)
     self.moveTo(pos, rot, True)
-    self.closeGripper()
-    self.moveTo(post_pos, rot, True)
+    self.closeGripper(primative=constants.PULL_PRIMATIVE)
+    self.moveTo(pre_pos, rot, True)
     self.openGripper()
     self.moveToJ(self.home_positions_joint, dynamic)
 
@@ -155,7 +141,7 @@ class RobotBase:
     raise NotImplementedError
 
   @abstractmethod
-  def closeGripper(self, max_it=100):
+  def closeGripper(self, max_it=100, primative=constants.PICK_PRIMATIVE):
     raise NotImplementedError
 
   @abstractmethod

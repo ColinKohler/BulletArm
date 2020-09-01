@@ -14,6 +14,7 @@ from helping_hands_rl_envs.simulators.pybullet.robots.robot_base import RobotBas
 from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 from helping_hands_rl_envs.simulators.pybullet.utils import object_generation
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
+from helping_hands_rl_envs.simulators import constants
 
 class UR5_Simple(RobotBase):
   '''
@@ -63,7 +64,7 @@ class UR5_Simple(RobotBase):
     self.holding_obj = None
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
 
-  def closeGripper(self, max_it=100):
+  def closeGripper(self, max_it=100, primative=constants.PICK_PRIMATIVE):
     ''''''
     p1, p2 = self._getGripperJointPosition()
     limit = self.gripper_joint_limit[1]

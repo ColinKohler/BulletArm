@@ -262,7 +262,7 @@ class PyBulletEnv(BaseEnv):
                          dynamic=self.dynamic, simulate_grasp=self.simulate_grasp)
     elif motion_primative == constants.PUSH_PRIMATIVE:
       pass
-    elif motion_primative == constants.PULL_DRAWER_PRIMATIVE:
+    elif motion_primative == constants.PULL_PRIMATIVE:
       self.robot.pull(pos, rot_q, self.pull_offset, dynamic=self.dynamic)
     else:
       raise ValueError('Bad motion primative supplied for action.')

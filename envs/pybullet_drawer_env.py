@@ -15,13 +15,15 @@ class PyBulletDrawerEnv(PyBulletEnv):
     super().__init__(config)
     self.drawer = Drawer()
     self.drawer_rot_range = (0,0)
+    self.drawer_rot = 0
 
   def initializeDrawer(self, rot_range=(-np.pi/2,np.pi/2)):
     rot = np.random.random()*(rot_range[1]-rot_range[0])+rot_range[0]
-    dist_drawer2center = self.workspace_size/2 + 0.1
+    self.drawer_rot = rot
+    dist_drawer2center = self.workspace_size/2 + 0.15
     x = self.workspace[0].mean() + dist_drawer2center * np.cos(rot)
     y = self.workspace[1].mean() + dist_drawer2center * np.sin(rot)
-    self.drawer.initialize((x, y, 0), pb.getQuaternionFromEuler((0, 0, rot)))
+    self.drawer.initialize((x, y, 0.1), pb.getQuaternionFromEuler((0, 0, rot)))
 
   def initialize(self):
     super().initialize()
