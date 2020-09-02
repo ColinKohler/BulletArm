@@ -15,7 +15,8 @@ class Drawer:
     self.id = pb.loadURDF(drawer_urdf_filepath, pos, rot, globalScaling=0.5)
 
   def remove(self):
-    pb.removeBody(self.id)
+    if self.id:
+      pb.removeBody(self.id)
     self.id = None
 
   def getHandlePosition(self):

@@ -33,7 +33,7 @@
     <!--</inertial>-->
   </link>
   <joint name="world_to_base" type="fixed">
-    <origin rpy="0 0 3.1415" xyz="0 0 0.2"/>
+    <origin rpy="0 0 3.1415" xyz="0 0 0.18"/>
     <parent link="world"/>
     <child link="base_link"/>
   </joint>
