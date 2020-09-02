@@ -1,6 +1,7 @@
 from helping_hands_rl_envs.envs.block_stacking_env import createBlockStackingEnv
 from helping_hands_rl_envs.envs.brick_stacking_env import createBrickStackingEnv
 from helping_hands_rl_envs.envs.block_adjacent_env import createBlockAdjacentEnv
+from helping_hands_rl_envs.envs.house_building_1_env import createHouseBuilding1Env
 
 def createMultiTaskEnv(simulator_base_env, configs):
   class MultiTaskEnv(object):
@@ -19,6 +20,9 @@ def createMultiTaskEnv(simulator_base_env, configs):
         elif config['env_type'] == 'block_adjacent':
           self.envs.append(createBlockAdjacentEnv(simulator_base_env, config)())
           self.env_types.append('block_adjacent')
+        elif config['env_type'] == 'house_building_1':
+          self.envs.append(createHouseBuilding1Env(simulator_base_env, config)())
+          self.env_types.append('house_building_1')
         else:
           raise ValueError('Env type not implemented in Multi-task env.')
 

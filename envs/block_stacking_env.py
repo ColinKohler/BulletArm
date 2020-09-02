@@ -21,7 +21,7 @@ def createBlockStackingEnv(simulator_base_env, config):
 
     def step(self, action):
       self.takeAction(action)
-      self.wait(50)
+      self.wait(100)
       obs = self._getObservation(action)
       done = self._checkTermination()
       reward = 1.0 if done else 0.0

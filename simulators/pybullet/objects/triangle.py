@@ -14,5 +14,12 @@ class Triangle(PybulletObject):
     root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
     urdf_filepath = os.path.join(root_dir, constants.URDF_PATH, 'triangle.urdf')
     object_id = pb.loadURDF(urdf_filepath, basePosition=pos, baseOrientation=rot, globalScaling=scale)
+    pb.changeDynamics(object_id, -1, linearDamping=0.04, angularDamping=0.04, restitution=0, contactStiffness=3000, contactDamping=100)
 
     super(Triangle, self).__init__(constants.TRIANGLE, object_id)
+
+    self.original_size = 0.05
+    self.size = 0.05 * scale
+
+  def getHeight(self):
+    return self.size

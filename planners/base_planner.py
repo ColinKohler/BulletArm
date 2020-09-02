@@ -10,6 +10,7 @@ class BasePlanner(object):
     self.rand_place_prob = config['rand_place_prob'] if 'rand_place_prob' in config else 0.0
     self.pick_noise = config['pick_noise'] if 'pick_noise' in config else None
     self.place_noise = config['place_noise'] if 'place_noise' in config else None
+    self.planner_res = config['planner_res'] if 'planner_res' in config else 10
     self.rot_noise = config['rot_noise'] if 'rot_noise' in config else None
     self.gamma = config['gamma']  if 'gamma' in config else 0.9
 
@@ -27,14 +28,20 @@ class BasePlanner(object):
   def addNoiseToPos(self, x, y, primative):
     signs = [-1, 1]
     if primative == constants.PICK_PRIMATIVE and self.pick_noise:
-      x_noise = npr.choice(signs) * npr.uniform(self.pick_noise[0], self.pick_noise[1])
-      y_noise = npr.choice(signs) * npr.uniform(self.pick_noise[0], self.pick_noise[1])
+      x_noise = np.round(npr.choice(signs) * npr.uniform(self.pick_noise[0], self.pick_noise[1]), self.planner_res)
+      y_noise = np.round(npr.choice(signs) * npr.uniform(self.pick_noise[0], self.pick_noise[1]), self.planner_res)
+
+      # x_noise = 0.000
+      # y_noise = 0.000
 
       x = np.clip(x + x_noise, self.env.workspace[0,0], self.env.workspace[0,1])
       y = np.clip(y + y_noise, self.env.workspace[1,0], self.env.workspace[1,1])
     elif primative == constants.PLACE_PRIMATIVE and self.place_noise:
-      x_noise = npr.choice(signs) * npr.uniform(self.place_noise[0], self.place_noise[1])
-      y_noise = npr.choice(signs) * npr.uniform(self.place_noise[0], self.place_noise[1])
+      x_noise = np.round(npr.choice(signs) * npr.uniform(self.place_noise[0], self.place_noise[1]), self.planner_res)
+      y_noise = np.round(npr.choice(signs) * npr.uniform(self.place_noise[0], self.place_noise[1]), self.planner_res)
+
+      # x_noise = 0.010
+      # y_noise = 0.010
 
       x = np.clip(x + x_noise, self.env.workspace[0,0], self.env.workspace[0,1])
       y = np.clip(y + y_noise, self.env.workspace[1,0], self.env.workspace[1,1])
@@ -61,6 +68,8 @@ class BasePlanner(object):
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def encodeAction(self, primitive, x, y, z, r):
+    x = np.round(x, self.planner_res)
+    y = np.round(y, self.planner_res)
     x, y = self.addNoiseToPos(x, y, primitive)
     if self.rot_noise: r = self.addNoiseToRot(r)
     return self.env._encodeAction(primitive, x, y, z, r)

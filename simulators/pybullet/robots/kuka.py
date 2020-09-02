@@ -24,7 +24,7 @@ class Kuka(RobotBase):
     super().__init__()
     self.max_velocity = .35
     self.max_force = 200.
-    self.finger_a_force = 2
+    self.finger_a_force = 2.5
     self.finger_b_force = 2
     self.finger_tip_force = 2
     self.end_effector_index = 14
@@ -86,7 +86,7 @@ class Kuka(RobotBase):
       it += 1
       p1_, p2_ = self._getGripperJointPosition()
       if it > max_it or (abs(p1 - p1_) < 0.0001 and abs(p2 - p2_) < 0.0001):
-        mean = (p1 + p2) / 2 - 0.001
+        # mean = (p1 + p2) / 2 - 0.001
         # self._sendGripperCommand(mean, mean)
         return False
       p1 = p1_
@@ -113,10 +113,11 @@ class Kuka(RobotBase):
     self._sendGripperCommand(target, target)
     self.gripper_closed = False
     it = 0
-    if self.holding_obj: pos = self.holding_obj.getPosition()
+    if self.holding_obj:
+      pos, rot = self.holding_obj.getPose()
     while abs(target-p1) + abs(target-p2) > 0.001:
       if self.holding_obj and it < 5:
-        self.holding_obj.resetPose(pos, pb.getQuaternionFromEuler([0., 0., 0.]))
+        self.holding_obj.resetPose(pos, rot)
       pb.stepSimulation()
       it += 1
       if it > 100:

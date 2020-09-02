@@ -70,41 +70,44 @@ class PyBulletEnv(BaseEnv):
 
     # TODO: Move this somewhere it makes sense
     self.block_original_size = 0.05
-    self.block_scale_range = (0.6, 0.7)
+    self.block_scale_range = (0.70, 0.70)
     self.min_block_size = self.block_original_size * self.block_scale_range[0]
     self.max_block_size = self.block_original_size * self.block_scale_range[1]
 
     self.pick_pre_offset = 0.10
     self.pick_offset = 0.005
     self.place_pre_offset = 0.10
-    self.place_offset = self.block_scale_range[1]*self.block_original_size + 0.025
+    self.place_offset = self.block_scale_range[1]*self.block_original_size# + 0.050
 
     # Setup camera parameters
     ws_mx = workspace[0].mean()
     ws_my = workspace[1].mean()
     ws_size = (workspace[0][1] - workspace[0][0])
-    diam = ws_size / 2.
-    cam_z = 1. + diam
+    # diam = ws_size / 2.
+    # cam_z = 10. + diam
+    cam_z = 10
     self.view_matrix = pb.computeViewMatrix(
       cameraEyePosition=[ws_mx, ws_my, cam_z],
       cameraTargetPosition=[ws_mx, ws_my, 0],
       cameraUpVector=[-1, 0, 0]
     )
 
-    left = -diam
-    right = diam
-    bottom = -diam
-    top = diam
-    self.near = 1.0
-    self.far = self.near+diam
-    # self.fov = np.degrees(2 * np.arctan((ws_size / 2) / self.far))
-    # self.proj_matrix = pb.computeProjectionMatrixFOV(self.fov, 1, self.near, self.far)
+    # left = -diam
+    # right = diam
+    # bottom = -diam
+    # top = diam
+    # self.near = 10.0
+    # self.far = self.near+diam
+    self.near = 9
+    self.far = 10
+    self.fov = np.degrees(2 * np.arctan((ws_size / 2) / self.far))
+    self.proj_matrix = pb.computeProjectionMatrixFOV(self.fov, 1, self.near, self.far)
     # self.proj_matrix = pb.computeProjectionMatrix(left, right, bottom, top, self.near, self.far)
-    self.proj_matrix = np.array([[2/(right-left), 0,              0,                         -((right+left)/(right-left))],
-                                 [0,              2/(top-bottom), 0,                         -((top+bottom)/(top-bottom))],
-                                 [0,              0,              -(2/(self.far-self.near)), -((self.far+self.near)/(self.far-self.near))],
-                                 [0,              0,              0,                          1]])
-    self.proj_matrix = tuple(self.proj_matrix.T.reshape(-1))
+    # self.proj_matrix = np.array([[2/(right-left), 0,              0,                         -((right+left)/(right-left))],
+    #                              [0,              2/(top-bottom), 0,                         -((top+bottom)/(top-bottom))],
+    #                              [0,              0,              -(2/(self.far-self.near)), -((self.far+self.near)/(self.far-self.near))],
+    #                              [0,              0,              0,                          1]])
+    # self.proj_matrix = tuple(self.proj_matrix.T.reshape(-1))
     # print(np.array(self.proj_matrix).reshape(4,4).T)
 
     # Rest pose for arm
@@ -130,7 +133,7 @@ class PyBulletEnv(BaseEnv):
   def reset(self):
     ''''''
     pb.resetSimulation()
-    pb.setPhysicsEngineParameter(numSubSteps=0, numSolverIterations=100, solverResidualThreshold=1e-7, constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_SI)
+    pb.setPhysicsEngineParameter(numSubSteps=0, numSolverIterations=200, solverResidualThreshold=1e-7, constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_SI)
     pb.setTimeStep(self._timestep)
 
     pb.setGravity(0, 0, -10)
@@ -382,12 +385,13 @@ class PyBulletEnv(BaseEnv):
 
     for position in valid_positions:
       position.append(0.020)
+      position = np.round(position, 3)
       if random_orientation:
         orientation = pb.getQuaternionFromEuler([0., 0., 2*np.pi*np.random.random_sample()])
       else:
         orientation = pb.getQuaternionFromEuler([0., 0., 0.])
       if not scale:
-        scale = npr.uniform(self.block_scale_range[0], self.block_scale_range[1])
+        scale = npr.choice(np.arange(self.block_scale_range[0], self.block_scale_range[1]+0.01, 0.02))
 
       if shape_type == constants.CUBE:
         handle = pb_obj_generation.generateCube(position, orientation, scale)
@@ -396,6 +400,7 @@ class PyBulletEnv(BaseEnv):
       elif shape_type == constants.CYLINDER:
         handle = pb_obj_generation.generateCylinder(position, orientation, scale)
       elif shape_type == constants.TRIANGLE:
+        orientation = pb.getQuaternionFromEuler([0., 0., np.pi/2])
         handle = pb_obj_generation.generateTriangle(position, orientation, scale)
       elif shape_type == constants.ROOF:
         handle = pb_obj_generation.generateRoof(position, orientation, scale)

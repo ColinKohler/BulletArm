@@ -78,14 +78,11 @@ class RobotBase:
         self.adjustGripperCommand()
         for i in range(10):
           pb.stepSimulation()
-        self.holding_obj = self.getPickedObj(objects)
-
         self.moveTo(pre_pos, pre_rot, True)
-
     else:
       self.moveTo(pos, rot, dynamic)
-      self.holding_obj = self.getPickedObj(objects)
 
+    self.holding_obj = self.getPickedObj(objects)
     self.moveToJ(self.home_positions_joint, dynamic)
     self.checkGripperClosed()
 

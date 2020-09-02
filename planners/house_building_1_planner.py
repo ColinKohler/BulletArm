@@ -11,7 +11,7 @@ class HouseBuilding1Planner(BlockStructureBasePlanner):
   def __init__(self, env, config):
     super(HouseBuilding1Planner, self).__init__(env, config)
 
-  def getStepLeft(self):
+  def getStepsLeft(self):
     blocks = list(filter(lambda x: self.env.object_types[x] == constants.CUBE, self.env.objects))
     triangles = list(filter(lambda x: self.env.object_types[x] == constants.TRIANGLE, self.env.objects))
 
@@ -28,7 +28,7 @@ class HouseBuilding1Planner(BlockStructureBasePlanner):
     blocks = list(filter(lambda x: self.env.object_types[x] == constants.CUBE, self.env.objects))
     triangles = list(filter(lambda x: self.env.object_types[x] == constants.TRIANGLE, self.env.objects))
     # blocks not stacked, pick block
-    if not self.checkStack(blocks):
+    if len(blocks) > 1 and not self.checkStack(blocks):
       return self.pickSecondTallestObjOnTop(objects=blocks)
     # blocks stacked, pick triangle
     else:
@@ -38,7 +38,7 @@ class HouseBuilding1Planner(BlockStructureBasePlanner):
     blocks = list(filter(lambda x: self.env.object_types[x] == constants.CUBE, self.env.objects))
     triangles = list(filter(lambda x: self.env.object_types[x] == constants.TRIANGLE, self.env.objects))
     # holding triangle, but block not stacked, put down triangle
-    if self.isObjectHeld(triangles[0]) and not self.checkStack(blocks):
+    if (self.isObjectHeld(triangles[0]) and not self.checkStack(blocks)) or (len(blocks) == 1 and self.isObjectHeld(blocks[0])):
       return self.placeOnGround(self.env.max_block_size*3, self.env.max_block_size*3)
     # stack on block
     else:

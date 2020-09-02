@@ -17,7 +17,7 @@ class BlockStackingPlanner(BlockStructureBasePlanner):
 
   def getStepsLeft(self):
     if not self.isSimValid():
-      return 100
+      return 4
     step_left = 2 * (self.getNumTopBlock() - 1)
     if self.isHolding():
       step_left -= 1
