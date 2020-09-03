@@ -38,6 +38,12 @@ def worker(remote, parent_remote, env_fn, planner_fn):
       elif cmd == 'close':
         remote.close()
         break
+      elif cmd == 'get_obs':
+        action = data
+        if action is None:
+          action = env.last_action
+        obs = env._getObservation(action)
+        remote.send(obs)
       elif cmd == 'get_spaces':
         remote.send((env.obs_shape, env.action_space, env.action_shape))
       elif cmd == 'get_obj_positions':
@@ -54,12 +60,20 @@ def worker(remote, parent_remote, env_fn, planner_fn):
         remote.send(planner.getValue())
       elif cmd == 'get_step_left':
         remote.send(planner.getStepLeft())
+      elif cmd == 'get_empty_in_hand':
+        remote.send(env.getEmptyInHand())
       elif cmd == 'save_to_file':
         path = data
         env.saveEnvToFile(path)
       elif cmd == 'load_from_file':
-        path = data
-        env.loadEnvFromFile(path)
+        try:
+          path = data
+          env.loadEnvFromFile(path)
+        except Exception as e:
+          print('EnvRunner worker load failed: {}'.format(e))
+          remote.send(False)
+        else:
+          remote.send(True)
       else:
         raise NotImplementerError
   except KeyboardInterrupt:
@@ -201,6 +215,7 @@ class RLRunner(object):
   def loadFromFile(self, path):
     for i, remote in enumerate(self.remotes):
       remote.send(('load_from_file', os.path.join(path, str(i))))
+    return np.array([remote.recv() for remote in self.remotes]).all()
 
   def getObjPositions(self):
     for remote in self.remotes:
@@ -237,6 +252,19 @@ class RLRunner(object):
     values = torch.from_numpy(np.stack(values)).float()
     return values
 
+  def getObs(self, action=None):
+    for remote in self.remotes:
+      remote.send(('get_obs', action))
+
+    obs = [remote.recv() for remote in self.remotes]
+    states, hand_obs, depths = zip(*obs)
+
+    states = torch.from_numpy(np.stack(states).astype(float)).float()
+    hand_obs = torch.from_numpy(np.stack(hand_obs)).float()
+    depths = torch.from_numpy(np.stack(depths)).float()
+
+    return states, hand_obs, depths
+
   def didBlockFall(self):
     for remote in self.remotes:
       remote.send(('did_block_fall', None))
@@ -247,6 +275,13 @@ class RLRunner(object):
   def setPosCandidate(self, pos_candidate):
     for remote in self.remotes:
       remote.send(('set_pos_candidate', pos_candidate))
+
+  def getEmptyInHand(self):
+    for remote in self.remotes:
+      remote.send(('get_empty_in_hand', None))
+    hand_obs = [remote.recv() for remote in self.remotes]
+    hand_obs = torch.from_numpy(np.stack(hand_obs)).float()
+    return hand_obs
 
   @staticmethod
   def getEnvGitHash():

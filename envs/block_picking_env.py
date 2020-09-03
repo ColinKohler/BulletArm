@@ -1,4 +1,5 @@
 from copy import deepcopy
+import numpy as np
 from helping_hands_rl_envs.envs.numpy_env import NumpyEnv
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 
@@ -69,7 +70,7 @@ def createBlockPickingEnv(simulator_base_env, config):
 
     def _getObservation(self):
       state, in_hand, obs = super(BlockPickingEnv, self)._getObservation()
-      return 0, in_hand, obs
+      return 0, np.zeros_like(in_hand), obs
 
   def _thunk():
     return BlockPickingEnv(config)

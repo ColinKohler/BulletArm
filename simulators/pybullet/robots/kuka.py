@@ -24,7 +24,7 @@ class Kuka(RobotBase):
     super().__init__()
     self.max_velocity = .35
     self.max_force = 200.
-    self.finger_a_force = 2.5
+    self.finger_a_force = 2
     self.finger_b_force = 2
     self.finger_tip_force = 2
     self.end_effector_index = 14
@@ -53,7 +53,7 @@ class Kuka(RobotBase):
 
     self.gripper_joint_limit = [0, 0.2]
 
-  def reset(self):
+  def initialize(self):
     ''''''
     ur5_urdf_filepath = os.path.join(self.root_dir, 'simulators/urdf/kuka/kuka_with_gripper2.sdf')
     self.id = pb.loadSDF(ur5_urdf_filepath)[0]
@@ -73,6 +73,11 @@ class Kuka(RobotBase):
       if i in range(7):
         self.arm_joint_names.append(str(joint_info[1]))
         self.arm_joint_indices.append(i)
+
+  def reset(self):
+    self.gripper_closed = False
+    self.holding_obj = None
+    [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
 
   def closeGripper(self, max_it=100):
     ''''''
@@ -112,6 +117,7 @@ class Kuka(RobotBase):
     target = self.gripper_joint_limit[1]
     self._sendGripperCommand(target, target)
     self.gripper_closed = False
+    self.holding_obj = None
     it = 0
     if self.holding_obj:
       pos, rot = self.holding_obj.getPose()

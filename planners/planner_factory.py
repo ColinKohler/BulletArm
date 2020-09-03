@@ -9,6 +9,10 @@ from helping_hands_rl_envs.planners.brick_stacking_planner import BrickStackingP
 from helping_hands_rl_envs.planners.house_building_1_planner import HouseBuilding1Planner
 from helping_hands_rl_envs.planners.house_building_2_planner import HouseBuilding2Planner
 from helping_hands_rl_envs.planners.house_building_3_planner import HouseBuilding3Planner
+from helping_hands_rl_envs.planners.house_building_4_planner import HouseBuilding4Planner
+from helping_hands_rl_envs.planners.improvise_house_building_2_planner import ImproviseHouseBuilding2Planner
+from helping_hands_rl_envs.planners.improvise_house_building_3_planner import ImproviseHouseBuilding3Planner
+from helping_hands_rl_envs.planners.deconstruct_planner import DeconstructPlanner
 
 AVAILABLE_PLANNER = ['random',
                      'multi_task',
@@ -20,7 +24,16 @@ AVAILABLE_PLANNER = ['random',
                      'brick_stacking',
                      'house_building_1',
                      'house_building_2',
-                     'house_building_3']
+                     'house_building_3',
+                     'house_building_4',
+                     'improvise_house_building_2',
+                     'improvise_house_building_3',
+                     'house_building_1_deconstruct',
+                     'house_building_4_deconstruct',
+                     'improvise_house_building_3_deconstruct',
+                     'improvise_house_building_4_deconstruct',
+                     'random_picking',
+                     'random_stacking']
 
 def createPlanner(planner, config):
   if isinstance(config, list):
@@ -51,3 +64,21 @@ def createPlanner(planner, config):
     return lambda env: HouseBuilding2Planner(env, config)
   elif planner == 'house_building_3':
     return lambda env: HouseBuilding3Planner(env, config)
+  elif planner == 'house_building_4':
+    return lambda env: HouseBuilding4Planner(env, config)
+  elif planner == 'improvise_house_building_2':
+    return lambda env: ImproviseHouseBuilding2Planner(env, config)
+  elif planner == 'improvise_house_building_3':
+    return lambda env: ImproviseHouseBuilding3Planner(env, config)
+  elif planner == 'house_building_1_deconstruct':
+    return lambda env: DeconstructPlanner(env, config)
+  elif planner == 'house_building_4_deconstruct':
+    return lambda env: DeconstructPlanner(env, config)
+  elif planner == 'improvise_house_building_3_deconstruct':
+    return lambda env: DeconstructPlanner(env, config)
+  elif planner == 'improvise_house_building_4_deconstruct':
+    return lambda env: DeconstructPlanner(env, config)
+  elif planner == 'random_picking':
+    return lambda env: BlockPickingPlanner(env, config)
+  elif planner == 'random_stacking':
+    return lambda env: BlockStackingPlanner(env, config)

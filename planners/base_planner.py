@@ -13,6 +13,7 @@ class BasePlanner(object):
     self.planner_res = config['planner_res'] if 'planner_res' in config else 10
     self.rot_noise = config['rot_noise'] if 'rot_noise' in config else None
     self.gamma = config['gamma']  if 'gamma' in config else 0.9
+    self.random_orientation = config['random_orientation'] if 'random_orientation' in config else True
 
     npr.seed(env.seed)
 
@@ -122,3 +123,12 @@ class BasePlanner(object):
 
   def isSimValid(self):
     return self.env.isSimValid()
+
+  def isObjOnGround(self, obj):
+    return self.env._isObjOnGround(obj)
+
+  def getHoldingObj(self):
+    return self.env._getHoldingObj()
+
+  def getHoldingObjType(self):
+    return self.env._getHoldingObjType()

@@ -442,7 +442,7 @@
       <child link="robotiq_85_left_inner_knuckle_link"/>
       <axis xyz="0 0 1"/>
       <origin xyz="0.06142 0.0127 0" rpy="3.14 0.0 0.0" />
-      <limit lower="-3.14" upper="3.14" velocity="3.14" effort="20"/>
+      <limit lower="-3.14" upper="3.14" velocity="3.14" effort="60"/>
       <mimic joint="robotiq_85_left_knuckle_joint" offset="0"/>
     </joint>
 
@@ -451,7 +451,7 @@
       <child link="robotiq_85_right_inner_knuckle_link"/>
       <axis xyz="0 0 1"/>
       <origin xyz="0.06142 -0.0127 0" rpy="0 0 0"/>
-      <limit lower="-3.14" upper="3.14" velocity="3.14" effort="20"/>
+      <limit lower="-3.14" upper="3.14" velocity="3.14" effort="60"/>
       <mimic joint="robotiq_85_left_knuckle_joint" offset="0"/>
     </joint>
 
@@ -498,8 +498,9 @@
       <parent link="robotiq_85_left_inner_knuckle_link"/>
       <child link="robotiq_85_left_finger_tip_link"/>
       <axis xyz="0 0 1"/>
-      <origin xyz="0.04303959807 -0.03759940821 0.0" rpy="0.0 0.0 0.0"/>
-      <limit lower="-3.14" upper="3.14" velocity="3.14" effort="10"/>
+      <!--<origin xyz="0.04303959807 -0.03759940821 0.0" rpy="0.0 0.0 0.0"/>-->
+      <origin rpy="0.0 0.0 0.0" xyz="0.064 -0.03759940821  0.0"/>
+      <limit lower="-3.14" upper="3.14" velocity="0.02" effort="60"/>
       <mimic joint="robotiq_85_left_knuckle_joint" multiplier="-1"/>
     </joint>
 
@@ -507,58 +508,79 @@
       <parent link="robotiq_85_right_inner_knuckle_link"/>
       <child link="robotiq_85_right_finger_tip_link"/>
       <axis xyz="0 0 1"/>
-      <origin rpy="0.0 0.0 0.0" xyz="0.04303959807 -0.03759940821  0.0"/>
-      <limit lower="-3.14" upper="3.14" velocity="3.14" effort="10"/>
+      <!--<origin rpy="0.0 0.0 0.0" xyz="0.04303959807 -0.03759940821  0.0"/>-->
+      <origin rpy="0.0 0.0 0.0" xyz="0.064 -0.03759940821  0.0"/>
+      <limit lower="-3.14" upper="3.14" velocity="0.02" effort="60"/>
       <mimic joint="robotiq_85_left_knuckle_joint" multiplier="-1"/>
     </joint>
 
 
     <link name="robotiq_85_left_finger_tip_link">
+      <!--<visual>-->
+        <!--<geometry>-->
+          <!--<mesh filename="../meshes/visual/robotiq_85_finger_tip_link.dae"/>-->
+        <!--</geometry>-->
+      <!--</visual>-->
+      <!--<collision>-->
+        <!--<geometry>-->
+          <!--<mesh filename="../meshes/collision/robotiq_85_finger_tip_link.stl"/>-->
+        <!--</geometry>-->
+      <!--</collision>-->
       <visual>
         <geometry>
-          <mesh filename="../meshes/visual/robotiq_85_finger_tip_link.dae"/>
+          <box size="0.05 0.005 0.025 "/>
         </geometry>
       </visual>
       <collision>
+        <origin rpy="0 0 0" xyz="0 0 0.0"/>
         <geometry>
-          <mesh filename="../meshes/collision/robotiq_85_finger_tip_link.stl"/>
+          <box size="0.05 0.005 0.025 "/>
         </geometry>
       </collision>
       <inertial>
-        <mass value="0.19555" />
+        <mass value="1" />
         <origin xyz="0.0 0.0 0.0" />
-        <inertia ixx = "0.000002" ixy = "0.000000" ixz = "0.000000"
-             iyx = "0.000000" iyy = "0.000005" iyz = "0.000000"
-             izx = "0.000000" izy = "0.000000" izz = "0.000006" />
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+
       </inertial>
       <contact>
-      <lateral_friction value="10"/>
-      <spinning_friction value="0.1"/>
+      <lateral_friction value="20"/>
+      <spinning_friction value="0.0"/>
       <rolling_friction value="0.0"/>
     </contact>
     </link>
 
     <link name="robotiq_85_right_finger_tip_link">
+      <!--<visual>-->
+        <!--<geometry>-->
+          <!--<mesh filename="../meshes/visual/robotiq_85_finger_tip_link.dae"/>-->
+        <!--</geometry>-->
+      <!--</visual>-->
+      <!--<collision>-->
+        <!--<geometry>-->
+          <!--<mesh filename="../meshes/collision/robotiq_85_finger_tip_link.stl"/>-->
+        <!--</geometry>-->
+      <!--</collision>-->
       <visual>
         <geometry>
-          <mesh filename="../meshes/visual/robotiq_85_finger_tip_link.dae"/>
+          <box size="0.05 0.005 0.025 "/>
         </geometry>
       </visual>
       <collision>
+        <origin rpy="0 0 0" xyz="0 0 0.0"/>
         <geometry>
-          <mesh filename="../meshes/collision/robotiq_85_finger_tip_link.stl"/>
+          <box size="0.05 0.005 0.025 "/>
         </geometry>
       </collision>
       <inertial>
-        <mass value="0.19555" />
+        <mass value="1" />
         <origin xyz="0.0 0.0 0.0" />
-        <inertia ixx = "0.000002" ixy = "0.000000" ixz = "0.000000"
-             iyx = "0.000000" iyy = "0.000005" iyz = "0.000000"
-             izx = "0.000000" izy = "0.000000" izz = "0.000006" />
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+
       </inertial>
       <contact>
-      <lateral_friction value="10"/>
-      <spinning_friction value="0.1"/>
+      <lateral_friction value="20"/>
+      <spinning_friction value="0.0"/>
       <rolling_friction value="0.0"/>
     </contact>
     </link>
@@ -579,7 +601,7 @@
 
   <joint name="dummy_center_fixed_joint" type="fixed">
     <child link="dummy_center_indicator_link"/>
-    <parent link="robotiq_85_base_link"/>
-    <origin rpy="0.0 1.5707 0.0" xyz="0.14 0 0" />
+    <parent link="simple_arm_tool0"/>
+    <origin rpy="0.0 0.0 1.5707" xyz="0 0 0.14" />
   </joint>
 </robot>

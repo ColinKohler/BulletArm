@@ -8,7 +8,8 @@ class BaseEnv(object):
   '''
   Base Arm RL environment.
   '''
-  def __init__(self, seed, workspace, max_steps, heightmap_size, action_sequence='pxyr', pos_candidate=None):
+  def __init__(self, seed, workspace, max_steps, heightmap_size, action_sequence='pxyr', pos_candidate=None,
+               in_hand_size=24, in_hand_mode='sub'):
     """
     constructor of BaseEnv
     Args:
@@ -32,7 +33,8 @@ class BaseEnv(object):
 
     # Setup heightmap
     self.heightmap_size = heightmap_size
-    self.in_hand_size = 64
+    self.in_hand_size = in_hand_size
+    self.in_hand_mode = in_hand_mode
     self.heightmap_shape = (self.heightmap_size, self.heightmap_size, 1)
     self.heightmap_resolution = self.workspace_size / self.heightmap_size
 
@@ -83,7 +85,6 @@ class BaseEnv(object):
     y = action[y_idx]
     z = action[z_idx] if z_idx != -1 else self._getPrimativeHeight(motion_primative, x, y)
     rot = action[rot_idx] if rot_idx != -1 else 0
-    # rot = 0.
     return motion_primative, x, y, z, rot
 
   def _encodeAction(self, primitive, x, y, z, r):
@@ -100,7 +101,6 @@ class BaseEnv(object):
       action[z_idx] = z
     if rot_idx != -1:
       action[rot_idx] = r
-
     return action
 
   def _checkTermination(self):
@@ -145,8 +145,8 @@ class BaseEnv(object):
       - y: Y coordinate
     Returns: (x, y) in pixels corresponding to coordinates
     '''
-    x_pixel = (y - self.workspace[1][0]) / self.heightmap_resolution
-    y_pixel = (x - self.workspace[0][0]) / self.heightmap_resolution
+    x_pixel = (x - self.workspace[0][0]) / self.heightmap_resolution
+    y_pixel = (y - self.workspace[1][0]) / self.heightmap_resolution
 
     return round(x_pixel), round(y_pixel)
 
@@ -188,12 +188,14 @@ class BaseEnv(object):
            p[1] > self.workspace[1][0] - 0.1 and p[1] < self.workspace[1][1] + 0.1 and \
            p[2] > self.workspace[2][0] and p[2] < self.workspace[2][1]
 
-  def getInHandImage(self, heightmap, x, y, rot, next_heightmap):
+  def getInHandImage(self, heightmap, x, y, z, rot, next_heightmap):
     # Pad heightmaps for grasps near the edges of the workspace
     heightmap = np.pad(heightmap, int(self.in_hand_size / 2), 'constant', constant_values=0.0)
     next_heightmap = np.pad(next_heightmap, int(self.in_hand_size / 2), 'constant', constant_values=0.0)
 
     x, y = self._getPixelsFromPos(x, y)
+    x = np.clip(x, self.in_hand_size / 2, self.heightmap_size-1-self.in_hand_size/2)
+    y = np.clip(y, self.in_hand_size / 2, self.heightmap_size-1-self.in_hand_size/2)
     x = round(x + self.in_hand_size / 2)
     y = round(y + self.in_hand_size / 2)
 
@@ -204,14 +206,38 @@ class BaseEnv(object):
     y_max = int(y + self.in_hand_size / 2)
 
     # Crop both heightmaps
-    crop = heightmap[y_min:y_max, x_min:x_max]
-    next_crop = next_heightmap[y_min:y_max, x_min:x_max]
+    crop = heightmap[x_min:x_max, y_min:y_max]
+    if self.in_hand_mode.find('sub') > -1:
+      next_crop = next_heightmap[x_min:x_max, y_min:y_max]
 
-    # Adjust the in-hand image to remove background objects
-    next_max = np.max(next_crop)
-    crop[crop >= next_max] -= next_max
+      # Adjust the in-hand image to remove background objects
+      next_max = np.max(next_crop)
+      crop[crop >= next_max] -= next_max
 
     # end_effector rotate counter clockwise along z, so in hand img rotate clockwise
     crop = sk_transform.rotate(crop, np.rad2deg(-rot))
 
-    return crop.reshape((self.in_hand_size, self.in_hand_size, 1))
+    if self.in_hand_mode.find('proj') > -1:
+      return self.getInHandOccupancyGridProj(crop, z, rot)
+    else:
+      return crop.reshape((self.in_hand_size, self.in_hand_size, 1))
+
+  def getInHandOccupancyGridProj(self, crop, z, rot):
+    crop = np.round(crop, 5)
+
+    zs = np.array([z+(self.in_hand_size/2-i)*self.heightmap_resolution for i in range(self.in_hand_size)])
+    zs = zs.reshape((-1, 1, 1))
+    zs = zs.repeat(self.in_hand_size, 1).repeat(self.in_hand_size, 2)
+    zs[zs<-self.heightmap_resolution] = 100
+    c = crop.reshape(1, self.in_hand_size, self.in_hand_size).repeat(self.in_hand_size, 0)
+    occupancy = c > zs
+
+    projection = np.stack((occupancy.sum(0), occupancy.sum(1), occupancy.sum(2)))
+    projection = np.rollaxis(projection, 0, 3)
+    return projection
+
+  def getEmptyInHand(self):
+    if self.in_hand_mode.find('proj') > -1:
+      return np.zeros((self.in_hand_size, self.in_hand_size, 3))
+    else:
+      return np.zeros((self.in_hand_size, self.in_hand_size, 1))
