@@ -22,7 +22,8 @@ class BaseEnv(object):
 
     """
     # Set random numpy seed
-    npr.seed(seed)
+    self.seed = seed
+    npr.seed(self.seed)
 
     # Setup environment
     self.workspace = workspace
@@ -147,7 +148,7 @@ class BaseEnv(object):
     x_pixel = (x - self.workspace[0][0]) / self.heightmap_resolution
     y_pixel = (y - self.workspace[1][0]) / self.heightmap_resolution
 
-    return int(x_pixel), int(y_pixel)
+    return round(x_pixel), round(y_pixel)
 
   def _isObjectOnCandidatePose(self, obj):
     '''
@@ -195,8 +196,8 @@ class BaseEnv(object):
     x, y = self._getPixelsFromPos(x, y)
     x = np.clip(x, self.in_hand_size / 2, self.heightmap_size-1-self.in_hand_size/2)
     y = np.clip(y, self.in_hand_size / 2, self.heightmap_size-1-self.in_hand_size/2)
-    x = x + int(self.in_hand_size / 2)
-    y = y + int(self.in_hand_size / 2)
+    x = round(x + self.in_hand_size / 2)
+    y = round(y + self.in_hand_size / 2)
 
     # Get the corners of the crop
     x_min = int(x - self.in_hand_size / 2)

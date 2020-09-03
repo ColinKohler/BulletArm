@@ -29,6 +29,12 @@ class PybulletObject(object):
     pos, rot = pb.getBasePositionAndOrientation(self.object_id)
     return list(pos), list(rot)
 
+  def setVelocity(self, linear_velocity, angular_velocity):
+    return pb.resetBaseVelocity(self.object_id, linear_velocity, angular_velocity)
+
+  def getVelocity(self):
+    return pb.getBaseVelocity(self.object_id)
+
   def getBoundingBox(self):
     return list(pb.getAABB(self.object_id))
 

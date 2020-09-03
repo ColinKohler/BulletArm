@@ -1,9 +1,11 @@
+import numpy as np
+
 from helping_hands_rl_envs.envs.numpy_env import NumpyEnv
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 
-def createBlockStackingEnv(simulator_base_env, config):
-  class BlockStackingEnv(simulator_base_env):
+def createBlockAdjacentEnv(simulator_base_env, config):
+  class BlockAdjacentEnv(simulator_base_env):
     ''''''
     def __init__(self, config):
       if simulator_base_env is NumpyEnv:
@@ -14,7 +16,6 @@ def createBlockStackingEnv(simulator_base_env, config):
         raise ValueError('Bad simulator base env specified.')
 
       self.simulator_base_env = simulator_base_env
-      self.object_type = config['object_type'] if 'object_type' in config else 'cube'
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
@@ -34,29 +35,23 @@ def createBlockStackingEnv(simulator_base_env, config):
 
     def reset(self):
       ''''''
-      # TODO: Move this to a utils file somewhere and set this in the init fn
-      if self.object_type == 'cube':
-        object_type = constants.CUBE
-      elif self.object_type == 'cylinder':
-        object_type = constants.CYLINDER
-      else:
-        raise ValueError('Invalid object type specified. Must be \'cube\' or \'cylinder\'')
-
-      while True:
-        super(BlockStackingEnv, self).reset()
-        try:
-          self._generateShapes(object_type, self.num_obj, random_orientation=self.random_orientation)
-        except Exception as e:
-          continue
-        else:
-          break
+      super(BlockAdjacentEnv, self).reset()
+      self._generateShapes(constants.CUBE, self.num_obj, random_orientation=self.random_orientation)
       return self._getObservation()
 
     def _checkTermination(self):
       ''''''
-      return self._checkStack()
+      pos = np.array([o.getPosition() for o in self.objects])
+      if (pos[:,2].max() - pos[:,2].min()) > 0.01: return False
+
+      if np.allclose(pos[:,0], pos[0,0], atol=0.01):
+        return np.abs(pos[:,1].max() - pos[:,1].min()) < self.max_block_size * 3.5
+      elif np.allclose(pos[:,1], pos[0,1], atol=0.01):
+        return np.abs(pos[:,0].max() - pos[:,0].min()) < self.max_block_size * 3.5
+      else:
+        return False
 
   def _thunk():
-    return BlockStackingEnv(config)
+    return BlockAdjacentEnv(config)
 
   return _thunk

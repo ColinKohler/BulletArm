@@ -41,11 +41,11 @@ def worker(remote, parent_remote, env_fn, planner_fn):
       elif cmd == 'get_steps_left':
         remote.send(planner.getStepsLeft())
       else:
-        raise NotImplementerError
+        raise NotImplementedError
   except KeyboardInterrupt:
     print('EnvRunner worker: caught keyboard interrupt')
 
-class DataRunner(object):
+class MultiDataRunner(object):
   '''
   Data environment runner which runs mulitpl environemnts in parallel in subprocesses
   and communicates with them via pipe
@@ -57,8 +57,8 @@ class DataRunner(object):
     self.waiting = False
     self.closed = False
 
-    num_envs = len(env_fns)
-    self.remotes, self.worker_remotes = zip(*[Pipe() for _ in range(num_envs)])
+    self.num_envs = len(env_fns)
+    self.remotes, self.worker_remotes = zip(*[Pipe() for _ in range(self.num_envs)])
     self.processes = [Process(target=worker, args=(worker_remote, remote, env_fn, planner_fn))
                       for (worker_remote, remote, env_fn, planner_fn) in zip(self.worker_remotes, self.remotes, env_fns, planner_fns)]
     self.num_processes = len(self.processes)
@@ -189,3 +189,33 @@ class DataRunner(object):
   def setPosCandidate(self, pos_candidate):
     for remote in self.remotes:
       remote.send(('set_pos_candidate', pos_candidate))
+
+class SingleDataRunner(object):
+  '''
+  Data environment runner which runs a single main threaded env
+  '''
+  def __init__(self, env, planner):
+    self.env = env
+    self.planner = planner
+
+  def step(self, action):
+    obs, reward, done = self.env.step(action)
+    state, hand_obs, depth = obs
+    valid = self.env.isSimValid()
+
+    return state, hand_obs, depth, reward, done, valid
+
+  def reset(self):
+    return self.env.reset()
+
+  def getNextAction(self):
+    return self.planner.getNextAction()
+
+  def getStepsLeft(self):
+    return self.planner.getStepsLeft()
+
+  def getValue(self):
+    return self.planner.getValue()
+
+  def didBlockFall(self):
+    return self.env.didBlockFall()

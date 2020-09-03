@@ -54,7 +54,6 @@ def createHouseBuilding1Env(simulator_base_env, config):
       triangles = list(filter(lambda x: self.object_types[x] == constants.TRIANGLE, self.objects))
       return self._checkObjUpright(triangles[0]) and super().isSimValid()
 
-
   def _thunk():
     return HouseBuilding1Env(config)
 

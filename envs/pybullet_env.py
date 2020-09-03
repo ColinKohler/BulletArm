@@ -86,22 +86,45 @@ class PyBulletEnv(BaseEnv):
 
     # TODO: Move this somewhere it makes sense
     self.block_original_size = 0.05
-    self.block_scale_range = (0.6, 0.7)
+    self.block_scale_range = (0.70, 0.70)
     self.min_block_size = self.block_original_size * self.block_scale_range[0]
     self.max_block_size = self.block_original_size * self.block_scale_range[1]
 
-    self.pick_pre_offset = 0.1
+    self.pick_pre_offset = 0.10
     self.pick_offset = 0.005
-    self.place_pre_offset = 0.1
+    self.place_pre_offset = 0.10
     self.place_offset = self.block_scale_range[1]*self.block_original_size
 
     # Setup camera parameters
-    workspace_x_offset = (workspace[0][1] - workspace[0][0])/2
-    workspace_y_offset = (workspace[1][1] - workspace[1][0])/2
-    self.view_matrix = pb.computeViewMatrixFromYawPitchRoll([workspace[0].mean(), workspace[1].mean(), 0], 10, -90, -90, 0, 2)
-    self.proj_matrix = pb.computeProjectionMatrix(-workspace_x_offset, workspace_x_offset, -workspace_y_offset, workspace_y_offset, -10.0, 100.0)
-    # self.view_matrix = pb.computeViewMatrixFromYawPitchRoll([workspace[0].mean(), workspace[1].mean(), 0], 3, -90, -90, 0, 2)
-    # self.proj_matrix = pb.computeProjectionMatrixFOV(5.7, 1, 2, 3.01)
+    ws_mx = workspace[0].mean()
+    ws_my = workspace[1].mean()
+    ws_size = (workspace[0][1] - workspace[0][0])
+    # diam = ws_size / 2.
+    # cam_z = 10. + diam
+    cam_z = 10
+    self.view_matrix = pb.computeViewMatrix(
+      cameraEyePosition=[ws_mx, ws_my, cam_z],
+      cameraTargetPosition=[ws_mx, ws_my, 0],
+      cameraUpVector=[-1, 0, 0]
+    )
+
+    # left = -diam
+    # right = diam
+    # bottom = -diam
+    # top = diam
+    # self.near = 10.0
+    # self.far = self.near+diam
+    self.near = 9
+    self.far = 10
+    self.fov = np.degrees(2 * np.arctan((ws_size / 2) / self.far))
+    self.proj_matrix = pb.computeProjectionMatrixFOV(self.fov, 1, self.near, self.far)
+    # self.proj_matrix = pb.computeProjectionMatrix(left, right, bottom, top, self.near, self.far)
+    # self.proj_matrix = np.array([[2/(right-left), 0,              0,                         -((right+left)/(right-left))],
+    #                              [0,              2/(top-bottom), 0,                         -((top+bottom)/(top-bottom))],
+    #                              [0,              0,              -(2/(self.far-self.near)), -((self.far+self.near)/(self.far-self.near))],
+    #                              [0,              0,              0,                          1]])
+    # self.proj_matrix = tuple(self.proj_matrix.T.reshape(-1))
+    # print(np.array(self.proj_matrix).reshape(4,4).T)
 
     # Rest pose for arm
     rot = pb.getQuaternionFromEuler([0, np.pi, 0])
@@ -134,10 +157,12 @@ class PyBulletEnv(BaseEnv):
   def initialize(self):
     ''''''
     pb.resetSimulation()
+    pb.setPhysicsEngineParameter(numSubSteps=0, numSolverIterations=200, solverResidualThreshold=1e-7, constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_SI)
     pb.setTimeStep(self._timestep)
 
     pb.setGravity(0, 0, -10)
     self.table_id = pb.loadURDF('plane.urdf', [0,0,0])
+    pb.changeDynamics(self.table_id, -1, linearDamping=0.04, angularDamping=0.04, restitution=0, contactStiffness=3000, contactDamping=100)
 
     # Load the UR5 and set it to the home positions
     self.robot.initialize()
@@ -157,7 +182,8 @@ class PyBulletEnv(BaseEnv):
 
   def reset(self):
     self.episode_count += 1
-    if self.episode_count >= 1000:
+    # Since both Colin and Ondrej have the problem of soft reset, always do hard reset here
+    if self.episode_count >= 1:
       self.initialize()
       self.episode_count = 0
 
@@ -284,16 +310,20 @@ class PyBulletEnv(BaseEnv):
     return True
 
   def wait(self, iteration):
-    if not self.simulate_grasp and self._isHolding():
-      return
+    # if not self.simulate_grasp and self._isHolding():
+    #   return
     [pb.stepSimulation() for _ in range(iteration)]
 
+  # TODO: This does not work w/cylinders
   def didBlockFall(self):
     motion_primative, x, y, z, rot = self._decodeAction(self.last_action)
     obj = self.last_obj
 
-    return motion_primative == constants.PLACE_PRIMATIVE and \
-           np.abs(z - obj.getPosition()[-1]) > obj.getHeight()
+    if obj:
+      return motion_primative == constants.PLACE_PRIMATIVE and \
+             np.linalg.norm(np.array(obj.getXYPosition()) - np.array([x,y])) > obj.size / 2.
+    else:
+      return False
 
   def _isPointInWorkspace(self, p):
     '''
@@ -310,14 +340,10 @@ class PyBulletEnv(BaseEnv):
 
   def _getHeightmap(self):
     image_arr = pb.getCameraImage(width=self.heightmap_size, height=self.heightmap_size,
-                                  viewMatrix=self.view_matrix, projectionMatrix=self.proj_matrix)
+                                  viewMatrix=self.view_matrix, projectionMatrix=self.proj_matrix, renderer=pb.ER_TINY_RENDERER)
     depthImg = image_arr[3]
-    # far = 3.01
-    # near = 2
-    far = 100
-    near = -10
-    depth = far * near / (far - (far - near) * depthImg)
-    return depth.max() - depth
+    depth = self.far * self.near / (self.far - (self.far - self.near) * depthImg)
+    return np.abs(depth - np.max(depth))
 
   def _getObservation(self, action=None):
     ''''''
@@ -333,7 +359,7 @@ class PyBulletEnv(BaseEnv):
 
     return self._isHolding(), in_hand_img, self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
-  def _getValidPositions(self, padding, min_distance, existing_positions, num_shapes, sample_range=None):
+  def _getValidPositions(self, border_padding, min_distance, existing_positions, num_shapes, sample_range=None):
     existing_positions_copy = copy.deepcopy(existing_positions)
     valid_positions = list()
     for i in range(num_shapes):
@@ -346,21 +372,21 @@ class PyBulletEnv(BaseEnv):
         if is_position_valid:
           break
         if sample_range:
-          sample_range[0][0] = max(sample_range[0][0], self.workspace[0][0]+padding/2)
-          sample_range[0][1] = min(sample_range[0][1], self.workspace[0][1]-padding/2)
-          sample_range[1][0] = max(sample_range[1][0], self.workspace[1][0]+padding/2)
-          sample_range[1][1] = min(sample_range[1][1], self.workspace[1][1]-padding/2)
+          sample_range[0][0] = max(sample_range[0][0], self.workspace[0][0]+border_padding/2)
+          sample_range[0][1] = min(sample_range[0][1], self.workspace[0][1]-border_padding/2)
+          sample_range[1][0] = max(sample_range[1][0], self.workspace[1][0]+border_padding/2)
+          sample_range[1][1] = min(sample_range[1][1], self.workspace[1][1]-border_padding/2)
           position = [(sample_range[0][1] - sample_range[0][0]) * npr.random_sample() + sample_range[0][0],
                       (sample_range[1][1] - sample_range[1][0]) * npr.random_sample() + sample_range[1][0]]
         else:
-          position = [(x_extents - padding) * npr.random_sample() + self.workspace[0][0] + padding / 2,
-                      (y_extents - padding) * npr.random_sample() + self.workspace[1][0] + padding / 2]
+          position = [(x_extents - border_padding) * npr.random_sample() + self.workspace[0][0] + border_padding / 2,
+                      (y_extents - border_padding) * npr.random_sample() + self.workspace[1][0] +  border_padding / 2]
 
         if self.pos_candidate is not None:
           position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0] - position[0]).argmin()]
           position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1] - position[1]).argmin()]
-          if not (self.workspace[0][0]+padding/2 < position[0] < self.workspace[0][1]-padding/2 and
-                  self.workspace[1][0]+padding/2 < position[1] < self.workspace[1][1]-padding/2):
+          if not (self.workspace[0][0]+border_padding/2 < position[0] < self.workspace[0][1]-border_padding/2 and
+                  self.workspace[1][0]+border_padding/2 < position[1] < self.workspace[1][1]-border_padding/2):
             continue
 
         if existing_positions_copy:
@@ -389,6 +415,8 @@ class PyBulletEnv(BaseEnv):
         padding = self.max_block_size * 3.4
       elif shape_type == constants.ROOF:
         padding = self.max_block_size * 3.4
+      else:
+        raise ValueError('Attempted to generate invalid shape.')
 
     if min_distance is None:
       if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER):
@@ -397,6 +425,8 @@ class PyBulletEnv(BaseEnv):
         min_distance = self.max_block_size * 3.4
       elif shape_type == constants.ROOF:
         min_distance = self.max_block_size * 3.4
+      else:
+        raise ValueError('Attempted to generate invalid shape.')
 
     shape_handles = list()
     positions = [o.getXYPosition() for o in self.objects]
@@ -406,13 +436,14 @@ class PyBulletEnv(BaseEnv):
       return None
 
     for position in valid_positions:
-      position.append(0.05)
+      position.append(0.020)
+      position = np.round(position, 3)
       if random_orientation:
         orientation = pb.getQuaternionFromEuler([0., 0., 2*np.pi*np.random.random_sample()])
       else:
-        orientation = pb.getQuaternionFromEuler([0., 0., 0])
+        orientation = pb.getQuaternionFromEuler([0., 0., 0.])
       if not scale:
-        scale = npr.uniform(self.block_scale_range[0], self.block_scale_range[1])
+        scale = npr.choice(np.arange(self.block_scale_range[0], self.block_scale_range[1]+0.01, 0.02))
 
       if shape_type == constants.CUBE:
         handle = pb_obj_generation.generateCube(position, orientation, scale)
@@ -590,6 +621,15 @@ class PyBulletEnv(BaseEnv):
       return False
     return top_obj.isTouching(bottom_obj)
 
+  def _getDistance(self, obj1, obj2):
+    position1 = obj1.getPosition()
+    position2 = obj2.getPosition()
+    return np.linalg.norm(np.array(position1) - np.array(position2))
+
+  def _checkAdjacent(self, obj_1, obj_2):
+    return np.allclose(obj_1.getZPosition(), obj_2.getZPosition(), atol=0.01) and \
+           self._getDistance(obj_1, obj_2) < 2.2 * self.max_block_size
+
   def _checkInBetween(self, obj0, obj1, obj2, threshold=None):
     if not threshold:
       threshold = self.max_block_size
@@ -647,4 +687,3 @@ class PyBulletEnv(BaseEnv):
       rot[2] -= np.pi
 
     return rot
-

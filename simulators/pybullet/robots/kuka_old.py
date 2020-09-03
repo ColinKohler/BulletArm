@@ -51,9 +51,9 @@ class Kuka(RobotBase):
     #     -0.299912, 0.000000, -0.000043, 0.299960, 0.000000, -0.000200
     # ]
 
-    self.gripper_joint_limit = [0, 0.2]
+    self.gripper_joint_limit = [0, 0.3]
 
-  def initialize(self):
+  def reset(self):
     ''''''
     ur5_urdf_filepath = os.path.join(self.root_dir, 'simulators/urdf/kuka/kuka_with_gripper2.sdf')
     self.id = pb.loadSDF(ur5_urdf_filepath)[0]
@@ -74,11 +74,6 @@ class Kuka(RobotBase):
         self.arm_joint_names.append(str(joint_info[1]))
         self.arm_joint_indices.append(i)
 
-  def reset(self):
-    self.gripper_closed = False
-    self.holding_obj = None
-    [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
-
   def closeGripper(self, max_it=100):
     ''''''
     p1, p2 = self._getGripperJointPosition()
@@ -91,17 +86,12 @@ class Kuka(RobotBase):
       it += 1
       p1_, p2_ = self._getGripperJointPosition()
       if it > max_it or (abs(p1 - p1_) < 0.0001 and abs(p2 - p2_) < 0.0001):
-        # mean = (p1 + p2) / 2 - 0.001
-        # self._sendGripperCommand(mean, mean)
+        mean = (p1 + p2) / 2 - 0.01
+        self._sendGripperCommand(mean, mean)
         return False
       p1 = p1_
       p2 = p2_
     return True
-
-  def adjustGripperCommand(self):
-    p1, p2 = self._getGripperJointPosition()
-    mean = (p1 + p2) / 2 - 0.001
-    self._sendGripperCommand(mean, mean)
 
   def checkGripperClosed(self):
     limit = self.gripper_joint_limit[1]
@@ -119,11 +109,7 @@ class Kuka(RobotBase):
     self.gripper_closed = False
     self.holding_obj = None
     it = 0
-    if self.holding_obj:
-      pos, rot = self.holding_obj.getPose()
     while abs(target-p1) + abs(target-p2) > 0.001:
-      if self.holding_obj and it < 5:
-        self.holding_obj.resetPose(pos, rot)
       pb.stepSimulation()
       it += 1
       if it > 100:
@@ -136,7 +122,7 @@ class Kuka(RobotBase):
     return True
 
   def _calculateIK(self, pos, rot):
-    return pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot, jointDamping=self.jd)[:7]
+    return pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)[:7]
 
   def _getGripperJointPosition(self):
     p1 = -pb.getJointState(self.id, 8)[0]
@@ -149,12 +135,44 @@ class Kuka(RobotBase):
     pb.setJointMotorControlArray(self.id, self.arm_joint_indices, pb.POSITION_CONTROL, commands,
                                  targetVelocities=[0.]*num_motors,
                                  forces=[self.max_force]*num_motors,
-                                 positionGains=[0.01]*num_motors,
+                                 positionGains=[0.02]*num_motors,
                                  velocityGains=[1.0]*num_motors)
+    # for i in range(num_motors):
+    #   pb.setJointMotorControl2(bodyUniqueId=self.id,
+    #                            jointIndex=i,
+    #                            controlMode=pb.POSITION_CONTROL,
+    #                            targetPosition=commands[i],
+    #                            targetVelocity=0,
+    #                            force=self.max_force,
+    #                            maxVelocity=self.max_velocity,
+    #                            positionGain=0.3,
+    #                            velocityGain=1)
 
   def _sendGripperCommand(self, target_pos1, target_pos2):
-    pb.setJointMotorControlArray(self.id,
-                                 [8, 11, 10, 13],
-                                 pb.POSITION_CONTROL,
-                                 [-target_pos1, target_pos2, 0, 0],
-                                 forces=[self.finger_a_force, self.finger_b_force,  self.finger_tip_force, self.finger_tip_force])
+    # pb.setJointMotorControl2(self.id,
+    #                          7,
+    #                          pb.POSITION_CONTROL,
+    #                          targetPosition=target_pos,
+    #                          force=self.max_force)
+    pb.setJointMotorControl2(self.id,
+                             8,
+                             pb.POSITION_CONTROL,
+                             targetPosition=-target_pos1,
+                             force=self.finger_a_force)
+    pb.setJointMotorControl2(self.id,
+                             11,
+                             pb.POSITION_CONTROL,
+                             targetPosition=target_pos2,
+                             force=self.finger_b_force)
+
+    pb.setJointMotorControl2(self.id,
+                             10,
+                             pb.POSITION_CONTROL,
+                             targetPosition=0,
+                             force=self.finger_tip_force)
+    pb.setJointMotorControl2(self.id,
+                             13,
+                             pb.POSITION_CONTROL,
+                             targetPosition=0,
+                             force=self.finger_tip_force)
+

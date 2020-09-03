@@ -36,10 +36,8 @@ class UR5_Simple(RobotBase):
     self.gripper_joint_indices = list()
 
   def initialize(self):
-    ''''''
     ur5_urdf_filepath = os.path.join(self.root_dir, 'simulators/urdf/ur5/ur5_simple_gripper.urdf')
     self.id = pb.loadURDF(ur5_urdf_filepath, [0,0,0], [0,0,0,1])
-    # self.is_holding = False
     self.gripper_closed = False
     self.holding_obj = None
     self.num_joints = pb.getNumJoints(self.id)
@@ -63,6 +61,11 @@ class UR5_Simple(RobotBase):
     self.holding_obj = None
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
 
+  def adjustGripperCommand(self):
+    p1, p2 = self._getGripperJointPosition()
+    mean = (p1 + p2) / 2 + 0.01
+    self._sendGripperCommand(mean, mean)
+
   def closeGripper(self, max_it=100):
     ''''''
     p1, p2 = self._getGripperJointPosition()
@@ -83,11 +86,6 @@ class UR5_Simple(RobotBase):
       p1 = p1_
       p2 = p2_
     return True
-
-  def adjustGripperCommand(self):
-    p1, p2 = self._getGripperJointPosition()
-    mean = (p1 + p2) / 2 + 0.01
-    self._sendGripperCommand(mean, mean)
 
   def checkGripperClosed(self):
     limit = self.gripper_joint_limit[1]

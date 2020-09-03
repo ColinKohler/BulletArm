@@ -1,30 +1,52 @@
 import numpy as np
 import numpy.random as npr
 
+from helping_hands_rl_envs.simulators import constants
+
 class BasePlanner(object):
   def __init__(self, env, config):
     self.env = env
     self.rand_pick_prob = config['rand_pick_prob'] if 'rand_pick_prob' in config else 0.0
     self.rand_place_prob = config['rand_place_prob'] if 'rand_place_prob' in config else 0.0
-    self.pos_noise = config['pos_noise'] if 'pos_noise' in config else None
+    self.pick_noise = config['pick_noise'] if 'pick_noise' in config else None
+    self.place_noise = config['place_noise'] if 'place_noise' in config else None
+    self.planner_res = config['planner_res'] if 'planner_res' in config else 10
     self.rot_noise = config['rot_noise'] if 'rot_noise' in config else None
     self.gamma = config['gamma']  if 'gamma' in config else 0.9
     self.random_orientation = config['random_orientation'] if 'random_orientation' in config else True
 
+    npr.seed(env.seed)
+
   def getNextAction(self):
     raise NotImplemented('Planners must implement this function')
 
-  def getStepLeft(self):
+  def getStepsLeft(self):
     raise NotImplemented('Planners must implement this function')
 
   def getValue(self):
-    return self.gamma**self.getStepLeft()
+    return self.gamma**self.getStepsLeft()
 
-  def addNoiseToPos(self, x, y):
-    # TODO: Would we ever want to include noise on the z-axis here?
-    if self.pos_noise:
-      x = np.clip(x + npr.uniform(-self.pos_noise, self.pos_noise), self.env.workspace[0,0], self.env.workspace[0,1])
-      y = np.clip(y + npr.uniform(-self.pos_noise, self.pos_noise), self.env.workspace[1,0], self.env.workspace[1,1])
+  def addNoiseToPos(self, x, y, primative):
+    signs = [-1, 1]
+    if primative == constants.PICK_PRIMATIVE and self.pick_noise:
+      x_noise = np.round(npr.choice(signs) * npr.uniform(self.pick_noise[0], self.pick_noise[1]), self.planner_res)
+      y_noise = np.round(npr.choice(signs) * npr.uniform(self.pick_noise[0], self.pick_noise[1]), self.planner_res)
+
+      # x_noise = 0.000
+      # y_noise = 0.000
+
+      x = np.clip(x + x_noise, self.env.workspace[0,0], self.env.workspace[0,1])
+      y = np.clip(y + y_noise, self.env.workspace[1,0], self.env.workspace[1,1])
+    elif primative == constants.PLACE_PRIMATIVE and self.place_noise:
+      x_noise = np.round(npr.choice(signs) * npr.uniform(self.place_noise[0], self.place_noise[1]), self.planner_res)
+      y_noise = np.round(npr.choice(signs) * npr.uniform(self.place_noise[0], self.place_noise[1]), self.planner_res)
+
+      # x_noise = 0.010
+      # y_noise = 0.010
+
+      x = np.clip(x + x_noise, self.env.workspace[0,0], self.env.workspace[0,1])
+      y = np.clip(y + y_noise, self.env.workspace[1,0], self.env.workspace[1,1])
+
     return x, y
 
   def addNoiseToRot(self, rot):
@@ -32,8 +54,24 @@ class BasePlanner(object):
       rot = np.clip(rot + npr.uniform(-self.rot_noise, self.rot_noise), 0., np.pi)
     return rot
 
+  def getRandomPickingAction(self):
+    x = npr.uniform(self.env.workspace[0, 0] + 0.025, self.env.workspace[0, 1] - 0.025)
+    y = npr.uniform(self.env.workspace[1, 0] + 0.025, self.env.workspace[1, 1] - 0.025)
+    z = 0.
+    r = npr.uniform(0., np.pi)
+    return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
+
+  def getRandomPlacingAction(self):
+    x = npr.uniform(self.env.workspace[0, 0] + 0.025, self.env.workspace[0, 1] - 0.025)
+    y = npr.uniform(self.env.workspace[1, 0] + 0.025, self.env.workspace[1, 1] - 0.025)
+    z = 0.
+    r = npr.uniform(0., np.pi)
+    return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
+
   def encodeAction(self, primitive, x, y, z, r):
-    if self.pos_noise: x, y = self.addNoiseToPos(x, y)
+    x = np.round(x, self.planner_res)
+    y = np.round(y, self.planner_res)
+    x, y = self.addNoiseToPos(x, y, primitive)
     if self.rot_noise: r = self.addNoiseToRot(r)
     return self.env._encodeAction(primitive, x, y, z, r)
 
@@ -41,7 +79,7 @@ class BasePlanner(object):
     if obj_type is not None:
       return list(filter(lambda x: self.env.object_types[x] == obj_type, self.env.objects))
     else:
-      return self.env.objects
+      return list(filter(lambda x: not self.isObjectHeld(x), self.env.objects))
 
   def getObjectsOnTopOf(self, bottom_obj):
     return list(filter(lambda x: self.checkOnTopOf(bottom_obj, x), self.getObjects()))
