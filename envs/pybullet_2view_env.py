@@ -17,18 +17,6 @@ class PyBullet2ViewEnv(PyBulletEnv):
     super().__init__(config)
     self.wall_x = 1.
 
-    # self.view_matrix_2 = pb.computeViewMatrix(
-    #   cameraEyePosition=[self.workspace[0].min(), self.workspace[1].mean(), self.workspace[2].mean()],
-    #   cameraTargetPosition=[self.wall_x, self.workspace[1].mean(), self.workspace[2].mean()],
-    #   cameraUpVector=[0, 0, 1])
-    # half_coverage = (self.workspace[2][1] - self.workspace[2][0])/2
-    # far = self.wall_x
-    # fov = 2*np.rad2deg(np.arctan(half_coverage/far))
-    # self.proj_matrix_2 = pb.computeProjectionMatrixFOV(
-    #   fov=fov,
-    #   aspect=1.0,
-    #   nearVal=0.01,
-    #   farVal=far+0.1)
     self.view_matrix_2 = pb.computeViewMatrix(
       cameraEyePosition=[-10, self.workspace[1].mean(), self.workspace[2].mean()],
       cameraTargetPosition=[self.wall_x, self.workspace[1].mean(), self.workspace[2].mean()],
@@ -62,8 +50,8 @@ class PyBullet2ViewEnv(PyBulletEnv):
 
     self.drawer.remove()
     self.drawer2.remove()
-    self.drawer.initialize((self.workspace[0][1]+0.15, 0, 0), pb.getQuaternionFromEuler((0, 0, 0)))
-    self.drawer2.initialize((self.workspace[0][1]+0.15, 0, 0.18), pb.getQuaternionFromEuler((0, 0, 0)))
+    self.drawer.initialize((self.workspace[0][1]+0.11, 0, 0), pb.getQuaternionFromEuler((0, 0, 0)))
+    self.drawer2.initialize((self.workspace[0][1]+0.11, 0, 0.18), pb.getQuaternionFromEuler((0, 0, 0)))
 
     return self._getObservation()
 
@@ -96,6 +84,14 @@ class PyBullet2ViewEnv(PyBulletEnv):
 
     return self._isHolding(), in_hand_img, heightmaps
 
+  def test(self):
+    handle1_pos = self.drawer.getHandlePosition()
+    handle2_pos = self.drawer2.getHandlePosition()
+    rot = pb.getQuaternionFromEuler((0, -np.pi/2, 0))
+    self.robot.pull(handle1_pos, rot, 0.2)
+    self.robot.pull(handle2_pos, rot, 0.2)
+
+
 if __name__ == '__main__':
   workspace = np.asarray([[0.3, 0.7],
                           [-0.2, 0.2],
@@ -107,3 +103,4 @@ if __name__ == '__main__':
   env = PyBullet2ViewEnv(env_config)
   while True:
     s, in_hand, obs = env.reset()
+    env.test()

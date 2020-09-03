@@ -15,6 +15,7 @@ from helping_hands_rl_envs.planners.block_placing_planner import BlockPlacingPla
 from helping_hands_rl_envs.planners.tilt_block_stacking_planner import TiltBlockStackingPlanner
 from helping_hands_rl_envs.planners.tilt_deconstruct_planner import TiltDeconstructPlanner
 from helping_hands_rl_envs.planners.drawer_opening_planner import DrawerOpeningPlanner
+from helping_hands_rl_envs.planners.block_from_drawer_planner import BlockFromDrawerPlanner
 
 AVAILABLE_PLANNER = ['random',
                      'play',
@@ -46,6 +47,7 @@ AVAILABLE_PLANNER = ['random',
                      'tilt_improvise_house_building_5_deconstruct',
                      'tilt_improvise_house_building_6_deconstruct',
                      'drawer_opening',
+                     'block_from_drawer',
                      ]
 
 def createPlanner(config):
@@ -111,3 +113,5 @@ def createPlanner(config):
     return lambda env: TiltDeconstructPlanner(env, config)
   elif config['planner'] == 'drawer_opening':
     return lambda env: DrawerOpeningPlanner(env, config)
+  elif config['planner'] == 'block_from_drawer':
+    return lambda env: BlockFromDrawerPlanner(env, config)
