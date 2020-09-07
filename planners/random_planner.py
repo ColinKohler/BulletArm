@@ -15,3 +15,6 @@ class RandomPlanner(BasePlanner):
       return np.concatenate(([primative], location))
     else:
       return location
+
+  def getStepLeft(self):
+    return 100

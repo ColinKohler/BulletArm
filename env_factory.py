@@ -13,11 +13,68 @@ from helping_hands_rl_envs.envs.block_cylinder_stacking_env import createBlockCy
 from helping_hands_rl_envs.envs.house_building_1_env import createHouseBuilding1Env
 from helping_hands_rl_envs.envs.house_building_2_env import createHouseBuilding2Env
 from helping_hands_rl_envs.envs.house_building_3_env import createHouseBuilding3Env
+from helping_hands_rl_envs.envs.house_building_4_env import createHouseBuilding4Env
+from helping_hands_rl_envs.envs.house_building_5_env import createHouseBuilding5Env
+from helping_hands_rl_envs.envs.improvise_house_building_2_env import createImproviseHouseBuilding2Env
+from helping_hands_rl_envs.envs.improvise_house_building_3_env import createImproviseHouseBuilding3Env
+from helping_hands_rl_envs.envs.improvise_house_building_4_env import createImproviseHouseBuilding4Env
+from helping_hands_rl_envs.envs.house_building_1_deconstruct_env import createHouseBuilding1DeconstructEnv
+from helping_hands_rl_envs.envs.house_building_4_deconstruct_env import createHouseBuilding4DeconstructEnv
+from helping_hands_rl_envs.envs.improvise_house_building_3_deconstruct_env import createImproviseHouseBuilding3DeconstructEnv
+from helping_hands_rl_envs.envs.improvise_house_building_4_deconstruct_env import createImproviseHouseBuilding4DeconstructEnv
+from helping_hands_rl_envs.envs.random_picking_env import createRandomPickingEnv
+from helping_hands_rl_envs.envs.random_stacking_env import createRandomStackingEnv
 from helping_hands_rl_envs.envs.multi_task_env import createMultiTaskEnv
 from helping_hands_rl_envs.planners.planner_factory import createPlanner, AVAILABLE_PLANNER
 
 from helping_hands_rl_envs.rl_runner import RLRunner
 from helping_hands_rl_envs.data_runner import MultiDataRunner, SingleDataRunner
+
+def getEnvFunction(env_type):
+  if env_type == 'block_picking':
+    return createBlockPickingEnv
+  elif env_type == 'block_stacking':
+    return createBlockStackingEnv
+  elif env_type == 'block_adjacent':
+    return createBlockAdjacentEnv
+  elif env_type == 'brick_stacking':
+    return createBrickStackingEnv
+  elif env_type == 'pyramid_stacking':
+    return createPyramidStackingEnv
+  elif env_type == 'block_cylinder_stacking':
+    return createBlockCylinderStackingEnv
+  elif env_type == 'house_building_1':
+    return createHouseBuilding1Env
+  elif env_type == 'house_building_2':
+    return createHouseBuilding2Env
+  elif env_type == 'house_building_3':
+    return createHouseBuilding3Env
+  elif env_type == 'house_building_4':
+    return createHouseBuilding4Env
+  elif env_type == 'house_building_5':
+    return createHouseBuilding5Env
+  elif env_type == 'improvise_house_building_2':
+    return createImproviseHouseBuilding2Env
+  elif env_type == 'improvise_house_building_3':
+    return createImproviseHouseBuilding3Env
+  elif env_type == 'improvise_house_building_4':
+    return createImproviseHouseBuilding4Env
+  elif env_type == 'house_building_1_deconstruct':
+    return createHouseBuilding1DeconstructEnv
+  elif env_type == 'house_building_4_deconstruct':
+    return createHouseBuilding4DeconstructEnv
+  elif env_type == 'improvise_house_building_3_deconstruct':
+    return createImproviseHouseBuilding3DeconstructEnv
+  elif env_type == 'improvise_house_building_4_deconstruct':
+    return createImproviseHouseBuilding4DeconstructEnv
+  elif env_type == 'random_picking':
+    return createRandomPickingEnv
+  elif env_type == 'random_stacking':
+    return createRandomStackingEnv
+  elif env_type == 'multi_task':
+    return createMultiTaskEnv
+  else:
+    raise ValueError('Invalid environment type passed to factory.')
 
 def createSingleProcessEnv(runner_type, simulator, env_type, env_config, planner_config):
   '''
@@ -59,28 +116,8 @@ def createSingleProcessEnv(runner_type, simulator, env_type, env_config, planner
     raise ValueError('Invalid simulator passed to factory. Valid simulators are: \'numpy\', \'pybullet\'.')
 
   # Create the various environments
-  if env_type == 'block_picking':
-    env = createBlockPickingEnv(parent_env, env_config)
-  elif env_type == 'block_stacking':
-    env = createBlockStackingEnv(parent_env, env_config)
-  elif env_type == 'block_adjacent':
-    env = createBlockAdjacentEnv(parent_env, env_config)
-  elif env_type == 'brick_stacking':
-    env = createBrickStackingEnv(parent_env, env_config)
-  elif env_type == 'pyramid_stacking':
-    env = createPyramidStackingEnv(parent_env, env_config)
-  elif env_type == 'block_cylinder_stacking':
-    env = createBlockCylinderStackingEnv(parent_env, env_config)
-  elif env_type == 'house_building_1':
-    env = createHouseBuilding1Env(parent_env, env_config)
-  elif env_type == 'house_building_2':
-    env = createHouseBuilding2Env(parent_env, env_config)
-  elif env_type == 'house_building_3':
-    env = createHouseBuilding3Env(parent_env, env_config)
-  elif env_type == 'multi_task':
-    env = createMultiTaskEnv(parent_env, env_config)
-  else:
-    raise ValueError('Invalid environment type passed to factory.')
+  env_func = getEnvFunction(env_type)
+  env = env_func(parent_env, env_config)
 
   if planner_config:
     if 'planner_type' in planner_config:
@@ -89,11 +126,13 @@ def createSingleProcessEnv(runner_type, simulator, env_type, env_config, planner
       planner_type = env_type
     else:
       planner_type = 'random'
+  else:
+    planner_type = 'random'
 
   env = env()
   planner = createPlanner(planner_type, planner_config)(env)
   if runner_type == 'rl':
-    runner = RLRunner(envs, planners)
+    runner = RLRunner(env, planner)
   elif runner_type == 'data':
     runner = SingleDataRunner(env, planner)
   else:
@@ -145,28 +184,8 @@ def createMultiprocessEnvs(num_processes, runner_type, simulator, env_type, env_
     raise ValueError('Invalid simulator passed to factory. Valid simulators are: \'numpy\', \'pybullet\'.')
 
   # Create the various environments
-  if env_type == 'block_picking':
-    envs = [createBlockPickingEnv(parent_env, env_configs[i]) for i in range(num_processes)]
-  elif env_type == 'block_stacking':
-    envs = [createBlockStackingEnv(parent_env, env_configs[i]) for i in range(num_processes)]
-  elif env_type == 'block_adjacent':
-    envs = [createBlockAdjacentEnv(parent_env, env_configs[i]) for i in range(num_processes)]
-  elif env_type == 'brick_stacking':
-    envs = [createBrickStackingEnv(parent_env, env_configs[i]) for i in range(num_processes)]
-  elif env_type == 'pyramid_stacking':
-    envs = [createPyramidStackingEnv(parent_env, env_configs[i]) for i in range(num_processes)]
-  elif env_type == 'block_cylinder_stacking':
-    envs = [createBlockCylinderStackingEnv(parent_env, env_configs[i]) for i in range(num_processes)]
-  elif env_type == 'house_building_1':
-    envs = [createHouseBuilding1Env(parent_env, env_configs[i]) for i in range(num_processes)]
-  elif env_type == 'house_building_2':
-    envs = [createHouseBuilding2Env(parent_env, env_configs[i]) for i in range(num_processes)]
-  elif env_type == 'house_building_3':
-    envs = [createHouseBuilding3Env(parent_env, env_configs[i]) for i in range(num_processes)]
-  elif env_type == 'multi_task':
-    envs = [createMultiTaskEnv(parent_env, env_configs[i]) for i in range(num_processes)]
-  else:
-    raise ValueError('Invalid environment type passed to factory.')
+  env_func = getEnvFunction(env_type)
+  envs = [env_func(parent_env, env_configs[i]) for i in range(num_processes)]
 
   if 'planner_type' in planner_config:
     planner_type = planner_config['planner_type']

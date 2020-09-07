@@ -34,8 +34,6 @@ def createBlockStackingEnv(simulator_base_env, config):
 
     def reset(self):
       ''''''
-      super(BlockStackingEnv, self).reset()
-
       # TODO: Move this to a utils file somewhere and set this in the init fn
       if self.object_type == 'cube':
         object_type = constants.CUBE
@@ -44,7 +42,14 @@ def createBlockStackingEnv(simulator_base_env, config):
       else:
         raise ValueError('Invalid object type specified. Must be \'cube\' or \'cylinder\'')
 
-      self._generateShapes(object_type, self.num_obj, random_orientation=self.random_orientation)
+      while True:
+        super(BlockStackingEnv, self).reset()
+        try:
+          self._generateShapes(object_type, self.num_obj, random_orientation=self.random_orientation)
+        except Exception as e:
+          continue
+        else:
+          break
       return self._getObservation()
 
     def _checkTermination(self):

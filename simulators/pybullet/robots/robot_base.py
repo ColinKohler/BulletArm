@@ -78,7 +78,6 @@ class RobotBase:
         self.adjustGripperCommand()
         for i in range(10):
           pb.stepSimulation()
-        self.moveTo(pre_pos, pre_rot, True)
     else:
       self.moveTo(pos, rot, dynamic)
 

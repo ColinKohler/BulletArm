@@ -9,8 +9,9 @@ class BlockPickingPlanner(BasePlanner):
     super(BlockPickingPlanner, self).__init__(env, config)
 
   def getNextAction(self):
-    block_poses = self.env.getObjectPoses()
-
+    block_poses = list(filter(lambda o: self.env._isPointInWorkspace(o), self.env.getObjectPoses()))
+    if len(block_poses) == 0:
+      block_poses = self.env.getObjectPoses()
     x = block_poses[0][0]
     y = block_poses[0][1]
     z = block_poses[0][2]

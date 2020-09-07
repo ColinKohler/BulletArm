@@ -43,8 +43,9 @@ def createHouseBuilding1Env(simulator_base_env, config):
 
     def _checkTermination(self):
       ''''''
+      blocks = list(filter(lambda x: self.object_types[x] == constants.CUBE, self.objects))
       triangles = list(filter(lambda x: self.object_types[x] == constants.TRIANGLE, self.objects))
-      return self._checkStack() and self._checkObjUpright(triangles[0])
+      return self._checkStack(blocks+triangles) and self._checkObjUpright(triangles[0])
 
     def getObjectPosition(self):
       return list(map(self._getObjectPosition, self.objects))

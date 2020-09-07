@@ -1,6 +1,7 @@
 import time
 import copy
 import numpy as np
+import scipy
 import numpy.random as npr
 
 import pybullet as pb
@@ -12,6 +13,7 @@ from helping_hands_rl_envs.simulators.pybullet.robots.kuka import Kuka
 from helping_hands_rl_envs.simulators.pybullet.robots.ur5_robotiq import UR5_Robotiq
 import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
 from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.simulators.pybullet.objects.pybullet_object import PybulletObject
 
 import pickle
 import os
@@ -34,6 +36,15 @@ class PyBulletEnv(BaseEnv):
       config['perfect_place'] = False
     if 'workspace_check' not in config:
       config['workspace_check'] = 'box'
+    if 'in_hand_size' not in config:
+      config['in_hand_size'] = 24
+    if 'in_hand_mode' not in config:
+      config['in_hand_mode'] = 'sub'
+    if 'num_random_objects' not in config:
+      config['num_random_objects'] = 0
+    if 'check_random_obj_valid' not in config:
+      config['check_random_obj_valid'] = False
+
     seed = config['seed']
     workspace = config['workspace']
     max_steps = config['max_steps']
@@ -47,7 +58,12 @@ class PyBulletEnv(BaseEnv):
     perfect_place = config['perfect_place']
     robot = config['robot']
     workspace_check = config['workspace_check']
-    super(PyBulletEnv, self).__init__(seed, workspace, max_steps, obs_size, action_sequence, pos_candidate)
+    in_hand_size = config['in_hand_size']
+    in_hand_mode = config['in_hand_mode']
+    num_random_objects = config['num_random_objects']
+    check_random_obj_valid = config['check_random_obj_valid']
+    super(PyBulletEnv, self).__init__(seed, workspace, max_steps, obs_size, action_sequence, pos_candidate,
+                                      in_hand_size, in_hand_mode)
 
     # Connect to pybullet and add data files to path
     if render:
@@ -77,7 +93,7 @@ class PyBulletEnv(BaseEnv):
     self.pick_pre_offset = 0.10
     self.pick_offset = 0.005
     self.place_pre_offset = 0.10
-    self.place_offset = self.block_scale_range[1]*self.block_original_size# + 0.050
+    self.place_offset = self.block_scale_range[1]*self.block_original_size
 
     # Setup camera parameters
     ws_mx = workspace[0].mean()
@@ -127,10 +143,18 @@ class PyBulletEnv(BaseEnv):
     self.heightmap = None
     self.current_episode_steps = 1
     self.last_action = None
+    self.last_obj = None
     self.state = {}
     self.pb_state = None
 
-  def reset(self):
+    self.initialize()
+
+    self.num_random_objects = num_random_objects
+    self.check_random_obj_valid = check_random_obj_valid
+
+    self.episode_count = 0
+
+  def initialize(self):
     ''''''
     pb.resetSimulation()
     pb.setPhysicsEngineParameter(numSubSteps=0, numSolverIterations=200, solverResidualThreshold=1e-7, constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_SI)
@@ -141,7 +165,7 @@ class PyBulletEnv(BaseEnv):
     pb.changeDynamics(self.table_id, -1, linearDamping=0.04, angularDamping=0.04, restitution=0, contactStiffness=3000, contactDamping=100)
 
     # Load the UR5 and set it to the home positions
-    self.robot.reset()
+    self.robot.initialize()
 
     # Reset episode vars
     self.objects = list()
@@ -156,12 +180,47 @@ class PyBulletEnv(BaseEnv):
 
     return self._getObservation()
 
+  def reset(self):
+    self.episode_count += 1
+    # Since both Colin and Ondrej have the problem of soft reset, always do hard reset here
+    if self.episode_count >= 1:
+      self.initialize()
+      self.episode_count = 0
+
+    for o in self.objects:
+      pb.removeBody(o.object_id)
+    self.robot.reset()
+    self.objects = list()
+    self.object_types = {}
+    self.heightmap = None
+    self.current_episode_steps = 1
+    self.last_action = None
+    self.last_obj = None
+    self.state = {}
+    self.pb_state = None
+
+    while True:
+      try:
+        self._generateShapes(constants.RANDOM, self.num_random_objects, random_orientation=True)
+      except Exception as e:
+        continue
+      else:
+        break
+
+    pb.stepSimulation()
+
+    return self._getObservation()
+
   def getStateDict(self):
+    self.robot.saveState()
     state = {'current_episode_steps': copy.deepcopy(self.current_episode_steps),
              'objects': copy.deepcopy(self.objects),
              'object_types': copy.deepcopy(self.object_types),
              'heightmap': copy.deepcopy(self.heightmap),
-             'robot_state': copy.deepcopy(self.robot.state)
+             'robot_state': copy.deepcopy(self.robot.state),
+             'random_state': np.random.get_state(),
+             'last_action': self.last_action,
+             'last_obj': self.last_obj
              }
     return state
 
@@ -170,12 +229,14 @@ class PyBulletEnv(BaseEnv):
     self.objects = state['objects']
     self.object_types = state['object_types']
     self.heightmap = state['heightmap']
+    self.last_action = state['last_action']
+    self.last_obj = state['last_obj']
     self.robot.state = state['robot_state']
     self.robot.restoreState()
+    np.random.set_state(state['random_state'])
 
   def saveState(self):
     self.pb_state = pb.saveState()
-    self.robot.saveState()
     self.state = self.getStateDict()
 
   def restoreState(self):
@@ -186,14 +247,7 @@ class PyBulletEnv(BaseEnv):
     bullet_file = os.path.join(path, 'env.bullet')
     pickle_file = os.path.join(path, 'env.pickle')
     pb.saveBullet(bullet_file)
-    self.robot.saveState()
-    state = {
-      'heightmap': copy.deepcopy(self.heightmap),
-      'current_episode_steps': copy.deepcopy(self.current_episode_steps),
-      'objects': copy.deepcopy(self.objects),
-      'robot_state': copy.deepcopy(self.robot.state),
-      'random_state': np.random.get_state()
-    }
+    state = self.getStateDict()
     with open(pickle_file, 'wb') as f:
       pickle.dump(state, f)
 
@@ -203,20 +257,15 @@ class PyBulletEnv(BaseEnv):
     pb.restoreState(fileName=bullet_file)
     with open(pickle_file, 'rb') as f:
       state = pickle.load(f)
-    self.heightmap = state['heightmap']
-    self.current_episode_steps = state['current_episode_steps']
-    self.objects = state['objects']
-    self.robot.state = state['robot_state']
-    np.random.set_state(state['random_state'])
-    self.robot.restoreState()
+    self.restoreStateDict(state)
 
   def takeAction(self, action):
     motion_primative, x, y, z, rot = self._decodeAction(action)
-    self.last_action = [motion_primative, self.robot.holding_obj, x, y, z, rot]
+    self.last_action = action
+    self.last_obj = self.robot.holding_obj
 
     # Get transform for action
     pos = [x, y, z]
-    rot_q = pb.getQuaternionFromEuler([0, np.pi, -rot])
     # [-pi, 0] is easier for the arm(kuka) to execute
     while rot < -np.pi:
       rot += np.pi
@@ -244,6 +293,8 @@ class PyBulletEnv(BaseEnv):
 
   def isSimValid(self):
     for obj in self.objects:
+      if not self.check_random_obj_valid and self.object_types[obj] == constants.RANDOM:
+        continue
       if self._isObjectHeld(obj):
         continue
       p = obj.getPosition()
@@ -265,7 +316,8 @@ class PyBulletEnv(BaseEnv):
 
   # TODO: This does not work w/cylinders
   def didBlockFall(self):
-    motion_primative, obj, x, y, z, rot = self.last_action
+    motion_primative, x, y, z, rot = self._decodeAction(self.last_action)
+    obj = self.last_obj
 
     if obj:
       return motion_primative == constants.PLACE_PRIMATIVE and \
@@ -286,91 +338,91 @@ class PyBulletEnv(BaseEnv):
            self.workspace[1][0] < p[1] < self.workspace[1][1] and \
            self.workspace[2][0] < p[2] < self.workspace[2][1]
 
+  def _getHeightmap(self):
+    image_arr = pb.getCameraImage(width=self.heightmap_size, height=self.heightmap_size,
+                                  viewMatrix=self.view_matrix, projectionMatrix=self.proj_matrix, renderer=pb.ER_TINY_RENDERER)
+    depthImg = image_arr[3]
+    depth = self.far * self.near / (self.far - (self.far - self.near) * depthImg)
+    return np.abs(depth - np.max(depth))
+
   def _getObservation(self, action=None):
     ''''''
     old_heightmap = self.heightmap
-
-    image_arr = pb.getCameraImage(width=self.heightmap_size, height=self.heightmap_size,
-                                  viewMatrix=self.view_matrix, projectionMatrix=self.proj_matrix, renderer=pb.ER_TINY_RENDERER)
-    self.heightmap = self.far * self.near / (self.far - (self.far - self.near) * image_arr[3])
-    self.heightmap = np.abs(self.heightmap - np.max(self.heightmap))
+    self.heightmap = self._getHeightmap()
 
     if action is None or self._isHolding() == False:
-      in_hand_img = np.zeros((self.in_hand_size, self.in_hand_size, 1))
+      in_hand_img = self.getEmptyInHand()
     else:
       motion_primative, x, y, z, rot = self._decodeAction(action)
-      in_hand_img = self.getInHandImage(old_heightmap, x, y, rot, self.heightmap)
+      in_hand_img = self.getInHandImage(old_heightmap, x, y, z, rot, self.heightmap)
+
 
     return self._isHolding(), in_hand_img, self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
   def _getValidPositions(self, border_padding, min_distance, existing_positions, num_shapes, sample_range=None):
-    for _ in range(100):
-      existing_positions_copy = copy.deepcopy(existing_positions)
-      valid_positions = list()
-      for i in range(num_shapes):
-        # Generate random drop config
-        x_extents = self.workspace[0][1] - self.workspace[0][0]
-        y_extents = self.workspace[1][1] - self.workspace[1][0]
+    existing_positions_copy = copy.deepcopy(existing_positions)
+    valid_positions = list()
+    for i in range(num_shapes):
+      # Generate random drop config
+      x_extents = self.workspace[0][1] - self.workspace[0][0]
+      y_extents = self.workspace[1][1] - self.workspace[1][0]
 
-        is_position_valid = False
-        for j in range(100):
-          if is_position_valid:
-            break
-          if sample_range:
-            sample_range[0][0] = max(sample_range[0][0], self.workspace[0][0]+border_padding/2)
-            sample_range[0][1] = min(sample_range[0][1], self.workspace[0][1]-border_padding/2)
-            sample_range[1][0] = max(sample_range[1][0], self.workspace[1][0]+border_padding/2)
-            sample_range[1][1] = min(sample_range[1][1], self.workspace[1][1]-border_padding/2)
-            position = [(sample_range[0][1] - sample_range[0][0]) * npr.random_sample() + sample_range[0][0],
-                        (sample_range[1][1] - sample_range[1][0]) * npr.random_sample() + sample_range[1][0]]
-          else:
-            position = [(x_extents - border_padding) * npr.random_sample() + self.workspace[0][0] + border_padding / 2,
-                        (y_extents - border_padding) * npr.random_sample() + self.workspace[1][0] +  border_padding / 2]
-
-          if self.pos_candidate is not None:
-            position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0] - position[0]).argmin()]
-            position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1] - position[1]).argmin()]
-            if not (self.workspace[0][0]+border_padding/2 < position[0] < self.workspace[0][1]-border_padding/2 and
-                    self.workspace[1][0]+border_padding/2 < position[1] < self.workspace[1][1]-border_padding/2):
-              continue
-
-          if existing_positions_copy:
-            distances = np.array(list(map(lambda p: np.linalg.norm(np.array(p)-position), existing_positions_copy)))
-            is_position_valid = np.all(distances > min_distance)
-            # is_position_valid = np.all(np.sum(np.abs(np.array(positions) - np.array(position[:-1])), axis=1) > min_distance)
-          else:
-            is_position_valid = True
+      is_position_valid = False
+      for j in range(100):
         if is_position_valid:
-          existing_positions_copy.append(position)
-          valid_positions.append(position)
-        else:
           break
-      if len(valid_positions) == num_shapes:
-        return valid_positions
-    raise NoValidPositionException
+        if sample_range:
+          sample_range[0][0] = max(sample_range[0][0], self.workspace[0][0]+border_padding/2)
+          sample_range[0][1] = min(sample_range[0][1], self.workspace[0][1]-border_padding/2)
+          sample_range[1][0] = max(sample_range[1][0], self.workspace[1][0]+border_padding/2)
+          sample_range[1][1] = min(sample_range[1][1], self.workspace[1][1]-border_padding/2)
+          position = [(sample_range[0][1] - sample_range[0][0]) * npr.random_sample() + sample_range[0][0],
+                      (sample_range[1][1] - sample_range[1][0]) * npr.random_sample() + sample_range[1][0]]
+        else:
+          position = [(x_extents - border_padding) * npr.random_sample() + self.workspace[0][0] + border_padding / 2,
+                      (y_extents - border_padding) * npr.random_sample() + self.workspace[1][0] +  border_padding / 2]
+
+        if self.pos_candidate is not None:
+          position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0] - position[0]).argmin()]
+          position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1] - position[1]).argmin()]
+          if not (self.workspace[0][0]+border_padding/2 < position[0] < self.workspace[0][1]-border_padding/2 and
+                  self.workspace[1][0]+border_padding/2 < position[1] < self.workspace[1][1]-border_padding/2):
+            continue
+
+        if existing_positions_copy:
+          distances = np.array(list(map(lambda p: np.linalg.norm(np.array(p)-position), existing_positions_copy)))
+          is_position_valid = np.all(distances > min_distance)
+          # is_position_valid = np.all(np.sum(np.abs(np.array(positions) - np.array(position[:-1])), axis=1) > min_distance)
+        else:
+          is_position_valid = True
+      if is_position_valid:
+        existing_positions_copy.append(position)
+        valid_positions.append(position)
+      else:
+        break
+    if len(valid_positions) == num_shapes:
+      return valid_positions
+    else:
+      raise NoValidPositionException
 
   def _generateShapes(self, shape_type=0, num_shapes=1, scale=None, pos=None, rot=None,
-                           min_distance=None, padding=None, random_orientation=False):
+                           min_distance=None, padding=None, random_orientation=False, z_scale=1):
     ''''''
     if padding is None:
-      if shape_type == constants.CUBE or shape_type == constants.TRIANGLE:
+      if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER):
         padding = self.max_block_size * 1.5
       elif shape_type == constants.BRICK:
         padding = self.max_block_size * 3.4
-      elif shape_type == constants.CYLINDER:
-        padding = self.max_block_size * 1.5
       elif shape_type == constants.ROOF:
         padding = self.max_block_size * 3.4
       else:
         raise ValueError('Attempted to generate invalid shape.')
 
     if min_distance is None:
-      if shape_type == constants.CUBE or shape_type == constants.TRIANGLE:
+      if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER):
         min_distance = self.max_block_size * 2.4
       elif shape_type == constants.BRICK:
         min_distance = self.max_block_size * 3.4
-      elif shape_type == constants.CYLINDER:
-        min_distance = self.max_block_size * 2.4
       elif shape_type == constants.ROOF:
         min_distance = self.max_block_size * 3.4
       else:
@@ -397,13 +449,14 @@ class PyBulletEnv(BaseEnv):
         handle = pb_obj_generation.generateCube(position, orientation, scale)
       elif shape_type == constants.BRICK:
         handle = pb_obj_generation.generateBrick(position, orientation, scale)
-      elif shape_type == constants.CYLINDER:
-        handle = pb_obj_generation.generateCylinder(position, orientation, scale)
       elif shape_type == constants.TRIANGLE:
-        orientation = pb.getQuaternionFromEuler([0., 0., np.pi/2])
         handle = pb_obj_generation.generateTriangle(position, orientation, scale)
       elif shape_type == constants.ROOF:
         handle = pb_obj_generation.generateRoof(position, orientation, scale)
+      elif shape_type == constants.CYLINDER:
+        handle = pb_obj_generation.generateCylinder(position, orientation, scale)
+      elif shape_type == constants.RANDOM:
+        handle = pb_obj_generation.generateRandomObj(position, orientation, scale, z_scale)
       else:
         raise NotImplementedError
       shape_handles.append(handle)
@@ -412,7 +465,7 @@ class PyBulletEnv(BaseEnv):
     for h in shape_handles:
       self.object_types[h] = shape_type
 
-    self.wait(100)
+    self.wait(50)
     return shape_handles
 
   def getObjects(self):
@@ -444,6 +497,12 @@ class PyBulletEnv(BaseEnv):
       obj_positions.append(obj.getPosition())
     return np.array(obj_positions)
 
+  def _getHoldingObj(self):
+    return self.robot.holding_obj
+
+  def _getHoldingObjType(self):
+    return self.object_types[self._getHoldingObj()] if self.robot.holding_obj else None
+
   def _isHolding(self):
     return self.robot.holding_obj is not None
 
@@ -454,18 +513,14 @@ class PyBulletEnv(BaseEnv):
     return T
 
   def _isObjectHeld(self, obj):
-    if obj in self.objects:
-      block_position = obj.getPosition()
-      rest_pose = self._getRestPoseMatrix()
-      return block_position[2] > rest_pose[2, -1] - 0.25
-    return False
+    return self.robot.holding_obj == obj
 
   def _removeObject(self, obj):
     if obj in self.objects:
-      # pb.removeBody(obj)
-      self._moveObjectOutWorkspace(obj)
-      self.robot.openGripper()
+      pb.removeBody(obj.object_id)
+      # self._moveObjectOutWorkspace(obj)
       self.objects.remove(obj)
+      self.robot.openGripper()
 
   def _moveObjectOutWorkspace(self, obj):
     pos = [-0.50, 0, 0.25]
@@ -484,6 +539,13 @@ class PyBulletEnv(BaseEnv):
           block_position[-1] > obj_position[-1]:
         return False
     return True
+
+  def _isObjOnGround(self, obj):
+    contact_points = obj.getContactPoints()
+    for p in contact_points:
+      if p[2] == self.table_id:
+        return True
+    return False
 
   def _getNumTopBlock(self, blocks=None):
     if not blocks:
@@ -515,7 +577,7 @@ class PyBulletEnv(BaseEnv):
       if i == 0:
         continue
       #TODO: not 100% sure about this
-      if not obj.isTouching(objects[i-1]):
+      if not obj.isTouching(objects[i-1]) or obj.isTouching(PybulletObject(-1, self.table_id)):
         return False
     return True
 
@@ -547,15 +609,15 @@ class PyBulletEnv(BaseEnv):
     angle = min(angle, np.pi / 2 - angle)
     return angle < np.pi / 12
 
-  def _checkObjUpright(self, obj):
+  def _checkObjUpright(self, obj, threshold=np.pi/9):
     triangle_rot = obj.getRotation()
     triangle_rot = pb.getEulerFromQuaternion(triangle_rot)
-    return abs(triangle_rot[0]) < np.pi/9 and abs(triangle_rot[1]) < np.pi/9
+    return abs(triangle_rot[0]) < threshold and abs(triangle_rot[1]) < threshold
 
   def _checkOnTop(self, bottom_obj, top_obj):
     bottom_position = bottom_obj.getPosition()
     top_position = top_obj.getPosition()
-    if top_position[-1] - bottom_position[-1] < 0.9 * self.block_scale_range[0] * self.block_original_size:
+    if top_position[-1] - bottom_position[-1] < 0.5 * self.block_scale_range[0] * self.block_original_size:
       return False
     return top_obj.isTouching(bottom_obj)
 
@@ -602,15 +664,15 @@ class PyBulletEnv(BaseEnv):
         extend = int(0.5*self.max_block_size/self.heightmap_resolution)
     else:
       extend = int(0.5*self.max_block_size/self.heightmap_resolution)
-    local_region = self.heightmap[int(max(y_pixel - extend, 0)):int(min(y_pixel + extend, self.heightmap_size)), \
-                                  int(max(x_pixel - extend, 0)):int(min(x_pixel + extend, self.heightmap_size))]
+    local_region = self.heightmap[int(max(x_pixel - extend, 0)):int(min(x_pixel + extend, self.heightmap_size)), \
+                                  int(max(y_pixel - extend, 0)):int(min(y_pixel + extend, self.heightmap_size))]
     try:
       safe_z_pos = np.max(local_region) + self.workspace[2][0]
     except ValueError:
       safe_z_pos = self.workspace[2][0]
     if motion_primative == constants.PICK_PRIMATIVE:
       safe_z_pos -= self.pick_offset
-      safe_z_pos = max(safe_z_pos, 0.025)
+      safe_z_pos = max(safe_z_pos, 0.02)
     else:
       safe_z_pos += self.place_offset
     return safe_z_pos
@@ -619,7 +681,6 @@ class PyBulletEnv(BaseEnv):
     rot = list(pb.getEulerFromQuaternion(rot))
 
     # TODO: This normalization should be improved
-    rot[2] *= -1
     while rot[2] < 0:
       rot[2] += np.pi
     while rot[2] > np.pi:

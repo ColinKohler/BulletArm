@@ -17,10 +17,10 @@ class HouseBuilding1Planner(BlockStructureBasePlanner):
 
     if not self.isSimValid():
       return 100
-    step_left = 2 * (self.getNumTopBlock() - 1)
+    step_left = 2 * (self.getNumTopBlock(blocks+triangles) - 1)
     if self.isHolding():
       step_left -= 1
-      if self.isObjectHeld(triangles[0]) and self.getNumTopBlock() > 2:
+      if self.isObjectHeld(triangles[0]) and self.getNumTopBlock(blocks+triangles) > 2:
         step_left += 2
     return step_left
 
@@ -32,7 +32,7 @@ class HouseBuilding1Planner(BlockStructureBasePlanner):
       return self.pickSecondTallestObjOnTop(objects=blocks)
     # blocks stacked, pick triangle
     else:
-      return self.pickSecondTallestObjOnTop(objects=triangles, side_grasp=True)
+      return self.pickSecondTallestObjOnTop(objects=triangles)
 
   def getPlacingAction(self):
     blocks = list(filter(lambda x: self.env.object_types[x] == constants.CUBE, self.env.objects))
