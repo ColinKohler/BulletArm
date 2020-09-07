@@ -5,7 +5,7 @@ class Sensor(object):
   def __init__(self, cam_pos, cam_up_vector, target_pos, target_size):
     self.view_matrix = pb.computeViewMatrix(
       cameraEyePosition=cam_pos,
-      cameraUpVector=cam_up_vector
+      cameraUpVector=cam_up_vector,
       cameraTargetPosition=target_pos,
     )
 

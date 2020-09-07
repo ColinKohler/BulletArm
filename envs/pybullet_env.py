@@ -99,8 +99,8 @@ class PyBulletEnv(BaseEnv):
     # Setup camera
     ws_size = workspace[0][1] - workspace[0][0]
     cam_pos = [workspace[0].mean(), workspace[1].mean(), 10]
+    target_pos = [workspace[0].mean(), workspace[1].mean(), 0]
     cam_up_vector = [-1, 0, 0]
-    target_pos = [ws_mx, ws_my, 0]
     self.sensor = Sensor(cam_pos, cam_up_vector, target_pos, ws_size)
 
     # Rest pose for arm
@@ -318,7 +318,7 @@ class PyBulletEnv(BaseEnv):
   def _getObservation(self, action=None):
     ''''''
     old_heightmap = self.heightmap
-    self.heightmap = self.sensor.getHeightmap()
+    self.heightmap = self.sensor.getHeightmap(self.heightmap_size)
 
     if action is None or self._isHolding() == False:
       in_hand_img = self.getEmptyInHand()
