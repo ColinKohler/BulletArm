@@ -11,7 +11,7 @@ plot = True
 render = False
 env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': obs_size, 'action_sequence': 'pxy',
               'num_objects': 2, 'render': render, 'fast_mode': True, 'simulate_grasps': False, 'robot': 'kuka', 'seed':10}
-planner_config = {'pick_noise': [0.000, 0.015], 'place_noise': [0.000, 0.000], 'rand_pick_prob': 0.0, 'rand_place_prob': 0.0, 'planner_res': 3}
+planner_config = {'pick_noise': [0.0, 0.0], 'place_noise': [0.0, 0.0], 'rand_pick_prob': 0.0, 'rand_place_prob': 0.0, 'planner_res': 3, 'planner_type': 'play'}
 envs = env_factory.createEnvs(1, 'data', 'pybullet', 'house_building_1', env_config, planner_config=planner_config)
 heightmap_resolution = (workspace[0,1] - workspace[0,0]) / obs_size
 
@@ -30,6 +30,8 @@ for sim in range(100):
     state_, hand_obs_, obs_, reward, done, valid = envs.step(action)
     x_pix = (action[0,2].item() - workspace[1][0]) / heightmap_resolution
     y_pix = (action[0,1].item() - workspace[0][0]) / heightmap_resolution
+
+    print(envs.getStepsLeft())
 
     if plot:
       fig, ax = plt.subplots(nrows=1, ncols=4)

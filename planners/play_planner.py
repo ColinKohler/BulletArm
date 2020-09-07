@@ -2,9 +2,10 @@ import numpy as np
 import numpy.random as npr
 
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
+from helping_hands_rl_envs.planners.block_structure_base_planner import BlockStructureBasePlanner
 from helping_hands_rl_envs.simulators import constants
 
-class PlayPlanner(BasePlanner):
+class PlayPlanner(BlockStructureBasePlanner):
   def __init__(self, env, config):
     super(PlayPlanner, self).__init__(env, config)
 
@@ -29,11 +30,37 @@ class PlayPlanner(BasePlanner):
 
     return self.encodeAction(primative, x, y, z, r)
 
-  # TODO: This is for block stacking so its weird to have this here
   def getStepsLeft(self):
+    blocks = list(filter(lambda x: self.env.object_types[x] == constants.CUBE, self.env.objects))
+    triangles = list(filter(lambda x: self.env.object_types[x] == constants.TRIANGLE, self.env.objects))
+
     if not self.isSimValid():
       return 100
-    step_left = 2 * (self.getNumTopBlock() - 1)
+    if self.checkTermination():
+      return 0
+
+    triangleOnTop = any([self.checkOnTopOf(block, triangles[0]) for block in blocks])
+    if self.getNumTopBlock(blocks+triangles) > 1 and triangleOnTop:
+      if any([self.isObjectHeld(block) for block in blocks]):
+        steps_left = 6
+      else:
+        steps_left = 4
+    else:
+      steps_left = 0
+
+    steps_left += 2 * (self.getNumTopBlock(blocks+triangles) - 1)
     if self.isHolding():
-      step_left -= 1
-    return step_left
+      steps_left -= 1
+      if self.isObjectHeld(triangles[0]) and self.getNumTopBlock(blocks+triangles) > 2:
+        steps_left += 2
+
+    return steps_left
+
+  # TODO: This is for block stacking so its weird to have this here
+  # def getStepsLeft(self):
+  #   if not self.isSimValid():
+  #     return 100
+  #   step_left = 2 * (self.getNumTopBlock() - 1)
+  #   if self.isHolding():
+  #     step_left -= 1
+  #   return step_left
