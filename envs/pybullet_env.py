@@ -9,11 +9,12 @@ import pybullet_data
 
 from helping_hands_rl_envs.envs.base_env import BaseEnv
 from helping_hands_rl_envs.simulators.pybullet.robots.ur5_simple import UR5_Simple
-from helping_hands_rl_envs.simulators.pybullet.robots.kuka import Kuka
 from helping_hands_rl_envs.simulators.pybullet.robots.ur5_robotiq import UR5_Robotiq
+from helping_hands_rl_envs.simulators.pybullet.robots.kuka import Kuka
+from helping_hands_rl_envs.simulators.pybullet.utils.sensor import Sensor
+from helping_hands_rl_envs.simulators.pybullet.objects.pybullet_object import PybulletObject
 import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
 from helping_hands_rl_envs.simulators import constants
-from helping_hands_rl_envs.simulators.pybullet.objects.pybullet_object import PybulletObject
 
 import pickle
 import os
@@ -95,36 +96,12 @@ class PyBulletEnv(BaseEnv):
     self.place_pre_offset = 0.10
     self.place_offset = self.block_scale_range[1]*self.block_original_size
 
-    # Setup camera parameters
-    ws_mx = workspace[0].mean()
-    ws_my = workspace[1].mean()
-    ws_size = (workspace[0][1] - workspace[0][0])
-    # diam = ws_size / 2.
-    # cam_z = 10. + diam
-    cam_z = 10
-    self.view_matrix = pb.computeViewMatrix(
-      cameraEyePosition=[ws_mx, ws_my, cam_z],
-      cameraTargetPosition=[ws_mx, ws_my, 0],
-      cameraUpVector=[-1, 0, 0]
-    )
-
-    # left = -diam
-    # right = diam
-    # bottom = -diam
-    # top = diam
-    # self.near = 10.0
-    # self.far = self.near+diam
-    self.near = 9
-    self.far = 10
-    self.fov = np.degrees(2 * np.arctan((ws_size / 2) / self.far))
-    self.proj_matrix = pb.computeProjectionMatrixFOV(self.fov, 1, self.near, self.far)
-    # self.proj_matrix = pb.computeProjectionMatrix(left, right, bottom, top, self.near, self.far)
-    # self.proj_matrix = np.array([[2/(right-left), 0,              0,                         -((right+left)/(right-left))],
-    #                              [0,              2/(top-bottom), 0,                         -((top+bottom)/(top-bottom))],
-    #                              [0,              0,              -(2/(self.far-self.near)), -((self.far+self.near)/(self.far-self.near))],
-    #                              [0,              0,              0,                          1]])
-    # self.proj_matrix = tuple(self.proj_matrix.T.reshape(-1))
-    # print(np.array(self.proj_matrix).reshape(4,4).T)
+    # Setup camera
+    ws_size = workspace[0][1] - workspace[0][0]
+    cam_pos = [workspace[0].mean(), workspace[1].mean(), 10]
+    cam_up_vector = [-1, 0, 0]
+    target_pos = [ws_mx, ws_my, 0]
+    self.sensor = Sensor(cam_pos, cam_up_vector, target_pos, ws_size)
 
     # Rest pose for arm
     rot = pb.getQuaternionFromEuler([0, np.pi, 0])
@@ -338,24 +315,16 @@ class PyBulletEnv(BaseEnv):
            self.workspace[1][0] < p[1] < self.workspace[1][1] and \
            self.workspace[2][0] < p[2] < self.workspace[2][1]
 
-  def _getHeightmap(self):
-    image_arr = pb.getCameraImage(width=self.heightmap_size, height=self.heightmap_size,
-                                  viewMatrix=self.view_matrix, projectionMatrix=self.proj_matrix, renderer=pb.ER_TINY_RENDERER)
-    depthImg = image_arr[3]
-    depth = self.far * self.near / (self.far - (self.far - self.near) * depthImg)
-    return np.abs(depth - np.max(depth))
-
   def _getObservation(self, action=None):
     ''''''
     old_heightmap = self.heightmap
-    self.heightmap = self._getHeightmap()
+    self.heightmap = self.sensor.getHeightmap()
 
     if action is None or self._isHolding() == False:
       in_hand_img = self.getEmptyInHand()
     else:
       motion_primative, x, y, z, rot = self._decodeAction(action)
       in_hand_img = self.getInHandImage(old_heightmap, x, y, z, rot, self.heightmap)
-
 
     return self._isHolding(), in_hand_img, self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
