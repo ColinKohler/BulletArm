@@ -9,7 +9,6 @@ from helping_hands_rl_envs.envs.block_stacking_env import createBlockStackingEnv
 from helping_hands_rl_envs.envs.block_adjacent_env import createBlockAdjacentEnv
 from helping_hands_rl_envs.envs.brick_stacking_env import createBrickStackingEnv
 from helping_hands_rl_envs.envs.pyramid_stacking_env import createPyramidStackingEnv
-from helping_hands_rl_envs.envs.block_cylinder_stacking_env import createBlockCylinderStackingEnv
 from helping_hands_rl_envs.envs.house_building_1_env import createHouseBuilding1Env
 from helping_hands_rl_envs.envs.house_building_2_env import createHouseBuilding2Env
 from helping_hands_rl_envs.envs.house_building_3_env import createHouseBuilding3Env
@@ -41,8 +40,6 @@ def getEnvFunction(env_type):
     return createBrickStackingEnv
   elif env_type == 'pyramid_stacking':
     return createPyramidStackingEnv
-  elif env_type == 'block_cylinder_stacking':
-    return createBlockCylinderStackingEnv
   elif env_type == 'house_building_1':
     return createHouseBuilding1Env
   elif env_type == 'house_building_2':
