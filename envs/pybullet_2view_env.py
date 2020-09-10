@@ -31,10 +31,6 @@ class PyBullet2ViewEnv(PyBulletEnv):
       farVal=far + 0.01)
     self.wall_id = None
 
-    self.drawer = Drawer()
-    self.drawer2 = Drawer()
-
-
   def reset(self):
     super().reset()
     if self.wall_id:
@@ -43,16 +39,10 @@ class PyBullet2ViewEnv(PyBulletEnv):
     urdf_filepath = os.path.join(root_dir, 'simulators/urdf/', 'wall.urdf')
     self.wall_id = pb.loadURDF(urdf_filepath,
                                      [self.wall_x,
-                                      workspace[1].mean(),
+                                      self.workspace[1].mean(),
                                       0],
                                      pb.getQuaternionFromEuler([0, 0, 0]),
                                      globalScaling=1)
-
-    self.drawer.remove()
-    self.drawer2.remove()
-    self.drawer.initialize((self.workspace[0][1]+0.11, 0, 0), pb.getQuaternionFromEuler((0, 0, 0)))
-    self.drawer2.initialize((self.workspace[0][1]+0.11, 0, 0.18), pb.getQuaternionFromEuler((0, 0, 0)))
-
     return self._getObservation()
 
 
@@ -84,23 +74,3 @@ class PyBullet2ViewEnv(PyBulletEnv):
 
     return self._isHolding(), in_hand_img, heightmaps
 
-  def test(self):
-    handle1_pos = self.drawer.getHandlePosition()
-    handle2_pos = self.drawer2.getHandlePosition()
-    rot = pb.getQuaternionFromEuler((0, -np.pi/2, 0))
-    self.robot.pull(handle1_pos, rot, 0.2)
-    self.robot.pull(handle2_pos, rot, 0.2)
-
-
-if __name__ == '__main__':
-  workspace = np.asarray([[0.3, 0.7],
-                          [-0.2, 0.2],
-                          [0, 0.40]])
-  env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 128, 'render': True, 'fast_mode': True,
-                'seed': 0, 'action_sequence': 'pxyrr', 'num_objects': 5, 'random_orientation': False,
-                'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
-                'workspace_check': 'point'}
-  env = PyBullet2ViewEnv(env_config)
-  while True:
-    s, in_hand, obs = env.reset()
-    env.test()
