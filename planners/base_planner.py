@@ -14,11 +14,11 @@ class BasePlanner(object):
   def getNextAction(self):
     raise NotImplemented('Planners must implement this function')
 
-  def getStepsLeft(self):
+  def getStepLeft(self):
     raise NotImplemented('Planners must implement this function')
 
   def getValue(self):
-    return self.gamma**self.getStepsLeft()
+    return self.gamma**self.getStepLeft()
 
   def addNoiseToPos(self, x, y):
     # TODO: Would we ever want to include noise on the z-axis here?
@@ -41,7 +41,7 @@ class BasePlanner(object):
     if obj_type is not None:
       return list(filter(lambda x: self.env.object_types[x] == obj_type, self.env.objects))
     else:
-      return list(filter(lambda x: not self.isObjectHeld(x), self.env.objects))
+      return self.env.objects
 
   def getObjectsOnTopOf(self, bottom_obj):
     return list(filter(lambda x: self.checkOnTopOf(bottom_obj, x), self.getObjects()))

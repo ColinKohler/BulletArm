@@ -15,7 +15,7 @@ class BlockStackingPlanner(BlockStructureBasePlanner):
   def getPlacingAction(self):
     return self.placeOnHighestObj()
 
-  def getStepsLeft(self):
+  def getStepLeft(self):
     if not self.isSimValid():
       return 100
     step_left = 2 * (self.getNumTopBlock() - 1)
