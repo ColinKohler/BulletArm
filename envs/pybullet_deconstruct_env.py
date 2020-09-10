@@ -206,6 +206,7 @@ class PyBulletDeconstructEnv(PyBulletEnv):
     self.objects.append(handle)
     self.object_types[handle] = obj_type
     self.structure_objs.append(handle)
+    return handle
 
   def generateH4(self):
     padding = self.max_block_size * 1.5
