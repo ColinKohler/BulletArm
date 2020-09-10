@@ -7,6 +7,7 @@ from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.envs.block_picking_env import createBlockPickingEnv
 from helping_hands_rl_envs.envs.block_stacking_env import createBlockStackingEnv
 from helping_hands_rl_envs.envs.brick_stacking_env import createBrickStackingEnv
+from helping_hands_rl_envs.envs.pyramid_stacking_env import createPyramidStackingEnv
 from helping_hands_rl_envs.envs.block_cylinder_stacking_env import createBlockCylinderStackingEnv
 from helping_hands_rl_envs.envs.house_building_1_env import createHouseBuilding1Env
 from helping_hands_rl_envs.envs.house_building_2_env import createHouseBuilding2Env
@@ -68,6 +69,8 @@ def createEnvs(num_processes, runner_type, simulator, env_type, env_config, plan
     envs = [createBlockStackingEnv(parent_env, env_configs[i]) for i in range(num_processes)]
   elif env_type == 'brick_stacking':
     envs = [createBrickStackingEnv(parent_env, env_configs[i]) for i in range(num_processes)]
+  elif env_type == 'pyramid_stacking':
+    envs = [createPyramidStackingEnv(parent_env, env_configs[i]) for i in range(num_processes)]
   elif env_type == 'block_cylinder_stacking':
     envs = [createBlockCylinderStackingEnv(parent_env, env_configs[i]) for i in range(num_processes)]
   elif env_type == 'house_building_1':

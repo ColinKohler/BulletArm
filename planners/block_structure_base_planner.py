@@ -16,12 +16,12 @@ class BlockStructureBasePlanner(BasePlanner):
   def getNextAction(self):
     if self.isHolding():
       if npr.rand() < self.rand_pick_prob:
-        return self.getRandomPickingAction()
+        return self.getRandomPlacingAction()
       else:
         return self.getPlacingAction()
     else:
       if npr.rand() < self.rand_place_prob:
-        return self.getRandomPlacingAction()
+        return self.getRandomPickingAction()
       else:
         return self.getPickingAction()
 
@@ -33,8 +33,8 @@ class BlockStructureBasePlanner(BasePlanner):
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
   def getRandomPlacingAction(self):
-    x = npr.uniform(self.env.workspace[0, 0], self.env.workspace[0, 1])
-    y = npr.uniform(self.env.workspace[1, 0], self.env.workspace[1, 1])
+    x = npr.uniform(self.env.workspace[0, 0] + 0.025, self.env.workspace[0, 1] - 0.025)
+    y = npr.uniform(self.env.workspace[1, 0] + 0.025, self.env.workspace[1, 1] - 0.025)
     z = 0.
     r = npr.uniform(0., np.pi)
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
@@ -259,3 +259,7 @@ class BlockStructureBasePlanner(BasePlanner):
     objects = objects[sorted_inds]
     object_poses = object_poses[sorted_inds]
     return objects, object_poses
+
+  def isAdjacent(self, obj_1, obj_2):
+    return np.allclose(obj_1.getZPosition(), obj_2.getZPosition(), atol=0.01) and \
+           self.getDistance(obj_1, obj_2) < 2.0 * self.getMaxBlockSize()

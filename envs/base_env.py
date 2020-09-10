@@ -205,38 +205,14 @@ class BaseEnv(object):
     y_max = int(y + self.in_hand_size / 2)
 
     # Crop both heightmaps
-    crop = heightmap[x_min:x_max, y_min:y_max]
-    if self.in_hand_mode.find('sub') > -1:
-      next_crop = next_heightmap[x_min:x_max, y_min:y_max]
+    crop = heightmap[y_min:y_max, x_min:x_max]
+    next_crop = next_heightmap[y_min:y_max, x_min:x_max]
 
-      # Adjust the in-hand image to remove background objects
-      next_max = np.max(next_crop)
-      crop[crop >= next_max] -= next_max
+    # Adjust the in-hand image to remove background objects
+    next_max = np.max(next_crop)
+    crop[crop >= next_max] -= next_max
 
     # end_effector rotate counter clockwise along z, so in hand img rotate clockwise
-    crop = sk_transform.rotate(crop, np.rad2deg(-rot))
-
-    if self.in_hand_mode.find('proj') > -1:
-      return self.getInHandOccupancyGridProj(crop, z, rot)
-    else:
-      return crop.reshape((self.in_hand_size, self.in_hand_size, 1))
-
-  def getInHandOccupancyGridProj(self, crop, z, rot):
-    crop = np.round(crop, 5)
-
-    zs = np.array([z+(self.in_hand_size/2-i)*self.heightmap_resolution for i in range(self.in_hand_size)])
-    zs = zs.reshape((-1, 1, 1))
-    zs = zs.repeat(self.in_hand_size, 1).repeat(self.in_hand_size, 2)
-    zs[zs<-self.heightmap_resolution] = 100
-    c = crop.reshape(1, self.in_hand_size, self.in_hand_size).repeat(self.in_hand_size, 0)
-    occupancy = c > zs
-
-    projection = np.stack((occupancy.sum(0), occupancy.sum(1), occupancy.sum(2)))
-    projection = np.rollaxis(projection, 0, 3)
-    return projection
-
-  def getEmptyInHand(self):
-    if self.in_hand_mode.find('proj') > -1:
-      return np.zeros((self.in_hand_size, self.in_hand_size, 3))
-    else:
-      return np.zeros((self.in_hand_size, self.in_hand_size, 1))
+    # crop = sk_transform.rotate(crop, np.rad2deg(-rot))
+    crop = sk_transform.rotate(crop, rot)
+    return crop.reshape((self.in_hand_size, self.in_hand_size, 1))

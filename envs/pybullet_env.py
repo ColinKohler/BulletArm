@@ -241,12 +241,13 @@ class PyBulletEnv(BaseEnv):
 
     # Get transform for action
     pos = [x, y, z]
+    rot_q = pb.getQuaternionFromEuler([0, np.pi, -rot])
     # [-pi, 0] is easier for the arm(kuka) to execute
-    while rot < -np.pi:
-      rot += np.pi
-    while rot > 0:
-      rot -= np.pi
-    rot_q = pb.getQuaternionFromEuler([0, np.pi, rot])
+    # while rot < -np.pi:
+    #   rot += np.pi
+    # while rot > 0:
+    #   rot -= np.pi
+    # rot_q = pb.getQuaternionFromEuler([0, np.pi, rot])
 
     # Take action specfied by motion primative
     if motion_primative == constants.PICK_PRIMATIVE:
@@ -323,7 +324,10 @@ class PyBulletEnv(BaseEnv):
   def _getObservation(self, action=None):
     ''''''
     old_heightmap = self.heightmap
-    self.heightmap = self._getHeightmap()
+    image_arr = pb.getCameraImage(width=self.heightmap_size, height=self.heightmap_size,
+                                  viewMatrix=self.view_matrix, projectionMatrix=self.proj_matrix)
+    self.heightmap = image_arr[3] - np.min(image_arr[3])
+    self.heightmap = self.heightmap.T
 
     if action is None or self._isHolding() == False:
       in_hand_img = self.getEmptyInHand()
@@ -411,7 +415,8 @@ class PyBulletEnv(BaseEnv):
       if random_orientation:
         orientation = pb.getQuaternionFromEuler([0., 0., 2*np.pi*np.random.random_sample()])
       else:
-        orientation = pb.getQuaternionFromEuler([0., 0., 0])
+        orientation = pb.getQuaternionFromEuler([0., 0., 0.])
+
       if not scale:
         scale = npr.uniform(self.block_scale_range[0], self.block_scale_range[1])
 
@@ -591,6 +596,15 @@ class PyBulletEnv(BaseEnv):
       return False
     return top_obj.isTouching(bottom_obj)
 
+  def _getDistance(self, obj1, obj2):
+    position1 = obj1.getPosition()
+    position2 = obj2.getPosition()
+    return np.linalg.norm(np.array(position1) - np.array(position2))
+
+  def _checkAdjacent(self, obj_1, obj_2):
+    return np.allclose(obj_1.getZPosition(), obj_2.getZPosition(), atol=0.01) and \
+           self._getDistance(obj_1, obj_2) < 2.2 * self.max_block_size
+
   def _checkInBetween(self, obj0, obj1, obj2, threshold=None):
     if not threshold:
       threshold = self.max_block_size
@@ -625,8 +639,8 @@ class PyBulletEnv(BaseEnv):
         extend = int(0.5*self.max_block_size/self.heightmap_resolution)
     else:
       extend = int(0.5*self.max_block_size/self.heightmap_resolution)
-    local_region = self.heightmap[int(max(x_pixel - extend, 0)):int(min(x_pixel + extend, self.heightmap_size)), \
-                                  int(max(y_pixel - extend, 0)):int(min(y_pixel + extend, self.heightmap_size))]
+    local_region = self.heightmap[int(max(y_pixel - extend, 0)):int(min(y_pixel + extend, self.heightmap_size)), \
+                                  int(max(x_pixel - extend, 0)):int(min(x_pixel + extend, self.heightmap_size))]
     try:
       safe_z_pos = np.max(local_region) + self.workspace[2][0]
     except ValueError:
@@ -642,6 +656,7 @@ class PyBulletEnv(BaseEnv):
     rot = list(pb.getEulerFromQuaternion(rot))
 
     # TODO: This normalization should be improved
+    rot[2] *= -1
     while rot[2] < 0:
       rot[2] += np.pi
     while rot[2] > np.pi:
