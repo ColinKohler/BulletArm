@@ -62,22 +62,22 @@ class RobotBase:
     self.openGripper()
     pre_pos = copy.copy(pos)
     pre_pos[2] += offset
-    # rot = pb.getQuaternionFromEuler([np.pi/2.,-np.pi,np.pi/2])
     pre_rot = rot
 
     # Move to pre-grasp pose and then grasp pose
     self.moveTo(pre_pos, pre_rot, dynamic)
     if simulate_grasp:
       self.moveTo(pos, rot, True, pos_th=1e-3, rot_th=1e-3)
+
       # Grasp object and lift up to pre pose
       gripper_fully_closed = self.closeGripper()
+      self.adjustGripperCommand()
       if gripper_fully_closed:
         self.openGripper()
-        self.moveTo(pre_pos, pre_rot, dynamic)
-      else:
-        self.adjustGripperCommand()
-        for i in range(10):
-          pb.stepSimulation()
+
+      self.moveTo(pre_pos, pre_rot, True)
+      for i in range(10):
+        pb.stepSimulation()
     else:
       self.moveTo(pos, rot, dynamic)
 

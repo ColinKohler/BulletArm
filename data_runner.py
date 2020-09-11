@@ -34,12 +34,16 @@ def worker(remote, parent_remote, env_fn, planner_fn):
         break
       elif cmd == 'get_next_action':
         remote.send(planner.getNextAction())
+      elif cmd == 'are_objects_in_workspace':
+        remote.send(env.areObjectsInWorkspace())
       elif cmd == 'did_block_fall':
         remote.send(env.didBlockFall())
       elif cmd == 'get_value':
         remote.send(planner.getValue())
       elif cmd == 'get_steps_left':
         remote.send(planner.getStepsLeft())
+      elif cmd == 'get_env_id':
+        remote.send(env.active_env_id)
       else:
         raise NotImplementedError
   except KeyboardInterrupt:
@@ -165,6 +169,13 @@ class MultiDataRunner(object):
     action = torch.from_numpy(np.stack(action)).float()
     return action
 
+  def areObjectsInWorkspace(self):
+    for remote in self.remotes:
+      remote.send(('are_objects_in_workspace', None))
+    valid_workspace = [remote.recv() for remote in self.remotes]
+    valid_workspace = torch.from_numpy(np.stack(valid_workspace)).float()
+    return valid_workspace
+
   def getStepsLeft(self):
     for remote in self.remotes:
       remote.send(('get_steps_left', None))
@@ -213,6 +224,9 @@ class SingleDataRunner(object):
 
   def getStepsLeft(self):
     return self.planner.getStepsLeft()
+
+  def areObjectsInWorkspace(self):
+    return self.planner.areObjectsInWorkspace()
 
   def getValue(self):
     return self.planner.getValue()

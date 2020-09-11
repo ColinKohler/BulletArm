@@ -286,6 +286,19 @@ class PyBulletEnv(BaseEnv):
           return False
     return True
 
+  def areObjectsInWorkspace(self):
+    for obj in self.objects:
+      if self._isObjectHeld(obj):
+        continue
+      p = obj.getPosition()
+      if self.workspace_check == 'point':
+        if not self._isPointInWorkspace(p):
+          return False
+      else:
+        if not self._isObjectWithinWorkspace(obj):
+          return False
+    return True
+
   def wait(self, iteration):
     # if not self.simulate_grasp and self._isHolding():
     #   return

@@ -27,7 +27,6 @@ def createMultiTaskEnv(simulator_base_env, configs):
           raise ValueError('Env type not implemented in Multi-task env.')
 
       self.active_env_id = 0
-      # TODO: This second env type list is probably not needed
       self.active_env = self.envs[self.active_env_id]
 
     def step(self, action):
