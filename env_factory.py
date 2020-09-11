@@ -14,11 +14,13 @@ from helping_hands_rl_envs.envs.house_building_2_env import createHouseBuilding2
 from helping_hands_rl_envs.envs.house_building_3_env import createHouseBuilding3Env
 from helping_hands_rl_envs.envs.house_building_4_env import createHouseBuilding4Env
 from helping_hands_rl_envs.envs.house_building_5_env import createHouseBuilding5Env
+from helping_hands_rl_envs.envs.house_building_x_env import createHouseBuildingXEnv
 from helping_hands_rl_envs.envs.improvise_house_building_2_env import createImproviseHouseBuilding2Env
 from helping_hands_rl_envs.envs.improvise_house_building_3_env import createImproviseHouseBuilding3Env
 from helping_hands_rl_envs.envs.improvise_house_building_4_env import createImproviseHouseBuilding4Env
 from helping_hands_rl_envs.envs.house_building_1_deconstruct_env import createHouseBuilding1DeconstructEnv
 from helping_hands_rl_envs.envs.house_building_4_deconstruct_env import createHouseBuilding4DeconstructEnv
+from helping_hands_rl_envs.envs.house_building_x_deconstruct_env import createHouseBuildingXDeconstructEnv
 from helping_hands_rl_envs.envs.improvise_house_building_3_deconstruct_env import createImproviseHouseBuilding3DeconstructEnv
 from helping_hands_rl_envs.envs.improvise_house_building_4_deconstruct_env import createImproviseHouseBuilding4DeconstructEnv
 from helping_hands_rl_envs.envs.random_picking_env import createRandomPickingEnv
@@ -50,6 +52,8 @@ def getEnvFunction(env_type):
     return createHouseBuilding4Env
   elif env_type == 'house_building_5':
     return createHouseBuilding5Env
+  elif env_type == 'house_building_x':
+    return createHouseBuildingXEnv
   elif env_type == 'improvise_house_building_2':
     return createImproviseHouseBuilding2Env
   elif env_type == 'improvise_house_building_3':
@@ -60,6 +64,8 @@ def getEnvFunction(env_type):
     return createHouseBuilding1DeconstructEnv
   elif env_type == 'house_building_4_deconstruct':
     return createHouseBuilding4DeconstructEnv
+  elif env_type == 'house_building_x_deconstruct':
+    return createHouseBuildingXDeconstructEnv
   elif env_type == 'improvise_house_building_3_deconstruct':
     return createImproviseHouseBuilding3DeconstructEnv
   elif env_type == 'improvise_house_building_4_deconstruct':

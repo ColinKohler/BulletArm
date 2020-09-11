@@ -22,12 +22,15 @@ def worker(remote, parent_remote, env_fn, planner_fn):
     while True:
       cmd, data = remote.recv()
       if cmd == 'step':
-        obs, reward, done = env.step(data)
-        remote.send((obs, reward, done))
+        res = env.step(data)
+        remote.send(res)
       elif cmd == 'step_auto_reset':
-        obs, reward, done = env.step(data)
-        if done: obs = env.reset()
-        remote.send((obs, reward, done))
+        res = env.step(data)
+        done = res[2]
+        if done:
+          # get observation after reset (res index 0), the rest stays the same
+          res = (env.reset(), *res[1:])
+        remote.send(res)
       elif cmd == 'reset':
         obs = env.reset()
         remote.send(obs)
@@ -143,7 +146,16 @@ class RLRunner(object):
     results = [remote.recv() for remote in self.remotes]
     self.waiting = False
 
-    obs, rewards, dones = zip(*results)
+    res = tuple(zip(*results))
+
+    if len(res) == 3:
+      return_metadata = False
+      metadata = None
+      obs, rewards, dones = res
+    else:
+      return_metadata = True
+      obs, rewards, dones, metadata = res
+
     states, hand_obs, depths = zip(*obs)
 
     states = torch.from_numpy(np.stack(states).astype(float)).float()
@@ -154,7 +166,10 @@ class RLRunner(object):
       rewards = rewards.unsqueeze(1)
     dones = torch.from_numpy(np.stack(dones).astype(np.float32)).float()
 
-    return states, hand_obs, depths, rewards, dones
+    if return_metadata:
+      return states, hand_obs, depths, rewards, dones, metadata
+    else:
+      return states, hand_obs, depths, rewards, dones
 
   def reset(self):
     '''

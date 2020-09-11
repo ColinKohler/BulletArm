@@ -331,7 +331,7 @@ class PyBulletEnv(BaseEnv):
   def _getObservation(self, action=None):
     ''''''
     old_heightmap = self.heightmap
-    self.heightmap = self.sensor.getHeightmap(self.heightmap_size)
+    self.heightmap = self._getHeightmap()
 
     if action is None or self._isHolding() == False:
       in_hand_img = self.getEmptyInHand()
@@ -340,6 +340,10 @@ class PyBulletEnv(BaseEnv):
       in_hand_img = self.getInHandImage(old_heightmap, x, y, z, rot, self.heightmap)
 
     return self._isHolding(), in_hand_img, self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
+
+  def _getHeightmap(self):
+
+    return self.sensor.getHeightmap(self.heightmap_size)
 
   def _getValidPositions(self, border_padding, min_distance, existing_positions, num_shapes, sample_range=None):
     existing_positions_copy = copy.deepcopy(existing_positions)
