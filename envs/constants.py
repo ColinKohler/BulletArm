@@ -38,7 +38,7 @@ CREATE_ENV_FNS = {
   'improvise_house_building_4' : createImproviseHouseBuilding4Env,
   'house_building_1_deconstruct' : createHouseBuilding1DeconstructEnv,
   'house_building_4_deconstruct' : createHouseBuilding4DeconstructEnv,
-  'house_building_x_deconstruct' : createHouseBuildingXDeconstructEnv
+  'house_building_x_deconstruct' : createHouseBuildingXDeconstructEnv,
   'improvise_house_building_3_deconstruct' : createImproviseHouseBuilding3DeconstructEnv,
   'improvise_house_building_4_deconstruct' : createImproviseHouseBuilding4DeconstructEnv,
   'random_picking' : createRandomPickingEnv,
