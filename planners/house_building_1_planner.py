@@ -17,12 +17,25 @@ class HouseBuilding1Planner(BlockStructureBasePlanner):
 
     if not self.isSimValid():
       return 100
-    step_left = 2 * (self.getNumTopBlock(blocks+triangles) - 1)
+    if self.checkTermination():
+      return 0
+
+    triangleOnTop = any([self.checkOnTopOf(block, triangles[0]) for block in blocks])
+    if self.getNumTopBlock(blocks+triangles) > 1 and triangleOnTop:
+      if any([self.isObjectHeld(block) for block in blocks]):
+        steps_left = 6
+      else:
+        steps_left = 4
+    else:
+      steps_left = 0
+
+    steps_left += 2 * (self.getNumTopBlock(blocks+triangles) - 1)
     if self.isHolding():
-      step_left -= 1
+      steps_left -= 1
       if self.isObjectHeld(triangles[0]) and self.getNumTopBlock(blocks+triangles) > 2:
-        step_left += 2
-    return step_left
+        steps_left += 2
+
+    return steps_left
 
   def getPickingAction(self):
     blocks = list(filter(lambda x: self.env.object_types[x] == constants.CUBE, self.env.objects))
