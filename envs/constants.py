@@ -8,11 +8,13 @@ from helping_hands_rl_envs.envs.house_building_2_env import createHouseBuilding2
 from helping_hands_rl_envs.envs.house_building_3_env import createHouseBuilding3Env
 from helping_hands_rl_envs.envs.house_building_4_env import createHouseBuilding4Env
 from helping_hands_rl_envs.envs.house_building_5_env import createHouseBuilding5Env
+from helping_hands_rl_envs.envs.house_building_x_env import createHouseBuildingXEnv
 from helping_hands_rl_envs.envs.improvise_house_building_2_env import createImproviseHouseBuilding2Env
 from helping_hands_rl_envs.envs.improvise_house_building_3_env import createImproviseHouseBuilding3Env
 from helping_hands_rl_envs.envs.improvise_house_building_4_env import createImproviseHouseBuilding4Env
 from helping_hands_rl_envs.envs.house_building_1_deconstruct_env import createHouseBuilding1DeconstructEnv
 from helping_hands_rl_envs.envs.house_building_4_deconstruct_env import createHouseBuilding4DeconstructEnv
+from helping_hands_rl_envs.envs.house_building_x_deconstruct_env import createHouseBuildingXDeconstructEnv
 from helping_hands_rl_envs.envs.improvise_house_building_3_deconstruct_env import createImproviseHouseBuilding3DeconstructEnv
 from helping_hands_rl_envs.envs.improvise_house_building_4_deconstruct_env import createImproviseHouseBuilding4DeconstructEnv
 from helping_hands_rl_envs.envs.random_picking_env import createRandomPickingEnv
@@ -30,11 +32,13 @@ CREATE_ENV_FNS = {
   'house_building_3' : createHouseBuilding3Env,
   'house_building_4' : createHouseBuilding4Env,
   'house_building_5' : createHouseBuilding5Env,
+  'house_buliding_x' : createHouseBuildingXEnv,
   'improvise_house_building_2' : createImproviseHouseBuilding2Env,
   'improvise_house_building_3' : createImproviseHouseBuilding3Env,
   'improvise_house_building_4' : createImproviseHouseBuilding4Env,
   'house_building_1_deconstruct' : createHouseBuilding1DeconstructEnv,
   'house_building_4_deconstruct' : createHouseBuilding4DeconstructEnv,
+  'house_building_x_deconstruct' : createHouseBuildingXDeconstructEnv
   'improvise_house_building_3_deconstruct' : createImproviseHouseBuilding3DeconstructEnv,
   'improvise_house_building_4_deconstruct' : createImproviseHouseBuilding4DeconstructEnv,
   'random_picking' : createRandomPickingEnv,

@@ -342,7 +342,6 @@ class PyBulletEnv(BaseEnv):
     return self._isHolding(), in_hand_img, self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
   def _getHeightmap(self):
-
     return self.sensor.getHeightmap(self.heightmap_size)
 
   def _getValidPositions(self, border_padding, min_distance, existing_positions, num_shapes, sample_range=None):
