@@ -124,7 +124,7 @@ def createMultiprocessEnvs(num_processes, runner_type, simulator, env_type, env_
     raise ValueError('Invalid simulator passed to factory. Valid simulators are: \'numpy\', \'pybullet\'.')
 
   # Create the various environments
-  env_func = getEnvFunction(env_type)
+  env_func = getEnvFn(env_type)
   envs = [env_func(parent_env, env_configs[i]) for i in range(num_processes)]
 
   if 'planner_type' in planner_config:
