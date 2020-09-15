@@ -252,10 +252,11 @@ class PyBulletEnv(BaseEnv):
 
     # Take action specfied by motion primative
     if motion_primative == constants.PICK_PRIMATIVE:
-      if self.perfect_grasp and not self._checkPerfectGrasp(x, y, z, rot, self.objects):
-        return
-      self.robot.pick(pos, rot_q, self.pick_pre_offset, dynamic=self.dynamic,
-                      objects=self.objects, simulate_grasp=self.simulate_grasp)
+      if self.robot.holding_obj is None:
+        if self.perfect_grasp and not self._checkPerfectGrasp(x, y, z, rot, self.objects):
+          return
+        self.robot.pick(pos, rot_q, self.pick_pre_offset, dynamic=self.dynamic,
+                        objects=self.objects, simulate_grasp=self.simulate_grasp)
     elif motion_primative == constants.PLACE_PRIMATIVE:
       obj = self.robot.holding_obj
       if self.robot.holding_obj is not None:
