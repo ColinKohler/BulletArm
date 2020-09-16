@@ -1,19 +1,14 @@
 from copy import deepcopy
 import numpy as np
-from helping_hands_rl_envs.envs.numpy_env import NumpyEnv
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 
-def createBlockPickingEnv(simulator_base_env, config):
-  class BlockPickingEnv(simulator_base_env):
-    ''''''
+def createBlockPickingEnv(config):
+  class BlockPickingEnv(PyBulletEnV):
+    '''
 
+    '''
     def __init__(self, config):
-      if simulator_base_env is NumpyEnv:
-        super().__init__(config)
-      elif simulator_base_env is PyBulletEnv:
-        super().__init__(config)
-      else:
-        raise ValueError('Bad simulator base env specified.')
+      super(BlockPickingEnv, self).__init__(config)
       self.simulator_base_env = simulator_base_env
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1

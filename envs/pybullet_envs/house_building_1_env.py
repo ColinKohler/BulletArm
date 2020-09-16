@@ -1,16 +1,13 @@
 from copy import deepcopy
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 
-def createHouseBuilding1Env(simulator_base_env, config):
-  class HouseBuilding1Env(simulator_base_env):
+def createHouseBuilding1Env(config):
+  class HouseBuilding1Env(PyBulletEnv):
     ''''''
     def __init__(self, config):
-      if simulator_base_env is PyBulletEnv:
-        super().__init__(config)
-      else:
-        raise ValueError('Bad simulator base env specified.')
-      self.simulator_base_env = simulator_base_env
+      super(HouseBuilding1Env, self).__init__(config)
+
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
@@ -52,7 +49,7 @@ def createHouseBuilding1Env(simulator_base_env, config):
 
     def isSimValid(self):
       triangles = list(filter(lambda x: self.object_types[x] == constants.TRIANGLE, self.objects))
-      return self._checkObjUpright(triangles[0]) and super().isSimValid()
+      return self._checkObjUpright(triangles[0]) and super(HouseBuilding1Env, self).isSimValid()
 
   def _thunk():
     return HouseBuilding1Env(config)

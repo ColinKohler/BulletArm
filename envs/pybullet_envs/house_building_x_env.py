@@ -1,20 +1,18 @@
 from copy import deepcopy
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 from .utils.check_goal import CheckGoal
 from .utils.check_goal_custom_labels import CheckGoalCustomLabels
 
-def createHouseBuildingXEnv(simulator_base_env, config):
-  class HouseBuildingXEnv(simulator_base_env):
+def createHouseBuildingXEnv(config):
+  class HouseBuildingXEnv(PyBulletEnv):
     ''''''
     def __init__(self, config):
-      if simulator_base_env is PyBulletEnv:
-        super().__init__(config)
-        self.block_scale_range = (0.6, 0.6)
-        self.min_block_size = self.block_original_size * self.block_scale_range[0]
-        self.max_block_size = self.block_original_size * self.block_scale_range[1]
-      else:
-        raise ValueError('Bad simulator base env specified.')
+      super(HouseBuildingXEnv, self).__init__(config)
+
+      self.block_scale_range = (0.6, 0.6)
+      self.min_block_size = self.block_original_size * self.block_scale_range[0]
+      self.max_block_size = self.block_original_size * self.block_scale_range[1]
       self.simulator_base_env = simulator_base_env
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
@@ -100,9 +98,9 @@ def createHouseBuildingXEnv(simulator_base_env, config):
     def isSimValid(self):
       roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
       if len(roofs) > 0 and self.check_roof_upright:
-        return self._checkObjUpright(roofs[0]) and super().isSimValid()
+        return self._checkObjUpright(roofs[0]) and super(HouseBuildingXEnv, self).isSimValid()
       else:
-        return super().isSimValid()
+        return super(HouseBuildingXEnv, self).isSimValid()
 
   def _thunk():
     return HouseBuildingXEnv(config)

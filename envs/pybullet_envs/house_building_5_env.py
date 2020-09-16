@@ -1,18 +1,16 @@
 from copy import deepcopy
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 
-def createHouseBuilding5Env(simulator_base_env, config):
-  class HouseBuilding5Env(simulator_base_env):
+def createHouseBuilding5Env(config):
+  class HouseBuilding5Env(PyBulletEnv):
     ''''''
     def __init__(self, config):
-      if simulator_base_env is PyBulletEnv:
-        super().__init__(config)
-        self.block_scale_range = (0.6, 0.6)
-        self.min_block_size = self.block_original_size * self.block_scale_range[0]
-        self.max_block_size = self.block_original_size * self.block_scale_range[1]
-      else:
-        raise ValueError('Bad simulator base env specified.')
+      super(HouseBuilding5Env, self).__init__(config)
+
+      self.block_scale_range = (0.6, 0.6)
+      self.min_block_size = self.block_original_size * self.block_scale_range[0]
+      self.max_block_size = self.block_original_size * self.block_scale_range[1]
       self.simulator_base_env = simulator_base_env
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
@@ -83,7 +81,7 @@ def createHouseBuilding5Env(simulator_base_env, config):
       for cylinder in cylinders:
         if not self._checkObjUpright(cylinder):
           return False
-      return super().isSimValid()
+      return super(HouseBuilding5Env, self).isSimValid()
 
   def _thunk():
     return HouseBuilding5Env(config)

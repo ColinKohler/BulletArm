@@ -1,21 +1,14 @@
 import numpy as np
 
-from helping_hands_rl_envs.envs.numpy_env import NumpyEnv
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 
-def createBlockAdjacentEnv(simulator_base_env, config):
-  class BlockAdjacentEnv(simulator_base_env):
+def createBlockAdjacentEnv(config):
+  class BlockAdjacentEnv(PyBulletEnv):
     ''''''
     def __init__(self, config):
-      if simulator_base_env is NumpyEnv:
-        super().__init__(config)
-      elif simulator_base_env is PyBulletEnv:
-        super().__init__(config)
-      else:
-        raise ValueError('Bad simulator base env specified.')
+      super(BlockAdjacentEnv, self).__init__(config)
 
-      self.simulator_base_env = simulator_base_env
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'

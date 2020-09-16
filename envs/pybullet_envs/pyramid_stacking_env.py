@@ -1,19 +1,14 @@
 import numpy as np
 
 from helping_hands_rl_envs.envs.numpy_env import NumpyEnv
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 
-def createPyramidStackingEnv(simulator_base_env, config):
-  class PyramidStackingEnv(simulator_base_env):
+def createPyramidStackingEnv(config):
+  class PyramidStackingEnv(PyBulletEnv):
     ''''''
     def __init__(self, config):
-      if simulator_base_env is NumpyEnv:
-        super().__init__(config)
-      elif simulator_base_env is PyBulletEnv:
-        super().__init__(config)
-      else:
-        raise ValueError('Bad simulator base env specified.')
+      super(PyramidStackingEnv, self).__init__(config)
 
       self.simulator_base_env = simulator_base_env
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False

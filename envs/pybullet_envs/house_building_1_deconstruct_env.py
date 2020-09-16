@@ -3,20 +3,16 @@ from copy import deepcopy
 import numpy.random as npr
 import numpy as np
 from itertools import combinations
-from helping_hands_rl_envs.envs.pybullet_deconstruct_env import PyBulletEnv, PyBulletDeconstructEnv
+from helping_hands_rl_envs.envs.pybullet_envs.deconstruct_env import DeconstructEnv
 from helping_hands_rl_envs.simulators import constants
 
-def createHouseBuilding1DeconstructEnv(simulator_base_env, config):
-  class HouseBuilding1DeconstructEnv(PyBulletDeconstructEnv):
+def createHouseBuilding1DeconstructEnv(config):
+  class HouseBuilding1DeconstructEnv(DeconstructEnv):
     ''''''
     def __init__(self, config):
-      if simulator_base_env is PyBulletEnv:
-        super().__init__(config)
-        self.pick_offset = 0.01
+      super(HouseBuilding1DeconstructEnv, self).__init__(config)
+      self.pick_offset = 0.01
 
-      else:
-        raise ValueError('Bad simulator base env specified.')
-      self.simulator_base_env = simulator_base_env
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
@@ -62,7 +58,7 @@ def createHouseBuilding1DeconstructEnv(simulator_base_env, config):
 
     def isSimValid(self):
       triangles = list(filter(lambda x: self.object_types[x] == constants.TRIANGLE, self.objects))
-      return self._checkObjUpright(triangles[0]) and super().isSimValid()
+      return self._checkObjUpright(triangles[0]) and super(HouseBuilding1DeconstructEnv, self).isSimValid()
 
 
   def _thunk():

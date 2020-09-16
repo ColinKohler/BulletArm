@@ -3,19 +3,24 @@ import numpy as np
 import scipy
 import numpy.random as npr
 
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv, NoValidPositionException
+from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv, NoValidPositionException
 import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
 from helping_hands_rl_envs.simulators import constants
 
-class PyBulletDeconstructEnv(PyBulletEnv):
+class DeconstructEnv(PyBulletEnv):
+  '''
+
+  '''
   def __init__(self, config):
-    super().__init__(config)
+    super(DeconstructEnv, self).__init__(config)
     self.pick_offset = -0.007
     self.structure_objs = []
     self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
 
   def _getObservation(self, action=None):
-    ''''''
+    '''
+
+    '''
     old_heightmap = self.heightmap
     self.heightmap = self._getHeightmap()
 
@@ -29,10 +34,16 @@ class PyBulletDeconstructEnv(PyBulletEnv):
     return self._isHolding(), in_hand_img, self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
   def reset(self):
-    super().reset()
+    '''
+
+    '''
+    super(DeconstructEnv, self).reset()
     self.structure_objs = []
 
   def generateImproviseH3(self):
+    '''
+
+    '''
     lower_z1 = 0.01
     lower_z2 = 0.025
     hier_z = 0.02
@@ -107,6 +118,9 @@ class PyBulletDeconstructEnv(PyBulletEnv):
     self.wait(50)
 
   def generateImproviseH4(self):
+    '''
+
+    '''
     roof_z = 0.06
 
     def generate(pos, zscale=1):
@@ -163,6 +177,9 @@ class PyBulletDeconstructEnv(PyBulletEnv):
     self.wait(50)
 
   def generateH1(self):
+    '''
+
+    '''
     padding = self.max_block_size * 1.5
     pos = self._getValidPositions(padding, 0, [], 1)[0]
     rot = pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()])
@@ -183,6 +200,9 @@ class PyBulletDeconstructEnv(PyBulletEnv):
     self.wait(50)
 
   def generateObject(self, pos, rot, obj_type):
+    '''
+
+    '''
     if obj_type == constants.CUBE:
       handle = pb_obj_generation.generateCube(pos,
                                               rot,
@@ -209,6 +229,9 @@ class PyBulletDeconstructEnv(PyBulletEnv):
     return handle
 
   def generateH4(self):
+    '''
+
+    '''
     padding = self.max_block_size * 1.5
     pos1 = self._getValidPositions(padding, 0, [], 1)[0]
     min_dist = 2.1 * self.max_block_size

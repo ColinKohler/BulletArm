@@ -1,19 +1,14 @@
 from copy import deepcopy
 
-from helping_hands_rl_envs.envs.numpy_env import NumpyEnv
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 
 from helping_hands_rl_envs.simulators import constants
 
-def createBrickStackingEnv(simulator_base_env, config):
-  class BrickStackingEnv(simulator_base_env):
+def createBrickStackingEnv(config):
+  class BrickStackingEnv(PyBulletEnv):
     ''''''
     def __init__(self, config):
-      if simulator_base_env is PyBulletEnv:
-        super(BrickStackingEnv, self).__init__(config)
-      else:
-        raise ValueError('Bad simulator base env specified.')
-      self.simulator_base_env = simulator_base_env
+      super(BrickStackingEnv, self).__init__(config)
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'

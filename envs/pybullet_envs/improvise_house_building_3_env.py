@@ -2,21 +2,19 @@ import time
 from copy import deepcopy
 import numpy.random as npr
 from itertools import combinations
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 
-def createImproviseHouseBuilding3Env(simulator_base_env, config):
-  class ImproviseHouseBuilding3Env(simulator_base_env):
+def createImproviseHouseBuilding3Env(config):
+  class ImproviseHouseBuilding3Env(PyBulletEnv):
     ''''''
     def __init__(self, config):
       config['check_random_obj_valid'] = True
-      if simulator_base_env is PyBulletEnv:
-        super().__init__(config)
-        self.block_scale_range = (0.6, 0.6)
-        self.min_block_size = self.block_original_size * self.block_scale_range[0]
-        self.max_block_size = self.block_original_size * self.block_scale_range[1]
-      else:
-        raise ValueError('Bad simulator base env specified.')
+      super(ImproviseHouseBuilding3Env, self).__init__(config)
+
+      self.block_scale_range = (0.6, 0.6)
+      self.min_block_size = self.block_original_size * self.block_scale_range[0]
+      self.max_block_size = self.block_original_size * self.block_scale_range[1]
       self.simulator_base_env = simulator_base_env
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
@@ -69,7 +67,7 @@ def createImproviseHouseBuilding3Env(simulator_base_env, config):
 
     def isSimValid(self):
       roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
-      return self._checkObjUpright(roofs[0]) and super().isSimValid()
+      return self._checkObjUpright(roofs[0]) and super(ImproviseHouseBuilding3Env, self).isSimValid()
 
   def _thunk():
     return ImproviseHouseBuilding3Env(config)

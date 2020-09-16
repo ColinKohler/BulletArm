@@ -1,16 +1,13 @@
 from helping_hands_rl_envs.envs.numpy_env import NumpyEnv
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 
-def createRandomStackingEnv(simulator_base_env, config):
-  class RandomStackingEnv(simulator_base_env):
+def createRandomStackingEnv(config):
+  class RandomStackingEnv(PyBulletEnv):
     ''''''
     def __init__(self, config):
       config['check_random_obj_valid'] = True
-      if simulator_base_env is PyBulletEnv:
-        super().__init__(config)
-      else:
-        raise ValueError('Bad simulator base env specified.')
+      super(RandomStackingEnv, self).__init__(config)
 
       self.simulator_base_env = simulator_base_env
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False

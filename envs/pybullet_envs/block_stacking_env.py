@@ -1,19 +1,12 @@
-from helping_hands_rl_envs.envs.numpy_env import NumpyEnv
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 
-def createBlockStackingEnv(simulator_base_env, config):
-  class BlockStackingEnv(simulator_base_env):
+def createBlockStackingEnv(config):
+  class BlockStackingEnv(PybulletEnv):
     ''''''
     def __init__(self, config):
-      if simulator_base_env is NumpyEnv:
-        super().__init__(config)
-      elif simulator_base_env is PyBulletEnv:
-        super().__init__(config)
-      else:
-        raise ValueError('Bad simulator base env specified.')
+      super(BlockStackingEnv, self).__init__(config)
 
-      self.simulator_base_env = simulator_base_env
       self.object_type = config['object_type'] if 'object_type' in config else 'cube'
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1

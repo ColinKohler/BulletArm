@@ -1,17 +1,15 @@
 from copy import deepcopy
 import numpy as np
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 import numpy.random as npr
 
-def createRandomPickingEnv(simulator_base_env, config):
-  class RandomPickingEnv(simulator_base_env):
+def createRandomPickingEnv(config):
+  class RandomPickingEnv(PyBulletEnv):
     def __init__(self, config):
       config['check_random_obj_valid'] = True
-      if simulator_base_env is PyBulletEnv:
-        super().__init__(config)
-      else:
-        raise ValueError('Bad simulator base env specified.')
+      super(RandomPickingEnv,  self).__init__(config)
+
       self.simulator_base_env = simulator_base_env
       self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
