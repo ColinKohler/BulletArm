@@ -21,7 +21,32 @@ from helping_hands_rl_envs.envs.random_picking_env import createRandomPickingEnv
 from helping_hands_rl_envs.envs.random_stacking_env import createRandomStackingEnv
 from helping_hands_rl_envs.envs.multi_task_env import createMultiTaskEnv
 
-CREATE_ENV_FNS = {
+CREATE_NUMPY_ENV_FNS = {
+  'block_picking' : createBlockPickingEnv,
+  'block_stacking' : createBlockStackingEnv,
+  'block_adjacent' : createBlockAdjacentEnv,
+  'brick_stacking' : createBrickStackingEnv,
+  'pyramid_stacking' : createPyramidStackingEnv,
+  'house_building_1' : createHouseBuilding1Env,
+  'house_building_2' : createHouseBuilding2Env,
+  'house_building_3' : createHouseBuilding3Env,
+  'house_building_4' : createHouseBuilding4Env,
+  'house_building_5' : createHouseBuilding5Env,
+  'house_buliding_x' : createHouseBuildingXEnv,
+  'improvise_house_building_2' : createImproviseHouseBuilding2Env,
+  'improvise_house_building_3' : createImproviseHouseBuilding3Env,
+  'improvise_house_building_4' : createImproviseHouseBuilding4Env,
+  'house_building_1_deconstruct' : createHouseBuilding1DeconstructEnv,
+  'house_building_4_deconstruct' : createHouseBuilding4DeconstructEnv,
+  'house_building_x_deconstruct' : createHouseBuildingXDeconstructEnv,
+  'improvise_house_building_3_deconstruct' : createImproviseHouseBuilding3DeconstructEnv,
+  'improvise_house_building_4_deconstruct' : createImproviseHouseBuilding4DeconstructEnv,
+  'random_picking' : createRandomPickingEnv,
+  'random_stacking' : createRandomStackingEnv,
+  'multi_task' : createMultiTaskEnv,
+}
+
+CREATE_PYBULLET_ENV_FNS = {
   'block_picking' : createBlockPickingEnv,
   'block_stacking' : createBlockStackingEnv,
   'block_adjacent' : createBlockAdjacentEnv,

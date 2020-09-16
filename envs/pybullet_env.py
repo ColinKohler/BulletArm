@@ -45,6 +45,10 @@ class PyBulletEnv(BaseEnv):
       config['num_random_objects'] = 0
     if 'check_random_obj_valid' not in config:
       config['check_random_obj_valid'] = False
+    if 'action_sequence' not in config:
+      config['action_sequence'] = 'pxyr'
+    if 'simulate_grasp' not in config:
+      config['simulate_grasp'] = True
 
     seed = config['seed']
     workspace = config['workspace']
