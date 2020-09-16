@@ -162,7 +162,7 @@ class PyBulletEnv(BaseEnv):
       self.initialize()
       self.initialized = True
     self.episode_count += 1
-    if self.episode_count >= 1000:
+    if self.episode_count >= 1:
       self.initialize()
       self.episode_count = 0
 

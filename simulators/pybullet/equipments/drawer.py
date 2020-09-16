@@ -19,6 +19,13 @@ class Drawer:
       pb.removeBody(self.id)
     self.id = None
 
+  def isObjInsideDrawer(self, obj):
+    contact_points = obj.getContactPoints()
+    for p in contact_points:
+      if p[2] == self.id and p[4] == 4:
+        return True
+    return False
+
   def getHandlePosition(self):
     return pb.getLinkState(self.id, 9)[4]
 

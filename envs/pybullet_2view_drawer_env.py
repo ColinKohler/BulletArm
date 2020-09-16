@@ -23,12 +23,17 @@ class PyBullet2ViewDrawerEnv(PyBullet2ViewEnv):
   def reset(self):
     super().reset()
 
-    self.drawer.remove()
-    self.drawer2.remove()
-    self.drawer.initialize((self.workspace[0][1]+0.11, 0, 0), pb.getQuaternionFromEuler((0, 0, 0)))
-    self.drawer2.initialize((self.workspace[0][1]+0.11, 0, 0.18), pb.getQuaternionFromEuler((0, 0, 0)))
+    self.drawer.reset()
+    self.drawer2.reset()
 
     return self._getObservation()
+
+  def initialize(self):
+    super().initialize()
+    # self.drawer.remove()
+    # self.drawer2.remove()
+    self.drawer.initialize((self.workspace[0][1] + 0.11, 0, 0), pb.getQuaternionFromEuler((0, 0, 0)))
+    self.drawer2.initialize((self.workspace[0][1] + 0.11, 0, 0.18), pb.getQuaternionFromEuler((0, 0, 0)))
 
   def test(self):
     handle1_pos = self.drawer.getHandlePosition()

@@ -31,10 +31,8 @@ class PyBullet2ViewEnv(PyBulletEnv):
       farVal=far + 0.01)
     self.wall_id = None
 
-  def reset(self):
-    super().reset()
-    if self.wall_id:
-      pb.removeBody(self.wall_id)
+  def initialize(self):
+    super().initialize()
     root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
     urdf_filepath = os.path.join(root_dir, 'simulators/urdf/', 'wall.urdf')
     self.wall_id = pb.loadURDF(urdf_filepath,
@@ -43,8 +41,6 @@ class PyBullet2ViewEnv(PyBulletEnv):
                                       0],
                                      pb.getQuaternionFromEuler([0, 0, 0]),
                                      globalScaling=1)
-    return self._getObservation()
-
 
   def _getHeightmap2(self):
     image_arr = pb.getCameraImage(width=self.heightmap_size, height=self.heightmap_size,
