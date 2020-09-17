@@ -60,21 +60,8 @@ def createTiltImproviseHouseBuilding6Env(simulator_base_env, config):
               if all(map(lambda p: self.isPosDistToTiltValid(p, t), other_pos)):
                 break
 
-            orientations = []
             existing_pos.extend(deepcopy(other_pos))
-            for position in other_pos:
-              y1, y2 = self.getY1Y2fromX(position[0])
-              if position[1] > y1:
-                d = (position[1] - y1) * np.cos(self.tilt_rz)
-                position.append(self.tilt_z1 + 0.02 + np.tan(self.tilt_plain_rx) * d)
-                orientations.append(pb.getQuaternionFromEuler([self.tilt_plain_rx, 0, self.tilt_rz]))
-              elif position[1] < y2:
-                d = (y2 - position[1]) * np.cos(self.tilt_rz)
-                position.append(self.tilt_z2 + 0.02 + np.tan(-self.tilt_plain2_rx) * d)
-                orientations.append(pb.getQuaternionFromEuler([self.tilt_plain2_rx, 0, self.tilt_rz]))
-              else:
-                position.append(0.02)
-                orientations.append(pb.getQuaternionFromEuler([0, 0, np.random.random() * np.pi * 2]))
+            orientations = self.calculateOrientations(other_pos)
             if t == constants.RANDOM:
               for i in range(obj_dict[t]):
                 zscale = np.random.uniform(2, 2.2)
