@@ -290,21 +290,18 @@ class BaseEnv(object):
     crop = np.round(crop, 5)
     size = self.in_hand_size
 
-    zs = np.array([z+(size/2-i)*(self.heightmap_resolution) for i in range(size)])
-    zs = zs.reshape((-1, 1, 1))
-    zs = zs.repeat(size, 1).repeat(size, 2)
-    zs[zs<-(self.heightmap_resolution)] = 100
-    c = crop.reshape(1, size, size).repeat(size, 0)
+    zs = np.array([z+(-size/2+i)*(self.heightmap_resolution) for i in range(size)])
+    zs = zs.reshape((1, 1, -1))
+    zs = zs.repeat(size, 0).repeat(size, 1)
+    # zs[zs<-(self.heightmap_resolution)] = 100
+    c = crop.reshape(size, size, 1).repeat(size, 2)
     ori_occupancy = c > zs
 
     # transform into points
     point = np.argwhere(ori_occupancy)
     # center
     ori_point = point - size/2
-    R = transformations.euler_matrix(-rz, -ry, -rx)[:3, :3]
-    # R = np.array([[np.cos(-rx), 0, np.sin(-rx)],
-    #               [0, 1, 0],
-    #               [-np.sin(-rx), 0, np.cos(-rx)]])
+    R = transformations.euler_matrix(rx, ry, rz)[:3, :3].T
     point = R.dot(ori_point.T)
     point = point + size/2
     point = np.round(point).astype(int)

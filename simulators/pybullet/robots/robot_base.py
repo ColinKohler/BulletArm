@@ -258,3 +258,15 @@ class RobotBase:
       pb.resetJointState(self.id, motor, q_poses[i])
 
     self._sendPositionCommand(q_poses)
+
+  def plotEndEffectorFrame(self):
+    line_id1 = pb.addUserDebugLine(self._getEndEffectorPosition(),
+                                  self._getEndEffectorPosition() + 0.1 * transformations.quaternion_matrix(
+                                    self._getEndEffectorRotation())[:3, 0], (1, 0, 0))
+    line_id2 = pb.addUserDebugLine(self._getEndEffectorPosition(),
+                                  self._getEndEffectorPosition() + 0.1 * transformations.quaternion_matrix(
+                                    self._getEndEffectorRotation())[:3, 1], (0, 1, 0))
+    line_id3 = pb.addUserDebugLine(self._getEndEffectorPosition(),
+                                  self._getEndEffectorPosition() + 0.1 * transformations.quaternion_matrix(
+                                    self._getEndEffectorRotation())[:3, 2], (0, 0, 1))
+    return line_id1, line_id2, line_id3
