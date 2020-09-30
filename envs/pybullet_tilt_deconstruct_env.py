@@ -158,14 +158,6 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
       if min_dist < dist < max_dist and self.isPosOffTilt(pos2):
         break
 
-    self.generateObject((pos1[0], pos1[1], self.max_block_size / 2),
-                        pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()]),
-                        constants.CUBE)
-
-    self.generateObject((pos2[0], pos2[1], self.max_block_size / 2),
-                        pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()]),
-                        constants.CUBE)
-
     obj_positions = np.array([pos1, pos2])
     slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(obj_positions[:, 0], obj_positions[:, 1])
     x, y = obj_positions.mean(0)
@@ -176,16 +168,24 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     while r < 0:
       r += np.pi
 
+    self.generateObject((pos1[0], pos1[1], self.max_block_size / 2),
+                        pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()]),
+                        constants.CUBE)
+
+    self.generateObject((pos2[0], pos2[1], self.max_block_size / 2),
+                        pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()]),
+                        constants.CUBE)
+
     self.generateObject([x, y, self.max_block_size * 1.5],
                         pb.getQuaternionFromEuler([0., 0., r]),
                         constants.BRICK)
 
     self.generateObject((pos1[0], pos1[1], self.max_block_size * 2.5),
-                        pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()]),
+                        pb.getQuaternionFromEuler([0., 0., r]),
                         constants.CUBE)
 
     self.generateObject((pos2[0], pos2[1], self.max_block_size * 2.5),
-                        pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()]),
+                        pb.getQuaternionFromEuler([0., 0., r]),
                         constants.CUBE)
 
     self.generateObject([x, y, self.max_block_size * 3.5],
