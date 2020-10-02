@@ -42,7 +42,7 @@ def worker(remote, parent_remote, env_fn, planner_fn):
         remote.send(planner.getValue())
       elif cmd == 'get_steps_left':
         remote.send(planner.getStepsLeft())
-      elif cmd == 'get_env_id':
+      elif cmd == 'get_active_env_id':
         remote.send(env.active_env_id)
       else:
         raise NotImplementedError
@@ -162,6 +162,13 @@ class MultiDataRunner(object):
     [remote.send(('close', None)) for remote in self.remotes]
     [process.join() for process in self.processes]
 
+  def getActiveEnvId(self):
+    for remote in self.remotes:
+      remote.send(('get_active_env_id', None))
+    active_env_id = [remote.recv() for remote in self.remotes]
+    active_env_id = torch.from_numpy(np.stack(active_env_id)).float()
+    return active_env_id
+
   def getNextAction(self):
     for remote in self.remotes:
       remote.send(('get_next_action', None))
@@ -218,6 +225,9 @@ class SingleDataRunner(object):
 
   def reset(self):
     return self.env.reset()
+
+  def getActiveEnvId(self):
+    return self.env.active_env_id
 
   def getNextAction(self):
     return self.planner.getNextAction()

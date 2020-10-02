@@ -4,6 +4,7 @@ import numpy.random as npr
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
 from helping_hands_rl_envs.planners.block_stacking_planner import BlockStackingPlanner
 from helping_hands_rl_envs.planners.brick_stacking_planner import BrickStackingPlanner
+from helping_hands_rl_envs.planners.pyramid_stacking_planner import PyramidStackingPlanner
 from helping_hands_rl_envs.planners.block_adjacent_planner import BlockAdjacentPlanner
 from helping_hands_rl_envs.planners.house_building_1_planner import HouseBuilding1Planner
 from helping_hands_rl_envs.planners.play_planner import PlayPlanner
@@ -18,6 +19,8 @@ class MultiTaskPlanner(object):
         self.planners.append(BlockStackingPlanner(env.envs[i], config))
       elif config['planner_type'] == 'brick_stacking':
         self.planners.append(BrickStackingPlanner(env.envs[i], config))
+      elif config['planner_type'] == 'pyramid_stacking':
+        self.planners.append(PyramidStackingPlanner(env.envs[i], config))
       elif config['planner_type'] == 'block_adjacent':
         self.planners.append(BlockAdjacentPlanner(env.envs[i], config))
       elif config['planner_type'] == 'house_building_1':

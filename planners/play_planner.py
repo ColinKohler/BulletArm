@@ -57,10 +57,13 @@ class PlayPlanner(BlockStructureBasePlanner):
   #   return steps_left
 
   # TODO: This is for block stacking so its weird to have this here
+  # def getStepsLeft(self):
+  #   if not self.isSimValid():
+  #     return 100
+  #   step_left = 2 * (self.getNumTopBlock() - 1)
+  #   if self.isHolding():
+  #     step_left -= 1
+  #   return step_left
+
   def getStepsLeft(self):
-    if not self.isSimValid():
-      return 100
-    step_left = 2 * (self.getNumTopBlock() - 1)
-    if self.isHolding():
-      step_left -= 1
-    return step_left
+    return 0
