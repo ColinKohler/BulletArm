@@ -297,3 +297,6 @@ class DeconstructEnv(PyBulletEnv):
                         constants.ROOF)
     self.wait(50)
 
+
+def createDeconstructEnv(config):
+  return DeconstructEnv(config)

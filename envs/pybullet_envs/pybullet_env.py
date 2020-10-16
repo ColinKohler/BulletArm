@@ -8,6 +8,8 @@ import pybullet as pb
 import pybullet_data
 
 from helping_hands_rl_envs.envs.base_env import BaseEnv
+from helping_hands_rl_envs.envs.pybullet_envs.constants import NoValidPositionException
+
 from helping_hands_rl_envs.simulators.pybullet.robots.ur5_simple import UR5_Simple
 from helping_hands_rl_envs.simulators.pybullet.robots.ur5_robotiq import UR5_Robotiq
 from helping_hands_rl_envs.simulators.pybullet.robots.kuka import Kuka
@@ -16,11 +18,9 @@ from helping_hands_rl_envs.simulators.pybullet.objects.pybullet_object import Py
 import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
 from helping_hands_rl_envs.simulators import constants
 
+
 import pickle
 import os
-
-class NoValidPositionException(Exception):
-  pass
 
 class PyBulletEnv(BaseEnv):
   '''

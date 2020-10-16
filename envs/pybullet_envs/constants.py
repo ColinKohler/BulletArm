@@ -45,3 +45,6 @@ CREATE_PYBULLET_ENV_FNS = {
   'random_stacking' : createRandomStackingEnv,
   'multi_task' : createMultiTaskEnv,
 }
+
+class NoValidPositionException(Exception):
+  pass
