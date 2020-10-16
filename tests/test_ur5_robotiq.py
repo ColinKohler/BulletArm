@@ -1,7 +1,6 @@
 import unittest
 import time
 import numpy as np
-import torch
 import matplotlib.pyplot as plt
 
 from helping_hands_rl_envs.envs.house_building_3_env import createHouseBuilding3Env

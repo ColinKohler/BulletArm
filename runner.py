@@ -1,5 +1,4 @@
-import numpy as np
-import torch
+imcort numpy as np
 from multiprocessing import Process, Pipe
 import os
 import git
@@ -131,7 +130,7 @@ class MultiRunner(object):
     Step the environments synchronously.
 
     Args:
-      - actions: PyTorch variable of environment actions
+      - actions: Numpy variable of environment actions
     '''
     self.stepAsync(actions, auto_reset)
     return self.stepWait()
@@ -141,7 +140,7 @@ class MultiRunner(object):
     Step each environment in a async fashion
 
     Args:
-      - actions: PyTorch variable of environment actions
+      - actions: Numpy variable of environment actions
     '''
     actions = actions.squeeze(1).numpy()
     for remote, action in zip(self.remotes, actions):
@@ -156,8 +155,8 @@ class MultiRunner(object):
     Wait until each environment has completed its next step
 
     Returns: (obs, rewards, dones)
-      - obs: Torch vector of observations
-      - rewards: Torch vector of rewards
+      - obs: Numpy vector of observations
+      - rewards: Numpy vector of rewards
       - dones: Numpy vector of 0/1 flags indicating if episode is done
     '''
     results = [remote.recv() for remote in self.remotes]
@@ -175,13 +174,13 @@ class MultiRunner(object):
 
     states, hand_obs, depths = zip(*obs)
 
-    states = torch.from_numpy(np.stack(states).astype(float)).float()
-    hand_obs = torch.from_numpy(np.stack(hand_obs)).float()
-    depths = torch.from_numpy(np.stack(depths)).float()
-    rewards = torch.from_numpy(np.stack(rewards)).float()
+    states = np.stack(states).astype(float)
+    hand_obs = np.stack(hand_obs)
+    depths = np.stack(depths)
+    rewards = np.stack(rewards)
     if len(rewards.shape) == 1:
       rewards = rewards.unsqueeze(1)
-    dones = torch.from_numpy(np.stack(dones).astype(np.float32)).float()
+    dones = np.stack(dones).astype(np.float32)
 
     if return_metadata:
       return states, hand_obs, depths, rewards, dones, metadata
@@ -192,7 +191,7 @@ class MultiRunner(object):
     '''
     Reset each environment
 
-    Returns: Torch vector of observations
+    Returns: Numpy vector of observations
     '''
     for remote in self.remotes:
       remote.send(('reset', None))
@@ -200,9 +199,9 @@ class MultiRunner(object):
     obs = [remote.recv() for remote in self.remotes]
     states, hand_obs, depths = zip(*obs)
 
-    states = torch.from_numpy(np.stack(states).astype(float)).float()
-    hand_obs = torch.from_numpy(np.stack(hand_obs)).float()
-    depths = torch.from_numpy(np.stack(depths)).float()
+    states = np.stack(states).astype(float)
+    hand_obs = np.stack(hand_obs)
+    depths = np.stack(depths)
 
     return states, hand_obs, depths
 
@@ -213,9 +212,9 @@ class MultiRunner(object):
     obs = [self.remotes[env_num].recv() for env_num in env_nums]
     states, hand_obs, depths = zip(*obs)
 
-    states = torch.from_numpy(np.stack(states).astype(float)).float()
-    hand_obs = torch.from_numpy(np.stack(hand_obs)).float()
-    depths = torch.from_numpy(np.stack(depths)).float()
+    states = np.stack(states).astype(float)
+    hand_obs = np.stack(hand_obs)
+    depths = np.stack(depths)
 
     return states, hand_obs, depths
 
@@ -288,7 +287,7 @@ class MultiRunner(object):
     for remote in self.remotes:
       remote.send(('get_next_action', None))
     action = [remote.recv() for remote in self.remotes]
-    action = torch.from_numpy(np.stack(action)).float()
+    action = np.stack(action)
     return action
 
   def getValue(self):
@@ -298,7 +297,7 @@ class MultiRunner(object):
     for remote in self.remotes:
       remote.send(('get_value', None))
     values = [remote.recv() for remote in self.remotes]
-    values = torch.from_numpy(np.stack(values)).float()
+    values = np.stack(values)
     return values
 
   def getStepsLeft(self):
@@ -308,7 +307,7 @@ class MultiRunner(object):
     for remote in self.remotes:
       remote.send(('get_steps_left', None))
     values = [remote.recv() for remote in self.remotes]
-    values = torch.from_numpy(np.stack(values)).float()
+    values = np.stack(values)
     return values
 
   def getObs(self, action=None):
@@ -321,9 +320,9 @@ class MultiRunner(object):
     obs = [remote.recv() for remote in self.remotes]
     states, hand_obs, depths = zip(*obs)
 
-    states = torch.from_numpy(np.stack(states).astype(float)).float()
-    hand_obs = torch.from_numpy(np.stack(hand_obs)).float()
-    depths = torch.from_numpy(np.stack(depths)).float()
+    states = np.stack(states).astype(float)
+    hand_obs = np.stack(hand_obs)
+    depths = np.stack(depths)
 
     return states, hand_obs, depths
 
@@ -334,7 +333,7 @@ class MultiRunner(object):
     for remote in self.remotes:
       remote.send(('are_objects_in_workspace', None))
     valid_workspace = [remote.recv() for remote in self.remotes]
-    valid_workspace = torch.from_numpy(np.stack(valid_workspace)).float()
+    valid_workspace = np.stack(valid_workspace)
     return valid_workspace
 
   def didBlockFall(self):
@@ -344,7 +343,7 @@ class MultiRunner(object):
     for remote in self.remotes:
       remote.send(('did_block_fall', None))
     did_block_fall = [remote.recv() for remote in self.remotes]
-    did_block_fall = torch.from_numpy(np.stack(did_block_fall)).float()
+    did_block_fall = np.stack(did_block_fall)
     return did_block_fall
 
   def setPosCandidate(self, pos_candidate):
@@ -361,7 +360,7 @@ class MultiRunner(object):
     for remote in self.remotes:
       remote.send(('get_empty_in_hand', None))
     hand_obs = [remote.recv() for remote in self.remotes]
-    hand_obs = torch.from_numpy(np.stack(hand_obs)).float()
+    hand_obs = np.stack(hand_obs)
     return hand_obs
 
   @staticmethod
@@ -387,7 +386,7 @@ class SingleRunner(object):
     Step the environment
 
     Args:
-      - action: PyTorch variable of environment action
+      - action: Numpy variable of environment action
 
     Returns:
     '''
@@ -411,7 +410,7 @@ class SingleRunner(object):
     '''
     Reset the environment
 
-    Returns: Torch vector of observations
+    Returns: Numpy vector of observations
     '''
     return self.env.reset()
 

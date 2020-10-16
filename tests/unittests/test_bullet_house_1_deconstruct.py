@@ -2,7 +2,6 @@ import unittest
 import time
 from tqdm import tqdm
 import numpy as np
-import torch
 
 from helping_hands_rl_envs.envs.house_building_1_env import createHouseBuilding1Env
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
@@ -48,7 +47,7 @@ class TestBulletHouse1Deconstruct(unittest.TestCase):
             s += 1
           total += 1
           steps[i] = 0
-      done_idxes = torch.nonzero(dones).squeeze(1)
+      done_idxes = np.nonzero(dones).squeeze(1)
       if done_idxes.shape[0] != 0:
         env.reset_envs(done_idxes)
 

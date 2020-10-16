@@ -1,7 +1,6 @@
 import time
 import numpy as np
 import matplotlib.pyplot as plt
-import torch
 import ipdb
 
 import helping_hands_rl_envs.env_factory as env_factory

@@ -1,7 +1,6 @@
 import unittest
 import time
 import numpy as np
-import torch
 
 from helping_hands_rl_envs.envs.house_building_1_env import createHouseBuilding1Env
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
