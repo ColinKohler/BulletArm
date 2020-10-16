@@ -1,3 +1,5 @@
+import numpy as np
+
 from helping_hands_rl_envs.envs.pybullet_envs.block_picking_env import createBlockPickingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.block_stacking_env import createBlockStackingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.block_adjacent_env import createBlockAdjacentEnv
@@ -44,6 +46,25 @@ CREATE_PYBULLET_ENV_FNS = {
   'random_picking' : createRandomPickingEnv,
   'random_stacking' : createRandomStackingEnv,
   'multi_task' : createMultiTaskEnv,
+}
+
+DEFAULT_CONFIG = {
+  'robot' : 'ur5',
+  'pos_candidate' : None,
+  'perfect_grasp' : False,
+  'perfect_place' : False,
+  'workspace_check' : 'box',
+  'in_hand_size' : 24,
+  'in_hand_mode' : 'sub',
+  'num_random_objects' : 0,
+  'check_random_obj_valid' : False,
+  'action_sequence' : 'pxyr',
+  'simulate_grasp' : True,
+  'workspace' : np.array([[0.30, 0.60], [-0.15, 0.15], [0, 1]]),
+  'max_steps' : 10,
+  'obs_size' : 128,
+  'fast_mode' : True,
+  'render' : False,
 }
 
 class NoValidPositionException(Exception):

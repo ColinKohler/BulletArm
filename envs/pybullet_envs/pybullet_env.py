@@ -9,6 +9,7 @@ import pybullet_data
 
 from helping_hands_rl_envs.envs.base_env import BaseEnv
 from helping_hands_rl_envs.envs.pybullet_envs.constants import NoValidPositionException
+import helping_hands_rl_envs.envs.pybullet_envs.constants as py_constants
 
 from helping_hands_rl_envs.simulators.pybullet.robots.ur5_simple import UR5_Simple
 from helping_hands_rl_envs.simulators.pybullet.robots.ur5_robotiq import UR5_Robotiq
@@ -18,7 +19,6 @@ from helping_hands_rl_envs.simulators.pybullet.objects.pybullet_object import Py
 import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
 from helping_hands_rl_envs.simulators import constants
 
-
 import pickle
 import os
 
@@ -27,28 +27,8 @@ class PyBulletEnv(BaseEnv):
   PyBullet Arm RL base class.
   '''
   def __init__(self, config):
-    if 'robot' not in config:
-      config['robot'] = 'ur5'
-    if 'pos_candidate' not in config:
-      config['pos_candidate'] = None
-    if 'perfect_grasp' not in config:
-      config['perfect_grasp'] = False
-    if 'perfect_place' not in config:
-      config['perfect_place'] = False
-    if 'workspace_check' not in config:
-      config['workspace_check'] = 'box'
-    if 'in_hand_size' not in config:
-      config['in_hand_size'] = 24
-    if 'in_hand_mode' not in config:
-      config['in_hand_mode'] = 'sub'
-    if 'num_random_objects' not in config:
-      config['num_random_objects'] = 0
-    if 'check_random_obj_valid' not in config:
-      config['check_random_obj_valid'] = False
-    if 'action_sequence' not in config:
-      config['action_sequence'] = 'pxyr'
-    if 'simulate_grasp' not in config:
-      config['simulate_grasp'] = True
+    # Load the default config and replace any duplicate values with the config
+    config = {**constants.DEFAULT_CONFIG, **config}
 
     seed = config['seed']
     workspace = config['workspace']
@@ -67,7 +47,9 @@ class PyBulletEnv(BaseEnv):
     in_hand_mode = config['in_hand_mode']
     num_random_objects = config['num_random_objects']
     check_random_obj_valid = config['check_random_obj_valid']
-    super(PyBulletEnv, self).__init__(seed, workspace, max_steps, obs_size, action_sequence, pos_candidate,
+
+    super(PyBulletEnv, self).__init__(seed, workspace, max_steps,
+                                      obs_size, action_sequence, pos_candidate,
                                       in_hand_size, in_hand_mode)
 
     # Connect to pybullet and add data files to path
