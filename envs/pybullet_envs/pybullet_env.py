@@ -243,11 +243,11 @@ class PyBulletEnv(BaseEnv):
 
   def isSimValid(self):
     for obj in self.objects:
+      p = obj.getPosition()
       if not self.check_random_obj_valid and self.object_types[obj] == constants.RANDOM:
         continue
       if self._isObjectHeld(obj):
         continue
-      p = obj.getPosition()
       if self.workspace_check == 'point':
         if not self._isPointInWorkspace(p):
           return False
@@ -261,9 +261,9 @@ class PyBulletEnv(BaseEnv):
 
   def areObjectsInWorkspace(self):
     for obj in self.objects:
+      p = obj.getPosition()
       if self._isObjectHeld(obj):
         continue
-      p = obj.getPosition()
       if self.workspace_check == 'point':
         if not self._isPointInWorkspace(p):
           return False
@@ -368,7 +368,7 @@ class PyBulletEnv(BaseEnv):
     ''''''
     if padding is None:
       if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER):
-        padding = self.max_block_size * 1.5
+        padding = self.max_block_size * 3.5
       elif shape_type == constants.BRICK:
         padding = self.max_block_size * 3.4
       elif shape_type == constants.ROOF:

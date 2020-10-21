@@ -55,6 +55,12 @@ def worker(remote, parent_remote, env_fn, planner_fn=None):
         remote.send(env.didBlockFall())
       elif cmd == 'are_objects_in_workspace':
         remote.send(env.areObjectsInWorkspace())
+      elif cmd == 'get_value':
+        remote.send(planner.getValue())
+      elif cmd == 'get_step_left':
+        remote.send(planner.getStepLeft())
+      elif cmd == 'get_active_env_id':
+        remote.send(env.active_env_id)
       elif cmd == 'get_empty_in_hand':
         remote.send(env.getEmptyInHand())
       # TODO: Might remove this
@@ -217,6 +223,13 @@ class MultiRunner(object):
     depths = np.stack(depths)
 
     return states, hand_obs, depths
+
+  def getActiveEnvId(self):
+    for remote in self.remotes:
+      remote.send(('get_active_env_id', None))
+    active_env_id = [remote.recv() for remote in self.remotes]
+    active_env_id = torch.from_numpy(np.stack(active_env_id)).float()
+    return active_env_id
 
   def close(self):
     '''

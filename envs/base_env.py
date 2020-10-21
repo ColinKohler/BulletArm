@@ -25,6 +25,8 @@ class BaseEnv(object):
     self.seed = seed
     npr.seed(self.seed)
 
+    self.active_env_id = 0
+
     # Setup environment
     self.workspace = workspace
     self.workspace_size = np.linalg.norm(self.workspace[0,1] - self.workspace[0,0])
