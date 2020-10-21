@@ -61,10 +61,13 @@ DEFAULT_CONFIG = {
   'action_sequence' : 'pxyr',
   'simulate_grasp' : True,
   'workspace' : np.array([[0.30, 0.60], [-0.15, 0.15], [0, 1]]),
+  'object_scale_range': (0.60, 0.70)
   'max_steps' : 10,
   'obs_size' : 128,
   'fast_mode' : True,
   'render' : False,
+  'num_solver_iterations' : 200,
+  'solver_residual_threshold' : 1e-7,
 }
 
 class NoValidPositionException(Exception):

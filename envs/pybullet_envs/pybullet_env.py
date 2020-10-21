@@ -30,50 +30,40 @@ class PyBulletEnv(BaseEnv):
     # Load the default config and replace any duplicate values with the config
     config = {**constants.DEFAULT_CONFIG, **config}
 
-    seed = config['seed']
-    workspace = config['workspace']
-    max_steps = config['max_steps']
-    obs_size = config['obs_size']
-    fast_mode = config['fast_mode']
-    render = config['render']
-    action_sequence = config['action_sequence']
-    simulate_grasp = config['simulate_grasp']
-    pos_candidate = config['pos_candidate']
-    perfect_grasp = config['perfect_grasp']
-    perfect_place = config['perfect_place']
-    robot = config['robot']
-    workspace_check = config['workspace_check']
-    in_hand_size = config['in_hand_size']
-    in_hand_mode = config['in_hand_mode']
-    num_random_objects = config['num_random_objects']
-    check_random_obj_valid = config['check_random_obj_valid']
-
-    super(PyBulletEnv, self).__init__(seed, workspace, max_steps,
-                                      obs_size, action_sequence, pos_candidate,
-                                      in_hand_size, in_hand_mode)
+    super(PyBulletEnv, self).__init__(config['seed'],
+                                      config['workspace'],
+                                      config['max_steps'],
+                                      config['obs_size'],
+                                      config['action_sequence'],
+                                      config['pos_candidate'],
+                                      config['in_hand_size'],
+                                      config['in_hand_mode'])
 
     # Connect to pybullet and add data files to path
-    if render:
+    if config['render']:
       self.client = pb.connect(pb.GUI)
     else:
       self.client = pb.connect(pb.DIRECT)
     pb.setAdditionalSearchPath(pybullet_data.getDataPath())
-    self.dynamic = not fast_mode
 
     # Environment specific variables
+    self.dynamic = not config['fast_mode']
+    self.num_solver_iterations = config['num_solver_iterations']
+    self.solver_residual_threshold = config['solver_residual_threshold']
     self._timestep = 1. / 240.
-    if robot == 'ur5':
+
+    if config['robot'] == 'ur5':
       self.robot = UR5_Simple()
-    elif robot == 'ur5_robotiq':
+    elif config['robot'] == 'ur5_robotiq':
       self.robot = UR5_Robotiq()
-    elif robot == 'kuka':
+    elif config['robot'] == 'kuka':
       self.robot = Kuka()
     else:
       raise NotImplementedError
 
     # TODO: Move this somewhere it makes sense
     self.block_original_size = 0.05
-    self.block_scale_range = (0.70, 0.70)
+    self.block_scale_range = conifg['object_scale_range']
     self.min_block_size = self.block_original_size * self.block_scale_range[0]
     self.max_block_size = self.block_original_size * self.block_scale_range[1]
 
@@ -83,9 +73,9 @@ class PyBulletEnv(BaseEnv):
     self.place_offset = self.block_scale_range[1]*self.block_original_size
 
     # Setup camera
-    ws_size = workspace[0][1] - workspace[0][0]
-    cam_pos = [workspace[0].mean(), workspace[1].mean(), 10]
-    target_pos = [workspace[0].mean(), workspace[1].mean(), 0]
+    ws_size = self.workspace[0][1] - self.workspace[0][0]
+    cam_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 10]
+    target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
     cam_up_vector = [-1, 0, 0]
     self.sensor = Sensor(cam_pos, cam_up_vector, target_pos, ws_size)
 
@@ -96,34 +86,27 @@ class PyBulletEnv(BaseEnv):
     self.objects = list()
     self.object_types = {}
 
-    self.simulate_grasp = simulate_grasp
-    self.perfect_grasp = perfect_grasp
-    self.perfect_place = perfect_place
-
-    self.workspace_check = workspace_check
-
-    self.table_id = None
-    self.heightmap = None
-    self.current_episode_steps = 1
-    self.last_action = None
-    self.last_obj = None
-    self.state = {}
-    self.pb_state = None
-
-    self.initialize()
-
-    self.num_random_objects = num_random_objects
-    self.check_random_obj_valid = check_random_obj_valid
+    self.simulate_grasp = config['simulate_grasp']
+    self.perfect_grasp = config['perfect_grasp']
+    self.perfect_place = config['perfect_place']
+    self.workspace_check = config['workspace_check']
+    self.num_random_objects = conifg['num_random_objects']
+    self.check_random_obj_valid = config['check_random_obj_valid']
 
     self.episode_count = 0
+    self.initialize()
 
   def initialize(self):
     ''''''
     pb.resetSimulation()
-    pb.setPhysicsEngineParameter(numSubSteps=0, numSolverIterations=200, solverResidualThreshold=1e-7, constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_SI)
+    pb.setPhysicsEngineParameter(numSubSteps=0,
+                                 numSolverIterations=self.num_solver_iterations,
+                                 solverResidualThreshold=self.solver_residual_threshold,
+                                 constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_SI)
     pb.setTimeStep(self._timestep)
-
     pb.setGravity(0, 0, -10)
+
+    # TODO: These might have to be in the config depending on how they effect the solver_residual_threshold
     self.table_id = pb.loadURDF('plane.urdf', [0,0,0])
     pb.changeDynamics(self.table_id, -1, linearDamping=0.04, angularDamping=0.04, restitution=0, contactStiffness=3000, contactDamping=100)
 
@@ -146,6 +129,7 @@ class PyBulletEnv(BaseEnv):
   def reset(self):
     self.episode_count += 1
     # Since both Colin and Ondrej have the problem of soft reset, always do hard reset here
+    # TODO: Fix this so it works better :p
     if self.episode_count >= 1:
       self.initialize()
       self.episode_count = 0
@@ -229,6 +213,8 @@ class PyBulletEnv(BaseEnv):
 
     # Get transform for action
     pos = [x, y, z]
+
+    # TODO: This should be moved in the kuka as it is better for that arm in specific
     # [-pi, 0] is easier for the arm(kuka) to execute
     while rot < -np.pi:
       rot += np.pi
