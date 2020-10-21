@@ -93,6 +93,49 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     self.structure_objs.append(handle)
     self.wait(50)
 
+  def generateH2(self):
+    padding = self.max_block_size * 1.5
+    while True:
+      pos1 = self._getValidPositions(padding, 0, [], 1)[0]
+      if self.isPosOffTilt(pos1):
+        break
+    min_dist = 2.1 * self.max_block_size
+    max_dist = 2.2 * self.max_block_size
+    sample_range = [[pos1[0] - max_dist, pos1[0] + max_dist],
+                    [pos1[1] - max_dist, pos1[1] + max_dist]]
+    for i in range(1000):
+      try:
+        pos2 = self._getValidPositions(padding, min_dist, [pos1], 1, sample_range=sample_range)[0]
+      except NoValidPositionException:
+        continue
+      dist = np.linalg.norm(np.array(pos1) - np.array(pos2))
+      if min_dist < dist < max_dist and self.isPosOffTilt(pos2):
+        break
+
+    self.generateObject((pos1[0], pos1[1], self.max_block_size / 2),
+                        pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()]),
+                        constants.CUBE)
+
+    self.generateObject((pos2[0], pos2[1], self.max_block_size / 2),
+                        pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()]),
+                        constants.CUBE)
+
+    obj_positions = np.array([pos1, pos2])
+    slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(obj_positions[:, 0], obj_positions[:, 1])
+    x, y = obj_positions.mean(0)
+    r = np.arctan(slope)
+    r -= np.pi / 2
+    while r > np.pi:
+      r -= np.pi
+    while r < 0:
+      r += np.pi
+
+    self.generateObject([x, y, self.max_block_size * 1.5],
+                        pb.getQuaternionFromEuler([0., 0., r]),
+                        constants.ROOF)
+
+    self.wait(50)
+
   def generateH3(self):
     padding = self.max_block_size * 1.5
     while True:

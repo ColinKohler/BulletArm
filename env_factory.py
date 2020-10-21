@@ -35,6 +35,7 @@ from helping_hands_rl_envs.envs.tilt_improvise_house_building_5_env import creat
 from helping_hands_rl_envs.envs.tilt_improvise_house_building_6_env import createTiltImproviseHouseBuilding6Env
 from helping_hands_rl_envs.envs.tilt_block_stacking_deconstruct_env import createTiltBlockStackingDeconstructEnv
 from helping_hands_rl_envs.envs.tilt_house_building_1_deconstruct_env import createTiltHouseBuilding1DeconstructEnv
+from helping_hands_rl_envs.envs.tilt_house_building_2_deconstruct_env import createTiltHouseBuilding2DeconstructEnv
 from helping_hands_rl_envs.envs.tilt_house_building_3_deconstruct_env import createTiltHouseBuilding3DeconstructEnv
 from helping_hands_rl_envs.envs.tilt_house_building_4_deconstruct_env import createTiltHouseBuilding4DeconstructEnv
 from helping_hands_rl_envs.envs.tilt_improvise_house_building_2_deconstruct_env import createTiltImproviseHouseBuilding2DeconstructEnv
@@ -141,6 +142,8 @@ def createEnvs(num_processes, runner_type, simulator, env_type, env_config, plan
     envs = [createTiltBlockStackingDeconstructEnv(parent_env, env_configs[i]) for i in range(num_processes)]
   elif env_type == 'tilt_house_building_1_deconstruct':
     envs = [createTiltHouseBuilding1DeconstructEnv(parent_env, env_configs[i]) for i in range(num_processes)]
+  elif env_type == 'tilt_house_building_2_deconstruct':
+    envs = [createTiltHouseBuilding2DeconstructEnv(parent_env, env_configs[i]) for i in range(num_processes)]
   elif env_type == 'tilt_house_building_3_deconstruct':
     envs = [createTiltHouseBuilding3DeconstructEnv(parent_env, env_configs[i]) for i in range(num_processes)]
   elif env_type == 'tilt_house_building_4_deconstruct':
