@@ -12,6 +12,7 @@ class BasePlanner(object):
     self.place_noise = config['place_noise'] if 'place_noise' in config else None
     self.planner_res = config['planner_res'] if 'planner_res' in config else 10
     self.rot_noise = config['rot_noise'] if 'rot_noise' in config else None
+    self.pos_noise = config['pos_noise'] if 'rot_noise' in config else None
     self.gamma = config['gamma']  if 'gamma' in config else 0.9
     self.random_orientation = config['random_orientation'] if 'random_orientation' in config else True
 

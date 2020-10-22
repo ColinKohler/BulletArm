@@ -1,8 +1,8 @@
 from copy import deepcopy
 from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
-from .utils.check_goal import CheckGoal
-from .utils.check_goal_custom_labels import CheckGoalCustomLabels
+from ..utils.check_goal import CheckGoal
+from ..utils.check_goal_custom_labels import CheckGoalCustomLabels
 
 class HouseBuildingXEnv(PyBulletEnv):
   ''''''

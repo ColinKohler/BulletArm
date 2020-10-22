@@ -14,7 +14,6 @@ class ImproviseHouseBuilding3Env(PyBulletEnv):
     self.block_scale_range = (0.6, 0.6)
     self.min_block_size = self.block_original_size * self.block_scale_range[0]
     self.max_block_size = self.block_original_size * self.block_scale_range[1]
-    self.simulator_base_env = simulator_base_env
     self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
     self.num_obj = config['num_objects'] if 'num_objects' in config else 1
     self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'

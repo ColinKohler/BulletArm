@@ -23,6 +23,19 @@ from helping_hands_rl_envs.envs.pybullet_envs.random_picking_env import createRa
 from helping_hands_rl_envs.envs.pybullet_envs.random_stacking_env import createRandomStackingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.multi_task_env import createMultiTaskEnv
 
+CREATE_NUMPY_ENV_FNS = {
+  'block_picking' : createBlockPickingEnv,
+  'block_stacking' : createBlockStackingEnv,
+  'block_adjacent' : createBlockAdjacentEnv,
+  'brick_stacking' : createBrickStackingEnv,
+  'pyramid_stacking' : createPyramidStackingEnv,
+  'house_building_1' : createHouseBuilding1Env,
+  'house_building_2' : createHouseBuilding2Env,
+  'house_building_3' : createHouseBuilding3Env,
+  'house_building_4' : createHouseBuilding4Env,
+  'house_building_5' : createHouseBuilding5Env,
+}
+
 CREATE_PYBULLET_ENV_FNS = {
   'block_picking' : createBlockPickingEnv,
   'block_stacking' : createBlockStackingEnv,
@@ -61,14 +74,15 @@ DEFAULT_CONFIG = {
   'action_sequence' : 'pxyr',
   'simulate_grasp' : True,
   'workspace' : np.array([[0.30, 0.60], [-0.15, 0.15], [0, 1]]),
-  'object_scale_range': (0.60, 0.70)
+  'object_scale_range': (0.60, 0.70),
   'max_steps' : 10,
   'obs_size' : 128,
   'fast_mode' : True,
   'render' : False,
   'num_solver_iterations' : 200,
   'solver_residual_threshold' : 1e-7,
+  'random_orientation': False,
+  'num_objects': 1,
+  'reward_type': 'sparse',
+  'object_type': 'cube',
 }
-
-class NoValidPositionException(Exception):
-  pass

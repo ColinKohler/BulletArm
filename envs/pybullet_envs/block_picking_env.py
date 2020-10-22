@@ -1,17 +1,13 @@
 from copy import deepcopy
 import numpy as np
 from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.simulators import constants
 
-class BlockPickingEnv(PyBulletEnV):
+class BlockPickingEnv(PyBulletEnv):
   '''
-
   '''
   def __init__(self, config):
     super(BlockPickingEnv, self).__init__(config)
-    self.simulator_base_env = simulator_base_env
-    self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
-    self.num_obj = config['num_objects'] if 'num_objects' in config else 1
-    self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
     self.obj_grasped = 0
 
   def step(self, action):
@@ -22,8 +18,6 @@ class BlockPickingEnv(PyBulletEnV):
     done = self._checkTermination()
     if self.reward_type == 'dense':
       reward = 1.0 if self.obj_grasped > pre_obj_grasped else 0.0
-    elif self.reward_type == 'step_left':
-      reward = self.getStepLeft()
     else:
       reward = 1.0 if done else 0.0
 
@@ -36,7 +30,7 @@ class BlockPickingEnv(PyBulletEnV):
   def reset(self):
     ''''''
     super(BlockPickingEnv, self).reset()
-    self._generateShapes(0, self.num_obj, random_orientation=self.random_orientation)
+    self._generateShapes(constants.CUBE, self.num_obj, random_orientation=self.random_orientation)
     self.obj_grasped = 0
     return self._getObservation()
 
@@ -47,9 +41,6 @@ class BlockPickingEnv(PyBulletEnV):
   def restoreState(self):
     super(BlockPickingEnv, self).restoreState()
     self.obj_grasped = self.state['obj_grasped']
-
-  def getObjectPosition(self):
-    return list(map(self._getObjectPosition, self.objects))
 
   def _checkTermination(self):
     ''''''
@@ -62,9 +53,11 @@ class BlockPickingEnv(PyBulletEnV):
         return False
     return False
 
-  def _getObservation(self):
+  def _getObservation(self, action=None):
     state, in_hand, obs = super(BlockPickingEnv, self)._getObservation()
     return 0, np.zeros_like(in_hand), obs
 
 def createBlockPickingEnv(config):
-  return BlockPickingEnv(config)
+  def _thunk():
+    return BlockPickingEnv(config)
+  return _thunk

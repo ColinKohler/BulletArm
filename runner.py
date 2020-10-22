@@ -1,4 +1,4 @@
-imcort numpy as np
+import numpy as np
 from multiprocessing import Process, Pipe
 import os
 import git
@@ -148,7 +148,7 @@ class MultiRunner(object):
     Args:
       - actions: Numpy variable of environment actions
     '''
-    actions = actions.squeeze(1).numpy()
+    # actions = actions.squeeze(1).numpy()
     for remote, action in zip(self.remotes, actions):
       if auto_reset:
         remote.send(('step_auto_reset', action))
@@ -184,8 +184,6 @@ class MultiRunner(object):
     hand_obs = np.stack(hand_obs)
     depths = np.stack(depths)
     rewards = np.stack(rewards)
-    if len(rewards.shape) == 1:
-      rewards = rewards.unsqueeze(1)
     dones = np.stack(dones).astype(np.float32)
 
     if return_metadata:

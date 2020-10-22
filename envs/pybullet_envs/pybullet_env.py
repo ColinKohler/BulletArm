@@ -1,15 +1,12 @@
-import time
 import copy
 import numpy as np
-import scipy
 import numpy.random as npr
 
 import pybullet as pb
 import pybullet_data
 
 from helping_hands_rl_envs.envs.base_env import BaseEnv
-from helping_hands_rl_envs.envs.pybullet_envs.constants import NoValidPositionException
-import helping_hands_rl_envs.envs.pybullet_envs.constants as py_constants
+from helping_hands_rl_envs.envs import env_constants
 
 from helping_hands_rl_envs.simulators.pybullet.robots.ur5_simple import UR5_Simple
 from helping_hands_rl_envs.simulators.pybullet.robots.ur5_robotiq import UR5_Robotiq
@@ -18,6 +15,7 @@ from helping_hands_rl_envs.simulators.pybullet.utils.sensor import Sensor
 from helping_hands_rl_envs.simulators.pybullet.objects.pybullet_object import PybulletObject
 import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
 from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
 import pickle
 import os
@@ -28,7 +26,7 @@ class PyBulletEnv(BaseEnv):
   '''
   def __init__(self, config):
     # Load the default config and replace any duplicate values with the config
-    config = {**constants.DEFAULT_CONFIG, **config}
+    config = {**env_constants.DEFAULT_CONFIG, **config}
 
     super(PyBulletEnv, self).__init__(config['seed'],
                                       config['workspace'],
@@ -63,7 +61,7 @@ class PyBulletEnv(BaseEnv):
 
     # TODO: Move this somewhere it makes sense
     self.block_original_size = 0.05
-    self.block_scale_range = conifg['object_scale_range']
+    self.block_scale_range = config['object_scale_range']
     self.min_block_size = self.block_original_size * self.block_scale_range[0]
     self.max_block_size = self.block_original_size * self.block_scale_range[1]
 
@@ -90,10 +88,22 @@ class PyBulletEnv(BaseEnv):
     self.perfect_grasp = config['perfect_grasp']
     self.perfect_place = config['perfect_place']
     self.workspace_check = config['workspace_check']
-    self.num_random_objects = conifg['num_random_objects']
+    self.num_random_objects = config['num_random_objects']
     self.check_random_obj_valid = config['check_random_obj_valid']
+    self.random_orientation = config['random_orientation']
+    self.num_obj = config['num_objects']
+    self.reward_type = config['reward_type']
+    self.object_type = config['object_type']
 
     self.episode_count = 0
+    self.table_id = None
+    self.heightmap = None
+    self.current_episode_steps = 1
+    self.last_action = None
+    self.last_obj = None
+    self.state = {}
+    self.pb_state = None
+
     self.initialize()
 
   def initialize(self):
@@ -157,6 +167,19 @@ class PyBulletEnv(BaseEnv):
     pb.stepSimulation()
 
     return self._getObservation()
+
+  def step(self, action):
+    self.takeAction(action)
+    self.wait(100)
+    obs = self._getObservation(action)
+    done = self._checkTermination()
+    reward = 1.0 if done else 0.0
+
+    if not done:
+      done = self.current_episode_steps >= self.max_steps or not self.isSimValid()
+    self.current_episode_steps += 1
+
+    return obs, reward, done
 
   def getStateDict(self):
     self.robot.saveState()

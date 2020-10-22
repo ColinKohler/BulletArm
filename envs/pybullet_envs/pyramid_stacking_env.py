@@ -1,6 +1,5 @@
 import numpy as np
 
-from helping_hands_rl_envs.envs.numpy_env import NumpyEnv
 from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 
@@ -8,24 +7,6 @@ class PyramidStackingEnv(PyBulletEnv):
   ''''''
   def __init__(self, config):
     super(PyramidStackingEnv, self).__init__(config)
-
-    self.simulator_base_env = simulator_base_env
-    self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
-    self.num_obj = config['num_objects'] if 'num_objects' in config else 3
-    self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
-
-  def step(self, action):
-    self.takeAction(action)
-    self.wait(100)
-    obs = self._getObservation(action)
-    done = self._checkTermination()
-    reward = 1.0 if done else 0.0
-
-    if not done:
-      done = self.current_episode_steps >= self.max_steps or not self.isSimValid()
-    self.current_episode_steps += 1
-
-    return obs, reward, done
 
   def reset(self):
     ''''''

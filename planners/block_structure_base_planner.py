@@ -2,10 +2,9 @@ import numpy as np
 import numpy.random as npr
 import scipy
 
-from helping_hands_rl_envs.envs.pybullet_env import NoValidPositionException
-
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
 from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
 import pybullet as pb
 

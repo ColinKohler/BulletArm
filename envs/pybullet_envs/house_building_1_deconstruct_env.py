@@ -10,25 +10,6 @@ class HouseBuilding1DeconstructEnv(DeconstructEnv):
   ''''''
   def __init__(self, config):
     super(HouseBuilding1DeconstructEnv, self).__init__(config)
-    self.pick_offset = 0.01
-
-    self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
-    self.num_obj = config['num_objects'] if 'num_objects' in config else 1
-    self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
-
-  def step(self, action):
-    reward = 1.0 if self.checkStructure() else 0.0
-    self.takeAction(action)
-    self.wait(100)
-    obs = self._getObservation(action)
-    motion_primative, x, y, z, rot = self._decodeAction(action)
-    done = motion_primative and self._checkTermination()
-
-    if not done:
-      done = self.current_episode_steps >= self.max_steps or not self.isSimValid()
-    self.current_episode_steps += 1
-
-    return obs, reward, done
 
   def reset(self):
     ''''''
@@ -61,4 +42,6 @@ class HouseBuilding1DeconstructEnv(DeconstructEnv):
 
 
 def createHouseBuilding1DeconstructEnv(config):
-  return HouseBuilding1DeconstructEnv(config)
+  def thunk():
+    return HouseBuilding1DeconstructEnv(config)
+  return thunk
