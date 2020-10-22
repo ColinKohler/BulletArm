@@ -12,7 +12,7 @@ class HouseBuilding3Planner(BlockStructureBasePlanner):
   def __init__(self, env, config):
     super(HouseBuilding3Planner, self).__init__(env, config)
 
-  def getStepLeft(self):
+  def getStepsLeft(self):
     blocks, bricks, roofs = self.getObjs()
 
     if not self.isSimValid():

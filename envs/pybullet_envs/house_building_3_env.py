@@ -12,9 +12,9 @@ class HouseBuilding3Env(PyBulletEnv):
     while True:
       super(HouseBuilding3Env, self).reset()
       try:
-        self._generateShapes(constants.CUBE, 2, random_orientation=self.random_orientation)
         self._generateShapes(constants.ROOF, 1, random_orientation=self.random_orientation)
         self._generateShapes(constants.BRICK, 1, random_orientation=self.random_orientation)
+        self._generateShapes(constants.CUBE, 2, random_orientation=self.random_orientation)
       except Exception as e:
         continue
       else:
@@ -46,4 +46,6 @@ class HouseBuilding3Env(PyBulletEnv):
     return self._checkObjUpright(roofs[0]) and super(HouseBuilding3Env, self).isSimValid()
 
 def createHouseBuilding3Env(config):
-  return HouseBuilding3Env(config)
+  def _thunk():
+    return HouseBuilding3Env(config)
+  return _thunk

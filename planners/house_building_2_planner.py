@@ -22,7 +22,7 @@ class HouseBuilding2Planner(BlockStructureBasePlanner):
            self.getDistance(blocks[0], blocks[1]) < 2.2 * self.getMaxBlockSize()
 
 
-  def getStepLeft(self):
+  def getStepsLeft(self):
     roofs = list(filter(lambda x: self.env.object_types[x] == constants.ROOF, self.env.objects))
 
     if not self.isSimValid():
