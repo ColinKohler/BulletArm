@@ -10,6 +10,8 @@ BRICK = 4
 TRIANGLE = 5
 ROOF = 6
 RANDOM = 7
+TEAPOT = 8
+TEAPOT_LID = 9
 
 # Motion primatives
 NUM_PRIMATIVES = 2

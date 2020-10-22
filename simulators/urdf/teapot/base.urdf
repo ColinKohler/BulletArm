@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<robot name="partnet_3e47ee246f89d6cdeb5a654451d3cffd-0">
+	<link name="link_1">
+		<contact>
+			<friction_anchor/>
+			<lateral_friction value="1.0"/>
+		</contact>
+		<inertial>
+			<origin xyz="0 0 0"/>
+			<mass value="0.5"/>
+			<inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
+		</inertial>
+		<visual name="handle-2">
+			<origin rpy="1.570796326794897 0 0" xyz="0 0 0.4"/>
+			<geometry>
+				<mesh filename="textured_objs/original-2.obj"/>
+			</geometry>
+		</visual>
+		<visual name="base_body-3">
+			<origin rpy="1.570796326794897 0 0" xyz="0 0 0.4"/>
+			<geometry>
+				<mesh filename="textured_objs/original-4.obj"/>
+			</geometry>
+		</visual>
+		<visual name="base_body-3">
+			<origin rpy="1.570796326794897 0 0" xyz="0 0 0.4"/>
+			<geometry>
+				<mesh filename="textured_objs/original-1.obj"/>
+			</geometry>
+		</visual>
+		<collision>
+			<origin rpy="1.570796326794897 0 0" xyz="0 0 0.4"/>
+			<geometry>
+				<mesh filename="textured_objs/original-2.obj"/>
+			</geometry>
+		</collision>
+		<collision>
+			<origin rpy="1.570796326794897 0 0" xyz="0 0 0.4"/>
+			<geometry>
+				<mesh filename="textured_objs/original-4.obj"/>
+			</geometry>
+		</collision>
+		<collision>
+			<origin rpy="1.570796326794897 0 0" xyz="0 0 0.4"/>
+			<geometry>
+				<mesh filename="textured_objs/original-1.obj"/>
+			</geometry>
+		</collision>
+	</link>
+</robot>

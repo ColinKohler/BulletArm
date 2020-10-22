@@ -35,6 +35,26 @@ class PyBullet2ViewDrawerEnv(PyBullet2ViewEnv):
     self.drawer.initialize((self.workspace[0][1] + 0.11, 0, 0), pb.getQuaternionFromEuler((0, 0, 0)))
     self.drawer2.initialize((self.workspace[0][1] + 0.11, 0, 0.18), pb.getQuaternionFromEuler((0, 0, 0)))
 
+  def isSimValid(self):
+    for obj in self.objects:
+      if self.drawer.isObjInsideDrawer(obj) or self.drawer2.isObjInsideDrawer(obj):
+        continue
+      if not self.check_random_obj_valid and self.object_types[obj] == constants.RANDOM:
+        continue
+      if self._isObjectHeld(obj):
+        continue
+      p = obj.getPosition()
+      if self.workspace_check == 'point':
+        if not self._isPointInWorkspace(p):
+          return False
+      else:
+        if not self._isObjectWithinWorkspace(obj):
+          return False
+      if self.pos_candidate is not None:
+        if np.abs(self.pos_candidate[0] - p[0]).min() > 0.02 or np.abs(self.pos_candidate[1] - p[1]).min() > 0.02:
+          return False
+    return True
+
   def test(self):
     handle1_pos = self.drawer.getHandlePosition()
     handle2_pos = self.drawer2.getHandlePosition()
@@ -51,7 +71,7 @@ if __name__ == '__main__':
                 'seed': 0, 'action_sequence': 'pxyrr', 'num_objects': 5, 'random_orientation': False,
                 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
                 'workspace_check': 'point'}
-  env = PyBullet2ViewEnv(env_config)
+  env = PyBullet2ViewDrawerEnv(env_config)
   while True:
     s, in_hand, obs = env.reset()
     env.test()

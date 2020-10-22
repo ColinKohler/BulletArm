@@ -52,25 +52,7 @@ def createDrawerCubeEnv(simulator_base_env, config):
     def _checkTermination(self):
       return self._isObjOnGround(self.objects[0]) and self._isPointInWorkspace(self.objects[0].getPosition())
 
-    def isSimValid(self):
-      for obj in self.objects:
-        if self.drawer.isObjInsideDrawer(obj) or self.drawer2.isObjInsideDrawer(obj):
-          continue
-        if not self.check_random_obj_valid and self.object_types[obj] == constants.RANDOM:
-          continue
-        if self._isObjectHeld(obj):
-          continue
-        p = obj.getPosition()
-        if self.workspace_check == 'point':
-          if not self._isPointInWorkspace(p):
-            return False
-        else:
-          if not self._isObjectWithinWorkspace(obj):
-            return False
-        if self.pos_candidate is not None:
-          if np.abs(self.pos_candidate[0] - p[0]).min() > 0.02 or np.abs(self.pos_candidate[1] - p[1]).min() > 0.02:
-            return False
-      return True
+
 
     def test(self):
       handle1_pos = self.drawer.getHandlePosition()
