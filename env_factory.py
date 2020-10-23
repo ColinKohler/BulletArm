@@ -63,7 +63,7 @@ def createSingleProcessEnv(simulator, env_type, env_config, planner_config={}):
 
   # Create the environment and planner if planner_config exists
   env_func = getEnvFn(simulator, env_type)
-  env = env_func(env_config)
+  env = env_func(env_config)()
 
   if planner_config:
     planner = getPlannerFn(env_type, planner_config)(env)

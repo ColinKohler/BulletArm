@@ -27,6 +27,4 @@ class BrickStackingEnv(PyBulletEnv):
     return all([self._checkOnTop(bricks[0], b) for b in blocks])
 
 def createBrickStackingEnv(config):
-  def _thunk():
-    return BrickStackingEnv(config)
-  return _thunk
+  return BrickStackingEnv(config)

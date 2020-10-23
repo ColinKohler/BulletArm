@@ -39,6 +39,4 @@ class HouseBuilding2Env(PyBulletEnv):
     return self._checkObjUpright(roofs[0]) and super(HouseBuilding2Env, self).isSimValid()
 
 def createHouseBuilding2Env(config):
-  def _thunk():
-    return HouseBuilding2Env(config)
-  return _thunk
+  return HouseBuilding2Env(config)

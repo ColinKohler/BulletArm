@@ -42,6 +42,4 @@ class HouseBuilding1DeconstructEnv(DeconstructEnv):
 
 
 def createHouseBuilding1DeconstructEnv(config):
-  def thunk():
-    return HouseBuilding1DeconstructEnv(config)
-  return thunk
+  return HouseBuilding1DeconstructEnv(config)
