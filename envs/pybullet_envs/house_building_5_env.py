@@ -6,7 +6,6 @@ class HouseBuilding5Env(PyBulletEnv):
   ''''''
   def __init__(self, config):
     super(HouseBuilding5Env, self).__init__(config)
-
     assert self.num_obj % 2 == 0
     self.prev_best = 0
 

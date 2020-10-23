@@ -1,3 +1,6 @@
+class NoValidPositionException(Exception):
+  pass
+
 # File paths
 URDF_PATH = 'simulators/urdf/object/'
 
@@ -16,3 +19,5 @@ NUM_PRIMATIVES = 2
 PICK_PRIMATIVE = 0
 PLACE_PRIMATIVE = 1
 PUSH_PRIMATIVE = 2
+
+

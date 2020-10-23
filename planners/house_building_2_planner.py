@@ -2,8 +2,6 @@ import numpy as np
 import numpy.random as npr
 import pybullet as pb
 
-from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import NoValidPositionException
-
 from helping_hands_rl_envs.planners.block_stacking_planner import BlockStackingPlanner
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
 from helping_hands_rl_envs.planners.block_structure_base_planner import BlockStructureBasePlanner
@@ -22,7 +20,7 @@ class HouseBuilding2Planner(BlockStructureBasePlanner):
            self.getDistance(blocks[0], blocks[1]) < 2.2 * self.getMaxBlockSize()
 
 
-  def getStepLeft(self):
+  def getStepsLeft(self):
     roofs = list(filter(lambda x: self.env.object_types[x] == constants.ROOF, self.env.objects))
 
     if not self.isSimValid():

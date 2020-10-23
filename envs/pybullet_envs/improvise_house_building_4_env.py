@@ -11,7 +11,6 @@ class ImproviseHouseBuilding4Env(PyBulletEnv):
   def __init__(self, config):
     config['check_random_obj_valid'] = True
     super(ImproviseHouseBuilding4Env, self).__init__(config)
-
     self.base_1_objs = []
     self.base_2_objs = []
 

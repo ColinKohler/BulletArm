@@ -2,7 +2,8 @@ import copy
 import numpy as np
 import numpy.random as npr
 
-from helping_hands_rl_envs.envs.pybullet_envs import constants
+from helping_hands_rl_envs.envs import constants as env_constants
+from helping_hands_rl_envs.envs.numpy_envs.numpy_env import NumpyEnv
 from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.planners.planner_factory import getPlannerFn
 
@@ -19,13 +20,13 @@ def getEnvFn(simulator, env_type):
   Returns:
   '''
   if simulator == 'numpy':
-    if env_type in constants.CREATE_NUMPY_ENV_FNS:
-      return constants.CREATE_NUMPY_ENV_FNS[env_type]
+    if env_type in env_constants.CREATE_NUMPY_ENV_FNS:
+      return env_constants.CREATE_NUMPY_ENV_FNS[env_type]
     else:
       raise ValueError('Invalid environment type passed to factory. No numpy env for {}'.format(env_type))
   elif simulator == 'pybullet':
-    if env_type in constants.CREATE_PYBULLET_ENV_FNS:
-      return constants.CREATE_PYBULLET_ENV_FNS[env_type]
+    if env_type in env_constants.CREATE_PYBULLET_ENV_FNS:
+      return env_constants.CREATE_PYBULLET_ENV_FNS[env_type]
     else:
       raise ValueError('Invalid environment type passed to factory. No pybullet env for {}'.format(env_type))
   else:

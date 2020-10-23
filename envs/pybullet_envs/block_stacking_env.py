@@ -5,20 +5,6 @@ class BlockStackingEnv(PyBulletEnv):
   ''''''
   def __init__(self, config):
     super(BlockStackingEnv, self).__init__(config)
-    self.object_type = config['object_type'] if 'object_type' in config else 'cube'
-
-  def step(self, action):
-    self.takeAction(action)
-    self.wait(100)
-    obs = self._getObservation(action)
-    done = self._checkTermination()
-    reward = 1.0 if done else 0.0
-
-    if not done:
-      done = self.current_episode_steps >= self.max_steps or not self.isSimValid()
-    self.current_episode_steps += 1
-
-    return obs, reward, done
 
   def reset(self):
     ''''''
@@ -46,4 +32,6 @@ class BlockStackingEnv(PyBulletEnv):
     return self._checkStack()
 
 def createBlockStackingEnv(config):
-  return BlockStackingEnv(config)
+  def _thunk():
+    return BlockStackingEnv(config)
+  return _thunk

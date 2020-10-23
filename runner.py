@@ -148,7 +148,6 @@ class MultiRunner(object):
     Args:
       - actions: Numpy variable of environment actions
     '''
-    actions = actions
     for remote, action in zip(self.remotes, actions):
       if auto_reset:
         remote.send(('step_auto_reset', action))

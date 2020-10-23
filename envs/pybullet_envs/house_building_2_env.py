@@ -7,19 +7,6 @@ class HouseBuilding2Env(PyBulletEnv):
   def __init__(self, config):
     super(HouseBuilding2Env, self).__init__(config)
 
-  def step(self, action):
-    self.takeAction(action)
-    self.wait(100)
-    obs = self._getObservation(action)
-    done = self._checkTermination()
-    reward = 1.0 if done else 0.0
-
-    if not done:
-      done = self.current_episode_steps >= self.max_steps or not self.isSimValid()
-    self.current_episode_steps += 1
-
-    return obs, reward, done
-
   def reset(self):
     ''''''
     while True:
@@ -52,4 +39,6 @@ class HouseBuilding2Env(PyBulletEnv):
     return self._checkObjUpright(roofs[0]) and super(HouseBuilding2Env, self).isSimValid()
 
 def createHouseBuilding2Env(config):
-  return HouseBuilding2Env(config)
+  def _thunk():
+    return HouseBuilding2Env(config)
+  return _thunk

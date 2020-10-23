@@ -13,7 +13,7 @@ class DeconstructEnv(PyBulletEnv):
   '''
   def __init__(self, config):
     super(DeconstructEnv, self).__init__(config)
-    self.pick_offset = -0.007
+    self.pick_offset = 0.01
     self.structure_objs = []
 
   def _getObservation(self, action=None):
@@ -38,6 +38,20 @@ class DeconstructEnv(PyBulletEnv):
     '''
     super(DeconstructEnv, self).reset()
     self.structure_objs = []
+
+  def step(self, action):
+    reward = 1.0 if self.checkStructure() else 0.0
+    self.takeAction(action)
+    self.wait(100)
+    obs = self._getObservation(action)
+    motion_primative, x, y, z, rot = self._decodeAction(action)
+    done = motion_primative and self._checkTermination()
+
+    if not done:
+      done = self.current_episode_steps >= self.max_steps or not self.isSimValid()
+    self.current_episode_steps += 1
+
+    return obs, reward, done
 
   def generateImproviseH3(self):
     '''

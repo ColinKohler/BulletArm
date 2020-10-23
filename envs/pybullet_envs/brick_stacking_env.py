@@ -1,27 +1,11 @@
-from copy import deepcopy
-
 from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
-
 from helping_hands_rl_envs.simulators import constants
 
 class BrickStackingEnv(PyBulletEnv):
   ''''''
   def __init__(self, config):
     super(BrickStackingEnv, self).__init__(config)
-    self.num_cubes = config['num_cubes'] if 'num_cubes' in config else 2
-
-  def step(self, action):
-    self.takeAction(action)
-    self.wait(100)
-    obs = self._getObservation(action)
-    done = self._checkTermination()
-    reward = 1.0 if done else 0.0
-
-    if not done:
-      done = self.current_episode_steps >= self.max_steps or not self.isSimValid()
-    self.current_episode_steps += 1
-
-    return obs, reward, done
+    self.num_cubes = self.num_obj - 1
 
   def reset(self):
     ''''''
@@ -42,8 +26,7 @@ class BrickStackingEnv(PyBulletEnv):
     bricks = list(filter(lambda x: self.object_types[x] == constants.BRICK, self.objects))
     return all([self._checkOnTop(bricks[0], b) for b in blocks])
 
-  def getObjectPosition(self):
-    return list(map(self._getObjectPosition, self.objects))
-
 def createBrickStackingEnv(config):
-  return BrickStackingEnv(config)
+  def _thunk():
+    return BrickStackingEnv(config)
+  return _thunk

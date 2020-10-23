@@ -5,29 +5,16 @@ from helping_hands_rl_envs.simulators import constants
 class HouseBuilding3Env(PyBulletEnv):
   ''''''
   def __init__(self, config):
-    HouseBuiliding3Env, selfuper(HouseBuiliding3Env, self).__init__(config)
-
-  def step(self, action):
-    self.takeAction(action)
-    self.wait(100)
-    obs = self._getObservation(action)
-    done = self._checkTermination()
-    reward = 1.0 if done else 0.0
-
-    if not done:
-      done = self.current_episode_steps >= self.max_steps or not self.isSimValid()
-    self.current_episode_steps += 1
-
-    return obs, reward, done
+    super(HouseBuilding3Env, self).__init__(config)
 
   def reset(self):
     ''''''
     while True:
       super(HouseBuilding3Env, self).reset()
       try:
-        self._generateShapes(constants.CUBE, 2, random_orientation=self.random_orientation)
         self._generateShapes(constants.ROOF, 1, random_orientation=self.random_orientation)
         self._generateShapes(constants.BRICK, 1, random_orientation=self.random_orientation)
+        self._generateShapes(constants.CUBE, 2, random_orientation=self.random_orientation)
       except Exception as e:
         continue
       else:
@@ -54,12 +41,11 @@ class HouseBuilding3Env(PyBulletEnv):
       return True
     return False
 
-  def getObjectPosition(self):
-    return list(map(self._getObjectPosition, self.objects))
-
   def isSimValid(self):
     roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
-    return self._checkObjUpright(roofs[0]) and super(HouseBuiliding3Env, self).isSimValid()
+    return self._checkObjUpright(roofs[0]) and super(HouseBuilding3Env, self).isSimValid()
 
 def createHouseBuilding3Env(config):
-  return HouseBuilding3Env(config)
+  def _thunk():
+    return HouseBuilding3Env(config)
+  return _thunk

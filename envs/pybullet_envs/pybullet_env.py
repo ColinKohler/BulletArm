@@ -1,7 +1,5 @@
-import time
 import copy
 import numpy as np
-import scipy
 import numpy.random as npr
 
 import pybullet as pb
@@ -17,6 +15,7 @@ from helping_hands_rl_envs.simulators.pybullet.utils.sensor import Sensor
 from helping_hands_rl_envs.simulators.pybullet.objects.pybullet_object import PybulletObject
 import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
 from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
 import pickle
 import os
@@ -96,8 +95,20 @@ class PyBulletEnv(BaseEnv):
     self.num_objects = config['num_objects']
     self.random_orientation = config['random_orientation']
     self.check_random_obj_valid = config['check_random_obj_valid']
+    self.random_orientation = config['random_orientation']
+    self.num_obj = config['num_objects']
+    self.reward_type = config['reward_type']
+    self.object_type = config['object_type']
 
     self.episode_count = 0
+    self.table_id = None
+    self.heightmap = None
+    self.current_episode_steps = 1
+    self.last_action = None
+    self.last_obj = None
+    self.state = {}
+    self.pb_state = None
+
     self.initialize()
 
   def initialize(self):
@@ -160,6 +171,19 @@ class PyBulletEnv(BaseEnv):
 
     pb.stepSimulation()
     return self._getObservation()
+
+  def step(self, action):
+    self.takeAction(action)
+    self.wait(100)
+    obs = self._getObservation(action)
+    done = self._checkTermination()
+    reward = 1.0 if done else 0.0
+
+    if not done:
+      done = self.current_episode_steps >= self.max_steps or not self.isSimValid()
+    self.current_episode_steps += 1
+
+    return obs, reward, done
 
   def getStateDict(self):
     self.robot.saveState()

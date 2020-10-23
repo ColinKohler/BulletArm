@@ -3,9 +3,6 @@ import time
 import numpy as np
 import torch
 
-from helping_hands_rl_envs.envs.house_building_1_env import createHouseBuilding1Env
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
-
 from helping_hands_rl_envs import env_factory
 
 class TestBulletHouse1(unittest.TestCase):
@@ -18,13 +15,12 @@ class TestBulletHouse1(unittest.TestCase):
                 'workspace_check': 'point'}
   planner_config = {'pos_noise': 0, 'rot_noise': 0}
 
-  # env = createHouseBuilding1Env(PyBulletEnv, env_config)()
 
   def testStepLeft(self):
     num_random_o = 2
     self.env_config['num_random_objects'] = num_random_o
     self.env_config['render'] = True
-    env = env_factory.createEnvs(1, 'rl', 'pybullet', 'house_building_1', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(1, 'pybullet', 'house_building_1', self.env_config, self.planner_config)
     env.reset()
 
     position = env.getObjPositions()[0]

@@ -8,7 +8,6 @@ class RandomPickingEnv(PyBulletEnv):
   def __init__(self, config):
     config['check_random_obj_valid'] = True
     super(RandomPickingEnv,  self).__init__(config)
-
     self.obj_grasped = 0
 
   def step(self, action):

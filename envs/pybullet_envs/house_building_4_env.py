@@ -5,20 +5,7 @@ from helping_hands_rl_envs.simulators import constants
 class HouseBuilding4Env(PyBulletEnv):
   ''''''
   def __init__(self, config):
-    super(HouseBuiliding4Env).__init__(config)
-
-  def step(self, action):
-    self.takeAction(action)
-    self.wait(100)
-    obs = self._getObservation(action)
-    done = self._checkTermination()
-    reward = 1.0 if done else 0.0
-
-    if not done:
-      done = self.current_episode_steps >= self.max_steps or not self.isSimValid()
-    self.current_episode_steps += 1
-
-    return obs, reward, done
+    super(HouseBuilding4Env, self).__init__(config)
 
   def reset(self):
     ''''''
@@ -55,9 +42,6 @@ class HouseBuilding4Env(PyBulletEnv):
            self._checkInBetween(bricks[0], level1_blocks[0], level1_blocks[1]) and \
            self._checkInBetween(roofs[0], level2_blocks[0], level2_blocks[1]) and \
            self._checkInBetween(bricks[0], level2_blocks[0], level2_blocks[1])
-
-  def getObjectPosition(self):
-    return list(map(self._getObjectPosition, self.objects))
 
   def isSimValid(self):
     roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
