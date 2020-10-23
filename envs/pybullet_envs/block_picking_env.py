@@ -2,16 +2,12 @@ from copy import deepcopy
 import numpy as np
 from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 
-class BlockPickingEnv(PyBulletEnV):
+class BlockPickingEnv(PyBulletEnv):
   '''
 
   '''
   def __init__(self, config):
     super(BlockPickingEnv, self).__init__(config)
-    self.simulator_base_env = simulator_base_env
-    self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
-    self.num_obj = config['num_objects'] if 'num_objects' in config else 1
-    self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
     self.obj_grasped = 0
 
   def step(self, action):

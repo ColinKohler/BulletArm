@@ -1,4 +1,4 @@
-imcort numpy as np
+import numpy as np
 from multiprocessing import Process, Pipe
 import os
 import git
@@ -148,7 +148,7 @@ class MultiRunner(object):
     Args:
       - actions: Numpy variable of environment actions
     '''
-    actions = actions.squeeze(1).numpy()
+    actions = actions
     for remote, action in zip(self.remotes, actions):
       if auto_reset:
         remote.send(('step_auto_reset', action))
@@ -171,27 +171,23 @@ class MultiRunner(object):
     res = tuple(zip(*results))
 
     if len(res) == 3:
-      return_metadata = False
       metadata = None
       obs, rewards, dones = res
     else:
-      return_metadata = True
       obs, rewards, dones, metadata = res
 
-    states, hand_obs, depths = zip(*obs)
+    states, hand_obs, obs = zip(*obs)
 
     states = np.stack(states).astype(float)
     hand_obs = np.stack(hand_obs)
-    depths = np.stack(depths)
+    obs = np.stack(obs)
     rewards = np.stack(rewards)
-    if len(rewards.shape) == 1:
-      rewards = rewards.unsqueeze(1)
     dones = np.stack(dones).astype(np.float32)
 
-    if return_metadata:
-      return states, hand_obs, depths, rewards, dones, metadata
+    if metadata:
+      return (states, hand_obs, obs), rewards, dones, metadata
     else:
-      return states, hand_obs, depths, rewards, dones
+      return (states, hand_obs, obs), rewards, dones
 
   def reset(self):
     '''
@@ -203,32 +199,32 @@ class MultiRunner(object):
       remote.send(('reset', None))
 
     obs = [remote.recv() for remote in self.remotes]
-    states, hand_obs, depths = zip(*obs)
+    states, hand_obs, obs = zip(*obs)
 
     states = np.stack(states).astype(float)
     hand_obs = np.stack(hand_obs)
-    depths = np.stack(depths)
+    obs = np.stack(obs)
 
-    return states, hand_obs, depths
+    return (states, hand_obs, obs)
 
   def reset_envs(self, env_nums):
     for env_num in env_nums:
       self.remotes[env_num].send(('reset', None))
 
     obs = [self.remotes[env_num].recv() for env_num in env_nums]
-    states, hand_obs, depths = zip(*obs)
+    states, hand_obs, obs = zip(*obs)
 
     states = np.stack(states).astype(float)
     hand_obs = np.stack(hand_obs)
-    depths = np.stack(depths)
+    obs = np.stack(obs)
 
-    return states, hand_obs, depths
+    return (states, hand_obs, obs)
 
   def getActiveEnvId(self):
     for remote in self.remotes:
       remote.send(('get_active_env_id', None))
     active_env_id = [remote.recv() for remote in self.remotes]
-    active_env_id = torch.from_numpy(np.stack(active_env_id)).float()
+    active_env_id = np.stack(active_env_id)
     return active_env_id
 
   def close(self):
@@ -331,13 +327,13 @@ class MultiRunner(object):
       remote.send(('get_obs', action))
 
     obs = [remote.recv() for remote in self.remotes]
-    states, hand_obs, depths = zip(*obs)
+    states, hand_obs, obs = zip(*obs)
 
     states = np.stack(states).astype(float)
     hand_obs = np.stack(hand_obs)
-    depths = np.stack(depths)
+    obs = np.stack(obs)
 
-    return states, hand_obs, depths
+    return states, hand_obs, obs
 
   def areObjectsInWorkspace(self):
     '''
@@ -404,20 +400,18 @@ class SingleRunner(object):
     Returns:
     '''
     results = self.env.step(action)
-    res = tuple(zip(*results))
 
-    if len(res) == 3:
-      return_metadata = False
+    if len(results) == 3:
       metadata = None
-      obs, rewards, dones = res
+      obs, rewards, dones = results
     else:
-      return_metadata = True
-      obs, rewards, dones, metadata = res
+      obs, rewards, dones, metadata = results
+    states, hand_obs, obs = obs
 
-    if return_metadata:
-      return states, hand_obs, depths, rewards, dones, metadata
+    if metadata:
+      return (states, hand_obs, obs), rewards, dones, metadata
     else:
-      return states, hand_obs, depths, rewards, dones
+      return (states, hand_obs, obs), rewards, dones
 
   def reset(self):
     '''

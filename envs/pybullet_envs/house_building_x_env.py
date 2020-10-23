@@ -1,21 +1,14 @@
 from copy import deepcopy
 from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
-from .utils.check_goal import CheckGoal
-from .utils.check_goal_custom_labels import CheckGoalCustomLabels
+from helping_hands_rl_envs.envs.utils.check_goal import CheckGoal
+from helping_hands_rl_envs.envs.utils.check_goal_custom_labels import CheckGoalCustomLabels
 
 class HouseBuildingXEnv(PyBulletEnv):
   ''''''
   def __init__(self, config):
     super(HouseBuildingXEnv, self).__init__(config)
 
-    self.block_scale_range = (0.6, 0.6)
-    self.min_block_size = self.block_original_size * self.block_scale_range[0]
-    self.max_block_size = self.block_original_size * self.block_scale_range[1]
-    self.simulator_base_env = simulator_base_env
-    self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
-    self.num_obj = config['num_objects'] if 'num_objects' in config else 1
-    self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
     self.get_custom_labels = config['get_custom_labels'] if 'get_custom_labels' in config else False
     self.custom_label_goals = config['custom_label_goals'] if 'custom_label_goals' in config else None
     self.check_roof_upright = config['check_roof_upright'] if 'check_roof_upright' in config else True

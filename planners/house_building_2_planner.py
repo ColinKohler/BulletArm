@@ -2,7 +2,7 @@ import numpy as np
 import numpy.random as npr
 import pybullet as pb
 
-from helping_hands_rl_envs.envs.pybullet_env import NoValidPositionException
+from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import NoValidPositionException
 
 from helping_hands_rl_envs.planners.block_stacking_planner import BlockStackingPlanner
 from helping_hands_rl_envs.planners.base_planner import BasePlanner

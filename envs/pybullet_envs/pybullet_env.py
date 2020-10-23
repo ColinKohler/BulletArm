@@ -8,7 +8,6 @@ import pybullet as pb
 import pybullet_data
 
 from helping_hands_rl_envs.envs.base_env import BaseEnv
-from helping_hands_rl_envs.envs.pybullet_envs.constants import NoValidPositionException
 import helping_hands_rl_envs.envs.pybullet_envs.constants as py_constants
 
 from helping_hands_rl_envs.simulators.pybullet.robots.ur5_simple import UR5_Simple
@@ -22,13 +21,16 @@ from helping_hands_rl_envs.simulators import constants
 import pickle
 import os
 
+class NoValidPositionException(Exception):
+  pass
+
 class PyBulletEnv(BaseEnv):
   '''
   PyBullet Arm RL base class.
   '''
   def __init__(self, config):
     # Load the default config and replace any duplicate values with the config
-    config = {**constants.DEFAULT_CONFIG, **config}
+    config = {**py_constants.DEFAULT_CONFIG, **config}
 
     super(PyBulletEnv, self).__init__(config['seed'],
                                       config['workspace'],
@@ -63,7 +65,7 @@ class PyBulletEnv(BaseEnv):
 
     # TODO: Move this somewhere it makes sense
     self.block_original_size = 0.05
-    self.block_scale_range = conifg['object_scale_range']
+    self.block_scale_range = config['object_scale_range']
     self.min_block_size = self.block_original_size * self.block_scale_range[0]
     self.max_block_size = self.block_original_size * self.block_scale_range[1]
 
@@ -90,7 +92,9 @@ class PyBulletEnv(BaseEnv):
     self.perfect_grasp = config['perfect_grasp']
     self.perfect_place = config['perfect_place']
     self.workspace_check = config['workspace_check']
-    self.num_random_objects = conifg['num_random_objects']
+    self.num_random_objects = config['num_random_objects']
+    self.num_objects = config['num_objects']
+    self.random_orientation = config['random_orientation']
     self.check_random_obj_valid = config['check_random_obj_valid']
 
     self.episode_count = 0
@@ -155,7 +159,6 @@ class PyBulletEnv(BaseEnv):
         break
 
     pb.stepSimulation()
-
     return self._getObservation()
 
   def getStateDict(self):

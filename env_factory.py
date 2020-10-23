@@ -2,9 +2,8 @@ import copy
 import numpy as np
 import numpy.random as npr
 
-from helping_hands_rl_envs.envs import constants
-from helping_hands_rl_envs.envs.numpy_env import NumpyEnv
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_envs import constants
+from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.planners.planner_factory import getPlannerFn
 
 from helping_hands_rl_envs.runner import MultiRunner, SingleRunner
@@ -55,7 +54,7 @@ def createSingleProcessEnv(simulator, env_type, env_config, planner_config={}):
   Returns: SingleRunner containing the environment
   '''
   # Check to make sure a seed is given and generate a random one if it is not
-  if env_type == 'multi_task'
+  if env_type == 'multi_task':
     for config in env_config:
       config['seed'] = config['seed'] if 'seed' in config else npr.randint(1000)
   else:
@@ -63,7 +62,7 @@ def createSingleProcessEnv(simulator, env_type, env_config, planner_config={}):
 
   # Create the environment and planner if planner_config exists
   env_func = getEnvFn(simulator, env_type)
-  env = env_func(env_config)()
+  env = env_func(env_config)
 
   if planner_config:
     planner = getPlannerFn(env_type, planner_config)(env)
@@ -88,7 +87,7 @@ def createMultiprocessEnvs(num_processes, simulator, env_type, env_config, plann
   # Clone env config and set seeds for the different processes
   env_configs = [copy.deepcopy(env_config) for _ in range(num_processes)]
   for i, env_config in enumerate(env_configs):
-    if env_type == 'multi_task'
+    if env_type == 'multi_task':
       for config in env_config:
         config['seed'] = config['seed'] + i if 'seed' in config else npr.randint(1000)
     else:
@@ -96,7 +95,7 @@ def createMultiprocessEnvs(num_processes, simulator, env_type, env_config, plann
 
   # Create the various environments
   env_func = getEnvFn(simulator, env_type)
-  envs = [env_func(parent_env, env_configs[i]) for i in range(num_processes)]
+  envs = [lambda : env_func(env_configs[i]) for i in range(num_processes)]
   if planner_config:
     planners = [getPlannerFn(env_type, planner_config) for i in range(num_processes)]
   else:

@@ -15,7 +15,6 @@ class DeconstructEnv(PyBulletEnv):
     super(DeconstructEnv, self).__init__(config)
     self.pick_offset = -0.007
     self.structure_objs = []
-    self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
 
   def _getObservation(self, action=None):
     '''

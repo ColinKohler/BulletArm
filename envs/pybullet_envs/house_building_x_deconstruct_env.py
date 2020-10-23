@@ -5,23 +5,14 @@ import numpy as np
 from itertools import combinations
 from helping_hands_rl_envs.envs.pybullet_envs.deconstruct_env import DeconstructEnv
 from helping_hands_rl_envs.simulators import constants
-from .utils.check_goal import CheckGoal
-from .utils.gen_goal import GenGoal
+from helping_hands_rl_envs.envs.utils.check_goal import CheckGoal
+from helping_hands_rl_envs.envs.utils.gen_goal import GenGoal
 
 class HouseBuildingXDeconstructEnv(DeconstructEnv):
   ''''''
   def __init__(self, config):
     super(HouseBuildingXDeconstructEnv, self).__init__(config)
-
     self.pick_offset = 0.01
-    self.block_scale_range = (0.6, 0.6)
-    self.min_block_size = self.block_original_size * self.block_scale_range[0]
-    self.max_block_size = self.block_original_size * self.block_scale_range[1]
-    self.simulator_base_env = simulator_base_env
-    self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
-    self.num_obj = config['num_objects'] if 'num_objects' in config else 1
-    self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
-    self.additional_objects = not config['no_additional_objects'] if 'no_additional_objects' in config else True
 
     goal = config["goal_string"]
     self.check_goal = CheckGoal(goal, self)

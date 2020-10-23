@@ -4,12 +4,8 @@ from helping_hands_rl_envs.simulators import constants
 
 class HouseBuilding4Env(PyBulletEnv):
   ''''''
-    self.min_block_size = self.block_original_size * self.block_scale_range[0]
-    self.max_block_size = self.block_original_size * self.block_scale_range[1]
-    self.simulator_base_env = simulator_base_env
-    self.random_orientation = config['random_orientation'] if 'random_orientation' in config else False
-    self.num_obj = config['num_objects'] if 'num_objects' in config else 1
-    self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
+  def __init__(self, config):
+    super(HouseBuiliding4Env).__init__(config)
 
   def step(self, action):
     self.takeAction(action)
