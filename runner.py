@@ -128,8 +128,8 @@ class MultiRunner(object):
     for remote in self.worker_remotes:
       remote.close()
 
-    self.remotes[0].send(('get_spaces', None))
-    self.obs_shape, self.action_space, self.action_shape = self.remotes[0].recv()
+    #self.remotes[0].send(('get_spaces', None))
+    #self.obs_shape, self.action_space, self.action_shape = self.remotes[0].recv()
 
   def step(self, actions, auto_reset=True):
     '''
@@ -482,6 +482,12 @@ class SingleRunner(object):
       return self.planner.getStepsLeft()
     else:
       raise ValueError('Attempting to use a planner which was not initialized.')
+
+  def getActiveEnvId(self):
+    '''
+
+    '''
+    return self.env.active_env_id
 
   def areObjectsInWorkspace(self):
     '''

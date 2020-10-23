@@ -19,7 +19,7 @@ class Sensor(object):
                                   viewMatrix=self.view_matrix,
                                   projectionMatrix=self.proj_matrix,
                                   renderer=pb.ER_TINY_RENDERER)
-    depth_img = image_arr[3]
+    depth_img = np.array(image_arr[3])
     depth = self.far * self.near / (self.far - (self.far - self.near) * depth_img)
 
-    return np.abs(depth - np.max(depth))
+    return np.abs(depth - np.max(depth)).reshape(size, size)

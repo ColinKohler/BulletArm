@@ -20,9 +20,6 @@ from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 import pickle
 import os
 
-class NoValidPositionException(Exception):
-  pass
-
 class PyBulletEnv(BaseEnv):
   '''
   PyBullet Arm RL base class.
@@ -306,6 +303,9 @@ class PyBulletEnv(BaseEnv):
 
   # TODO: This does not work w/cylinders
   def didBlockFall(self):
+    if self.last_action is None:
+      return False
+
     motion_primative, x, y, z, rot = self._decodeAction(self.last_action)
     obj = self.last_obj
 
