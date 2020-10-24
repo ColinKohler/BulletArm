@@ -2,6 +2,7 @@ from copy import deepcopy
 from itertools import combinations
 from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
 class ImproviseHouseBuilding2Env(PyBulletEnv):
   ''''''
@@ -29,7 +30,7 @@ class ImproviseHouseBuilding2Env(PyBulletEnv):
       try:
         self._generateShapes(constants.ROOF, 1, random_orientation=self.random_orientation)
         self._generateShapes(constants.RANDOM, self.num_obj-1, random_orientation=self.random_orientation)
-      except:
+      except NoValidPositionException:
         continue
       else:
         break

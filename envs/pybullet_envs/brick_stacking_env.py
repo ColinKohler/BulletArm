@@ -1,5 +1,6 @@
 from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
 class BrickStackingEnv(PyBulletEnv):
   ''''''
@@ -14,7 +15,7 @@ class BrickStackingEnv(PyBulletEnv):
       try:
         self._generateShapes(constants.BRICK, 1, random_orientation=self.random_orientation)
         self._generateShapes(constants.CUBE, self.num_cubes, random_orientation=self.random_orientation)
-      except Exception as e:
+      except NoValidPositionException as e:
         continue
       else:
         break

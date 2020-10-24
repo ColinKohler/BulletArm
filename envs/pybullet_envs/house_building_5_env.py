@@ -1,6 +1,7 @@
 from copy import deepcopy
 from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
 class HouseBuilding5Env(PyBulletEnv):
   ''''''
@@ -39,7 +40,7 @@ class HouseBuilding5Env(PyBulletEnv):
       try:
         self._generateShapes(constants.CYLINDER, int(self.num_obj/2), random_orientation=self.random_orientation)
         self._generateShapes(constants.CUBE, int(self.num_obj/2), random_orientation=self.random_orientation)
-      except Exception as e:
+      except NoValidPositionException as e:
         continue
       else:
         break

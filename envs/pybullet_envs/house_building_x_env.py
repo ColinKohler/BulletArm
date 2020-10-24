@@ -3,6 +3,7 @@ from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.envs.utils.check_goal import CheckGoal
 from helping_hands_rl_envs.envs.utils.check_goal_custom_labels import CheckGoalCustomLabels
+from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
 class HouseBuildingXEnv(PyBulletEnv):
   ''''''
@@ -75,7 +76,7 @@ class HouseBuildingXEnv(PyBulletEnv):
         self._generateShapes(constants.BRICK, self.gen_bricks, random_orientation=self.random_orientation)
         self._generateShapes(constants.CUBE, self.gen_blocks, random_orientation=self.random_orientation)
         self._generateShapes(constants.TRIANGLE, self.gen_triangles, random_orientation=self.random_orientation)
-      except Exception as e:
+      except NoValidPositionException as e:
         continue
       else:
         break

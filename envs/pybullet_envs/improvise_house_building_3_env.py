@@ -4,6 +4,7 @@ import numpy.random as npr
 from itertools import combinations
 from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
 class ImproviseHouseBuilding3Env(PyBulletEnv):
   ''''''
@@ -38,7 +39,7 @@ class ImproviseHouseBuilding3Env(PyBulletEnv):
         #                      z_scale=1)
         # self._generateShapes(constants.RANDOM, 1, random_orientation=self.random_orientation,
         #                      z_scale=2)
-      except:
+      except NoValidPositionException:
         continue
       else:
         break

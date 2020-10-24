@@ -3,6 +3,7 @@ import numpy as np
 from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 import numpy.random as npr
+from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
 class RandomPickingEnv(PyBulletEnv):
   def __init__(self, config):
@@ -34,7 +35,7 @@ class RandomPickingEnv(PyBulletEnv):
       try:
         for i in range(self.num_obj):
           self._generateShapes(constants.RANDOM, 1, random_orientation=self.random_orientation, z_scale=npr.choice([1, 2], p=[0.75, 0.25]))
-      except:
+      except NoValidPositionException:
         continue
       else:
         break

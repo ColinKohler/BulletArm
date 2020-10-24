@@ -1,5 +1,6 @@
 from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
 class BlockStackingEnv(PyBulletEnv):
   ''''''
@@ -20,8 +21,7 @@ class BlockStackingEnv(PyBulletEnv):
       super(BlockStackingEnv, self).reset()
       try:
         self._generateShapes(object_type, self.num_objects, random_orientation=self.random_orientation)
-      except Exception as e:
-        print(e)
+      except NoValidPositionException as e:
         continue
       else:
         break
