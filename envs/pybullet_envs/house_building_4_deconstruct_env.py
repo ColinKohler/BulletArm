@@ -2,6 +2,7 @@ import time
 from copy import deepcopy
 import numpy.random as npr
 import numpy as np
+import pybullet as pb
 from itertools import combinations
 from helping_hands_rl_envs.envs.pybullet_envs.deconstruct_env import DeconstructEnv
 from helping_hands_rl_envs.simulators import constants
@@ -10,41 +11,6 @@ class HouseBuilding4DeconstructEnv(DeconstructEnv):
   ''''''
   def __init__(self, config):
     super(HouseBuilding4DeconstructEnv, self).__init__(config)
-    self.pick_offset = 0.01
-
-  def step(self, action):
-    reward = 1.0 if self.checkStructure() else 0.0
-    self.takeAction(action)
-    self.wait(100)
-    obs = self._getObservation(action)
-    motion_primative, x, y, z, rot = self._decodeAction(action)
-    done = motion_primative and self._checkTermination()
-
-    if not done:
-      done = self.current_episode_steps >= self.max_steps or not self.isSimValid()
-    self.current_episode_steps += 1
-
-    return obs, reward, done
-
-  def reset(self):
-    ''''''
-    while True:
-      super(HouseBuilding4DeconstructEnv, self).reset()
-      self.generateH4()
-
-      while not self.checkStructure():
-        super(HouseBuilding4DeconstructEnv, self).reset()
-        self.generateH4()
-
-      return self._getObservation()
-
-  def _checkTermination(self):
-    obj_combs = combinations(self.objects, 2)
-    for (obj1, obj2) in obj_combs:
-      dist = np.linalg.norm(np.array(obj1.getXYPosition()) - np.array(obj2.getXYPosition()))
-      if dist < 2.4*self.min_block_size:
-        return False
-    return True
 
   def checkStructure(self):
     blocks = list(filter(lambda x: self.object_types[x] == constants.CUBE, self.objects))
@@ -66,6 +32,30 @@ class HouseBuilding4DeconstructEnv(DeconstructEnv):
            self._checkInBetween(bricks[0], level1_blocks[0], level1_blocks[1]) and \
            self._checkInBetween(roofs[0], level2_blocks[0], level2_blocks[1]) and \
            self._checkInBetween(bricks[0], level2_blocks[0], level2_blocks[1])
+
+  def generateStructure(self):
+    padding = self.max_block_size * 1.5
+    min_dist = 2.1 * self.max_block_size
+    max_dist = 2.2 * self.max_block_size
+    pos1, pos2 = self.get2BaseXY(padding, min_dist, max_dist)
+    rot1 = self._getValidOrientation(self.random_orientation)
+    rot2 = self._getValidOrientation(self.random_orientation)
+    self.generateStructureShape((pos1[0], pos1[1], self.max_block_size / 2), rot1, constants.CUBE)
+    self.generateStructureShape((pos2[0], pos2[1], self.max_block_size / 2), rot2, constants.CUBE)
+
+    x, y, r = self.getXYRFrom2BasePos(pos1, pos2)
+    self.generateStructureShape([x, y, self.max_block_size * 1.5], pb.getQuaternionFromEuler([0., 0., r]),
+                                constants.BRICK)
+
+    rot1 = self._getValidOrientation(self.random_orientation)
+    rot2 = self._getValidOrientation(self.random_orientation)
+    self.generateStructureShape((pos1[0], pos1[1], self.max_block_size * 2.5), rot1, constants.CUBE)
+    self.generateStructureShape((pos2[0], pos2[1], self.max_block_size * 2.5), rot2, constants.CUBE)
+
+    self.generateStructureShape([x, y, self.max_block_size * 3.5], pb.getQuaternionFromEuler([0., 0., r]),
+                                constants.ROOF)
+
+    self.wait(50)
 
   def isSimValid(self):
     roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))

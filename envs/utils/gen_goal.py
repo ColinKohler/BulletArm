@@ -72,12 +72,12 @@ class GenGoal:
                     if min_dist < dist < max_dist:
                         break
 
-                self.env.generateObject(
+                self.env.generateStructureShape(
                     (pos1[0], pos1[1], self.MAX_BLOCK_SIZE / 2),
                     self.ZERO_ROT, constants.CUBE
                 )
 
-                self.env.generateObject(
+                self.env.generateStructureShape(
                     (pos2[0], pos2[1], self.MAX_BLOCK_SIZE / 2),
                     self.ZERO_ROT, constants.CUBE
                 )
@@ -94,7 +94,7 @@ class GenGoal:
                 elif self.type == GenGoal.ROOF:
                     obj = constants.ROOF
 
-                self.env.generateObject(
+                self.env.generateStructureShape(
                     [pos1[0], pos1[1], self.MAX_BLOCK_SIZE / 2],
                     pb.getQuaternionFromEuler([0., 0., 0.]),
                     obj
@@ -117,7 +117,7 @@ class GenGoal:
                 else:
                     raise ValueError("Unknown object.")
 
-                self.env.generateObject(
+                self.env.generateStructureShape(
                     (pos[0], pos[1], self.MAX_BLOCK_SIZE * self.height + offset),
                     self.ZERO_ROT, obj
                 )
@@ -137,7 +137,7 @@ class GenGoal:
                         obj = constants.TRIANGLE
 
                     pos = random.choice([pos1, pos2])
-                    self.env.generateObject(
+                    self.env.generateStructureShape(
                         (pos[0], pos[1], self.MAX_BLOCK_SIZE * self.height + offset),
                         self.ZERO_ROT, obj
                     )
@@ -146,12 +146,12 @@ class GenGoal:
 
                 elif self.type == GenGoal.TWO_BLOCKS:
 
-                    self.env.generateObject(
+                    self.env.generateStructureShape(
                         (pos1[0], pos1[1], self.MAX_BLOCK_SIZE * self.height + offset),
                         self.ZERO_ROT, constants.CUBE
                     )
 
-                    self.env.generateObject(
+                    self.env.generateStructureShape(
                         (pos2[0], pos2[1], self.MAX_BLOCK_SIZE * self.height + offset),
                         self.ZERO_ROT, constants.CUBE
                     )
@@ -169,7 +169,7 @@ class GenGoal:
 
                     pos = np.mean(np.array([pos1, pos2]), axis=0)
 
-                    self.env.generateObject(
+                    self.env.generateStructureShape(
                         (pos[0], pos[1], self.MAX_BLOCK_SIZE * self.height + offset),
                         self.ZERO_ROT, obj
                     )
@@ -191,7 +191,7 @@ class GenGoal:
                     else:
                         obj = constants.TRIANGLE
 
-                    self.env.generateObject(
+                    self.env.generateStructureShape(
                         (new_pos[0], new_pos[1], self.MAX_BLOCK_SIZE * self.height + offset),
                         self.ZERO_ROT, obj
                     )
@@ -203,12 +203,12 @@ class GenGoal:
                     pos1 = [pos[0], pos[1] - self.MAX_BLOCK_SIZE]
                     pos2 = [pos[0], pos[1] + self.MAX_BLOCK_SIZE]
 
-                    self.env.generateObject(
+                    self.env.generateStructureShape(
                         (pos1[0], pos1[1], self.MAX_BLOCK_SIZE * self.height + offset),
                         self.ZERO_ROT, constants.CUBE
                     )
 
-                    self.env.generateObject(
+                    self.env.generateStructureShape(
                         (pos2[0], pos2[1], self.MAX_BLOCK_SIZE * self.height + offset),
                         self.ZERO_ROT, constants.CUBE
                     )
@@ -224,7 +224,7 @@ class GenGoal:
                     else:
                         raise ValueError("Unknown object.")
 
-                    self.env.generateObject(
+                    self.env.generateStructureShape(
                         (pos[0], pos[1], self.MAX_BLOCK_SIZE * self.height + offset),
                         self.ZERO_ROT, obj
                     )

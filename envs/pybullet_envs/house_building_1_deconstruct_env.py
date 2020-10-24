@@ -11,30 +11,22 @@ class HouseBuilding1DeconstructEnv(DeconstructEnv):
   def __init__(self, config):
     super(HouseBuilding1DeconstructEnv, self).__init__(config)
 
-  def reset(self):
-    ''''''
-    super(HouseBuilding1DeconstructEnv, self).reset()
-    self.generateH1()
-
-    while not self.checkStructure():
-      super(HouseBuilding1DeconstructEnv, self).reset()
-      self.generateH1()
-
-    return self._getObservation()
-
-  def _checkTermination(self):
-    obj_combs = combinations(self.objects, 2)
-    for (obj1, obj2) in obj_combs:
-      dist = np.linalg.norm(np.array(obj1.getXYPosition()) - np.array(obj2.getXYPosition()))
-      if dist < 2.4*self.min_block_size:
-        return False
-    return True
-
   def checkStructure(self):
     ''''''
     blocks = list(filter(lambda x: self.object_types[x] == constants.CUBE, self.objects))
     triangles = list(filter(lambda x: self.object_types[x] == constants.TRIANGLE, self.objects))
     return self._checkStack(blocks+triangles) and self._checkObjUpright(triangles[0])
+
+  def generateStructure(self):
+    padding = self.max_block_size * 1.5
+    pos = self._getValidPositions(padding, 0, [], 1)[0]
+    rot = self._getValidOrientation(self.random_orientation)
+    for i in range(self.num_obj - 1):
+      self.generateStructureShape((pos[0], pos[1], i * self.max_block_size + self.max_block_size / 2), rot,
+                                  constants.CUBE)
+    self.generateStructureShape((pos[0], pos[1], (self.num_obj - 1) * self.max_block_size + self.max_block_size / 2),
+                                rot, constants.TRIANGLE)
+    self.wait(50)
 
   def isSimValid(self):
     triangles = list(filter(lambda x: self.object_types[x] == constants.TRIANGLE, self.objects))

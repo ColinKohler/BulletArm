@@ -390,6 +390,13 @@ class PyBulletEnv(BaseEnv):
     else:
       raise NoValidPositionException
 
+  def _getValidOrientation(self, random_orientation):
+    if random_orientation:
+      orientation = pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()])
+    else:
+      orientation = pb.getQuaternionFromEuler([0., 0., 0.])
+    return orientation
+
   def _generateShapes(self, shape_type=0, num_shapes=1, scale=None, pos=None, rot=None,
                            min_distance=None, padding=None, random_orientation=False, z_scale=1):
     ''''''
@@ -423,10 +430,7 @@ class PyBulletEnv(BaseEnv):
     for position in valid_positions:
       position.append(0.020)
       position = np.round(position, 3)
-      if random_orientation:
-        orientation = pb.getQuaternionFromEuler([0., 0., 2*np.pi*np.random.random_sample()])
-      else:
-        orientation = pb.getQuaternionFromEuler([0., 0., 0.])
+      orientation = self._getValidOrientation(random_orientation)
       if not scale:
         scale = npr.choice(np.arange(self.block_scale_range[0], self.block_scale_range[1]+0.01, 0.02))
 
