@@ -22,7 +22,6 @@ DEFAULT_CONFIG = {
   'num_solver_iterations' : 200,
   'solver_residual_threshold' : 1e-7,
   'reward_type' : 'sparse',
-  'random_orientation' : False,
   'num_objects' : 1,
   'object_type' : 'cube',
 }

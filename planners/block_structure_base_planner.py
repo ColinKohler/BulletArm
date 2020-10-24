@@ -230,7 +230,7 @@ class BlockStructureBasePlanner(BasePlanner):
       return self.placeOnHighestObj([bottom_obj])
     bottom_pos, bottom_rot = bottom_obj.getPose()
     bottom_rot = pb.getEulerFromQuaternion(bottom_rot)[2]
-    v = np.array([[np.cos(bottom_rot), np.sin(bottom_rot)]]).repeat(num_slots, 0)
+    v = np.array([[np.cos(bottom_rot+np.pi/2), np.sin(bottom_rot+np.pi/2)]]).repeat(num_slots, 0)
 
     bottom_obj_length -= self.getMaxBlockSize()
     possible_points = v * np.expand_dims(np.linspace(-0.5, 0.5, num_slots), 1).repeat(2, 1) * bottom_obj_length
@@ -246,7 +246,7 @@ class BlockStructureBasePlanner(BasePlanner):
       x, y = possible_points[np.argmax(scipy.spatial.distance.cdist(possible_points, top_obj_positions).min(axis=1))]
 
     z = bottom_pos[2] + self.env.place_offset
-    r = bottom_rot + np.pi / 2
+    r = bottom_rot
     while r > np.pi:
       r -= np.pi
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)

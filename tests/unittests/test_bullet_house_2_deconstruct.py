@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 from helping_hands_rl_envs import env_factory
 
-class TestBulletBrickStacking(unittest.TestCase):
+class TestBulletHouse2Deconstruct(unittest.TestCase):
   workspace = np.asarray([[0.3, 0.6],
                           [-0.15, 0.15],
                           [0, 0.50]])
@@ -19,12 +19,11 @@ class TestBulletBrickStacking(unittest.TestCase):
 
   def testPlanner(self):
     self.env_config['render'] = True
-    self.env_config['seed'] = 1
-    env = env_factory.createEnvs(1, 'pybullet', 'brick_stacking', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(1, 'pybullet', 'house_building_2_deconstruct', self.env_config, self.planner_config)
     env.reset()
     for i in range(3, -1, -1):
       action = env.getNextAction()
       (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
-      self.assertEqual(env.getStepsLeft(), i)
+    self.assertEqual(dones, 1)
     env.close()
 

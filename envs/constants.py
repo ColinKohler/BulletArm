@@ -15,6 +15,8 @@ from helping_hands_rl_envs.envs.pybullet_envs.improvise_house_building_2_env imp
 from helping_hands_rl_envs.envs.pybullet_envs.improvise_house_building_3_env import createImproviseHouseBuilding3Env
 from helping_hands_rl_envs.envs.pybullet_envs.improvise_house_building_4_env import createImproviseHouseBuilding4Env
 from helping_hands_rl_envs.envs.pybullet_envs.house_building_1_deconstruct_env import createHouseBuilding1DeconstructEnv
+from helping_hands_rl_envs.envs.pybullet_envs.house_building_2_deconstruct_env import createHouseBuilding2DeconstructEnv
+from helping_hands_rl_envs.envs.pybullet_envs.house_building_3_deconstruct_env import createHouseBuilding3DeconstructEnv
 from helping_hands_rl_envs.envs.pybullet_envs.house_building_4_deconstruct_env import createHouseBuilding4DeconstructEnv
 from helping_hands_rl_envs.envs.pybullet_envs.house_building_x_deconstruct_env import createHouseBuildingXDeconstructEnv
 from helping_hands_rl_envs.envs.pybullet_envs.improvise_house_building_3_deconstruct_env import createImproviseHouseBuilding3DeconstructEnv
@@ -52,6 +54,8 @@ CREATE_PYBULLET_ENV_FNS = {
   'improvise_house_building_3' : createImproviseHouseBuilding3Env,
   'improvise_house_building_4' : createImproviseHouseBuilding4Env,
   'house_building_1_deconstruct' : createHouseBuilding1DeconstructEnv,
+  'house_building_2_deconstruct' : createHouseBuilding2DeconstructEnv,
+  'house_building_3_deconstruct' : createHouseBuilding3DeconstructEnv,
   'house_building_4_deconstruct' : createHouseBuilding4DeconstructEnv,
   'house_building_x_deconstruct' : createHouseBuildingXDeconstructEnv,
   'improvise_house_building_3_deconstruct' : createImproviseHouseBuilding3DeconstructEnv,

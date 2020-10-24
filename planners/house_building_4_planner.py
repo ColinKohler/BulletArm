@@ -95,7 +95,7 @@ class HouseBuilding4Planner(BlockStructureBasePlanner):
     else:
       return self.placeOnTopOfMultiple(level2_blocks)
 
-  def getStepLeft(self):
+  def getStepsLeft(self):
     if not self.isSimValid():
       return 100
     if self.checkTermination():
