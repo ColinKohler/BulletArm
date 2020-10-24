@@ -41,15 +41,15 @@ class ImproviseHouseBuilding4DeconstructEnv(DeconstructEnv):
     base2_scale1 = np.random.uniform(1, 2)
     base2_scale2 = 3 - base2_scale1
 
-    self.generateRandomShapeWithZScale([pos1[0], pos1[1], base1_scale1 * 0.007],
-                                       self._getValidOrientation(self.random_orientation), base1_scale1)
-    self.generateRandomShapeWithZScale([pos1[0], pos1[1], base1_scale1 * 0.014 + base1_scale2 * 0.007],
-                                       self._getValidOrientation(self.random_orientation), base1_scale2)
+    self.generateStructureRandomShapeWithZScale([pos1[0], pos1[1], base1_scale1 * 0.007],
+                                                self._getValidOrientation(self.random_orientation), base1_scale1)
+    self.generateStructureRandomShapeWithZScale([pos1[0], pos1[1], base1_scale1 * 0.014 + base1_scale2 * 0.007],
+                                                self._getValidOrientation(self.random_orientation), base1_scale2)
 
-    self.generateRandomShapeWithZScale([pos2[0], pos2[1], base2_scale1 * 0.007],
-                                       self._getValidOrientation(self.random_orientation), base2_scale1)
-    self.generateRandomShapeWithZScale([pos2[0], pos2[1], base2_scale1 * 0.014 + base2_scale2 * 0.007],
-                                       self._getValidOrientation(self.random_orientation), base2_scale2)
+    self.generateStructureRandomShapeWithZScale([pos2[0], pos2[1], base2_scale1 * 0.007],
+                                                self._getValidOrientation(self.random_orientation), base2_scale1)
+    self.generateStructureRandomShapeWithZScale([pos2[0], pos2[1], base2_scale1 * 0.014 + base2_scale2 * 0.007],
+                                                self._getValidOrientation(self.random_orientation), base2_scale2)
 
     x, y, r = self.getXYRFrom2BasePos(pos1, pos2)
 

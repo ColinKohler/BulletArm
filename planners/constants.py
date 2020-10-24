@@ -34,6 +34,7 @@ PLANNERS = {
   'house_building_3_deconstruct' : DeconstructPlanner,
   'house_building_4_deconstruct' : DeconstructPlanner,
   'house_building_x_deconstruct' : DeconstructPlanner,
+  'improvise_house_building_2_deconstruct' : DeconstructPlanner,
   'improvise_house_building_3_deconstruct' : DeconstructPlanner,
   'improvise_house_building_4_deconstruct' : DeconstructPlanner,
 }

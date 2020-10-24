@@ -39,40 +39,40 @@ class ImproviseHouseBuilding3Env(DeconstructEnv):
 
     t = np.random.choice(4)
     if t == 0:
-      self.generateRandomShapeWithZScale([pos1[0], pos1[1], lower_z1],
-                                         self._getValidOrientation(self.random_orientation), 1)
-      self.generateRandomShapeWithZScale([pos1[0], pos1[1], lower_z2],
-                                         self._getValidOrientation(self.random_orientation), 1)
-      self.generateRandomShapeWithZScale([pos2[0], pos2[1], lower_z1],
-                                         self._getValidOrientation(self.random_orientation), 1)
-      self.generateRandomShapeWithZScale([pos2[0], pos2[1], lower_z2],
-                                         self._getValidOrientation(self.random_orientation), 1)
+      self.generateStructureRandomShapeWithZScale([pos1[0], pos1[1], lower_z1],
+                                                  self._getValidOrientation(self.random_orientation), 1)
+      self.generateStructureRandomShapeWithZScale([pos1[0], pos1[1], lower_z2],
+                                                  self._getValidOrientation(self.random_orientation), 1)
+      self.generateStructureRandomShapeWithZScale([pos2[0], pos2[1], lower_z1],
+                                                  self._getValidOrientation(self.random_orientation), 1)
+      self.generateStructureRandomShapeWithZScale([pos2[0], pos2[1], lower_z2],
+                                                  self._getValidOrientation(self.random_orientation), 1)
 
     elif t == 1:
-      self.generateRandomShapeWithZScale([pos1[0], pos1[1], lower_z1],
-                                         self._getValidOrientation(self.random_orientation), 1)
-      self.generateRandomShapeWithZScale([pos1[0], pos1[1], lower_z2],
-                                         self._getValidOrientation(self.random_orientation), 1)
-      self.generateRandomShapeWithZScale([pos2[0], pos2[1], hier_z], self._getValidOrientation(self.random_orientation),
-                                         2)
+      self.generateStructureRandomShapeWithZScale([pos1[0], pos1[1], lower_z1],
+                                                  self._getValidOrientation(self.random_orientation), 1)
+      self.generateStructureRandomShapeWithZScale([pos1[0], pos1[1], lower_z2],
+                                                  self._getValidOrientation(self.random_orientation), 1)
+      self.generateStructureRandomShapeWithZScale([pos2[0], pos2[1], hier_z], self._getValidOrientation(self.random_orientation),
+                                                  2)
 
       self._generateShapes(constants.RANDOM, 1, random_orientation=True, z_scale=np.random.choice([1, 2]))
 
     elif t == 2:
-      self.generateRandomShapeWithZScale([pos1[0], pos1[1], hier_z], self._getValidOrientation(self.random_orientation),
-                                         2)
-      self.generateRandomShapeWithZScale([pos2[0], pos2[1], lower_z1],
-                                         self._getValidOrientation(self.random_orientation), 1)
-      self.generateRandomShapeWithZScale([pos2[0], pos2[1], lower_z2],
-                                         self._getValidOrientation(self.random_orientation), 1)
+      self.generateStructureRandomShapeWithZScale([pos1[0], pos1[1], hier_z], self._getValidOrientation(self.random_orientation),
+                                                  2)
+      self.generateStructureRandomShapeWithZScale([pos2[0], pos2[1], lower_z1],
+                                                  self._getValidOrientation(self.random_orientation), 1)
+      self.generateStructureRandomShapeWithZScale([pos2[0], pos2[1], lower_z2],
+                                                  self._getValidOrientation(self.random_orientation), 1)
 
       self._generateShapes(constants.RANDOM, 1, random_orientation=True, z_scale=np.random.choice([1, 2]))
 
     elif t == 3:
-      self.generateRandomShapeWithZScale([pos1[0], pos1[1], hier_z], self._getValidOrientation(self.random_orientation),
-                                         2)
-      self.generateRandomShapeWithZScale([pos2[0], pos2[1], hier_z], self._getValidOrientation(self.random_orientation),
-                                         2)
+      self.generateStructureRandomShapeWithZScale([pos1[0], pos1[1], hier_z], self._getValidOrientation(self.random_orientation),
+                                                  2)
+      self.generateStructureRandomShapeWithZScale([pos2[0], pos2[1], hier_z], self._getValidOrientation(self.random_orientation),
+                                                  2)
 
       self._generateShapes(constants.RANDOM, 2, random_orientation=True, z_scale=np.random.choice([1, 2]))
 

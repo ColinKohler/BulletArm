@@ -95,7 +95,7 @@ class DeconstructEnv(PyBulletEnv):
     self.structure_objs.append(handle)
     return handle
 
-  def generateRandomShapeWithZScale(self, pos, rot, zscale=1):
+  def generateStructureRandomShapeWithZScale(self, pos, rot, zscale=1):
     handle = pb_obj_generation.generateRandomObj(pos, rot,
                                                  npr.uniform(self.block_scale_range[0], self.block_scale_range[1]),
                                                  zscale)
