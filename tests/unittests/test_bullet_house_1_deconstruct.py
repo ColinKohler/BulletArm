@@ -23,7 +23,7 @@ class TestBulletBlockStacking(unittest.TestCase):
     env.reset()
     for i in range(5, -1, -1):
       action = env.getNextAction()
-      states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+      (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(dones, 1)
     env.close()
 

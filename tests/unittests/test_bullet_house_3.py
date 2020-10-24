@@ -22,7 +22,7 @@ class TestBulletHouse3(unittest.TestCase):
     env.reset()
     for i in range(5, -1, -1):
       action = env.getNextAction()
-      states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+      (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
       self.assertEqual(env.getStepsLeft(), i)
     env.close()
 
@@ -37,7 +37,7 @@ class TestBulletHouse3(unittest.TestCase):
   #   s = 0
   #   env.reset()
   #   while total < 1000:
-  #     states_, in_hands_, obs_, rewards, dones = env.step(env.getNextAction())
+  #     (states_, in_hands_, obs_), rewards, dones = env.step(env.getNextAction())
   #     # plt.imshow(in_hands_.squeeze())
   #     # plt.show()
   #     if dones.sum():
@@ -59,27 +59,27 @@ class TestBulletHouse3(unittest.TestCase):
     env.save()
     position = env.getObjectPositions()[0]
     action = np.array([[0, position[0][0], position[0][1], 0]])
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 7)
 
     action = np.array([[1, position[1][0], position[1][1], 0]])
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 8)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 7)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 6)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 5)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 4)
     env.restore()
     env.close()
@@ -94,37 +94,37 @@ class TestBulletHouse3(unittest.TestCase):
     env.save()
     position = list(env.getObjectPositions())[0]
     action = np.array([[0, position[0][0], position[0][1], 0]])
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 7)
 
     action = np.array([[1, position[2][0], position[2][1], 0]])
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 8)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 7)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 6)
     env.restore()
 
     position = list(env.getObjectPositions())[0]
     action = np.array([[0, position[1][0], position[1][1], 0]])
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 7)
 
     action = np.array([[1, position[2][0], position[2][1], 0]])
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 8)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 7)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 6)
 
     env.close()
@@ -140,36 +140,36 @@ class TestBulletHouse3(unittest.TestCase):
     env.save()
     position = list(env.getObjectPositions())[0]
     action = np.array([[0, position[1][0], position[1][1], 0]])
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 7)
 
     action = np.array([[1, position[2][0], position[2][1], 0]])
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 8)
 
     position = list(env.getObjectPositions())[0]
     action = np.array([[0, position[0][0], position[0][1], 0]])
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 9)
 
     action = np.array([[1, position[2][0], position[2][1], 0]])
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 10)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 9)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 8)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 7)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 6)
 
     env.close()
@@ -183,28 +183,28 @@ class TestBulletHouse3(unittest.TestCase):
     env.reset()
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 5)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 4)
 
     position = list(env.getObjectPositions())[0]
     action = np.array([[0, position[0][0], position[0][1], 0]])
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 5)
 
     action = np.array([[1, position[1][0], position[1][1], 0]])
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 6)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 5)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 4)
 
     env.close()
@@ -218,47 +218,47 @@ class TestBulletHouse3(unittest.TestCase):
     env.reset()
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 5)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 4)
 
     env.save()
     position = list(env.getObjectPositions())[0]
     action = np.array([[0, position[1][0], position[1][1], 0]])
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 3)
 
     action = np.array([[1, position[2][0], position[2][1], 0]])
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 4)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 3)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 2)
     env.restore()
 
     position = list(env.getObjectPositions())[0]
     action = np.array([[0, position[0][0], position[0][1], 0]])
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 5)
 
     action = np.array([[1, position[2][0], position[2][1], 0]])
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 6)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 5)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 4)
 
     env.close()
@@ -272,27 +272,27 @@ class TestBulletHouse3(unittest.TestCase):
     env.reset()
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 5)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 4)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 3)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 2)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 1)
 
     action = env.getNextAction()
-    states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+    (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 0)
 
     env.close()
