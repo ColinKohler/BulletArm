@@ -119,7 +119,6 @@ class PyBulletEnv(BaseEnv):
   def initialize(self):
     ''''''
     pb.resetSimulation()
-    self.setPhysicsEngineParameters()
     pb.setPhysicsEngineParameter(numSubSteps=0,
                                  numSolverIterations=self.num_solver_iterations,
                                  solverResidualThreshold=self.solver_residual_threshold,
