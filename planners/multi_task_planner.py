@@ -7,6 +7,9 @@ from helping_hands_rl_envs.planners.brick_stacking_planner import BrickStackingP
 from helping_hands_rl_envs.planners.pyramid_stacking_planner import PyramidStackingPlanner
 from helping_hands_rl_envs.planners.block_adjacent_planner import BlockAdjacentPlanner
 from helping_hands_rl_envs.planners.house_building_1_planner import HouseBuilding1Planner
+from helping_hands_rl_envs.planners.house_building_2_planner import HouseBuilding2Planner
+from helping_hands_rl_envs.planners.house_building_3_planner import HouseBuilding3Planner
+from helping_hands_rl_envs.planners.house_building_4_planner import HouseBuilding4Planner
 from helping_hands_rl_envs.planners.play_planner import PlayPlanner
 
 class MultiTaskPlanner(object):
@@ -25,6 +28,12 @@ class MultiTaskPlanner(object):
         self.planners.append(BlockAdjacentPlanner(env.envs[i], config))
       elif config['planner_type'] == 'house_building_1':
         self.planners.append(HouseBuilding1Planner(env.envs[i], config))
+      elif config['planner_type'] == 'house_building_2':
+        self.planners.append(HouseBuilding2Planner(env.envs[i], config))
+      elif config['planner_type'] == 'house_building_3':
+        self.planners.append(HouseBuilding3Planner(env.envs[i], config))
+      elif config['planner_type'] == 'house_building_4':
+        self.planners.append(HouseBuilding4Planner(env.envs[i], config))
       elif config['planner_type'] == 'play':
         self.planners.append(PlayPlanner(env.envs[i], config))
       else:

@@ -17,3 +17,9 @@ class Roof(PybulletObject):
     pb.changeDynamics(object_id, -1, linearDamping=0.04, angularDamping=0.04, restitution=0, contactStiffness=3000, contactDamping=100)
 
     super(Roof, self).__init__(constants.ROOF, object_id)
+
+    self.original_size = 0.05
+    self.size = 0.05 * scale
+
+  def getHeight(self):
+    return self.size

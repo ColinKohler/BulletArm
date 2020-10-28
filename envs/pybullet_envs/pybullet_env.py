@@ -46,8 +46,16 @@ class PyBulletEnv(BaseEnv):
 
     # Environment specific variables
     self.dynamic = not config['fast_mode']
-    self.num_solver_iterations = config['num_solver_iterations']
-    self.solver_residual_threshold = config['solver_residual_threshold']
+    if config['physics_mode'] == 'fast':
+      self.num_solver_iterations = 200
+      self.solver_residual_threshold = 1e-7
+    elif config['physics_mode'] == 'slow':
+      self.num_solver_iterations = 10
+      self.solver_residual_threshold = 1e-5
+    elif config['physics_mode'] == 'custom':
+      self.num_solver_iterations = config['num_solver_iterations']
+      self.solver_residual_threshold = config['solver_residual_threshold']
+
     self._timestep = 1. / 240.
 
     if config['robot'] == 'ur5':
@@ -111,6 +119,7 @@ class PyBulletEnv(BaseEnv):
   def initialize(self):
     ''''''
     pb.resetSimulation()
+    self.setPhysicsEngineParameters()
     pb.setPhysicsEngineParameter(numSubSteps=0,
                                  numSolverIterations=self.num_solver_iterations,
                                  solverResidualThreshold=self.solver_residual_threshold,
