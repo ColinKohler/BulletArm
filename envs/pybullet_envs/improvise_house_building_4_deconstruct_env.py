@@ -61,4 +61,6 @@ class ImproviseHouseBuilding4DeconstructEnv(DeconstructEnv):
     return self._checkObjUpright(roofs[0]) and super(ImproviseHouseBuilding4DeconstructEnv, self).isSimValid()
 
 def createImproviseHouseBuilding4DeconstructEnv(config):
-  return ImproviseHouseBuilding4DeconstructEnv(config)
+  def thunk_():
+    return ImproviseHouseBuilding4DeconstructEnv(config)
+  return thunk_

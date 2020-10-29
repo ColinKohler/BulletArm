@@ -76,4 +76,6 @@ class HouseBuilding5Env(PyBulletEnv):
     return super(HouseBuilding5Env, self).isSimValid()
 
 def createHouseBuilding5Env(config):
-  return HouseBuilding5Env(config)
+  def thunk_():
+    return HouseBuilding5Env(config)
+  return thunk_

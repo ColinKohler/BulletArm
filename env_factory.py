@@ -63,7 +63,7 @@ def createSingleProcessEnv(simulator, env_type, env_config, planner_config={}):
 
   # Create the environment and planner if planner_config exists
   env_func = getEnvFn(simulator, env_type)
-  env = env_func(env_config)
+  env = env_func(env_config)()
 
   if planner_config:
     planner = getPlannerFn(env_type, planner_config)(env)
@@ -96,7 +96,7 @@ def createMultiprocessEnvs(num_processes, simulator, env_type, env_config, plann
 
   # Create the various environments
   env_func = getEnvFn(simulator, env_type)
-  envs = [lambda : env_func(env_configs[i]) for i in range(num_processes)]
+  envs = [env_func(env_configs[i]) for i in range(num_processes)]
   if planner_config:
     planners = [getPlannerFn(env_type, planner_config) for i in range(num_processes)]
   else:
