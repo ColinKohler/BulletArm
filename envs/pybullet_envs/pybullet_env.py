@@ -46,15 +46,6 @@ class PyBulletEnv(BaseEnv):
 
     # Environment specific variables
     self.dynamic = not config['fast_mode']
-    if config['physics_mode'] == 'fast':
-      self.num_solver_iterations = 200
-      self.solver_residual_threshold = 1e-7
-    elif config['physics_mode'] == 'slow':
-      self.num_solver_iterations = 10
-      self.solver_residual_threshold = 1e-5
-    elif config['physics_mode'] == 'custom':
-      self.num_solver_iterations = config['num_solver_iterations']
-      self.solver_residual_threshold = config['solver_residual_threshold']
 
     self._timestep = 1. / 240.
 
@@ -66,6 +57,18 @@ class PyBulletEnv(BaseEnv):
       self.robot = Kuka()
     else:
       raise NotImplementedError
+
+    if config['physics_mode'] == 'fast':
+      self.num_solver_iterations = 10
+      self.solver_residual_threshold = 1e-5
+      self.robot.position_gain = 0.02
+    elif config['physics_mode'] == 'slow':
+      self.num_solver_iterations = 200
+      self.solver_residual_threshold = 1e-7
+      self.robot.position_gain = 0.01
+    elif config['physics_mode'] == 'custom':
+      self.num_solver_iterations = config['num_solver_iterations']
+      self.solver_residual_threshold = config['solver_residual_threshold']
 
     # TODO: Move this somewhere it makes sense
     self.block_original_size = 0.05

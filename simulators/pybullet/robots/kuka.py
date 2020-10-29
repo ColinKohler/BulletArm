@@ -149,7 +149,7 @@ class Kuka(RobotBase):
     pb.setJointMotorControlArray(self.id, self.arm_joint_indices, pb.POSITION_CONTROL, commands,
                                  targetVelocities=[0.]*num_motors,
                                  forces=[self.max_force]*num_motors,
-                                 positionGains=[0.01]*num_motors,
+                                 positionGains=[self.position_gain]*num_motors,
                                  velocityGains=[1.0]*num_motors)
 
   def _sendGripperCommand(self, target_pos1, target_pos2):

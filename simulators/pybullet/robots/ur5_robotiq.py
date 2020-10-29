@@ -171,7 +171,7 @@ class UR5_Robotiq(RobotBase):
   def _sendGripperCommand(self, target_pos1, target_pos2):
     pb.setJointMotorControlArray(self.id, self.gripper_joint_indices, pb.POSITION_CONTROL,
                                  targetPositions=[target_pos1, target_pos2], forces=self.gripper_open_force,
-                                 positionGains=[0.02]*2, velocityGains=[1.0]*2)
+                                 positionGains=[self.position_gain]*2, velocityGains=[1.0]*2)
     # pb.setJointMotorControlArray(self.id, self.gripper_joint_indices, pb.POSITION_CONTROL,
     #                              targetPositions=[target_pos1, target_pos2], forces=self.gripper_open_force)
 

@@ -33,6 +33,8 @@ class RobotBase:
       'gripper_closed': self.gripper_closed
     }
 
+    self.position_gain = 0.02
+
   def saveState(self):
     self.state = {
       'holding_obj': self.holding_obj,

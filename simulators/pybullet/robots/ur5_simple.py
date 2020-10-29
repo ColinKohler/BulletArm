@@ -122,7 +122,7 @@ class UR5_Simple(RobotBase):
     ''''''
     num_motors = len(self.arm_joint_indices)
     pb.setJointMotorControlArray(self.id, self.arm_joint_indices, pb.POSITION_CONTROL, commands,
-                                 [0.]*num_motors, self.max_forces[:-2], [0.02]*num_motors, [1.0]*num_motors)
+                                 [0.]*num_motors, self.max_forces[:-2], [self.position_gain]*num_motors, [1.0]*num_motors)
 
   def _sendGripperCommand(self, target_pos1, target_pos2):
     pb.setJointMotorControlArray(self.id, self.gripper_joint_indices, pb.POSITION_CONTROL,
