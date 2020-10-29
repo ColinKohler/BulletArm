@@ -59,8 +59,8 @@ class PyBulletEnv(BaseEnv):
       raise NotImplementedError
 
     if config['physics_mode'] == 'fast':
-      self.num_solver_iterations = 10
-      self.solver_residual_threshold = 1e-5
+      self.num_solver_iterations = 50
+      self.solver_residual_threshold = 1e-7
       self.robot.position_gain = 0.02
     elif config['physics_mode'] == 'slow':
       self.num_solver_iterations = 200
