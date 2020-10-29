@@ -96,7 +96,11 @@ def createMultiprocessEnvs(num_processes, simulator, env_type, env_config, plann
 
   # Create the various environments
   env_func = getEnvFn(simulator, env_type)
-  envs = [lambda : env_func(env_configs[i]) for i in range(num_processes)]
+  def getEnv(c):
+    def _thunk():
+      return env_func(c)
+    return _thunk
+  envs = [getEnv(env_configs[i]) for i in range(num_processes)]
   if planner_config:
     planners = [getPlannerFn(env_type, planner_config) for i in range(num_processes)]
   else:
