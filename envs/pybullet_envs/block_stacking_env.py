@@ -32,4 +32,6 @@ class BlockStackingEnv(PyBulletEnv):
     return self._checkStack()
 
 def createBlockStackingEnv(config):
-  return BlockStackingEnv(config)
+  def thunk_():
+    return BlockStackingEnv(config)
+  return thunk_

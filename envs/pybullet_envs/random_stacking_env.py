@@ -31,4 +31,6 @@ class RandomStackingEnv(PyBulletEnv):
     return self._checkStack()
 
 def createRandomStackingEnv(config):
-  return RandomStackingEnv(config)
+  def thunk_():
+    return RandomStackingEnv(config)
+  return thunk_

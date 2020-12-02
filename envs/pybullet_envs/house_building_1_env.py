@@ -32,4 +32,6 @@ class HouseBuilding1Env(PyBulletEnv):
     return self._checkObjUpright(triangles[0]) and super(HouseBuilding1Env, self).isSimValid()
 
 def createHouseBuilding1Env(config):
-  return HouseBuilding1Env(config)
+  def thunk_():
+    return HouseBuilding1Env(config)
+  return thunk_

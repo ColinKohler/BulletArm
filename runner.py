@@ -28,7 +28,7 @@ def worker(remote, parent_remote, env_fn, planner_fn=None):
         res = env.step(data)
         remote.send(res)
       elif cmd == 'step_auto_reset':
-        res = env.step(data)
+        res = env.step(data, auto_reset=True)
         done = res[2]
         if done:
           # get observation after reset (res index 0), the rest stays the same
@@ -55,6 +55,8 @@ def worker(remote, parent_remote, env_fn, planner_fn=None):
         remote.send(env.didBlockFall())
       elif cmd == 'are_objects_in_workspace':
         remote.send(env.areObjectsInWorkspace())
+      elif cmd == 'is_sim_valid':
+        remote.send(env.isSimValid())
       elif cmd == 'get_value':
         remote.send(planner.getValue())
       elif cmd == 'get_step_left':
@@ -131,7 +133,7 @@ class MultiRunner(object):
     #self.remotes[0].send(('get_spaces', None))
     #self.obs_shape, self.action_space, self.action_shape = self.remotes[0].recv()
 
-  def step(self, actions, auto_reset=True):
+  def step(self, actions, auto_reset=False):
     '''
     Step the environments synchronously.
 
@@ -141,7 +143,7 @@ class MultiRunner(object):
     self.stepAsync(actions, auto_reset)
     return self.stepWait()
 
-  def stepAsync(self, actions, auto_reset=True):
+  def stepAsync(self, actions, auto_reset=False):
     '''
     Step each environment in a async fashion
 
@@ -340,9 +342,19 @@ class MultiRunner(object):
     '''
     for remote in self.remotes:
       remote.send(('are_objects_in_workspace', None))
-    valid_workspace = [remote.recv() for remote in self.remotes]
-    valid_workspace = np.stack(valid_workspace)
-    return valid_workspace
+    in_workspace = [remote.recv() for remote in self.remotes]
+    in_workspace = np.stack(in_workspace)
+    return in_workspace
+
+  def isSimValid(self):
+    '''
+
+    '''
+    for remote in self.remotes:
+      remote.send(('is_sim_valid', None))
+    valid = [remote.recv() for remote in self.remotes]
+    valid = np.stack(valid)
+    return valid
 
   def didBlockFall(self):
     '''
@@ -497,6 +509,12 @@ class SingleRunner(object):
       return self.planner.areObjectsInWorkspace()
     else:
       raise ValueError('Attempting to use a planner which was not initialized.')
+
+  def isSimValid(self):
+    '''
+
+    '''
+    return self.env.isSimValid()
 
 
   def getObs(self, action=None):
