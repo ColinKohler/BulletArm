@@ -1,16 +1,16 @@
 from copy import deepcopy
-import numpy as np
-from helping_hands_rl_envs.envs.numpy_env import NumpyEnv
+import pybullet as pb
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.simulators.pybullet.robots.kuka_float_pick import KukaFloatPick
+from helping_hands_rl_envs.simulators import constants
+import numpy.random as npr
+import numpy as np
 
-def createBlockPickingEnv(simulator_base_env, config):
-  class BlockPickingEnv(simulator_base_env):
-    ''''''
-
+def createCubeFloatPickingEnv(simulator_base_env, config):
+  class CubeFloatPickingEnv(PyBulletEnv):
     def __init__(self, config):
-      if simulator_base_env is NumpyEnv:
-        super().__init__(config)
-      elif simulator_base_env is PyBulletEnv:
+      config['check_random_obj_valid'] = True
+      if simulator_base_env is PyBulletEnv:
         super().__init__(config)
       else:
         raise ValueError('Bad simulator base env specified.')
@@ -19,6 +19,19 @@ def createBlockPickingEnv(simulator_base_env, config):
       self.num_obj = config['num_objects'] if 'num_objects' in config else 1
       self.reward_type = config['reward_type'] if 'reward_type' in config else 'sparse'
       self.obj_grasped = 0
+      self.rx_range = (-np.pi/8, np.pi/8)
+      self.robot = KukaFloatPick()
+
+      self.gravity = (0, 0, 0)
+
+    def _getInitializeOrientation(self, random_orientation):
+      if random_orientation:
+        orientation = pb.getQuaternionFromEuler([(self.rx_range[1]-self.rx_range[0])*np.random.random_sample()+self.rx_range[0],
+                                                 0,
+                                                 2 * np.pi * np.random.random_sample()])
+      else:
+        orientation = pb.getQuaternionFromEuler([0., 0., np.pi / 2])
+      return orientation
 
     def step(self, action):
       pre_obj_grasped = self.obj_grasped
@@ -28,8 +41,6 @@ def createBlockPickingEnv(simulator_base_env, config):
       done = self._checkTermination()
       if self.reward_type == 'dense':
         reward = 1.0 if self.obj_grasped > pre_obj_grasped else 0.0
-      elif self.reward_type == 'step_left':
-        reward = self.getStepLeft()
       else:
         reward = 1.0 if done else 0.0
 
@@ -41,21 +52,25 @@ def createBlockPickingEnv(simulator_base_env, config):
 
     def reset(self):
       ''''''
-      super(BlockPickingEnv, self).reset()
-      self._generateShapes(0, self.num_obj, random_orientation=self.random_orientation)
+      while True:
+        super(CubeFloatPickingEnv, self).reset()
+        try:
+          for i in range(self.num_obj):
+            self._generateShapes(constants.CUBE, 1, random_orientation=self.random_orientation, padding=self.max_block_size*3)
+        except:
+          continue
+        else:
+          break
       self.obj_grasped = 0
       return self._getObservation()
 
     def saveState(self):
-      super(BlockPickingEnv, self).saveState()
+      super(CubeFloatPickingEnv, self).saveState()
       self.state['obj_grasped'] = deepcopy(self.obj_grasped)
 
     def restoreState(self):
-      super(BlockPickingEnv, self).restoreState()
+      super(CubeFloatPickingEnv, self).restoreState()
       self.obj_grasped = self.state['obj_grasped']
-
-    def getObjectPosition(self):
-      return list(map(self._getObjectPosition, self.objects))
 
     def _checkTermination(self):
       ''''''
@@ -69,10 +84,10 @@ def createBlockPickingEnv(simulator_base_env, config):
       return False
 
     def _getObservation(self, action=None):
-      state, in_hand, obs = super(BlockPickingEnv, self)._getObservation(action)
+      state, in_hand, obs = super(CubeFloatPickingEnv, self)._getObservation(action)
       return 0, np.zeros_like(in_hand), obs
 
   def _thunk():
-    return BlockPickingEnv(config)
+    return CubeFloatPickingEnv(config)
 
   return _thunk

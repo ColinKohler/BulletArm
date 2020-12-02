@@ -44,10 +44,7 @@ class BlockStructureBasePlanner(BasePlanner):
       if self.isObjOnTop(obj):
         x, y, z, r = pose[0], pose[1], pose[2]+self.env.pick_offset, pose[5]
         break
-    while r < 0:
-      r += np.pi
-    while r > np.pi:
-      r -= np.pi
+
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
   def pickSecondTallestObjOnTop(self, objects=None):
@@ -64,10 +61,7 @@ class BlockStructureBasePlanner(BasePlanner):
       if self.isObjOnTop(obj):
         x, y, z, r = pose[0], pose[1], pose[2]+self.env.pick_offset, pose[5]
         break
-    while r < 0:
-      r += np.pi
-    while r > np.pi:
-      r -= np.pi
+
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
   def pickShortestObjOnTop(self, objects=None,):
@@ -84,10 +78,6 @@ class BlockStructureBasePlanner(BasePlanner):
       if self.isObjOnTop(obj):
         x, y, z, r = pose[0], pose[1], pose[2] + self.env.pick_offset, pose[5]
         break
-    while r < 0:
-      r += np.pi
-    while r > np.pi:
-      r -= np.pi
 
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
@@ -101,10 +91,6 @@ class BlockStructureBasePlanner(BasePlanner):
       if self.isObjOnTop(obj):
         x, y, z, r = pose[0], pose[1], pose[2] + self.env.pick_offset, pose[5]
         break
-    while r < 0:
-      r += np.pi
-    while r > np.pi:
-      r -= np.pi
 
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
@@ -116,16 +102,11 @@ class BlockStructureBasePlanner(BasePlanner):
     """
     if objects is None: objects = self.env.objects
     objects, object_poses = self.getSortedObjPoses(objects=objects)
-    x, y, z, r = object_poses[0][0], object_poses[0][1], object_poses[0][2], object_poses[0][5]
+    x, y, z, r = object_poses[0][0], object_poses[0][1], object_poses[0][2]+self.env.place_offset, object_poses[0][5]
     for obj, pose in zip(objects, object_poses):
       if not self.isObjectHeld(obj):
         x, y, z, r = pose[0], pose[1], pose[2]+self.env.place_offset, pose[5]
         break
-    while r < 0:
-      r += np.pi
-    while r > np.pi:
-      r -= np.pi
-
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def placeOnGround(self, padding_dist, min_dist):
@@ -195,8 +176,7 @@ class BlockStructureBasePlanner(BasePlanner):
     x, y, z, r = place_pos[0], place_pos[1], self.env.place_offset, 0
     slope, intercept, r_value, p_value, std_err = scipy.stats.linregress([x, another_obj_position[0]], [y, another_obj_position[1]])
     r = np.arctan(slope)
-    while r > np.pi:
-      r -= np.pi
+
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def placeOnTopOfMultiple(self, bottom_objs):
@@ -210,8 +190,7 @@ class BlockStructureBasePlanner(BasePlanner):
     x, y, z = obj_positions.mean(0)
     z += +self.env.place_offset
     r = np.arctan(slope) + np.pi / 2
-    while r > np.pi:
-      r -= np.pi
+
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def placeOn(self, bottom_obj, bottom_obj_length, num_slots=2):
@@ -230,7 +209,7 @@ class BlockStructureBasePlanner(BasePlanner):
       return self.placeOnHighestObj([bottom_obj])
     bottom_pos, bottom_rot = bottom_obj.getPose()
     bottom_rot = pb.getEulerFromQuaternion(bottom_rot)[2]
-    v = np.array([[np.cos(bottom_rot+np.pi/2), np.sin(bottom_rot+np.pi/2)]]).repeat(num_slots, 0)
+    v = np.array([[np.cos(bottom_rot), np.sin(bottom_rot)]]).repeat(num_slots, 0)
 
     bottom_obj_length -= self.getMaxBlockSize()
     possible_points = v * np.expand_dims(np.linspace(-0.5, 0.5, num_slots), 1).repeat(2, 1) * bottom_obj_length
@@ -246,9 +225,8 @@ class BlockStructureBasePlanner(BasePlanner):
       x, y = possible_points[np.argmax(scipy.spatial.distance.cdist(possible_points, top_obj_positions).min(axis=1))]
 
     z = bottom_pos[2] + self.env.place_offset
-    r = bottom_rot
-    while r > np.pi:
-      r -= np.pi
+    r = bottom_rot + np.pi / 2
+
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def getSortedObjPoses(self, roll=False, objects=None, ascend=False):

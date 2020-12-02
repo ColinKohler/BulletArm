@@ -15,6 +15,7 @@ class BasePlanner(object):
     self.pos_noise = config['pos_noise'] if 'rot_noise' in config else None
     self.gamma = config['gamma']  if 'gamma' in config else 0.9
     self.random_orientation = config['random_orientation'] if 'random_orientation' in config else True
+    self.half_rotation = config['half_rotation'] if 'half_rotation' in config else False
 
     npr.seed(env.seed)
 
@@ -67,7 +68,13 @@ class BasePlanner(object):
     x = np.round(x, self.planner_res)
     y = np.round(y, self.planner_res)
     x, y = self.addNoiseToPos(x, y, primitive)
+    # TODO: addNoiseToRot with 3 rots
     if self.rot_noise: r = self.addNoiseToRot(r)
+    if not hasattr(r, '__len__') and self.half_rotation:
+      while r < 0:
+        r += np.pi
+      while r > np.pi:
+        r -= np.pi
     return self.env._encodeAction(primitive, x, y, z, r)
 
   def getObjects(self, obj_type=None):

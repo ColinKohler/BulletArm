@@ -248,14 +248,7 @@ class PyBulletEnv(BaseEnv):
 
     # Get transform for action
     pos = [x, y, z]
-
-    # TODO: This should be moved in the kuka as it is better for that arm in specific
-    # [-pi, 0] is easier for the arm(kuka) to execute
-    while rot < -np.pi:
-      rot += np.pi
-    while rot > 0:
-      rot -= np.pi
-    rot_q = pb.getQuaternionFromEuler([0, np.pi, rot])
+    rot_q = pb.getQuaternionFromEuler(rot)
 
     # Take action specfied by motion primative
     if motion_primative == constants.PICK_PRIMATIVE:
@@ -357,6 +350,7 @@ class PyBulletEnv(BaseEnv):
 
   def _getValidPositions(self, border_padding, min_distance, existing_positions, num_shapes, sample_range=None):
     existing_positions_copy = copy.deepcopy(existing_positions)
+    sample_range = copy.deepcopy(sample_range)
     valid_positions = list()
     for i in range(num_shapes):
       # Generate random drop config
@@ -434,14 +428,22 @@ class PyBulletEnv(BaseEnv):
     shape_handles = list()
     positions = [o.getXYPosition() for o in self.objects]
 
-    valid_positions = self._getValidPositions(padding, min_distance, positions, num_shapes)
-    if valid_positions is None:
-      return None
+    if pos is None:
+      valid_positions = self._getValidPositions(padding, min_distance, positions, num_shapes)
+      if valid_positions is None:
+        return None
+      for position in valid_positions:
+        position.append(0.020)
+    else:
+      valid_positions = pos
 
-    for position in valid_positions:
-      position.append(0.020)
-      position = np.round(position, 3)
-      orientation = self._getValidOrientation(random_orientation)
+    if rot is None:
+      orientations = [self._getValidOrientation(random_orientation) for _ in range(num_shapes)]
+    else:
+      orientations = rot
+
+
+    for position, orientation in zip(valid_positions, orientations):
       if not scale:
         scale = npr.choice(np.arange(self.block_scale_range[0], self.block_scale_range[1]+0.01, 0.02))
 
@@ -489,10 +491,10 @@ class PyBulletEnv(BaseEnv):
       obj_poses.append(pos + rot)
     return np.array(obj_poses)
 
-  def getObjectPositions(self):
+  def getObjectPositions(self, omit_hold=True):
     obj_positions = list()
     for obj in self.objects:
-      if self._isObjectHeld(obj):
+      if omit_hold and self._isObjectHeld(obj):
         continue
       obj_positions.append(obj.getPosition())
     return np.array(obj_positions)
@@ -681,9 +683,9 @@ class PyBulletEnv(BaseEnv):
     rot = list(pb.getEulerFromQuaternion(rot))
 
     # TODO: This normalization should be improved
-    while rot[2] < 0:
-      rot[2] += np.pi
-    while rot[2] > np.pi:
-      rot[2] -= np.pi
+    # while rot[2] < 0:
+    #   rot[2] += np.pi
+    # while rot[2] > np.pi:
+    #   rot[2] -= np.pi
 
     return rot

@@ -63,7 +63,9 @@ class RobotBase:
     # Setup pre-grasp pos and default orientation
     self.openGripper()
     pre_pos = copy.copy(pos)
-    pre_pos[2] += offset
+    m = np.array(pb.getMatrixFromQuaternion(rot)).reshape(3, 3)
+    pre_pos += m[:, 2] * offset
+    # rot = pb.getQuaternionFromEuler([np.pi/2.,-np.pi,np.pi/2])
     pre_rot = rot
 
     # Move to pre-grasp pose and then grasp pose
@@ -91,7 +93,8 @@ class RobotBase:
     ''''''
     # Setup pre-grasp pos and default orientation
     pre_pos = copy.copy(pos)
-    pre_pos[2] += offset
+    m = np.array(pb.getMatrixFromQuaternion(rot)).reshape(3, 3)
+    pre_pos += m[:, 2] * offset
     pre_rot = rot
 
     # Move to pre-grasp pose and then grasp pose
@@ -195,6 +198,17 @@ class RobotBase:
 
     self.holding_obj.resetPose(obj_pos_, obj_rot_)
 
+  def getEndToHoldingObj(self):
+    if not self.holding_obj:
+      return np.zeros((4, 4))
+    end_pos = self._getEndEffectorPosition()
+    end_rot = self._getEndEffectorRotation()
+    obj_pos, obj_rot = self.holding_obj.getPose()
+    oTend = pybullet_util.getMatrix(end_pos, end_rot)
+    oTobj = pybullet_util.getMatrix(obj_pos, obj_rot)
+    endTobj = np.linalg.inv(oTend).dot(oTobj)
+    return endTobj
+
   def _teleportArmWithObjJointPose(self, joint_pose):
     if not self.holding_obj:
       self._moveToJointPose(joint_pose, False)
@@ -245,3 +259,15 @@ class RobotBase:
       pb.resetJointState(self.id, motor, q_poses[i])
 
     self._sendPositionCommand(q_poses)
+
+  def plotEndEffectorFrame(self):
+    line_id1 = pb.addUserDebugLine(self._getEndEffectorPosition(),
+                                  self._getEndEffectorPosition() + 0.1 * transformations.quaternion_matrix(
+                                    self._getEndEffectorRotation())[:3, 0], (1, 0, 0))
+    line_id2 = pb.addUserDebugLine(self._getEndEffectorPosition(),
+                                  self._getEndEffectorPosition() + 0.1 * transformations.quaternion_matrix(
+                                    self._getEndEffectorRotation())[:3, 1], (0, 1, 0))
+    line_id3 = pb.addUserDebugLine(self._getEndEffectorPosition(),
+                                  self._getEndEffectorPosition() + 0.1 * transformations.quaternion_matrix(
+                                    self._getEndEffectorRotation())[:3, 2], (0, 0, 1))
+    return line_id1, line_id2, line_id3

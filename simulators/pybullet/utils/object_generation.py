@@ -12,6 +12,7 @@ from helping_hands_rl_envs.simulators.pybullet.objects.triangle import Triangle
 from helping_hands_rl_envs.simulators.pybullet.objects.roof import Roof
 from helping_hands_rl_envs.simulators.pybullet.objects.cylinder import Cylinder
 from helping_hands_rl_envs.simulators.pybullet.objects.random_object import RandomObject
+from helping_hands_rl_envs.simulators.pybullet.objects.random_brick import RandomBrick
 
 def generateCube(pos, rot, scale):
   ''''''
@@ -34,3 +35,6 @@ def generateCylinder(pos, rot, scale):
 
 def generateRandomObj(pos, rot, scale, z_scale=1):
   return RandomObject(pos, rot, scale, z_scale)
+
+def generateRandomBrick(pos, rot, x_scale, y_scale, z_scale):
+  return RandomBrick(pos, rot, x_scale, y_scale, z_scale)

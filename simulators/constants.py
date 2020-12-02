@@ -20,4 +20,5 @@ PICK_PRIMATIVE = 0
 PLACE_PRIMATIVE = 1
 PUSH_PRIMATIVE = 2
 
-
+z_scale_1 = 1
+z_scale_2 = 2
