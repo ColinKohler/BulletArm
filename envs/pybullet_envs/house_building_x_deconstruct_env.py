@@ -72,6 +72,4 @@ class HouseBuildingXDeconstructEnv(DeconstructEnv):
       return super(HouseBuildingXDeconstructEnv, self).isSimValid()
 
 def createHouseBuildingXDeconstructEnv(config):
-  def thunk_():
-    return HouseBuildingXDeconstructEnv(config)
-  return thunk_
+  return HouseBuildingXDeconstructEnv(config)

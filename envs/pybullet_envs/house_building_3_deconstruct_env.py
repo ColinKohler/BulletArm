@@ -47,6 +47,4 @@ class HouseBuilding3DeconstructEnv(DeconstructEnv):
     return self._checkObjUpright(roofs[0]) and super(HouseBuilding3DeconstructEnv, self).isSimValid()
 
 def createHouseBuilding3DeconstructEnv(config):
-  def thunk_():
-    return HouseBuilding3DeconstructEnv(config)
-  return thunk_
+  return HouseBuilding3DeconstructEnv(config)

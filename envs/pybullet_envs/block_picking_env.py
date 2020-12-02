@@ -58,6 +58,4 @@ class BlockPickingEnv(PyBulletEnv):
     return 0, np.zeros_like(in_hand), obs
 
 def createBlockPickingEnv(config):
-  def thunk_():
-    return BlockPickingEnv(config)
-  return thunk_
+  return BlockPickingEnv(config)

@@ -70,6 +70,4 @@ class ImproviseHouseBuilding4Env(PyBulletEnv):
     return self._checkObjUpright(roofs[0]) and super(ImproviseHouseBuilding4Env, self).isSimValid()
 
 def createImproviseHouseBuilding4Env(config):
-  def thunk_():
-    return ImproviseHouseBuilding4Env(config)
-  return thunk_
+  return ImproviseHouseBuilding4Env(config)

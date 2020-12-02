@@ -66,6 +66,4 @@ class RandomPickingEnv(PyBulletEnv):
     return 0, np.zeros_like(in_hand), obs
 
 def createRandomPickingEnv(config):
-  def thunk_():
-    return RandomPickingEnv(config)
-  return thunk_
+  return RandomPickingEnv(config)

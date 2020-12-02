@@ -28,6 +28,4 @@ class PyramidStackingEnv(PyBulletEnv):
            self._checkAdjacent(bottom_objs[0], bottom_objs[1])
 
 def createPyramidStackingEnv(config):
-  def thunk_():
-    return PyramidStackingEnv(config)
-  return thunk_
+  return PyramidStackingEnv(config)

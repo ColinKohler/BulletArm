@@ -96,6 +96,4 @@ class HouseBuildingXEnv(PyBulletEnv):
       return super(HouseBuildingXEnv, self).isSimValid()
 
 def createHouseBuildingXEnv(config):
-  def thunk_():
-    return HouseBuildingXEnv(config)
-  return thunk_
+  return HouseBuildingXEnv(config)

@@ -27,6 +27,4 @@ class BlockAdjacentEnv(PyBulletEnv):
       return False
 
 def createBlockAdjacentEnv(config):
-  def thunk_():
-    return BlockAdjacentEnv(config)
-  return thunk_
+  return BlockAdjacentEnv(config)
