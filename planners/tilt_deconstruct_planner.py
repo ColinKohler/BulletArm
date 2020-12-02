@@ -56,7 +56,7 @@ class TiltDeconstructPlanner(BlockStructureBasePlanner):
       except NoValidPositionException:
         place_pos = self.getValidPositions(padding_dist, min_dist, [], 1)[0]
       x, y, z = place_pos[0], place_pos[1], self.env.place_offset
-      if self.env.isPosDistToTiltValid((x, y), self.getHoldingObjType()):
+      if self.env.isPosDistToRampValid((x, y), self.getHoldingObjType()):
         break
     y1, y2 = self.env.getY1Y2fromX(x)
     if y > y1:

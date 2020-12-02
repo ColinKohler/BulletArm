@@ -5,9 +5,9 @@ import numpy.random as npr
 from copy import deepcopy
 from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv, NoValidPositionException
+from helping_hands_rl_envs.envs.pybullet_env import NoValidPositionException
 from helping_hands_rl_envs.envs.pybullet_deconstruct_env import PyBulletDeconstructEnv
-from helping_hands_rl_envs.envs.pybullet_tilt_env import PyBulletTiltEnv
+from envs.pybullet_envs.ramp_envs.pybullet_tilt_env import PyBulletTiltEnv
 import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
 from helping_hands_rl_envs.simulators import constants
 

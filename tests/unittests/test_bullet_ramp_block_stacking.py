@@ -2,10 +2,6 @@ import unittest
 import time
 from tqdm import tqdm
 import numpy as np
-import torch
-
-from helping_hands_rl_envs.envs.house_building_1_env import createHouseBuilding1Env
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 
 from helping_hands_rl_envs import env_factory
 
@@ -18,17 +14,14 @@ class TestBulletTilt(unittest.TestCase):
                 'reward_type': 'dense', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
                 'workspace_check': 'point'}
 
-  # env = createHouseBuilding1Env(PyBulletEnv, env_config)()
+  planner_config = {'random_orientation': True}
 
   def testPlanner(self):
-    self.env_config['render'] = True
-    self.env_config['reward_type'] = 'sparse'
-    self.env_config['random_orientation'] = True
-    self.env_config['num_objects'] = 4
-    self.env_config['action_sequence'] = 'xyzrrp'
+    self.env_config['render'] = False
+    self.env_config['action_sequence'] = 'xyzrrrp'
     self.env_config['in_hand_mode'] = 'proj'
 
-    env = env_factory.createEnvs(1, 'rl', 'pybullet', 'tilt_block_stacking', self.env_config, {})
+    env = env_factory.createEnvs(20, 'pybullet', 'ramp_block_stacking', self.env_config, self.planner_config)
     total = 0
     s = 0
     step_times = []
@@ -38,21 +31,21 @@ class TestBulletTilt(unittest.TestCase):
       t0 = time.time()
       action = env.getNextAction()
       t_plan = time.time() - t0
-      states_, in_hands_, obs_, rewards, dones = env.step(action)
+      (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=True)
       t_action = time.time() - t0 - t_plan
       t = time.time() - t0
       step_times.append(t)
 
-      s += rewards.sum().int().item()
+      s += rewards.sum()
 
       if dones.sum():
-        total += dones.sum().int().item()
+        total += dones.sum()
 
         pbar.set_description(
           '{:.3f}, plan time: {:.2f}, action time: {:.2f}, avg step time: {:.2f}'
             .format(float(s) / total if total != 0 else 0, t_plan, t_action, np.mean(step_times))
         )
-      pbar.update(dones.sum().int().item())
+      pbar.update(dones.sum())
     env.close()
 
   def testReset(self):

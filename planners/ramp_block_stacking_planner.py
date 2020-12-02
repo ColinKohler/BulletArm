@@ -1,14 +1,14 @@
 import numpy as np
 import numpy.random as npr
 
-from helping_hands_rl_envs.envs.pybullet_env import NoValidPositionException
+from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
 from helping_hands_rl_envs.planners.block_structure_base_planner import BlockStructureBasePlanner
 from helping_hands_rl_envs.simulators import constants
 
-class TiltBlockStackingPlanner(BlockStructureBasePlanner):
+class RampBlockStackingPlanner(BlockStructureBasePlanner):
   def __init__(self, env, config):
-    super(TiltBlockStackingPlanner, self).__init__(env, config)
+    super(RampBlockStackingPlanner, self).__init__(env, config)
 
   # def placeOnHighestObj(self, objects=None):
   #   """
@@ -45,24 +45,22 @@ class TiltBlockStackingPlanner(BlockStructureBasePlanner):
   #   return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, (rz, rx))
 
   def getPickingAction(self):
-    objects = list(filter(lambda o: o.getPosition()[1] > self.env.tilt_border or o.getPosition()[1] < self.env.tilt_border2, self.env.objects))
+    objects = list(filter(lambda o: not self.env.isPosOffRamp(o.getPosition()), self.env.objects))
     if len(objects) == 0:
       objects = self.env.objects
 
-    objects, object_poses = self.getSortedObjPoses(objects=objects)
+    objects, object_poses = self.getSortedObjPoses(objects=objects, roll=True)
 
-    x, y, z, rx, rz = object_poses[0][0], object_poses[0][1], object_poses[0][2] + self.env.pick_offset, object_poses[0][3], object_poses[0][5]
+    x, y, z, rx, ry, rz = object_poses[0][0], object_poses[0][1], object_poses[0][2] + self.env.pick_offset, object_poses[0][3], object_poses[0][4], object_poses[0][5]
     for obj, pose in zip(objects, object_poses):
       if self.isObjOnTop(obj):
-        x, y, z, rx, rz = pose[0], pose[1], pose[2] + self.env.pick_offset, pose[3], pose[5]
+        x, y, z, rx, ry, rz = pose[0], pose[1], pose[2] + self.env.pick_offset, pose[3], pose[4], pose[5]
         break
 
-
-
-    return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, (rz, -rx))
+    return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, (rz, ry, rx))
 
   def getPlacingAction(self):
-    objects = list(filter(lambda o: self.env.tilt_border2 < o.getPosition()[1] < self.env.tilt_border, self.env.objects))
+    objects = list(filter(lambda o: self.env.isPosOffRamp(o.getPosition()), self.env.objects))
     if objects:
       return self.placeOnHighestObj(objects)
     else:

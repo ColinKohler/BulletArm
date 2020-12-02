@@ -28,7 +28,7 @@ def worker(remote, parent_remote, env_fn, planner_fn=None):
         res = env.step(data)
         remote.send(res)
       elif cmd == 'step_auto_reset':
-        res = env.step(data, auto_reset=True)
+        res = env.step(data)
         done = res[2]
         if done:
           # get observation after reset (res index 0), the rest stays the same

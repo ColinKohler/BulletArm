@@ -1,11 +1,7 @@
-from copy import deepcopy
-import pybullet as pb
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
-from helping_hands_rl_envs.envs.pybullet_tilt_env import PyBulletTiltEnv
-from helping_hands_rl_envs.simulators.pybullet.robots.kuka_float_pick import KukaFloatPick
+from envs.pybullet_envs.ramp_envs.pybullet_tilt_env import PyBulletTiltEnv
 from helping_hands_rl_envs.simulators import constants
-import numpy.random as npr
-import numpy as np
+
 
 def createTiltHouseBuilding3Env(simulator_base_env, config):
   class TiltHouseBuilding3Env(PyBulletTiltEnv):

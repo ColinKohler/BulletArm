@@ -1,13 +1,9 @@
 from copy import deepcopy
-import pybullet as pb
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv, NoValidPositionException
-from helping_hands_rl_envs.envs.pybullet_tilt_env import PyBulletTiltEnv
-from helping_hands_rl_envs.simulators.pybullet.robots.kuka_float_pick import KukaFloatPick
+from envs.pybullet_envs.ramp_envs.pybullet_tilt_env import PyBulletTiltEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
-import numpy.random as npr
-from itertools import combinations
 import numpy as np
 
 def createTiltImproviseHouseBuilding6Env(simulator_base_env, config):

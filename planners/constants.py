@@ -13,6 +13,7 @@ from helping_hands_rl_envs.planners.house_building_4_planner import HouseBuildin
 from helping_hands_rl_envs.planners.improvise_house_building_2_planner import ImproviseHouseBuilding2Planner
 from helping_hands_rl_envs.planners.improvise_house_building_3_planner import ImproviseHouseBuilding3Planner
 from helping_hands_rl_envs.planners.deconstruct_planner import DeconstructPlanner
+from helping_hands_rl_envs.planners.ramp_block_stacking_planner import RampBlockStackingPlanner
 
 PLANNERS = {
   'random' : RandomPlanner,
@@ -37,4 +38,5 @@ PLANNERS = {
   'improvise_house_building_2_deconstruct' : DeconstructPlanner,
   'improvise_house_building_3_deconstruct' : DeconstructPlanner,
   'improvise_house_building_4_deconstruct' : DeconstructPlanner,
+  'ramp_block_stacking': RampBlockStackingPlanner,
 }
