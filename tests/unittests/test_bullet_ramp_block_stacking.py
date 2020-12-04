@@ -5,21 +5,19 @@ import numpy as np
 
 from helping_hands_rl_envs import env_factory
 
-class TestBulletTilt(unittest.TestCase):
+class TestBulletRampBlockStackingDeconstruct(unittest.TestCase):
   workspace = np.asarray([[0.35, 0.65],
                           [-0.15, 0.15],
                           [0, 0.50]])
   env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 90, 'render': False, 'fast_mode': True,
-                'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 4, 'random_orientation': True,
+                'seed': 0, 'action_sequence': 'xyzrrrp', 'num_objects': 4, 'random_orientation': True,
                 'reward_type': 'dense', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
-                'workspace_check': 'point'}
+                'workspace_check': 'point', 'in_hand_mode': 'proj'}
 
   planner_config = {'random_orientation': True}
 
   def testPlanner(self):
     self.env_config['render'] = False
-    self.env_config['action_sequence'] = 'xyzrrrp'
-    self.env_config['in_hand_mode'] = 'proj'
 
     env = env_factory.createEnvs(20, 'pybullet', 'ramp_block_stacking', self.env_config, self.planner_config)
     total = 0

@@ -1,15 +1,11 @@
-import time
-import pybullet as pb
-from copy import deepcopy
-import numpy.random as npr
 import numpy as np
 from itertools import combinations
-from helping_hands_rl_envs.envs.pybullet_tilt_deconstruct_env import PyBulletEnv, PyBulletTiltDeconstructEnv
+from envs.pybullet_envs.ramp_envs.ramp_deconstruct_env import PyBulletEnv, RampDeconstructEnv
 from helping_hands_rl_envs.simulators import constants
 
 
 def createTiltImproviseHouseBuilding5DeconstructEnv(simulator_base_env, config):
-  class TiltImproviseHouseBuilding5DeconstructEnv(PyBulletTiltDeconstructEnv):
+  class TiltImproviseHouseBuilding5DeconstructEnv(RampDeconstructEnv):
     ''''''
     def __init__(self, config):
       if simulator_base_env is PyBulletEnv:

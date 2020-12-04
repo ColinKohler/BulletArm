@@ -4,14 +4,14 @@ import scipy
 import numpy.random as npr
 from copy import deepcopy
 from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
+from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
-from helping_hands_rl_envs.envs.pybullet_env import NoValidPositionException
-from helping_hands_rl_envs.envs.pybullet_deconstruct_env import PyBulletDeconstructEnv
-from envs.pybullet_envs.ramp_envs.pybullet_tilt_env import PyBulletTiltEnv
+from helping_hands_rl_envs.envs.pybullet_envs.deconstruct_env import DeconstructEnv
+from envs.pybullet_envs.ramp_envs.ramp_base_env import RampBaseEnv
 import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
 from helping_hands_rl_envs.simulators import constants
 
-class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
+class RampDeconstructEnv(DeconstructEnv, RampBaseEnv):
   def __init__(self, config):
     super().__init__(config)
     self.pick_offset = 0.0
@@ -27,38 +27,23 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     dist = np.linalg.norm(curr_obj_pos - self.prev_obj_pos, axis=1)
     return (dist > 0.005).sum() == 1 and super().isSimValid()
 
-  def _getObservation(self, action=None):
-    ''''''
-    old_heightmap = self.heightmap
-    self.heightmap = self._getHeightmap()
-
-    if action is None or self._isHolding() == True:
-      in_hand_img = self.getEmptyInHand()
-    else:
-      motion_primative, x, y, z, rot = self._decodeAction(action)
-      if self.action_sequence.find('z') == -1:
-        # z is set for a placing action, here eliminate the place offset and put the pick offset
-        z = z - self.place_offset - self.pick_offset
-      in_hand_img = self.getInHandImage(self.heightmap, x, y, z, rot, old_heightmap)
-
-
-    return self._isHolding(), in_hand_img, self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
-
-
-  # def initialize(self):
-  #   super().initialize()
-  #   self.tilt_plain_id = -1
-  #   self.tilt_plain2_id = -1
-
   def reset(self):
-    super().reset()
-    self.resetTilt()
+    super(DeconstructEnv, self).reset()
+    self.resetRamp()
+    self.structure_objs = []
+    self.generateStructure()
+    while not self.checkStructure():
+      super(DeconstructEnv, self).reset()
+      self.resetRamp()
+      self.structure_objs = []
+      self.generateStructure()
+    return self._getObservation()
 
   def generateS(self):
     padding = self.max_block_size * 1.5
     while True:
       pos = self._getValidPositions(padding, 0, [], 1)[0]
-      if self.isPosOffTilt(pos):
+      if self.isPosOffRamp(pos):
         break
     rot = pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()])
     for i in range(self.num_obj):
@@ -74,7 +59,7 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     padding = self.max_block_size * 1.5
     while True:
       pos = self._getValidPositions(padding, 0, [], 1)[0]
-      if self.isPosOffTilt(pos):
+      if self.isPosOffRamp(pos):
         break
     rot = pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()])
     for i in range(self.num_obj-1):
@@ -97,7 +82,7 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     padding = self.max_block_size * 1.5
     while True:
       pos1 = self._getValidPositions(padding, 0, [], 1)[0]
-      if self.isPosOffTilt(pos1):
+      if self.isPosOffRamp(pos1):
         break
     min_dist = 2.1 * self.max_block_size
     max_dist = 2.2 * self.max_block_size
@@ -109,7 +94,7 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
       except NoValidPositionException:
         continue
       dist = np.linalg.norm(np.array(pos1) - np.array(pos2))
-      if min_dist < dist < max_dist and self.isPosOffTilt(pos2):
+      if min_dist < dist < max_dist and self.isPosOffRamp(pos2):
         break
 
     self.generateObject((pos1[0], pos1[1], self.max_block_size / 2),
@@ -140,7 +125,7 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     padding = self.max_block_size * 1.5
     while True:
       pos1 = self._getValidPositions(padding, 0, [], 1)[0]
-      if self.isPosOffTilt(pos1):
+      if self.isPosOffRamp(pos1):
         break
     min_dist = 2.1 * self.max_block_size
     max_dist = 2.2 * self.max_block_size
@@ -152,7 +137,7 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
       except NoValidPositionException:
         continue
       dist = np.linalg.norm(np.array(pos1) - np.array(pos2))
-      if min_dist < dist < max_dist and self.isPosOffTilt(pos2):
+      if min_dist < dist < max_dist and self.isPosOffRamp(pos2):
         break
 
     self.generateObject((pos1[0], pos1[1], self.max_block_size / 2),
@@ -186,7 +171,7 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     padding = self.max_block_size * 1.5
     while True:
       pos1 = self._getValidPositions(padding, 0, [], 1)[0]
-      if self.isPosOffTilt(pos1):
+      if self.isPosOffRamp(pos1):
         break
     min_dist = 2.1 * self.max_block_size
     max_dist = 2.2 * self.max_block_size
@@ -198,7 +183,7 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
       except NoValidPositionException:
         continue
       dist = np.linalg.norm(np.array(pos1) - np.array(pos2))
-      if min_dist < dist < max_dist and self.isPosOffTilt(pos2):
+      if min_dist < dist < max_dist and self.isPosOffRamp(pos2):
         break
 
     obj_positions = np.array([pos1, pos2])
@@ -242,20 +227,20 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     min_distance = pybullet_util.getMinDistance(constants.RANDOM, self.max_block_size)
     for j in range(100):
       other_pos = self._getValidPositions(padding, min_distance, existing_pos, n)
-      if all(map(lambda p: self.isPosDistToTiltValid(p, constants.RANDOM), other_pos)):
+      if all(map(lambda p: self.isPosDistToRampValid(p, constants.RANDOM), other_pos)):
         break
     orientations = []
     existing_pos.extend(deepcopy(other_pos))
     for position in other_pos:
       y1, y2 = self.getY1Y2fromX(position[0])
       if position[1] > y1:
-        d = (position[1] - y1) * np.cos(self.tilt_rz)
-        position.append(self.tilt_z1 + 0.02 + np.tan(self.tilt_plain_rx) * d)
-        orientations.append(pb.getQuaternionFromEuler([self.tilt_plain_rx, 0, self.tilt_rz]))
+        d = (position[1] - y1) * np.cos(self.ramp_rz)
+        position.append(self.ramp1_height + 0.02 + np.tan(self.ramp1_angle) * d)
+        orientations.append(pb.getQuaternionFromEuler([self.ramp1_angle, 0, self.ramp_rz]))
       elif position[1] < y2:
-        d = (y2 - position[1]) * np.cos(self.tilt_rz)
-        position.append(self.tilt_z2 + 0.02 + np.tan(-self.tilt_plain2_rx) * d)
-        orientations.append(pb.getQuaternionFromEuler([self.tilt_plain2_rx, 0, self.tilt_rz]))
+        d = (y2 - position[1]) * np.cos(self.ramp_rz)
+        position.append(self.ramp2_height + 0.02 + np.tan(-self.ramp2_angle) * d)
+        orientations.append(pb.getQuaternionFromEuler([self.ramp2_angle, 0, self.ramp_rz]))
       else:
         position.append(0.02)
         orientations.append(pb.getQuaternionFromEuler([0, 0, np.random.random() * np.pi * 2]))
@@ -293,7 +278,7 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     padding = self.max_block_size * 1.5
     while True:
       pos1 = self._getValidPositions(padding, 0, [], 1)[0]
-      if self.isPosOffTilt(pos1, min_dist=0.03):
+      if self.isPosOffRamp(pos1, min_dist=0.03):
         break
     min_dist = 2.1 * self.max_block_size
     max_dist = 2.4 * self.max_block_size
@@ -305,7 +290,7 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
       except NoValidPositionException:
         continue
       dist = np.linalg.norm(np.array(pos1) - np.array(pos2))
-      if min_dist < dist < max_dist and self.isPosOffTilt(pos2, min_dist=0.03):
+      if min_dist < dist < max_dist and self.isPosOffRamp(pos2, min_dist=0.03):
         break
 
     obj_positions = np.array([pos1, pos2])
@@ -365,11 +350,11 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
       self.structure_objs.append(handle)
 
     padding = self.max_block_size * 1.5
-    pos1 = self._getValidPositions(padding, 0, [], 1, sample_range=[self.workspace[0], [self.tilt_border2+0.02, self.tilt_border-0.02]])[0]
+    pos1 = self._getValidPositions(padding, 0, [], 1, sample_range=[self.workspace[0], [self.ramp2_dist_to_center+0.02, self.ramp1_dist_to_center-0.02]])[0]
     min_dist = 1.7 * self.max_block_size
     max_dist = 2.4 * self.max_block_size
     sample_range = [[pos1[0] - max_dist, pos1[0] + max_dist],
-                    [max(pos1[1] - max_dist, self.tilt_border2+0.02), min(pos1[1] + max_dist, self.tilt_border-0.02)]]
+                    [max(pos1[1] - max_dist, self.ramp2_dist_to_center+0.02), min(pos1[1] + max_dist, self.ramp1_dist_to_center-0.02)]]
     for i in range(100):
       try:
         pos2 = self._getValidPositions(padding, min_dist, [pos1], 1, sample_range=sample_range)[0]
@@ -425,7 +410,7 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     padding = self.max_block_size * 1.5
     while True:
       pos1 = self._getValidPositions(padding, 0, [], 1)[0]
-      if self.isPosOffTilt(pos1, min_dist=0.03):
+      if self.isPosOffRamp(pos1, min_dist=0.03):
         break
     min_dist = 2.2 * self.max_block_size
     max_dist = 2.4 * self.max_block_size
@@ -437,7 +422,7 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
       except NoValidPositionException:
         continue
       dist = np.linalg.norm(np.array(pos1) - np.array(pos2))
-      if min_dist < dist < max_dist and self.isPosOffTilt(pos2, min_dist=0.03):
+      if min_dist < dist < max_dist and self.isPosOffRamp(pos2, min_dist=0.03):
         break
 
     base1_zscale1 = np.random.uniform(2, 2.2)
@@ -515,7 +500,7 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     padding = self.max_block_size * 1.5
     while True:
       pos1 = self._getValidPositions(padding, 0, [], 1)[0]
-      if self.isPosOffTilt(pos1, min_dist=0.03):
+      if self.isPosOffRamp(pos1, min_dist=0.03):
         break
     min_dist = 2.7 * self.max_block_size
     max_dist = 2.8 * self.max_block_size
@@ -527,7 +512,7 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
       except NoValidPositionException:
         continue
       dist = np.linalg.norm(np.array(pos1) - np.array(pos2))
-      if min_dist < dist < max_dist and self.isPosOffTilt(pos2, min_dist=0.03):
+      if min_dist < dist < max_dist and self.isPosOffRamp(pos2, min_dist=0.03):
         break
 
     base1_zscale = np.random.uniform(2, 2.2)
@@ -580,7 +565,7 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
     padding = self.max_block_size * 1.5
     while True:
       pos1 = self._getValidPositions(padding, 0, [], 1)[0]
-      if self.isPosOffTilt(pos1, min_dist=0.03):
+      if self.isPosOffRamp(pos1, min_dist=0.03):
         break
     min_dist = 2.7 * self.max_block_size
     max_dist = 2.8 * self.max_block_size
@@ -592,7 +577,7 @@ class PyBulletTiltDeconstructEnv(PyBulletDeconstructEnv, PyBulletTiltEnv):
       except NoValidPositionException:
         continue
       dist = np.linalg.norm(np.array(pos1) - np.array(pos2))
-      if min_dist < dist < max_dist and self.isPosOffTilt(pos2, min_dist=0.03):
+      if min_dist < dist < max_dist and self.isPosOffRamp(pos2, min_dist=0.03):
         break
 
     base1_zscale = np.random.uniform(2, 2.2)

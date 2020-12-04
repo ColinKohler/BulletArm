@@ -23,6 +23,7 @@ from helping_hands_rl_envs.envs.pybullet_envs.improvise_house_building_2_deconst
 from helping_hands_rl_envs.envs.pybullet_envs.improvise_house_building_3_deconstruct_env import createImproviseHouseBuilding3DeconstructEnv
 from helping_hands_rl_envs.envs.pybullet_envs.improvise_house_building_4_deconstruct_env import createImproviseHouseBuilding4DeconstructEnv
 from helping_hands_rl_envs.envs.pybullet_envs.ramp_envs.ramp_block_stacking_env import creatRampBlockStackingEnv
+from helping_hands_rl_envs.envs.pybullet_envs.ramp_envs.ramp_block_stacking_deconstruct_env import createRampBlockStackingDeconstructEnv
 from helping_hands_rl_envs.envs.pybullet_envs.random_picking_env import createRandomPickingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.random_stacking_env import createRandomStackingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.multi_task_env import createMultiTaskEnv
@@ -67,4 +68,5 @@ CREATE_PYBULLET_ENV_FNS = {
   'random_stacking' : createRandomStackingEnv,
   'multi_task' : createMultiTaskEnv,
   'ramp_block_stacking': creatRampBlockStackingEnv,
+  'ramp_block_stacking_deconstruct': createRampBlockStackingDeconstructEnv,
 }

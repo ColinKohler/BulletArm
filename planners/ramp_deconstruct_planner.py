@@ -3,18 +3,17 @@ import numpy.random as npr
 import pybullet as pb
 from itertools import combinations
 
-from helping_hands_rl_envs.envs.pybullet_env import NoValidPositionException
-
 from helping_hands_rl_envs.planners.block_stacking_planner import BlockStackingPlanner
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
 from helping_hands_rl_envs.planners.block_structure_base_planner import BlockStructureBasePlanner
 from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 
-class TiltDeconstructPlanner(BlockStructureBasePlanner):
+class RampDeconstructPlanner(BlockStructureBasePlanner):
   def __init__(self, env, config):
-    super(TiltDeconstructPlanner, self).__init__(env, config)
+    super(RampDeconstructPlanner, self).__init__(env, config)
     self.objs_to_remove = []
 
   def getStepLeft(self):
@@ -60,15 +59,15 @@ class TiltDeconstructPlanner(BlockStructureBasePlanner):
         break
     y1, y2 = self.env.getY1Y2fromX(x)
     if y > y1:
-      rx = self.env.tilt_plain_rx
-      rz = self.env.tilt_rz
-      d = (y - y1) * np.cos(self.env.tilt_rz)
-      z += (self.env.tilt_z1 + np.tan(self.env.tilt_plain_rx) * d)
+      rx = self.env.ramp1_angle
+      rz = self.env.ramp_rz
+      d = (y - y1) * np.cos(self.env.ramp_rz)
+      z += (self.env.ramp1_height + np.tan(self.env.ramp1_angle) * d)
     elif y < y2:
-      rx = self.env.tilt_plain2_rx
-      rz = self.env.tilt_rz
-      d = (y2 - y) * np.cos(self.env.tilt_rz)
-      z += (self.env.tilt_z2 + np.tan(-self.env.tilt_plain2_rx) * d)
+      rx = self.env.ramp2_angle
+      rz = self.env.ramp_rz
+      d = (y2 - y) * np.cos(self.env.ramp_rz)
+      z += (self.env.ramp2_height + np.tan(-self.env.ramp2_angle) * d)
     else:
       rx = 0
       rz = np.random.random() * np.pi * 2
@@ -84,7 +83,7 @@ class TiltDeconstructPlanner(BlockStructureBasePlanner):
 
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, (rz, ry, rx))
 
-  def placeOnTilt(self, padding_dist, min_dist):
+  def placeOnRamp(self, padding_dist, min_dist):
     existing_pos = [o.getXYPosition() for o in list(filter(lambda x: not self.isObjectHeld(x), self.env.objects))]
     while True:
       try:
@@ -94,16 +93,16 @@ class TiltDeconstructPlanner(BlockStructureBasePlanner):
       x, y, z = place_pos[0], place_pos[1], self.env.place_offset
       y1, y2 = self.env.getY1Y2fromX(x)
       if y > y1:
-        rx = -self.env.tilt_plain_rx
-        rz = self.env.tilt_rz
-        d = (y - y1) * np.cos(self.env.tilt_rz)
-        z += np.tan(self.env.tilt_plain_rx) * d
+        rx = -self.env.ramp1_angle
+        rz = self.env.ramp_rz
+        d = (y - y1) * np.cos(self.env.ramp_rz)
+        z += np.tan(self.env.ramp1_angle) * d
         break
       elif y < y2:
-        rx = -self.env.tilt_plain2_rx
-        rz = self.env.tilt_rz
-        d = (y2 - y) * np.cos(self.env.tilt_rz)
-        z += np.tan(-self.env.tilt_plain2_rx) * d
+        rx = -self.env.ramp2_angle
+        rz = self.env.ramp_rz
+        d = (y2 - y) * np.cos(self.env.ramp_rz)
+        z += np.tan(-self.env.ramp2_angle) * d
         break
       else:
         continue

@@ -36,9 +36,11 @@ class DeconstructEnv(PyBulletEnv):
   def reset(self):
     ''''''
     super(DeconstructEnv, self).reset()
+    self.structure_objs = []
     self.generateStructure()
     while not self.checkStructure():
       super(DeconstructEnv, self).reset()
+      self.structure_objs = []
       self.generateStructure()
     return self._getObservation()
 
