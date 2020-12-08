@@ -13,19 +13,9 @@ from helping_hands_rl_envs.simulators import constants
 
 class RampDeconstructEnv(DeconstructEnv, RampBaseEnv):
   def __init__(self, config):
-    super().__init__(config)
+    super(RampDeconstructEnv, self).__init__(config)
     self.pick_offset = 0.0
     self.place_offset = 0.015
-    self.prev_obj_pos = ()
-
-  def takeAction(self, action):
-    self.prev_obj_pos = self.getObjectPositions(omit_hold=False)
-    super().takeAction(action)
-
-  def isSimValid(self):
-    curr_obj_pos = self.getObjectPositions(omit_hold=False)
-    dist = np.linalg.norm(curr_obj_pos - self.prev_obj_pos, axis=1)
-    return (dist > 0.005).sum() == 1 and super().isSimValid()
 
   def reset(self):
     super(DeconstructEnv, self).reset()
@@ -39,44 +29,33 @@ class RampDeconstructEnv(DeconstructEnv, RampBaseEnv):
       self.generateStructure()
     return self._getObservation()
 
-  def generateS(self):
-    padding = self.max_block_size * 1.5
+  def get1BaseXY(self, padding):
     while True:
       pos = self._getValidPositions(padding, 0, [], 1)[0]
       if self.isPosOffRamp(pos):
         break
-    rot = pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()])
-    for i in range(self.num_obj):
-      handle = pb_obj_generation.generateCube((pos[0], pos[1], i * self.max_block_size + self.max_block_size / 2),
-                                              rot,
-                                              npr.uniform(self.block_scale_range[0], self.block_scale_range[1]))
-      self.objects.append(handle)
-      self.object_types[handle] = constants.CUBE
-      self.structure_objs.append(handle)
-    self.wait(50)
+    return pos
 
-  def generateH1(self):
-    padding = self.max_block_size * 1.5
+  def get2BaseXY(self, padding, min_dist, max_dist):
     while True:
-      pos = self._getValidPositions(padding, 0, [], 1)[0]
-      if self.isPosOffRamp(pos):
+      pos1 = self._getValidPositions(padding, 0, [], 1)[0]
+      if self.isPosOffRamp(pos1):
         break
-    rot = pb.getQuaternionFromEuler([0., 0., 2 * np.pi * np.random.random_sample()])
-    for i in range(self.num_obj-1):
-      handle = pb_obj_generation.generateCube((pos[0], pos[1], i*self.max_block_size+self.max_block_size/2),
-                                              rot,
-                                              npr.uniform(self.block_scale_range[0], self.block_scale_range[1]))
-      self.objects.append(handle)
-      self.object_types[handle] = constants.CUBE
-      self.structure_objs.append(handle)
-    handle = pb_obj_generation.generateTriangle(
-      (pos[0], pos[1], (self.num_obj-1) * self.max_block_size + self.max_block_size / 2),
-      rot,
-      npr.uniform(self.block_scale_range[0], self.block_scale_range[1]))
-    self.objects.append(handle)
-    self.object_types[handle] = constants.TRIANGLE
-    self.structure_objs.append(handle)
-    self.wait(50)
+    if self.random_orientation:
+      sample_range = [[pos1[0] - max_dist, pos1[0] + max_dist],
+                      [pos1[1] - max_dist, pos1[1] + max_dist]]
+    else:
+      sample_range = [[pos1[0] - 0.005, pos1[0] + 0.005],
+                      [pos1[1] - max_dist, pos1[1] + max_dist]]
+    for i in range(100):
+      try:
+        pos2 = self._getValidPositions(padding, min_dist, [pos1], 1, sample_range=sample_range)[0]
+      except NoValidPositionException:
+        continue
+      dist = np.linalg.norm(np.array(pos1) - np.array(pos2))
+      if min_dist < dist < max_dist and self.isPosOffRamp(pos2):
+        break
+    return pos1, pos2
 
   def generateH2(self):
     padding = self.max_block_size * 1.5

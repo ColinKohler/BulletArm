@@ -22,8 +22,10 @@ from helping_hands_rl_envs.envs.pybullet_envs.house_building_x_deconstruct_env i
 from helping_hands_rl_envs.envs.pybullet_envs.improvise_house_building_2_deconstruct_env import createImproviseHouseBuilding2DeconstructEnv
 from helping_hands_rl_envs.envs.pybullet_envs.improvise_house_building_3_deconstruct_env import createImproviseHouseBuilding3DeconstructEnv
 from helping_hands_rl_envs.envs.pybullet_envs.improvise_house_building_4_deconstruct_env import createImproviseHouseBuilding4DeconstructEnv
-from helping_hands_rl_envs.envs.pybullet_envs.ramp_envs.ramp_block_stacking_env import creatRampBlockStackingEnv
+from helping_hands_rl_envs.envs.pybullet_envs.ramp_envs.ramp_block_stacking_env import createRampBlockStackingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.ramp_envs.ramp_block_stacking_deconstruct_env import createRampBlockStackingDeconstructEnv
+from helping_hands_rl_envs.envs.pybullet_envs.ramp_envs.ramp_house_building_1_env import createRampHouseBuilding1Env
+from helping_hands_rl_envs.envs.pybullet_envs.ramp_envs.ramp_house_building_1_deconstruct_env import createRampHouseBuilding1DeconstructEnv
 from helping_hands_rl_envs.envs.pybullet_envs.random_picking_env import createRandomPickingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.random_stacking_env import createRandomStackingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.multi_task_env import createMultiTaskEnv
@@ -67,6 +69,8 @@ CREATE_PYBULLET_ENV_FNS = {
   'random_picking' : createRandomPickingEnv,
   'random_stacking' : createRandomStackingEnv,
   'multi_task' : createMultiTaskEnv,
-  'ramp_block_stacking': creatRampBlockStackingEnv,
+  'ramp_block_stacking': createRampBlockStackingEnv,
   'ramp_block_stacking_deconstruct': createRampBlockStackingDeconstructEnv,
+  'ramp_house_building_1': createRampHouseBuilding1Env,
+  'ramp_house_building_1_deconstruct': createRampHouseBuilding1DeconstructEnv,
 }

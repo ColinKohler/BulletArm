@@ -17,6 +17,18 @@ class DeconstructEnv(PyBulletEnv):
     self.pick_offset = 0.01
     self.terminate_min_dist = 2.4*self.min_block_size
     self.structure_objs = []
+    self.prev_obj_pos = ()
+
+  def takeAction(self, action):
+    # keep track of the current positions of all objects
+    self.prev_obj_pos = self.getObjectPositions(omit_hold=False)
+    PyBulletEnv.takeAction(self, action)
+
+  def isSimValid(self):
+    # compare the object positions with the previous step. Only allow one object to move at each action step
+    curr_obj_pos = self.getObjectPositions(omit_hold=False)
+    dist = np.linalg.norm(curr_obj_pos - self.prev_obj_pos, axis=1)
+    return (dist > 0.005).sum() == 1 and PyBulletEnv.isSimValid(self)
 
   def _getObservation(self, action=None):
     '''
@@ -45,6 +57,9 @@ class DeconstructEnv(PyBulletEnv):
     return self._getObservation()
 
   def _checkTermination(self):
+    # To deconstruct a block structure with n blocks, n-1 pick and place action pairs must be executed
+    if self.current_episode_steps < (self.num_obj-1)*2:
+      return False
     obj_combs = combinations(self.objects, 2)
     for (obj1, obj2) in obj_combs:
       dist = np.linalg.norm(np.array(obj1.getXYPosition()) - np.array(obj2.getXYPosition()))
@@ -104,6 +119,9 @@ class DeconstructEnv(PyBulletEnv):
     self.objects.append(handle)
     self.object_types[handle] = constants.RANDOM
     self.structure_objs.append(handle)
+
+  def get1BaseXY(self, padding):
+    return self._getValidPositions(padding, 0, [], 1)[0]
 
   def get2BaseXY(self, padding, min_dist, max_dist):
     pos1 = self._getValidPositions(padding, 0, [], 1)[0]

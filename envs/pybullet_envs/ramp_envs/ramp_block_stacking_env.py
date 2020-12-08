@@ -18,5 +18,5 @@ class RampBlockStackingEnv(RampBaseEnv):
     ''''''
     return self._checkStack()
 
-def creatRampBlockStackingEnv(config):
+def createRampBlockStackingEnv(config):
   return RampBlockStackingEnv(config)
