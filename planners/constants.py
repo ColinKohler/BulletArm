@@ -45,4 +45,5 @@ PLANNERS = {
   'ramp_house_building_2_deconstruct': RampDeconstructPlanner,
   'ramp_house_building_3_deconstruct': RampDeconstructPlanner,
   'ramp_house_building_4_deconstruct': RampDeconstructPlanner,
+  'ramp_improvise_house_building_2_deconstruct': RampDeconstructPlanner,
 }

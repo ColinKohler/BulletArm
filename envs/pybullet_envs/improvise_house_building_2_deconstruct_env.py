@@ -25,20 +25,27 @@ class ImproviseHouseBuilding2Env(DeconstructEnv):
     return False
 
   def generateStructure(self):
-    lower_z1 = 0.01
-    roof_z = 0.025
-
     padding = self.max_block_size * 1.5
-    min_dist = 1.7 * self.max_block_size
-    max_dist = 2.4 * self.max_block_size
+    min_dist = 2.7 * self.max_block_size
+    max_dist = 2.8 * self.max_block_size
     pos1, pos2 = self.get2BaseXY(padding, min_dist, max_dist)
 
-    self.generateStructureShape([pos1[0], pos1[1], lower_z1], self._getValidOrientation(self.random_orientation), constants.RANDOM)
-    self.generateStructureShape([pos2[0], pos2[1], lower_z1], self._getValidOrientation(self.random_orientation), constants.RANDOM)
+    zscale1 = np.random.uniform(2, 2.2)
+    scale1 = np.random.uniform(0.6, 0.9)
+    zscale1 = 0.6 * zscale1 / scale1
+
+    zscale2 = np.random.uniform(2, 2.2)
+    scale2 = np.random.uniform(0.6, 0.9)
+    zscale2 = 0.6 * zscale2 / scale2
+
+    self.generateStructureRandomShapeWithScaleAndZScale([pos1[0], pos1[1], zscale1 * 0.007], self._getValidOrientation(self.random_orientation), scale1, zscale1)
+    self.generateStructureRandomShapeWithScaleAndZScale([pos2[0], pos2[1], zscale2 * 0.007], self._getValidOrientation(self.random_orientation), scale2, zscale2)
+    # self.generateStructureShape([pos1[0], pos1[1], lower_z1], self._getValidOrientation(self.random_orientation), constants.RANDOM)
+    # self.generateStructureShape([pos2[0], pos2[1], lower_z1], self._getValidOrientation(self.random_orientation), constants.RANDOM)
 
     x, y, r = self.getXYRFrom2BasePos(pos1, pos2)
 
-    self.generateStructureShape((x, y, roof_z), pb.getQuaternionFromEuler([0., 0., r]), constants.ROOF)
+    self.generateStructureShape((x, y, self.max_block_size * 1.5), pb.getQuaternionFromEuler([0., 0., r]), constants.ROOF)
     self.wait(50)
 
   def isSimValid(self):

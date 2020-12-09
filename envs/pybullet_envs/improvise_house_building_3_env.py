@@ -33,12 +33,6 @@ class ImproviseHouseBuilding3Env(PyBulletEnv):
         self._generateShapes(constants.ROOF, 1, random_orientation=self.random_orientation)
         for i in range(self.num_obj-1):
           self._generateShapes(constants.RANDOM, 1, random_orientation=self.random_orientation, z_scale=npr.choice([1, 2], p=[0.75, 0.25]))
-        # self._generateShapes(constants.RANDOM, 1, random_orientation=self.random_orientation,
-        #                      z_scale=1)
-        # self._generateShapes(constants.RANDOM, 1, random_orientation=self.random_orientation,
-        #                      z_scale=1)
-        # self._generateShapes(constants.RANDOM, 1, random_orientation=self.random_orientation,
-        #                      z_scale=2)
       except NoValidPositionException:
         continue
       else:

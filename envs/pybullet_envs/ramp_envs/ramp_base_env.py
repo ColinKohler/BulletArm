@@ -94,27 +94,34 @@ class RampBaseEnv(PyBulletEnv):
           padding = pybullet_util.getPadding(t, self.max_block_size)
           min_distance = pybullet_util.getMinDistance(t, self.max_block_size)
           for j in range(100):
-            if t == constants.CUBE:
+            # put at least one cube or random shape on the ground
+            if t == constants.CUBE or t == constants.RANDOM:
               for i in range(100):
                 off_tilt_pos = self._getValidPositions(padding, min_distance, existing_pos, 1)
                 if self.isPosOffRamp(off_tilt_pos[0]):
                   break
               if i == 100:
                 raise NoValidPositionException
-              other_pos = self._getValidPositions(padding, min_distance, existing_pos+off_tilt_pos, obj_dict[t]-1)
-              other_pos.extend(off_tilt_pos)
+              positions = self._getValidPositions(padding, min_distance, existing_pos+off_tilt_pos, obj_dict[t]-1)
+              positions.extend(off_tilt_pos)
             else:
-              other_pos = self._getValidPositions(padding, min_distance, existing_pos, obj_dict[t])
-            if all(map(lambda p: self.isPosDistToRampValid(p, t), other_pos)):
+              positions = self._getValidPositions(padding, min_distance, existing_pos, obj_dict[t])
+            if all(map(lambda p: self.isPosDistToRampValid(p, t), positions)):
               break
 
-          existing_pos.extend(deepcopy(other_pos))
-          orientations = self.calculateOrientations(other_pos)
-          self._generateShapes(t, obj_dict[t], random_orientation=False, pos=other_pos, rot=orientations)
+          existing_pos.extend(deepcopy(positions))
+          orientations = self.calculateOrientations(positions)
+          if t == constants.RANDOM:
+            self.generateRandomShape(obj_dict[t], positions, orientations)
+          else:
+            self._generateShapes(t, obj_dict[t], random_orientation=False, pos=positions, rot=orientations)
       except Exception as e:
         continue
       else:
         break
+
+  def generateRandomShape(self, n, poss, rots):
+    self._generateShapes(constants.RANDOM, n, random_orientation=False, pos=poss, rot=rots)
 
   def calculateOrientations(self, positions):
     orientations = []
