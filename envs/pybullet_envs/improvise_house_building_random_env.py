@@ -7,11 +7,11 @@ from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
-class ImproviseHouseBuilding4Env(PyBulletEnv):
+class ImproviseHouseBuildingRandomEnv(PyBulletEnv):
   ''''''
   def __init__(self, config):
     config['check_random_obj_valid'] = True
-    super(ImproviseHouseBuilding4Env, self).__init__(config)
+    super(ImproviseHouseBuildingRandomEnv, self).__init__(config)
     self.base_1_objs = []
     self.base_2_objs = []
 
@@ -37,7 +37,7 @@ class ImproviseHouseBuilding4Env(PyBulletEnv):
   def reset(self):
     ''''''
     while True:
-      super(ImproviseHouseBuilding4Env, self).reset()
+      super(ImproviseHouseBuildingRandomEnv, self).reset()
       try:
         self._generateShapes(constants.ROOF, 1, random_orientation=self.random_orientation)
         self.base_1_objs = self.generateBasePair()
@@ -67,7 +67,7 @@ class ImproviseHouseBuilding4Env(PyBulletEnv):
 
   def isSimValid(self):
     roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
-    return self._checkObjUpright(roofs[0]) and super(ImproviseHouseBuilding4Env, self).isSimValid()
+    return self._checkObjUpright(roofs[0]) and super(ImproviseHouseBuildingRandomEnv, self).isSimValid()
 
-def createImproviseHouseBuilding4Env(config):
-  return ImproviseHouseBuilding4Env(config)
+def createImproviseHouseBuildingRandomEnv(config):
+  return ImproviseHouseBuildingRandomEnv(config)

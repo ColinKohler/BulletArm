@@ -7,11 +7,11 @@ from itertools import combinations
 from helping_hands_rl_envs.envs.pybullet_envs.deconstruct_env import DeconstructEnv
 from helping_hands_rl_envs.simulators import constants
 
-class ImproviseHouseBuilding4DeconstructEnv(DeconstructEnv):
+class ImproviseHouseBuildingRandomDeconstructEnv(DeconstructEnv):
   ''''''
   def __init__(self, config):
     config['check_random_obj_valid'] = True
-    super(ImproviseHouseBuilding4DeconstructEnv, self).__init__(config)
+    super(ImproviseHouseBuildingRandomDeconstructEnv, self).__init__(config)
     self.terminate_min_dist = 2.7*self.min_block_size
 
   def checkStructure(self):
@@ -58,7 +58,7 @@ class ImproviseHouseBuilding4DeconstructEnv(DeconstructEnv):
 
   def isSimValid(self):
     roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
-    return self._checkObjUpright(roofs[0]) and super(ImproviseHouseBuilding4DeconstructEnv, self).isSimValid()
+    return self._checkObjUpright(roofs[0]) and DeconstructEnv.isSimValid(self)
 
-def createImproviseHouseBuilding4DeconstructEnv(config):
-  return ImproviseHouseBuilding4DeconstructEnv(config)
+def createImproviseHouseBuildingRandomDeconstructEnv(config):
+  return ImproviseHouseBuildingRandomDeconstructEnv(config)

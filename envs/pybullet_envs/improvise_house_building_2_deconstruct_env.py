@@ -50,7 +50,7 @@ class ImproviseHouseBuilding2Env(DeconstructEnv):
 
   def isSimValid(self):
     roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
-    return self._checkObjUpright(roofs[0]) and super(ImproviseHouseBuilding2Env, self).isSimValid()
+    return self._checkObjUpright(roofs[0]) and DeconstructEnv.isSimValid(self)
 
 def createImproviseHouseBuilding2DeconstructEnv(config):
   return ImproviseHouseBuilding2Env(config)
