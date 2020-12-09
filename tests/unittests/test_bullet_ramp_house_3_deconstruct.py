@@ -4,26 +4,23 @@ from tqdm import tqdm
 import numpy as np
 import torch
 
-from helping_hands_rl_envs.envs.house_building_1_env import createHouseBuilding1Env
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
-
 from helping_hands_rl_envs import env_factory
 
-class TestBulletHouse1Deconstruct(unittest.TestCase):
+class TestBulletRampHouseBuilding3Deconstruct(unittest.TestCase):
   workspace = np.asarray([[0.35, 0.65],
                           [-0.15, 0.15],
                           [0, 0.50]])
   env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 90, 'render': False, 'fast_mode': True,
-                'seed': 0, 'action_sequence': 'pxyzrrr', 'num_objects': 3, 'random_orientation': True,
+                'seed': 0, 'action_sequence': 'xyzrrrp', 'num_objects': 4, 'random_orientation': True,
                 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
-                'workspace_check': 'point', 'in_hand_mode': 'proj'}
+                'workspace_check': 'point', 'in_hand_mode': 'proj', 'object_scale_range': (0.6, 0.6)}
 
-  # env = createHouseBuilding1Env(PyBulletEnv, env_config)()
+  planner_config = {'random_orientation': True}
 
   def testPlanner(self):
-    self.env_config['render'] = True
-    num_processes = 1
-    env = env_factory.createEnvs(num_processes, 'rl', 'pybullet', 'tilt_house_building_2_deconstruct', self.env_config, {})
+    self.env_config['render'] = False
+    num_processes = 20
+    env = env_factory.createEnvs(num_processes, 'pybullet', 'ramp_house_building_3_deconstruct', self.env_config, self.planner_config)
     total = 0
     s = 0
     step_times = []
@@ -34,21 +31,21 @@ class TestBulletHouse1Deconstruct(unittest.TestCase):
       t0 = time.time()
       action = env.getNextAction()
       t_plan = time.time() - t0
-      states_, in_hands_, obs_, rewards, dones = env.step(action, auto_reset=False)
+      (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
       t_action = time.time() - t0 - t_plan
       t = time.time() - t0
       step_times.append(t)
 
       steps = list(map(lambda x: x+1, steps))
-      num_objects = [len(p) for p in env.getObjPositions()]
+      num_objects = [len(p) for p in env.getObjectPositions()]
 
       for i in range(num_processes):
         if dones[i]:
-          if steps[i] <= 2*(num_objects[i]):
+          if steps[i] == 2*(num_objects[i]-1):
             s += 1
           total += 1
           steps[i] = 0
-      done_idxes = torch.nonzero(dones).squeeze(1)
+      done_idxes = np.nonzero(dones)[0]
       if done_idxes.shape[0] != 0:
         env.reset_envs(done_idxes)
 
@@ -56,4 +53,5 @@ class TestBulletHouse1Deconstruct(unittest.TestCase):
         '{}/{}, SR: {:.3f}, plan time: {:.2f}, action time: {:.2f}, avg step time: {:.2f}'
           .format(s, total, float(s) / total if total != 0 else 0, t_plan, t_action, np.mean(step_times))
       )
+      pbar.update(total-pbar.n)
     env.close()
