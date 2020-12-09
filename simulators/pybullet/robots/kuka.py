@@ -100,7 +100,7 @@ class Kuka(RobotBase):
 
   def adjustGripperCommand(self):
     p1, p2 = self._getGripperJointPosition()
-    mean = (p1 + p2) / 2 - 0.001
+    mean = (p1 + p2) / 2 - 0.01
     self._sendGripperCommand(mean, mean)
 
   def checkGripperClosed(self):
