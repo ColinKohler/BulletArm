@@ -66,7 +66,7 @@ class RampBlockStackingPlanner(BlockStructureBasePlanner):
     else:
       return self.placeOnGround(self.getMaxBlockSize()*3, self.getMaxBlockSize()*3)
 
-  def getStepLeft(self):
+  def getStepsLeft(self):
     if not self.isSimValid():
       return 100
     return self.getNumTopBlock() - 1

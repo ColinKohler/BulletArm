@@ -14,7 +14,7 @@ class DeconstructPlanner(BlockStructureBasePlanner):
     super(DeconstructPlanner, self).__init__(env, config)
     self.objs_to_remove = []
 
-  def getStepLeft(self):
+  def getStepsLeft(self):
     return 100
 
   def pickTallestObjOnTop(self, objects=None):

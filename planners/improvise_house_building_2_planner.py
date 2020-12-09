@@ -23,7 +23,7 @@ class ImproviseHouseBuilding2Planner(BlockStructureBasePlanner):
         return obj1, obj2
     return None, None
 
-  def getStepLeft(self):
+  def getStepsLeft(self):
     return 100
 
   def dist_valid(self, d):

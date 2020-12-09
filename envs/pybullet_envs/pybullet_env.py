@@ -107,6 +107,7 @@ class PyBulletEnv(BaseEnv):
     self.num_obj = config['num_objects']
     self.reward_type = config['reward_type']
     self.object_type = config['object_type']
+    self.hard_reset_freq = config['hard_reset_freq']
 
     self.episode_count = 0
     self.table_id = None
@@ -152,8 +153,7 @@ class PyBulletEnv(BaseEnv):
   def reset(self):
     self.episode_count += 1
     # Since both Colin and Ondrej have the problem of soft reset, always do hard reset here
-    # TODO: Fix this so it works better :p
-    if self.episode_count >= 1:
+    if self.episode_count >= self.hard_reset_freq:
       self.initialize()
       self.episode_count = 0
 

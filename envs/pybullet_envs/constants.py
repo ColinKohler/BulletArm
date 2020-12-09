@@ -23,4 +23,5 @@ DEFAULT_CONFIG = {
   'reward_type' : 'sparse',
   'num_objects' : 1,
   'object_type' : 'cube',
+  'hard_reset_freq': 1,
 }

@@ -1,5 +1,5 @@
-from envs.pybullet_envs.ramp_envs.ramp_deconstruct_env import RampDeconstructEnv
-from envs.pybullet_envs.house_building_1_deconstruct_env import HouseBuilding1DeconstructEnv
+from helping_hands_rl_envs.envs.pybullet_envs.ramp_envs.ramp_deconstruct_env import RampDeconstructEnv
+from helping_hands_rl_envs.envs.pybullet_envs.house_building_1_deconstruct_env import HouseBuilding1DeconstructEnv
 
 class RampHouseBuilding1DeconstructEnv(RampDeconstructEnv, HouseBuilding1DeconstructEnv):
   ''''''

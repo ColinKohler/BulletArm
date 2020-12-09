@@ -61,7 +61,7 @@ class ImproviseHouseBuilding3Planner(BlockStructureBasePlanner):
 
     return None, None
 
-  def getStepLeft(self):
+  def getStepsLeft(self):
     return 100
 
   def getPickingAction(self):

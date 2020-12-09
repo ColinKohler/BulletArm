@@ -32,7 +32,7 @@ class BlockPlacingPlanner(BlockStructureBasePlanner):
   def getPlacingAction(self):
     return self.placeOnHighestObj()
 
-  def getStepLeft(self):
+  def getStepsLeft(self):
     if not self.isSimValid():
       return 100
     return self.getNumTopBlock() - 1

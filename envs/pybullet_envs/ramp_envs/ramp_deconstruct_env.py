@@ -7,7 +7,7 @@ from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
 from helping_hands_rl_envs.envs.pybullet_envs.deconstruct_env import DeconstructEnv
-from envs.pybullet_envs.ramp_envs.ramp_base_env import RampBaseEnv
+from helping_hands_rl_envs.envs.pybullet_envs.ramp_envs.ramp_base_env import RampBaseEnv
 import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
 from helping_hands_rl_envs.simulators import constants
 

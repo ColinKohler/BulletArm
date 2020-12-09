@@ -25,7 +25,7 @@ class FloatPickingPlanner(BasePlanner):
 
     return self.env._encodeAction(constants.PICK_PRIMATIVE, x, y, z, (rz, rx))
 
-  def getStepLeft(self):
+  def getStepsLeft(self):
     if not self.env.isSimValid():
       return 100
     step_left = self.env.num_obj - self.env.obj_grasped

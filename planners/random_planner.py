@@ -16,5 +16,5 @@ class RandomPlanner(BasePlanner):
     else:
       return self.encodeAction(0, location[0], location[1], 0, 0)
 
-  def getStepLeft(self):
+  def getStepsLeft(self):
     return 100
