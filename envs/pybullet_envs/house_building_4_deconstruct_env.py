@@ -47,8 +47,8 @@ class HouseBuilding4DeconstructEnv(DeconstructEnv):
     self.generateStructureShape([x, y, self.max_block_size * 1.5], pb.getQuaternionFromEuler([0., 0., r]),
                                 constants.BRICK)
 
-    rot1 = self._getValidOrientation(self.random_orientation)
-    rot2 = self._getValidOrientation(self.random_orientation)
+    rot1 = pb.getQuaternionFromEuler([0., 0., r])
+    rot2 = pb.getQuaternionFromEuler([0., 0., r])
     self.generateStructureShape((pos1[0], pos1[1], self.max_block_size * 2.5), rot1, constants.CUBE)
     self.generateStructureShape((pos2[0], pos2[1], self.max_block_size * 2.5), rot2, constants.CUBE)
 
