@@ -11,19 +11,6 @@ class ImproviseHouseBuilding2Env(PyBulletEnv):
     config['check_random_obj_valid'] = True
     super(ImproviseHouseBuilding2Env, self).__init__(config)
 
-  def step(self, action):
-    self.takeAction(action)
-    self.wait(500)
-    obs = self._getObservation(action)
-    done = self._checkTermination()
-    reward = 1.0 if done else 0.0
-
-    if not done:
-      done = self.current_episode_steps >= self.max_steps or not self.isSimValid()
-    self.current_episode_steps += 1
-
-    return obs, reward, done
-
   def reset(self):
     ''''''
     while True:

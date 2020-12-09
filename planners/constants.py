@@ -37,6 +37,7 @@ PLANNERS = {
   'house_building_4_deconstruct' : DeconstructPlanner,
   'house_building_x_deconstruct' : DeconstructPlanner,
   'improvise_house_building_2_deconstruct' : DeconstructPlanner,
+  'improvise_house_building_3_deconstruct' : DeconstructPlanner,
   'improvise_house_building_discrete_deconstruct' : DeconstructPlanner,
   'improvise_house_building_random_deconstruct' : DeconstructPlanner,
   'ramp_block_stacking': RampBlockStackingPlanner,
@@ -46,4 +47,5 @@ PLANNERS = {
   'ramp_house_building_3_deconstruct': RampDeconstructPlanner,
   'ramp_house_building_4_deconstruct': RampDeconstructPlanner,
   'ramp_improvise_house_building_2_deconstruct': RampDeconstructPlanner,
+  'ramp_improvise_house_building_3_deconstruct': RampDeconstructPlanner,
 }

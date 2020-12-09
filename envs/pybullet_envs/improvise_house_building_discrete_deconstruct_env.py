@@ -85,5 +85,15 @@ class ImproviseHouseBuildingDiscreteEnv(DeconstructEnv):
     roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
     return self._checkObjUpright(roofs[0]) and DeconstructEnv.isSimValid(self)
 
+  def _checkTermination(self):
+    if self.current_episode_steps < 4:
+      return False
+    obj_combs = combinations(self.objects, 2)
+    for (obj1, obj2) in obj_combs:
+      dist = np.linalg.norm(np.array(obj1.getXYPosition()) - np.array(obj2.getXYPosition()))
+      if dist < self.terminate_min_dist:
+        return False
+    return True
+
 def createImproviseHouseBuildingDiscreteDeconstructEnv(config):
   return ImproviseHouseBuildingDiscreteEnv(config)

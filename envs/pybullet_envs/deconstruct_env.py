@@ -126,6 +126,12 @@ class DeconstructEnv(PyBulletEnv):
     self.object_types[handle] = constants.RANDOM
     self.structure_objs.append(handle)
 
+  def generateStructureRandomBrickShape(self, pos, rot, x_scale=0.6, y_scale=0.6, z_scale=0.6):
+    handle = pb_obj_generation.generateRandomBrick(pos, rot, x_scale, y_scale, z_scale)
+    self.objects.append(handle)
+    self.object_types[handle] = constants.BRICK
+    self.structure_objs.append(handle)
+
   def get1BaseXY(self, padding):
     return self._getValidPositions(padding, 0, [], 1)[0]
 

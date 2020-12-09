@@ -15,19 +15,6 @@ class ImproviseHouseBuildingRandomEnv(PyBulletEnv):
     self.base_1_objs = []
     self.base_2_objs = []
 
-  def step(self, action):
-    self.takeAction(action)
-    self.wait(100)
-    obs = self._getObservation(action)
-    done = self._checkTermination()
-    reward = 1.0 if done else 0.0
-
-    if not done:
-      done = self.current_episode_steps >= self.max_steps or not self.isSimValid()
-    self.current_episode_steps += 1
-
-    return obs, reward, done
-
   def generateBasePair(self):
     scale1 = np.random.uniform(1, 2)
     scale2 = 3-scale1

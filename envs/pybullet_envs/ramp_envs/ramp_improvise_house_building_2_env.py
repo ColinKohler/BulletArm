@@ -16,7 +16,6 @@ class RampImproviseHouseBuilding2Env(RampBaseEnv):
                            scale=scale, z_scale=zscale)
 
   def reset(self):
-    # super().reset()
     obj_dict = {
       constants.ROOF: 1,
       constants.RANDOM: 2

@@ -26,7 +26,7 @@ class RampBaseEnv(PyBulletEnv):
     self.ramp1_height = 0
     self.ramp2_height = 0
 
-    self.min_ramp_dist = 0.02
+    self.min_ramp_dist = 0.03
     self.max_ramp_dist = 0.1
 
     self.ramp_rz = 0
@@ -113,6 +113,8 @@ class RampBaseEnv(PyBulletEnv):
           orientations = self.calculateOrientations(positions)
           if t == constants.RANDOM:
             self.generateRandomShape(obj_dict[t], positions, orientations)
+          elif t == constants.BRICK:
+            self.generateBrickShape(obj_dict[t], positions, orientations)
           else:
             self._generateShapes(t, obj_dict[t], random_orientation=False, pos=positions, rot=orientations)
       except Exception as e:
@@ -122,6 +124,9 @@ class RampBaseEnv(PyBulletEnv):
 
   def generateRandomShape(self, n, poss, rots):
     self._generateShapes(constants.RANDOM, n, random_orientation=False, pos=poss, rot=rots)
+
+  def generateBrickShape(self, n, poss, rots):
+    self._generateShapes(constants.BRICK, n, random_orientation=False, pos=poss, rot=rots)
 
   def calculateOrientations(self, positions):
     orientations = []
