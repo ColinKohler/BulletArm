@@ -79,6 +79,8 @@ class PyBulletEnv(BaseEnv):
     self.pick_pre_offset = 0.10
     self.pick_offset = 0.005
     self.place_pre_offset = 0.10
+    self.place_pre_offset = 0.10
+    self.pull_offset = 0.20
     self.place_offset = self.block_scale_range[1]*self.block_original_size
 
     # Setup camera
@@ -266,6 +268,8 @@ class PyBulletEnv(BaseEnv):
                          dynamic=self.dynamic, simulate_grasp=self.simulate_grasp)
     elif motion_primative == constants.PUSH_PRIMATIVE:
       pass
+    elif motion_primative == constants.PULL_PRIMATIVE:
+      self.robot.pull(pos, rot_q, self.pull_offset, dynamic=self.dynamic)
     else:
       raise ValueError('Bad motion primative supplied for action.')
 

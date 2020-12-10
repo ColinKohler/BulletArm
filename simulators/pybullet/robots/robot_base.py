@@ -110,6 +110,21 @@ class RobotBase:
     self.moveTo(pre_pos, pre_rot, dynamic)
     self.moveToJ(self.home_positions_joint, dynamic)
 
+  def pull(self, pos, rot, offset, dynamic=True):
+    pre_pos = copy.copy(pos)
+    m = np.array(pb.getMatrixFromQuaternion(rot)).reshape(3, 3)
+    pre_pos += m[:, 2] * offset
+    self.moveTo(pre_pos, rot, dynamic)
+    # for mid in np.arange(0, offset, 0.05)[1:]:
+    #   self.moveTo(pre_pos - m[:, 2] * mid, rot, True)
+    self.moveTo(pos, rot, True)
+    self.closeGripper(primative=constants.PULL_PRIMATIVE)
+    # for mid in np.arange(0, offset, 0.05)[1:]:
+    #   self.moveTo(pos + m[:, 2] * mid, rot, True)
+    self.moveTo(pre_pos, rot, True)
+    self.openGripper()
+    self.moveToJ(self.home_positions_joint, dynamic)
+
   def moveTo(self, pos, rot, dynamic=True, pos_th=1e-3, rot_th=1e-3):
     if dynamic or not self.holding_obj:
       self._moveToCartesianPose(pos, rot, dynamic, pos_th, rot_th)
@@ -127,7 +142,7 @@ class RobotBase:
     raise NotImplementedError
 
   @abstractmethod
-  def closeGripper(self, max_it=100):
+  def closeGripper(self, max_it=100, primative=constants.PICK_PRIMATIVE):
     raise NotImplementedError
 
   @abstractmethod

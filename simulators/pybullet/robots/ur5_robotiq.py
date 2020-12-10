@@ -13,6 +13,7 @@ import pybullet_data
 import helping_hands_rl_envs
 import time
 from helping_hands_rl_envs.simulators.pybullet.robots.robot_base import RobotBase
+from helping_hands_rl_envs.simulators import constants
 
 jointInfo = namedtuple("jointInfo",
                        ["id", "name", "type", "lowerLimit", "upperLimit", "maxForce", "maxVelocity"])
@@ -104,7 +105,7 @@ class UR5_Robotiq(RobotBase):
     self.holding_obj = None
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
 
-  def closeGripper(self, max_it=100):
+  def closeGripper(self, max_it=100, primative=constants.PICK_PRIMATIVE):
     ''''''
     p1, p2 = self._getGripperJointPosition()
     limit = self.gripper_joint_limit[1]

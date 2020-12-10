@@ -24,9 +24,6 @@ class Kuka(RobotBase):
     super().__init__()
     self.max_velocity = .35
     self.max_force = 200.
-    self.finger_a_force = 2
-    self.finger_b_force = 2
-    self.finger_tip_force = 2
     self.end_effector_index = 14
     self.gripper_index = 7
 
@@ -79,11 +76,15 @@ class Kuka(RobotBase):
     self.holding_obj = None
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
 
-  def closeGripper(self, max_it=100):
+  def closeGripper(self, max_it=100, primative=constants.PICK_PRIMATIVE):
     ''''''
+    if primative == constants.PULL_PRIMATIVE:
+      force = 20
+    else:
+      force = 2
     p1, p2 = self._getGripperJointPosition()
     target = self.gripper_joint_limit[0]
-    self._sendGripperCommand(target, target)
+    self._sendGripperCommand(target, target, force)
     self.gripper_closed = True
     it = 0
     while abs(target-p1) + abs(target-p2) > 0.001:
