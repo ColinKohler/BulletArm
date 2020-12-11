@@ -1,16 +1,12 @@
 import pybullet as pb
 import numpy as np
-import scipy
-import numpy.random as npr
-from copy import deepcopy
-from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv, NoValidPositionException
-from helping_hands_rl_envs.envs.pybullet_2view_drawer_env import PyBullet2ViewDrawerEnv
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from envs.pybullet_envs.two_view_envs.two_view_drawer_env import TwoViewDrawerEnv
 from helping_hands_rl_envs.simulators import constants
 
 def createDrawerCubeEnv(simulator_base_env, config):
-  class DrawerCubeEnv(PyBullet2ViewDrawerEnv):
+  class DrawerCubeEnv(TwoViewDrawerEnv):
     def __init__(self, config):
       if simulator_base_env is PyBulletEnv:
         super().__init__(config)
@@ -31,7 +27,7 @@ def createDrawerCubeEnv(simulator_base_env, config):
         self._generateShapes(constants.CUBE, 1, pos=[[0.65, 0, 0.3]])
       # self._generateShapes(constants.CUBE, 1, pos=[[0.65, 0, 0.1]])
 
-      self.handle_pos = self.drawer.getHandlePosition()
+      self.handle_pos = self.drawer1.getHandlePosition()
       self.handle2_pos = self.drawer2.getHandlePosition()
       return self._getObservation()
 
@@ -55,7 +51,7 @@ def createDrawerCubeEnv(simulator_base_env, config):
 
 
     def test(self):
-      handle1_pos = self.drawer.getHandlePosition()
+      handle1_pos = self.drawer1.getHandlePosition()
       handle2_pos = self.drawer2.getHandlePosition()
       rot = pb.getQuaternionFromEuler((0, -np.pi / 2, 0))
       self.robot.pull(handle1_pos, rot, 0.2)

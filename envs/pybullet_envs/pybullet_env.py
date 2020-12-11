@@ -80,7 +80,7 @@ class PyBulletEnv(BaseEnv):
     self.pick_offset = 0.005
     self.place_pre_offset = 0.10
     self.place_pre_offset = 0.10
-    self.pull_offset = 0.20
+    self.pull_offset = 0.25
     self.place_offset = self.block_scale_range[1]*self.block_original_size
 
     # Setup camera
@@ -88,7 +88,7 @@ class PyBulletEnv(BaseEnv):
     cam_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 10]
     target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
     cam_up_vector = [-1, 0, 0]
-    self.sensor = Sensor(cam_pos, cam_up_vector, target_pos, ws_size)
+    self.sensor = Sensor(cam_pos, cam_up_vector, target_pos, ws_size, cam_pos[2] - 1, cam_pos[2])
 
     # Rest pose for arm
     rot = pb.getQuaternionFromEuler([0, np.pi, 0])
@@ -120,7 +120,7 @@ class PyBulletEnv(BaseEnv):
     self.state = {}
     self.pb_state = None
 
-    self.initialize()
+    # self.initialize()
 
   def initialize(self):
     ''''''
@@ -150,7 +150,7 @@ class PyBulletEnv(BaseEnv):
     # Step simulation
     pb.stepSimulation()
 
-    return self._getObservation()
+    # return self._getObservation()
 
   def reset(self):
     self.episode_count += 1

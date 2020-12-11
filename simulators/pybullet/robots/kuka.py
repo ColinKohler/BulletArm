@@ -9,6 +9,7 @@ import pybullet as pb
 import pybullet_data
 
 import helping_hands_rl_envs
+from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.pybullet.robots.robot_base import RobotBase
 import time
 
@@ -153,9 +154,9 @@ class Kuka(RobotBase):
                                  positionGains=[self.position_gain]*num_motors,
                                  velocityGains=[1.0]*num_motors)
 
-  def _sendGripperCommand(self, target_pos1, target_pos2):
+  def _sendGripperCommand(self, target_pos1, target_pos2, force=2):
     pb.setJointMotorControlArray(self.id,
                                  [8, 11, 10, 13],
                                  pb.POSITION_CONTROL,
                                  [-target_pos1, target_pos2, 0, 0],
-                                 forces=[self.finger_a_force, self.finger_b_force,  self.finger_tip_force, self.finger_tip_force])
+                                 forces=[force, force,  force, force])

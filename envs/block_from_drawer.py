@@ -1,16 +1,11 @@
-import pybullet as pb
 import numpy as np
-import scipy
-import numpy.random as npr
-from copy import deepcopy
-from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv, NoValidPositionException
-from helping_hands_rl_envs.envs.pybullet_2view_env import PyBullet2ViewEnv
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from envs.pybullet_envs.two_view_envs.two_view_env import TwoViewEnv
 from helping_hands_rl_envs.simulators import constants
 
 def createBlockFromDrawerEnv(simulator_base_env, config):
-  class BlockFromDrawerEnv(PyBullet2ViewEnv):
+  class BlockFromDrawerEnv(TwoViewEnv):
     def __init__(self, config):
       if simulator_base_env is PyBulletEnv:
         super().__init__(config)

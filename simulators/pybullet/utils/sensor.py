@@ -2,15 +2,15 @@ import pybullet as pb
 import numpy as np
 
 class Sensor(object):
-  def __init__(self, cam_pos, cam_up_vector, target_pos, target_size):
+  def __init__(self, cam_pos, cam_up_vector, target_pos, target_size, near, far):
     self.view_matrix = pb.computeViewMatrix(
       cameraEyePosition=cam_pos,
       cameraUpVector=cam_up_vector,
       cameraTargetPosition=target_pos,
     )
 
-    self.near = cam_pos[2] - 1
-    self.far = cam_pos[2]
+    self.near = near
+    self.far = far
     self.fov = np.degrees(2 * np.arctan((target_size / 2) / self.far))
     self.proj_matrix = pb.computeProjectionMatrixFOV(self.fov, 1, self.near, self.far)
 
