@@ -2,7 +2,7 @@ import pybullet as pb
 import numpy as np
 
 from helping_hands_rl_envs.simulators.pybullet.equipments.drawer import Drawer
-from envs.pybullet_envs.two_view_envs.two_view_env import TwoViewEnv
+from helping_hands_rl_envs.envs.pybullet_envs.two_view_envs.two_view_env import TwoViewEnv
 from helping_hands_rl_envs.simulators import constants
 
 class TwoViewDrawerEnv(TwoViewEnv):

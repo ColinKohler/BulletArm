@@ -99,7 +99,8 @@ class DrawerTeapotPlanner(BasePlanner):
       else:
         return self.pickTeapotLid()
 
-
+  def getStepsLeft(self):
+    return 100
 
 
 
