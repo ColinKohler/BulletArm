@@ -17,7 +17,7 @@ class TestBulletHouse4(unittest.TestCase):
   planner_config = {'pos_noise': 0, 'rot_noise': 0}
 
   def testPlanner(self):
-    self.env_config['seed'] = 0
+    self.env_config['seed'] = 1
     env = env_factory.createEnvs(1, 'pybullet', 'house_building_4', self.env_config, self.planner_config)
     env.reset()
     for i in range(9, -1, -1):
