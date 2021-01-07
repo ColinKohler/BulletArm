@@ -43,7 +43,7 @@ class TestBulletTwoViewDrawerTeapot(unittest.TestCase):
           '{:.3f}, plan time: {:.2f}, action time: {:.2f}, avg step time: {:.2f}'
             .format(float(s) / total if total != 0 else 0, t_plan, t_action, np.mean(step_times))
         )
-      pbar.update(dones.sum())
+      pbar.update(int(dones.sum()))
     env.close()
 
   def testReset(self):

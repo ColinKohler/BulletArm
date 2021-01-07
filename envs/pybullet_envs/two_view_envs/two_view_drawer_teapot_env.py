@@ -33,13 +33,14 @@ class TwoViewDrawerTeapotEnv(TwoViewDrawerEnv):
     return self._isObjOnGround(self.objects[0]) and self._checkOnTop(self.objects[0], self.objects[1])
 
   def generateTeapot(self):
+    teapot_model_id = np.random.choice([1, 2, 3, 4])
     rot = (np.random.random() - 0.5) * np.pi
     if np.random.random() > 0.5:
-      teapot = TeapotBase([0.83, 0, 0.05], pb.getQuaternionFromEuler((0, 0, rot)), 0.08)
-      teapot_lid = TeapotLid([0.83, 0, 0.25], pb.getQuaternionFromEuler((0, 0, 0)), 0.08)
+      teapot = TeapotBase([0.83, 0, 0.05], pb.getQuaternionFromEuler((0, 0, rot)), 0.08, teapot_model_id)
+      teapot_lid = TeapotLid([0.83, 0, 0.25], pb.getQuaternionFromEuler((0, 0, 0)), 0.08, teapot_model_id)
     else:
-      teapot = TeapotBase([0.83, 0, 0.25], pb.getQuaternionFromEuler((0, 0, rot)), 0.08)
-      teapot_lid = TeapotLid([0.83, 0, 0.05], pb.getQuaternionFromEuler((0, 0, 0)), 0.08)
+      teapot = TeapotBase([0.83, 0, 0.25], pb.getQuaternionFromEuler((0, 0, rot)), 0.08, teapot_model_id)
+      teapot_lid = TeapotLid([0.83, 0, 0.05], pb.getQuaternionFromEuler((0, 0, 0)), 0.08, teapot_model_id)
     self.objects.append(teapot)
     self.object_types[teapot] = constants.TEAPOT
     self.objects.append(teapot_lid)
