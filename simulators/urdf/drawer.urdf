@@ -361,92 +361,95 @@
     <parent link="base_link"/>
     <child link="back_wall"/>
   </joint>
-  <link name="handle_left">
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <box size="0.06 0.04 0.04"/>
-      </geometry>
-      <material name="omni/White"/>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0.0"/>
-      <geometry>
-        <box size="0.06 0.04 0.04"/>
-      </geometry>
-    </collision>
-    <inertial>
-      <!-- CENTER OF MASS -->
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.05"/>
-      <!-- box inertia: 1/12*m(y^2+z^2), ... -->
-      <inertia ixx="2e-05" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
-    </inertial>
-  </link>
-  <joint name="d_2_hl" type="fixed">
-    <origin rpy="0 0 0" xyz="0.38 -0.1 0"/>
-    <parent link="drawer"/>
-    <child link="handle_left"/>
-  </joint>
-  <link name="handle_right">
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <box size="0.06 0.04 0.04"/>
-      </geometry>
-      <material name="omni/White"/>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0.0"/>
-      <geometry>
-        <box size="0.06 0.04 0.04"/>
-      </geometry>
-    </collision>
-    <inertial>
-      <!-- CENTER OF MASS -->
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.05"/>
-      <!-- box inertia: 1/12*m(y^2+z^2), ... -->
-      <inertia ixx="2e-05" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
-    </inertial>
-  </link>
-  <joint name="d_2_hr" type="fixed">
-    <origin rpy="0 0 0" xyz="0.38 0.1 0"/>
-    <parent link="drawer"/>
-    <child link="handle_right"/>
-  </joint>
-  <link name="handle_grip">
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <box size="0.04 0.24 0.04"/>
-      </geometry>
-      <material name="omni/White"/>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0.0"/>
-      <geometry>
-        <box size="0.04 0.24 0.04"/>
-      </geometry>
-    </collision>
-    <inertial>
-      <!-- CENTER OF MASS -->
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.05"/>
-      <!-- box inertia: 1/12*m(y^2+z^2), ... -->
-      <inertia ixx="0.0009125" ixy="0" ixz="0" iyy="2e-05" iyz="0" izz="0.0009125"/>
-    </inertial>
-    <contact>
-      <lateral_friction value="200.0"/>
-      <spinning_friction value="0.0"/>
-      <rolling_friction value="0.0"/>
-    </contact>
-  </link>
-  <joint name="d_2_hg" type="fixed">
-    <origin rpy="0 0 0" xyz="0.42 0 0"/>
-    <parent link="drawer"/>
-    <child link="handle_grip"/>
-  </joint>
+  <!--<link name="handle_left">-->
+    <!--<visual>-->
+      <!--<origin rpy="0 0 0" xyz="0 0 0"/>-->
+      <!--<geometry>-->
+        <!--<box size="0.06 0.04 0.04"/>-->
+      <!--</geometry>-->
+      <!--<material name="omni/White"/>-->
+    <!--</visual>-->
+    <!--<collision>-->
+      <!--<origin rpy="0 0 0" xyz="0 0 0.0"/>-->
+      <!--<geometry>-->
+        <!--<box size="0.06 0.04 0.04"/>-->
+      <!--</geometry>-->
+    <!--</collision>-->
+    <!--<inertial>-->
+      <!--&lt;!&ndash; CENTER OF MASS &ndash;&gt;-->
+      <!--<origin rpy="0 0 0" xyz="0 0 0"/>-->
+      <!--<mass value="0.05"/>-->
+      <!--&lt;!&ndash; box inertia: 1/12*m(y^2+z^2), ... &ndash;&gt;-->
+      <!--<inertia ixx="2e-05" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>-->
+    <!--</inertial>-->
+  <!--</link>-->
+  <!--<joint name="d_2_hl" type="fixed">-->
+    <!--<origin rpy="0 0 0" xyz="0.38 -0.1 0"/>-->
+    <!--<parent link="drawer"/>-->
+    <!--<child link="handle_left"/>-->
+  <!--</joint>-->
+  <!--<link name="handle_right">-->
+    <!--<visual>-->
+      <!--<origin rpy="0 -1.57 0" xyz="0 0 0"/>-->
+      <!--<geometry>-->
+        <!--&lt;!&ndash;<box size="0.06 0.04 0.04"/>&ndash;&gt;-->
+        <!--<cylinder radius="0.02" length="0.06"/>-->
+      <!--</geometry>-->
+      <!--<material name="omni/White"/>-->
+    <!--</visual>-->
+    <!--<collision>-->
+      <!--<origin rpy="0 0 0" xyz="0 0 0.0"/>-->
+      <!--<geometry>-->
+        <!--<box size="0.06 0.04 0.04"/>-->
+      <!--</geometry>-->
+    <!--</collision>-->
+    <!--<inertial>-->
+      <!--&lt;!&ndash; CENTER OF MASS &ndash;&gt;-->
+      <!--<origin rpy="0 0 0" xyz="0 0 0"/>-->
+      <!--<mass value="0.05"/>-->
+      <!--&lt;!&ndash; box inertia: 1/12*m(y^2+z^2), ... &ndash;&gt;-->
+      <!--<inertia ixx="2e-05" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>-->
+    <!--</inertial>-->
+  <!--</link>-->
+  <!--<joint name="d_2_hr" type="fixed">-->
+    <!--<origin rpy="0 0 0" xyz="0.38 0.1 0"/>-->
+    <!--<parent link="drawer"/>-->
+    <!--<child link="handle_right"/>-->
+  <!--</joint>-->
+  <!--<link name="handle_grip">-->
+    <!--<visual>-->
+      <!--<origin rpy="1.57 0 0" xyz="0 0 0"/>-->
+      <!--<geometry>-->
+        <!--&lt;!&ndash;<box size="0.04 0.24 0.04"/>&ndash;&gt;-->
+        <!--<cylinder length="0.24" radius="0.02"/>-->
+      <!--</geometry>-->
+      <!--<material name="omni/White"/>-->
+    <!--</visual>-->
+    <!--<collision>-->
+      <!--<origin rpy="1.57 0 0" xyz="0 0 0"/>-->
+      <!--<geometry>-->
+        <!--&lt;!&ndash;<box size="0.04 0.24 0.04"/>&ndash;&gt;-->
+        <!--<cylinder length="0.24" radius="0.02"/>-->
+      <!--</geometry>-->
+    <!--</collision>-->
+    <!--<inertial>-->
+      <!--&lt;!&ndash; CENTER OF MASS &ndash;&gt;-->
+      <!--<origin rpy="0 0 0" xyz="0 0 0"/>-->
+      <!--<mass value="0.05"/>-->
+      <!--&lt;!&ndash; box inertia: 1/12*m(y^2+z^2), ... &ndash;&gt;-->
+      <!--<inertia ixx="0.0009125" ixy="0" ixz="0" iyy="2e-05" iyz="0" izz="0.0009125"/>-->
+    <!--</inertial>-->
+    <!--<contact>-->
+      <!--<lateral_friction value="200.0"/>-->
+      <!--<spinning_friction value="0.0"/>-->
+      <!--<rolling_friction value="0.0"/>-->
+    <!--</contact>-->
+  <!--</link>-->
+  <!--<joint name="d_2_hg" type="fixed">-->
+    <!--<origin rpy="0 0 0" xyz="0.42 0 0"/>-->
+    <!--<parent link="drawer"/>-->
+    <!--<child link="handle_grip"/>-->
+  <!--</joint>-->
 
 
   <!--<link name="handle_top_cover">-->

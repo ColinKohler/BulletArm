@@ -26,6 +26,8 @@ class TeapotLid(PybulletObject):
       pos += (T[:3, 2]*0.1*self.scale)
     elif self.teapot_model_id in [4]:
       pos += (T[:3, 2]*0.2*self.scale)
+    elif self.teapot_model_id in [5]:
+      pos += (T[:3, 2]*0.15*self.scale)
 
     return pos
 

@@ -26,9 +26,12 @@ class TeapotBase(PybulletObject):
     elif self.teapot_model_id in [2, 3]:
       pos += (T[:3, 1]*0.7*self.scale)
       pos += (T[:3, 2]*0.55*self.scale)
-    elif self.teapot_model_id == 4:
+    elif self.teapot_model_id in [4]:
       pos += (T[:3, 1]*0.85*self.scale)
       pos += (T[:3, 2]*0.4*self.scale)
+    elif self.teapot_model_id == 5:
+      pos += (T[:3, 1]*0.75*self.scale)
+      pos += (T[:3, 2]*0.6*self.scale)
     return pos
 
   def getPosition(self):
