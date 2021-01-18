@@ -2,11 +2,11 @@ import pybullet as pb
 import numpy as np
 
 from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
-from envs.pybullet_envs.two_view_envs.two_view_drawer_env import TwoViewDrawerEnv
+from envs.pybullet_envs.two_view_envs.drawer_env import DrawerEnv
 from helping_hands_rl_envs.simulators import constants
 
 def createDrawerCubeEnv(simulator_base_env, config):
-  class DrawerCubeEnv(TwoViewDrawerEnv):
+  class DrawerCubeEnv(DrawerEnv):
     def __init__(self, config):
       if simulator_base_env is PyBulletEnv:
         super().__init__(config)

@@ -2,10 +2,10 @@ import pybullet as pb
 import numpy as np
 
 from helping_hands_rl_envs.simulators.pybullet.equipments.drawer import Drawer
-from helping_hands_rl_envs.envs.pybullet_envs.two_view_envs.two_view_env import TwoViewEnv
+from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 
-class TwoViewDrawerEnv(TwoViewEnv):
+class DrawerEnv(PyBulletEnv):
   def __init__(self, config):
     super().__init__(config)
     self.drawer1 = Drawer()
@@ -62,7 +62,7 @@ if __name__ == '__main__':
                 'seed': 0, 'action_sequence': 'pxyrr', 'num_objects': 5, 'random_orientation': False,
                 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
                 'workspace_check': 'point'}
-  env = TwoViewDrawerEnv(env_config)
+  env = DrawerEnv(env_config)
   while True:
     s, in_hand, obs = env.reset()
     env.test()

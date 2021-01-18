@@ -4,10 +4,10 @@ import numpy as np
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.pybullet.objects.teapot_base import TeapotBase
 from helping_hands_rl_envs.simulators.pybullet.objects.teapot_lid import TeapotLid
-from helping_hands_rl_envs.envs.pybullet_envs.two_view_envs.two_view_drawer_env import TwoViewDrawerEnv
+from helping_hands_rl_envs.envs.pybullet_envs.two_view_envs.drawer_env import DrawerEnv
 
 
-class TwoViewDrawerTeapotEnv(TwoViewDrawerEnv):
+class DrawerTeapotEnv(DrawerEnv):
   def __init__(self, config):
     super().__init__(config)
 
@@ -68,8 +68,8 @@ class TwoViewDrawerTeapotEnv(TwoViewDrawerEnv):
     self.robot.place(teapot_open_pos, (0, 0, 0, 1), 0.1, False)
     pass
 
-def createTwoViewDrawerTeapotEnv(config):
-  return TwoViewDrawerTeapotEnv(config)
+def createDrawerTeapotEnv(config):
+  return DrawerTeapotEnv(config)
 
 if __name__ == '__main__':
   workspace = np.asarray([[0.3, 0.7],
@@ -79,7 +79,7 @@ if __name__ == '__main__':
                 'seed': 0, 'action_sequence': 'pxyrr', 'num_objects': 5, 'random_orientation': False,
                 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
                 'workspace_check': 'point', 'physics_mode': 'slow'}
-  env = TwoViewDrawerTeapotEnv(env_config)
+  env = DrawerTeapotEnv(env_config)
   while True:
     s, in_hand, obs = env.reset()
     env.test()

@@ -23,3 +23,27 @@ class Sensor(object):
     depth = self.far * self.near / (self.far - (self.far - self.near) * depth_img)
 
     return np.abs(depth - np.max(depth)).reshape(size, size)
+
+  def getPointCloud(self, size):
+    image_arr = pb.getCameraImage(width=size, height=size,
+                                  viewMatrix=self.view_matrix, projectionMatrix=self.proj_matrix)
+    depthImg = image_arr[3]
+
+    # https://stackoverflow.com/questions/59128880/getting-world-coordinates-from-opengl-depth-buffer
+    projectionMatrix = np.asarray(self.proj_matrix).reshape([4,4],order='F')
+    viewMatrix = np.asarray(self.view_matrix).reshape([4,4],order='F')
+    tran_pix_world = np.linalg.inv(np.matmul(projectionMatrix, viewMatrix))
+    pixel_pos = np.mgrid[0:size, 0:size]
+    pixel_pos = pixel_pos/(size/2) - 1
+    pixel_pos = np.moveaxis(pixel_pos, 1, 2)
+    pixel_pos[1] = -pixel_pos[1]
+    zs = 2*depthImg.reshape(1, size, size) - 1
+    pixel_pos = np.concatenate((pixel_pos, zs))
+    pixel_pos = pixel_pos.reshape(3, -1)
+    augment = np.ones((1, pixel_pos.shape[1]))
+    pixel_pos = np.concatenate((pixel_pos, augment), axis=0)
+    position = np.matmul(tran_pix_world, pixel_pos)
+    pc = position / position[3]
+    points = pc.T[:, :3]
+
+    return points
