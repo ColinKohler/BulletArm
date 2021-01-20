@@ -8,21 +8,29 @@ from helping_hands_rl_envs.simulators import constants
 class DrawerEnv(PyBulletEnv):
   def __init__(self, config):
     super().__init__(config)
+    self.drawer_theta_range = [-np.pi/6, np.pi/6]
     self.drawer1 = Drawer()
     self.drawer2 = Drawer()
 
+  def resetDrawerEnv(self):
+    self.resetPybulletEnv()
+
+    # theta = np.pi / 6
+    theta = 0
+    drawer_rotq = pb.getQuaternionFromEuler((0, 0, theta))
+
+    self.drawer1.reset((self.workspace[0][1] + 0.21, 0, 0), drawer_rotq)
+    self.drawer2.reset((self.workspace[0][1] + 0.21, 0, 0.18), drawer_rotq)
+
   def reset(self):
-    super().reset()
-
-    self.drawer1.reset()
-    self.drawer2.reset()
-
+    self.resetDrawerEnv()
     return self._getObservation()
 
   def initialize(self):
     super().initialize()
-    # self.drawer.remove()
-    # self.drawer2.remove()
+
+    self.drawer1.remove()
+    self.drawer2.remove()
     self.drawer1.initialize((self.workspace[0][1] + 0.21, 0, 0), pb.getQuaternionFromEuler((0, 0, 0)))
     self.drawer2.initialize((self.workspace[0][1] + 0.21, 0, 0.18), pb.getQuaternionFromEuler((0, 0, 0)))
 
@@ -65,4 +73,4 @@ if __name__ == '__main__':
   env = DrawerEnv(env_config)
   while True:
     s, in_hand, obs = env.reset()
-    env.test()
+    # env.test()

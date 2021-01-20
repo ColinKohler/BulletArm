@@ -11,9 +11,12 @@ class DrawerTeapotEnv(DrawerEnv):
   def __init__(self, config):
     super().__init__(config)
 
-  def reset(self):
-    super().reset()
+  def resetDrawerTeapotEnv(self):
+    self.resetDrawerEnv()
     self.generateTeapot()
+
+  def reset(self):
+    self.resetDrawerTeapotEnv()
     return self._getObservation()
 
   def step(self, action):

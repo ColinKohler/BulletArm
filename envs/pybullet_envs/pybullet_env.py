@@ -152,7 +152,7 @@ class PyBulletEnv(BaseEnv):
 
     # return self._getObservation()
 
-  def reset(self):
+  def resetPybulletEnv(self):
     if self.episode_count == -1:
       self.initialize()
     self.episode_count += 1
@@ -182,6 +182,9 @@ class PyBulletEnv(BaseEnv):
         break
 
     pb.stepSimulation()
+
+  def reset(self):
+    self.resetPybulletEnv()
     return self._getObservation()
 
   def step(self, action):

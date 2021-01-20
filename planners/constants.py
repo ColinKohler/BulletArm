@@ -50,4 +50,5 @@ PLANNERS = {
   'ramp_improvise_house_building_2_deconstruct': RampDeconstructPlanner,
   'ramp_improvise_house_building_3_deconstruct': RampDeconstructPlanner,
   'two_view_drawer_teapot': DrawerTeapotPlanner,
+  'm_view_drawer_teapot': DrawerTeapotPlanner
 }
