@@ -1,6 +1,7 @@
+import time
 import pybullet as pb
 import numpy as np
-
+import matplotlib.pyplot as plt
 from helping_hands_rl_envs.simulators.pybullet.utils.sensor import Sensor
 
 class Renderer(object):
@@ -20,14 +21,22 @@ class Renderer(object):
     self.sensor_2 = Sensor(cam_2_forward_pos, cam_forward_up_vector, cam_forward_target_pos,
                            8 * (self.workspace[2][1] - self.workspace[2][0]), near=0.5, far=far_2)
 
+    cam_3_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 10]
+    cam_3_target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
+    far_3 = np.linalg.norm(np.array(cam_3_pos) - np.array(cam_3_target_pos)) + 2
+    self.sensor_3 = Sensor(cam_3_pos, [-1, 0, 0], cam_3_target_pos,
+                           self.workspace[0][1] - self.workspace[0][0], near=0.1, far=far_3)
+
     self.points = np.empty((0, 3))
 
   def getNewPointCloud(self):
     points1 = self.sensor_1.getPointCloud(512)
     points2 = self.sensor_2.getPointCloud(512)
+    points3 = self.sensor_3.getPointCloud(512)
     self.clearPoints()
     self.addPoints(points1)
     self.addPoints(points2)
+    self.addPoints(points3)
 
   def getForwardHeightmapByThetas(self, size, thetas):
     heightmaps = []
@@ -35,10 +44,10 @@ class Renderer(object):
       dy = np.sin(theta) * 1
       dx = np.cos(theta) * 1
 
-      render_cam_target_pos = [self.workspace[0][1] + 0.21, self.workspace[1].mean(), self.workspace[2].mean()]
+      render_cam_target_pos = [self.workspace[0].mean() + 0.41, self.workspace[1].mean(), self.workspace[2].mean()]
       render_cam_up_vector = [0, 0, 1]
 
-      render_cam_pos1 = [self.workspace[0][1] + 0.21-dx, dy, self.workspace[2].mean()]
+      render_cam_pos1 = [self.workspace[0].mean() + 0.41-dx, dy, self.workspace[2].mean()]
       hm = self.projectHeightmap(size, render_cam_pos1, render_cam_up_vector,
                                  render_cam_target_pos, self.workspace[2][1] - self.workspace[2][0])
 
@@ -51,6 +60,7 @@ class Renderer(object):
     render_cam_up_vector = [-1, 0, 0]
 
     render_cam_pos1 = [self.workspace[0].mean(), self.workspace[1].mean(), 10]
+    # t0 = time.time()
     hm = self.projectHeightmap(size, render_cam_pos1, render_cam_up_vector,
                                render_cam_target_pos, self.workspace[2][1] - self.workspace[2][0])
     return hm
@@ -84,11 +94,58 @@ class Renderer(object):
     pts[1] = (pts[1] + 1) * size / 2
     mask = (pts[0] > 0) * (pts[0] < size) * (pts[1] > 0) * (pts[1] < size)
     pts = pts[:, mask]
-    depth = np.ones((size, size)) * 1000
-    for i in range(pts.shape[1]):
-      depth[int(pts[1, i]), int(pts[0, i])] = min(depth[int(pts[1, i]), int(pts[0, i])], pts[2, i])
-    depth[depth == 1000] = np.nan
+    # dense pixel index
+    mix_xy = (pts[1].astype(int) * size + pts[0].astype(int))
+    # lexsort point cloud first on dense pixel index, then on z value
+    ind = np.lexsort((pts[2], mix_xy))
+    # bin count the points that belongs to each pixel
+    bincount = np.bincount(mix_xy)
+    # cumulative sum of the bin count. the result indicates the cumulative sum of number of points for all previous pixels
+    cumsum = np.cumsum(bincount)
+    # rolling the cumsum gives the ind of the first point that belongs to each pixel.
+    # because of the lexsort, the first point has the smallest z value
+    cumsum = np.roll(cumsum, 1)
+    cumsum[0] = bincount[0]
+    # pad for unobserved pixels
+    cumsum = np.append(cumsum, -1 * np.ones(size * size - cumsum.shape[0])).astype(int)
+
+    depth = pts[2][ind][cumsum]
+    depth[cumsum == 0] = np.nan
+    depth = depth.reshape(size, size)
     mask = np.isnan(depth)
     depth[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), depth[~mask])
 
     return np.abs(depth - np.max(depth))
+
+
+  # def projectHeightmap(self, size, cam_pos, cam_up_vector, target_pos, target_size):
+  #   view_matrix = pb.computeViewMatrix(
+  #     cameraEyePosition=cam_pos,
+  #     cameraUpVector=cam_up_vector,
+  #     cameraTargetPosition=target_pos,
+  #   )
+  #   view_matrix = np.asarray(view_matrix).reshape([4, 4], order='F')
+  #
+  #   augment = np.ones((1, self.points.shape[0]))
+  #   pts = np.concatenate((self.points.T, augment), axis=0)
+  #   projection_matrix = np.array([
+  #     [1 / (target_size / 2), 0, 0, 0],
+  #     [0, 1 / (target_size / 2), 0, 0],
+  #     [0, 0, -1, 0],
+  #     [0, 0, 0, 1]
+  #   ])
+  #   tran_world_pix = np.matmul(projection_matrix, view_matrix)
+  #   pts = np.matmul(tran_world_pix, pts)
+  #   pts[1] = -pts[1]
+  #   pts[0] = (pts[0] + 1) * size / 2
+  #   pts[1] = (pts[1] + 1) * size / 2
+  #   mask = (pts[0] > 0) * (pts[0] < size) * (pts[1] > 0) * (pts[1] < size)
+  #   pts = pts[:, mask]
+  #   depth = np.ones((size, size)) * 1000
+  #   for i in range(pts.shape[1]):
+  #     depth[int(pts[1, i]), int(pts[0, i])] = min(depth[int(pts[1, i]), int(pts[0, i])], pts[2, i])
+  #   depth[depth == 1000] = np.nan
+  #   mask = np.isnan(depth)
+  #   depth[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), depth[~mask])
+  #
+  #   return np.abs(depth - np.max(depth))

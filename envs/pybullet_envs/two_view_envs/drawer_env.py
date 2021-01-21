@@ -11,16 +11,18 @@ class DrawerEnv(PyBulletEnv):
     self.drawer_theta_range = [-np.pi/6, np.pi/6]
     self.drawer1 = Drawer()
     self.drawer2 = Drawer()
+    self.drawer_theta = 0
 
   def resetDrawerEnv(self):
     self.resetPybulletEnv()
 
-    # theta = np.pi / 6
-    theta = 0
-    drawer_rotq = pb.getQuaternionFromEuler((0, 0, theta))
+    # self.drawer_theta = np.pi / 6
+    # self.drawer_theta = 0
+    self.drawer_theta = np.random.random() * (self.drawer_theta_range[1] - self.drawer_theta_range[0]) + self.drawer_theta_range[0]
+    drawer_rotq = pb.getQuaternionFromEuler((0, 0, self.drawer_theta))
 
-    self.drawer1.reset((self.workspace[0][1] + 0.21, 0, 0), drawer_rotq)
-    self.drawer2.reset((self.workspace[0][1] + 0.21, 0, 0.18), drawer_rotq)
+    self.drawer1.reset((self.workspace[0].mean() + 0.41, 0, 0), drawer_rotq)
+    self.drawer2.reset((self.workspace[0].mean() + 0.41, 0, 0.18), drawer_rotq)
 
   def reset(self):
     self.resetDrawerEnv()

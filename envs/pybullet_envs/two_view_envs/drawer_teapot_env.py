@@ -37,13 +37,13 @@ class DrawerTeapotEnv(DrawerEnv):
 
   def generateTeapot(self):
     teapot_model_id = np.random.choice([1, 2, 3, 4, 5])
-    rot = (np.random.random() - 0.5) * np.pi
+    rot = (np.random.random() - 0.5) * np.pi + self.drawer_theta
     if np.random.random() > 0.5:
-      teapot = TeapotBase([0.83, 0, 0.05], pb.getQuaternionFromEuler((0, 0, rot)), 0.08, teapot_model_id)
-      teapot_lid = TeapotLid([0.83, 0, 0.25], pb.getQuaternionFromEuler((0, 0, 0)), 0.08, teapot_model_id)
+      teapot = TeapotBase(self.drawer1.getObjInitPos(), pb.getQuaternionFromEuler((0, 0, rot)), 0.08, teapot_model_id)
+      teapot_lid = TeapotLid(self.drawer2.getObjInitPos(), pb.getQuaternionFromEuler((0, 0, 0)), 0.08, teapot_model_id)
     else:
-      teapot = TeapotBase([0.83, 0, 0.25], pb.getQuaternionFromEuler((0, 0, rot)), 0.08, teapot_model_id)
-      teapot_lid = TeapotLid([0.83, 0, 0.05], pb.getQuaternionFromEuler((0, 0, 0)), 0.08, teapot_model_id)
+      teapot = TeapotBase(self.drawer2.getObjInitPos(), pb.getQuaternionFromEuler((0, 0, rot)), 0.08, teapot_model_id)
+      teapot_lid = TeapotLid(self.drawer1.getObjInitPos(), pb.getQuaternionFromEuler((0, 0, 0)), 0.08, teapot_model_id)
     self.objects.append(teapot)
     self.object_types[teapot] = constants.TEAPOT
     self.objects.append(teapot_lid)

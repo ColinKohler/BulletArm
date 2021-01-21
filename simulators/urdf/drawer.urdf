@@ -506,5 +506,29 @@
     <!--<parent link="handle_top_cover"/>-->
     <!--<child link="handle_bottom_cover"/>-->
   <!--</joint>-->
+  <link name="drawer_obj_pos">
+    <contact>
+			<friction_anchor/>
+			<lateral_friction value="1.0"/>
+		</contact>
+    <!--<visual>-->
+      <!--<origin rpy="0 0 0" xyz="0 0 0"/>-->
+      <!--<geometry>-->
+        <!--<box size="0.02 0.02 0.02"/>-->
+      <!--</geometry>-->
+    <!--</visual>-->
+    <inertial>
+      <!-- CENTER OF MASS -->
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="0.05"/>
+      <!-- box inertia: 1/12*m(y^2+z^2), ... -->
+      <inertia ixx="0.0109" ixy="0" ixz="0" iyy="0.0255125" iyz="0" izz="0.0363925"/>
+    </inertial>
+  </link>
+  <joint name="dbow2dop" type="fixed">
+    <origin rpy="0 0 0" xyz="0.16 0 0.06"/>
+    <parent link="drawer_bottom_wall"/>
+    <child link="drawer_obj_pos"/>
+  </joint>
 </robot>
 

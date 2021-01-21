@@ -1,6 +1,7 @@
 import pybullet as pb
 import numpy as np
 import os
+import time
 import helping_hands_rl_envs
 
 import matplotlib.pyplot as plt

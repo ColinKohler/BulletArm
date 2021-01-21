@@ -36,11 +36,23 @@ class Drawer:
     # return pb.getLinkState(self.handle.id, 0)[4]
     return self.handle.getPosition()
 
-  def reset(self):
+  def getHandleRotation(self):
+    return self.handle.getRotation()
+
+  def reset(self, pos=(0,0,0), rot=(0,0,0,1)):
+    pb.resetBasePositionAndOrientation(self.id, pos, rot)
+    for i in range(50):
+      pb.stepSimulation()
     pb.resetJointState(self.id, 1, 0)
+    for i in range(50):
+      pb.stepSimulation()
+    pass
 
   def isDrawerOpen(self):
     return pb.getJointState(self.id, 1)[0] > 0.15
 
   def isDrawerClosed(self):
     return pb.getJointState(self.id, 1)[0] < 0.02
+
+  def getObjInitPos(self):
+    return pb.getLinkState(self.id, 5)[0]

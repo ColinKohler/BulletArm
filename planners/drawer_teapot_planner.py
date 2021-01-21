@@ -10,7 +10,10 @@ class DrawerTeapotPlanner(BasePlanner):
 
   def openDrawer(self, drawer):
     handle1_pos = drawer.getHandlePosition()
-    rot = (0, -np.pi / 2, 0)
+    handle1_rot = drawer.getHandleRotation()
+    rx, ry, rz = list(pb.getEulerFromQuaternion(handle1_rot))
+
+    rot = (0, -np.pi / 2, rz)
     return self.encodeAction(constants.PULL_PRIMATIVE, handle1_pos[0], handle1_pos[1], handle1_pos[2], rot)
 
   def pickTeapot(self):
