@@ -1,5 +1,6 @@
 import pybullet as pb
 import numpy as np
+import cupy as cp
 
 class Sensor(object):
   def __init__(self, cam_pos, cam_up_vector, target_pos, target_size, near, far):
@@ -24,26 +25,30 @@ class Sensor(object):
 
     return np.abs(depth - np.max(depth)).reshape(size, size)
 
-  def getPointCloud(self, size):
+  def getPointCloud(self, size, to_numpy=True):
     image_arr = pb.getCameraImage(width=size, height=size,
-                                  viewMatrix=self.view_matrix, projectionMatrix=self.proj_matrix)
-    depthImg = image_arr[3]
+                                  viewMatrix=self.view_matrix,
+                                  projectionMatrix=self.proj_matrix,
+                                  renderer=pb.ER_TINY_RENDERER)
+    depthImg = cp.asarray(image_arr[3])
 
     # https://stackoverflow.com/questions/59128880/getting-world-coordinates-from-opengl-depth-buffer
-    projectionMatrix = np.asarray(self.proj_matrix).reshape([4,4],order='F')
-    viewMatrix = np.asarray(self.view_matrix).reshape([4,4],order='F')
-    tran_pix_world = np.linalg.inv(np.matmul(projectionMatrix, viewMatrix))
-    pixel_pos = np.mgrid[0:size, 0:size]
+    projectionMatrix = cp.asarray(self.proj_matrix).reshape([4,4],order='F')
+    viewMatrix = cp.asarray(self.view_matrix).reshape([4,4],order='F')
+    tran_pix_world = cp.linalg.inv(cp.matmul(projectionMatrix, viewMatrix))
+    pixel_pos = cp.mgrid[0:size, 0:size]
     pixel_pos = pixel_pos/(size/2) - 1
-    pixel_pos = np.moveaxis(pixel_pos, 1, 2)
+    pixel_pos = cp.moveaxis(pixel_pos, 1, 2)
     pixel_pos[1] = -pixel_pos[1]
     zs = 2*depthImg.reshape(1, size, size) - 1
-    pixel_pos = np.concatenate((pixel_pos, zs))
+    pixel_pos = cp.concatenate((pixel_pos, zs))
     pixel_pos = pixel_pos.reshape(3, -1)
-    augment = np.ones((1, pixel_pos.shape[1]))
-    pixel_pos = np.concatenate((pixel_pos, augment), axis=0)
-    position = np.matmul(tran_pix_world, pixel_pos)
+    augment = cp.ones((1, pixel_pos.shape[1]))
+    pixel_pos = cp.concatenate((pixel_pos, augment), axis=0)
+    position = cp.matmul(tran_pix_world, pixel_pos)
     pc = position / position[3]
     points = pc.T[:, :3]
 
+    if to_numpy:
+      points = cp.asnumpy(points)
     return points

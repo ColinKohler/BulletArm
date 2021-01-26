@@ -19,6 +19,7 @@ class MViewDrawerTeapotEnv(DrawerTeapotEnv):
     self.renderer = Renderer(self.workspace)
 
     self.wall_id = None
+    self.view_thetas = [-np.pi / 9, 0, np.pi / 9]
 
   def initialize(self):
     super().initialize()
@@ -36,7 +37,7 @@ class MViewDrawerTeapotEnv(DrawerTeapotEnv):
     # TODO:
     self.renderer.getNewPointCloud()
     topdown_heightmap = self.renderer.getTopDownHeightmap(self.heightmap_size)
-    forward_heightmaps = self.renderer.getForwardHeightmapByThetas(self.heightmap_size, [-np.pi / 6, 0, np.pi / 6])
+    forward_heightmaps = self.renderer.getForwardHeightmapByThetas(self.heightmap_size, self.view_thetas)
     pos = self.drawer1.getHandlePosition()
     old_heightmap = self.heightmap
     self.heightmap = topdown_heightmap
