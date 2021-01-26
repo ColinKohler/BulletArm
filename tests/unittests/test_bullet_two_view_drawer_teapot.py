@@ -6,20 +6,20 @@ import numpy as np
 from helping_hands_rl_envs import env_factory
 
 class TestBulletTwoViewDrawerTeapot(unittest.TestCase):
-  workspace = np.asarray([[0.3, 0.7],
-                          [-0.2, 0.2],
-                          [0, 0.40]])
+  workspace = np.asarray([[0.25, 0.75],
+                          [-0.25, 0.25],
+                          [0, 0.50]])
   env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 128, 'render': True, 'fast_mode': True,
                 'seed': 0, 'action_sequence': 'xyzrrrp', 'num_objects': 5, 'random_orientation': False,
                 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
-                'workspace_check': 'point', 'physics_mode': 'slow', 'in_hand_mode': 'proj'}
+                'workspace_check': 'point', 'physics_mode': 'slow', 'in_hand_mode': 'proj', 'hard_reset_freq': 1000}
 
   planner_config = {'random_orientation': True}
 
   def testPlanner(self):
-    self.env_config['render'] = True
+    self.env_config['render'] = False
 
-    env = env_factory.createEnvs(1, 'pybullet', 'two_view_drawer_teapot', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(20, 'pybullet', 'two_view_drawer_teapot', self.env_config, self.planner_config)
     total = 0
     s = 0
     step_times = []

@@ -14,12 +14,12 @@ class Renderer(object):
     cam_1_forward_pos = [0, 0.5, 1]
     far_1 = np.linalg.norm(np.array(cam_1_forward_pos) - np.array(cam_forward_target_pos)) + 2
     self.sensor_1 = Sensor(cam_1_forward_pos, cam_forward_up_vector, cam_forward_target_pos,
-                           8 * (self.workspace[2][1] - self.workspace[2][0]), near=0.5, far=far_1)
+                           3.2, near=0.5, far=far_1)
 
     cam_2_forward_pos = [0, -0.5, 1]
     far_2 = np.linalg.norm(np.array(cam_2_forward_pos) - np.array(cam_forward_target_pos)) + 2
     self.sensor_2 = Sensor(cam_2_forward_pos, cam_forward_up_vector, cam_forward_target_pos,
-                           8 * (self.workspace[2][1] - self.workspace[2][0]), near=0.5, far=far_2)
+                           3.2, near=0.5, far=far_2)
 
     cam_3_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 10]
     cam_3_target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
@@ -30,9 +30,9 @@ class Renderer(object):
     self.points = np.empty((0, 3))
 
   def getNewPointCloud(self):
-    points1 = self.sensor_1.getPointCloud(512)
-    points2 = self.sensor_2.getPointCloud(512)
-    points3 = self.sensor_3.getPointCloud(512)
+    points1 = self.sensor_1.getPointCloud(360)
+    points2 = self.sensor_2.getPointCloud(360)
+    points3 = self.sensor_3.getPointCloud(360)
     self.clearPoints()
     self.addPoints(points1)
     self.addPoints(points2)
@@ -47,7 +47,7 @@ class Renderer(object):
       render_cam_target_pos = [self.workspace[0].mean() + 0.41, self.workspace[1].mean(), self.workspace[2].mean()]
       render_cam_up_vector = [0, 0, 1]
 
-      render_cam_pos1 = [self.workspace[0].mean() + 0.41-dx, dy, self.workspace[2].mean()]
+      render_cam_pos1 = [self.workspace[0].mean() + 0.41-dx, -dy, self.workspace[2].mean()]
       hm = self.projectHeightmap(size, render_cam_pos1, render_cam_up_vector,
                                  render_cam_target_pos, self.workspace[2][1] - self.workspace[2][0])
 
@@ -92,6 +92,14 @@ class Renderer(object):
     pts[1] = -pts[1]
     pts[0] = (pts[0] + 1) * size / 2
     pts[1] = (pts[1] + 1) * size / 2
+
+    # pts_floor = pts.copy()
+    # pts_floor[0], pts_floor[1] = np.floor(pts_floor[0]), np.floor(pts_floor[1])
+    # pts_ceil = pts.copy()
+    # pts_ceil[0], pts_ceil[1] = np.ceil(pts_ceil[0]), np.ceil(pts_ceil[1])
+    # pts = np.concatenate((pts_floor, pts_ceil), 1)
+    # mask = (pts[0] >= 0) * (pts[0] < size) * (pts[1] >= 0) * (pts[1] < size)
+
     mask = (pts[0] > 0) * (pts[0] < size) * (pts[1] > 0) * (pts[1] < size)
     pts = pts[:, mask]
     # dense pixel index

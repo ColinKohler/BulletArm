@@ -41,7 +41,7 @@ from helping_hands_rl_envs.envs.pybullet_envs.ramp_envs.ramp_improvise_house_bui
 from helping_hands_rl_envs.envs.pybullet_envs.random_picking_env import createRandomPickingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.random_stacking_env import createRandomStackingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.multi_task_env import createMultiTaskEnv
-from helping_hands_rl_envs.envs.pybullet_envs.two_view_envs.drawer_teapot_env import createDrawerTeapotEnv
+from helping_hands_rl_envs.envs.pybullet_envs.two_view_envs.two_view_drawer_teapot_env import createTwoViewDrawerTeapotEnv
 from helping_hands_rl_envs.envs.pybullet_envs.two_view_envs.mview_drawer_teapot_env import createMViewDrawerTeapotEnv
 
 CREATE_NUMPY_ENV_FNS = {
@@ -99,6 +99,6 @@ CREATE_PYBULLET_ENV_FNS = {
   'ramp_house_building_4_deconstruct': createRampHouseBuilding4DeconstructEnv,
   'ramp_improvise_house_building_2_deconstruct': createRampImproviseHouseBuilding2DeconstructEnv,
   'ramp_improvise_house_building_3_deconstruct': createRampImproviseHouseBuilding3DeconstructEnv,
-  'two_view_drawer_teapot': createDrawerTeapotEnv,
-  'm_view_drawer_teapot': createMViewDrawerTeapotEnv,
+  'two_view_drawer_teapot': createTwoViewDrawerTeapotEnv,
+  'multi_view_drawer_teapot': createMViewDrawerTeapotEnv,
 }

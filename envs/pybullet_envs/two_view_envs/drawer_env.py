@@ -16,9 +16,10 @@ class DrawerEnv(PyBulletEnv):
   def resetDrawerEnv(self):
     self.resetPybulletEnv()
 
-    # self.drawer_theta = np.pi / 6
-    # self.drawer_theta = 0
-    self.drawer_theta = np.random.random() * (self.drawer_theta_range[1] - self.drawer_theta_range[0]) + self.drawer_theta_range[0]
+    if self.random_orientation:
+      self.drawer_theta = np.random.random() * (self.drawer_theta_range[1] - self.drawer_theta_range[0]) + self.drawer_theta_range[0]
+    else:
+      self.drawer_theta = 0
     drawer_rotq = pb.getQuaternionFromEuler((0, 0, self.drawer_theta))
 
     self.drawer1.reset((self.workspace[0].mean() + 0.41, 0, 0), drawer_rotq)
@@ -31,10 +32,8 @@ class DrawerEnv(PyBulletEnv):
   def initialize(self):
     super().initialize()
 
-    self.drawer1.remove()
-    self.drawer2.remove()
-    self.drawer1.initialize((self.workspace[0][1] + 0.21, 0, 0), pb.getQuaternionFromEuler((0, 0, 0)))
-    self.drawer2.initialize((self.workspace[0][1] + 0.21, 0, 0.18), pb.getQuaternionFromEuler((0, 0, 0)))
+    self.drawer1.initialize((self.workspace[0].mean() + 0.21, 0, 0), pb.getQuaternionFromEuler((0, 0, 0)))
+    self.drawer2.initialize((self.workspace[0].mean() + 0.21, 0, 0.18), pb.getQuaternionFromEuler((0, 0, 0)))
 
   def isSimValid(self):
     for obj in self.objects:

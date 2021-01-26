@@ -3,11 +3,11 @@ import numpy as np
 import os
 import helping_hands_rl_envs
 
-from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_envs.two_view_envs.drawer_teapot_env import DrawerTeapotEnv
 from helping_hands_rl_envs.simulators.pybullet.utils.sensor import Sensor
 
 
-class TwoViewEnv(PyBulletEnv):
+class TwoViewDrawerTeapotEnv(DrawerTeapotEnv):
   def __init__(self, config):
     super().__init__(config)
     self.wall_x = 1.1
@@ -51,3 +51,5 @@ class TwoViewEnv(PyBulletEnv):
 
     return self._isHolding(), in_hand_img, heightmaps
 
+def createTwoViewDrawerTeapotEnv(config):
+  return TwoViewDrawerTeapotEnv(config)
