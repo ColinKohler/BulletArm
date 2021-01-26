@@ -22,12 +22,12 @@
 				<mesh filename="textured_objs/original-2.obj"/>
 			</geometry>
 		</collision>
-		<visual>
-			<origin rpy="0 0 0" xyz="0 0 0.2"/>
-			<geometry>
-				<box size=".3 .3 .2"/>
-			</geometry>
-		</visual>
+		<!--<visual>-->
+			<!--<origin rpy="0 0 0" xyz="0 0 0.2"/>-->
+			<!--<geometry>-->
+				<!--<box size=".3 .3 .2"/>-->
+			<!--</geometry>-->
+		<!--</visual>-->
 		<collision>
 			<origin rpy="0 0 0" xyz="0 0 0.2"/>
 			<geometry>

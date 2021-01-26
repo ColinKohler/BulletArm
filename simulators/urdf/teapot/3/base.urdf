@@ -58,5 +58,17 @@
 				<mesh filename="textured_objs/original-5.obj"/>
 			</geometry>
 		</collision>
+		<!--<visual>-->
+			<!--<origin rpy="0 0 0" xyz="0 0.7 0.55"/>-->
+			<!--<geometry>-->
+				<!--<box size=".3 .3 .3"/>-->
+			<!--</geometry>-->
+		<!--</visual>-->
+		<collision>
+			<origin rpy="0 0 0" xyz="0 0.7 0.55"/>
+			<geometry>
+				<box size=".3 .3 .3"/>
+			</geometry>
+		</collision>
 	</link>
 </robot>

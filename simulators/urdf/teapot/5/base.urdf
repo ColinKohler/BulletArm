@@ -119,16 +119,16 @@
 			</geometry>
 		</collision>
 		<!--<visual>-->
-			<!--<origin rpy="0 0 0" xyz="0 0.85 0.4"/>-->
+			<!--<origin rpy="0 0 0" xyz="0 0.75 0.6"/>-->
 			<!--<geometry>-->
 				<!--<box size=".3 .3 .3"/>-->
 			<!--</geometry>-->
 		<!--</visual>-->
-		<!--<collision>-->
-			<!--<origin rpy="0 0 0" xyz="0 0.85 0.4"/>-->
-			<!--<geometry>-->
-				<!--<box size=".3 .3 .3"/>-->
-			<!--</geometry>-->
-		<!--</collision>-->
+		<collision>
+			<origin rpy="0 0 0" xyz="0 0.75 0.6"/>
+			<geometry>
+				<box size=".3 .3 .3"/>
+			</geometry>
+		</collision>
 	</link>
 </robot>
