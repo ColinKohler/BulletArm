@@ -12,12 +12,14 @@ class TestBulletTwoViewDrawerTeapot(unittest.TestCase):
   env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 128, 'render': True, 'fast_mode': True,
                 'seed': 0, 'action_sequence': 'xyzrrrp', 'num_objects': 5, 'random_orientation': True,
                 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
-                'workspace_check': 'point', 'physics_mode': 'slow', 'in_hand_mode': 'proj', 'hard_reset_freq': 2,
+                'workspace_check': 'point', 'physics_mode': 'slow', 'in_hand_mode': 'proj', 'hard_reset_freq': 1000,
                 }
 
   planner_config = {'random_orientation': True, 'half_rotation': True}
 
   def testPlanner(self):
+    # 0.872
+    # 0.970
     self.env_config['render'] = False
 
     env = env_factory.createEnvs(20, 'pybullet', 'multi_view_drawer_teapot', self.env_config, self.planner_config)
@@ -25,8 +27,8 @@ class TestBulletTwoViewDrawerTeapot(unittest.TestCase):
     s = 0
     step_times = []
     env.reset()
-    pbar = tqdm(total=1000)
-    while total < 1000:
+    pbar = tqdm(total=500)
+    while total < 500:
       t0 = time.time()
       action = env.getNextAction()
       t_plan = time.time() - t0

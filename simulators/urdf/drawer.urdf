@@ -96,7 +96,7 @@
     </inertial>
   </link>
   <joint name="drawer_2_dlw" type="fixed">
-      <origin rpy="0 0 0" xyz="0 -0.29 0"/>
+      <origin rpy="0 0 0" xyz="0 -0.34 0"/>
       <parent link="drawer"/>
       <child link="drawer_left_wall"/>
   </joint>
@@ -124,7 +124,7 @@
     </inertial>
   </link>
   <joint name="drawer_2_drw" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0.29 0"/>
+    <origin rpy="0 0 0" xyz="0 0.34 0"/>
     <parent link="drawer"/>
     <child link="drawer_right_wall"/>
   </joint>
@@ -137,14 +137,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <box size="0.7 0.6 0.02"/>
+        <box size="0.7 0.7 0.02"/>
       </geometry>
       <material name="omni/LightGrey"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0.0"/>
       <geometry>
-        <box size="0.7 0.6 0.02"/>
+        <box size="0.7 0.7 0.02"/>
       </geometry>
     </collision>
     <inertial>
@@ -164,14 +164,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <box size="0.02 0.6 0.3"/>
+        <box size="0.02 0.7 0.3"/>
       </geometry>
       <material name="omni/LightGrey"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0.0"/>
       <geometry>
-        <box size="0.02 0.6 0.3"/>
+        <box size="0.02 0.7 0.3"/>
       </geometry>
     </collision>
     <inertial>
@@ -192,14 +192,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <box size="0.02 0.6 0.3"/>
+        <box size="0.02 0.7 0.3"/>
       </geometry>
       <material name="omni/LightGrey"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0.0"/>
       <geometry>
-        <box size="0.02 0.6 0.3"/>
+        <box size="0.02 0.7 0.3"/>
       </geometry>
     </collision>
     <inertial>
@@ -249,7 +249,7 @@
     </inertial>
   </link>
   <joint name="b_2_lw" type="fixed">
-    <origin rpy="0 0 0" xyz="-0.01 -0.32 0"/>
+    <origin rpy="0 0 0" xyz="-0.01 -0.37 0"/>
     <parent link="base_link"/>
     <child link="left_wall"/>
   </joint>
@@ -276,7 +276,7 @@
     </inertial>
   </link>
   <joint name="b_2_rw" type="fixed">
-    <origin rpy="0 0 0" xyz="-0.01 0.32 0"/>
+    <origin rpy="0 0 0" xyz="-0.01 0.37 0"/>
     <parent link="base_link"/>
     <child link="right_wall"/>
   </joint>
@@ -284,14 +284,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <box size="0.71 0.66 0.02"/>
+        <box size="0.71 0.76 0.02"/>
       </geometry>
       <material name="omni/White"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0.0"/>
       <geometry>
-        <box size="0.71 0.66 0.02"/>
+        <box size="0.71 0.76 0.02"/>
       </geometry>
     </collision>
     <inertial>
@@ -311,14 +311,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <box size="0.71 0.66 0.02"/>
+        <box size="0.71 0.76 0.02"/>
       </geometry>
       <material name="omni/White"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0.0"/>
       <geometry>
-        <box size="0.71 0.66 0.02"/>
+        <box size="0.71 0.76 0.02"/>
       </geometry>
     </collision>
     <inertial>
@@ -338,14 +338,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <box size="0.02 0.66 0.36"/>
+        <box size="0.02 0.76 0.36"/>
       </geometry>
       <material name="omni/White"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0.0"/>
       <geometry>
-        <box size="0.02 0.66 0.36"/>
+        <box size="0.02 0.76 0.36"/>
       </geometry>
     </collision>
     <inertial>

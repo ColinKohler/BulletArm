@@ -27,23 +27,29 @@ class DrawerTeapotPlanner(BasePlanner):
     return self.encodeAction(constants.PICK_PRIMATIVE, pos[0], pos[1], pos[2], (rz, ry, rx))
 
   def placeTeapotOnGround(self):
-    sample_range = [[0.33, 0.37],
-                    [-0.15, 0.15]]
-    try:
-      place_pos = self.getValidPositions(0.05, 0.05, [self.env.objects[1].getPosition()[:2]], 1, sample_range)[0]
-    except NoValidPositionException:
-      place_pos = self.getValidPositions(0.05, 0.05, [], 1, sample_range)[0]
+    sample_range = [[0.25, 0.32],
+                    [-0.2, 0.2]]
+    place_pos = self.getValidPositions(0.05, 0.1, [], 1, sample_range)[0]
+    for _ in range(1000):
+      try:
+        place_pos = self.getValidPositions(0.05, 0.15, [self.env.objects[1].getPosition()[:2]], 1, sample_range)[0]
+        break
+      except NoValidPositionException:
+        continue
     x, y, z = place_pos[0], place_pos[1], self.env.place_offset
     r = 0
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
   def placeLidOnGround(self):
-    sample_range = [[0.33, 0.37],
-                    [-0.15, 0.15]]
-    try:
-      place_pos = self.getValidPositions(0.05, 0.05, [self.env.objects[0].getPosition()[:2]], 1, sample_range)[0]
-    except NoValidPositionException:
-      place_pos = self.getValidPositions(0.05, 0.05, [], 1, sample_range)[0]
+    sample_range = [[0.25, 0.32],
+                    [-0.2, 0.2]]
+    place_pos = self.getValidPositions(0.05, 0.1, [], 1, sample_range)[0]
+    for _ in range(1000):
+      try:
+        place_pos = self.getValidPositions(0.05, 0.1, [self.env.objects[0].getPosition()[:2]], 1, sample_range)[0]
+        break
+      except NoValidPositionException:
+        continue
     x, y, z = place_pos[0], place_pos[1], self.env.place_offset
     r = 0
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)

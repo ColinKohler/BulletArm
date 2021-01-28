@@ -22,7 +22,7 @@ class Renderer(object):
     self.sensor_2 = Sensor(cam_2_forward_pos, cam_forward_up_vector, cam_forward_target_pos,
                            3.2, near=0.5, far=far_2)
 
-    cam_3_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 10]
+    cam_3_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 20]
     cam_3_target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
     far_3 = np.linalg.norm(np.array(cam_3_pos) - np.array(cam_3_target_pos)) + 2
     self.sensor_3 = Sensor(cam_3_pos, [-1, 0, 0], cam_3_target_pos,
