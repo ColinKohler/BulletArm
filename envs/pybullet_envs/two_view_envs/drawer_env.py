@@ -1,6 +1,8 @@
+import os
 import pybullet as pb
 import numpy as np
 
+import helping_hands_rl_envs
 from helping_hands_rl_envs.simulators.pybullet.equipments.drawer import Drawer
 from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
@@ -12,6 +14,9 @@ class DrawerEnv(PyBulletEnv):
     self.drawer1 = Drawer()
     self.drawer2 = Drawer()
     self.drawer_theta = 0
+
+    self.wall_x = 1.2
+    self.wall_id = None
 
   def resetDrawerEnv(self):
     self.resetPybulletEnv()
@@ -34,6 +39,15 @@ class DrawerEnv(PyBulletEnv):
 
     self.drawer1.initialize((self.workspace[0].mean() + 0.41, 0, 0), pb.getQuaternionFromEuler((0, 0, 0)))
     self.drawer2.initialize((self.workspace[0].mean() + 0.41, 0, 0.36*0.5), pb.getQuaternionFromEuler((0, 0, 0)))
+
+    root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
+    urdf_filepath = os.path.join(root_dir, 'simulators/urdf/', 'wall.urdf')
+    self.wall_id = pb.loadURDF(urdf_filepath,
+                               [self.wall_x,
+                                self.workspace[1].mean(),
+                                0],
+                               pb.getQuaternionFromEuler([0, 0, 0]),
+                               globalScaling=1)
 
   def isSimValid(self):
     for obj in self.objects:

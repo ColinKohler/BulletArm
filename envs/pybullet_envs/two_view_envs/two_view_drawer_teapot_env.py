@@ -10,26 +10,11 @@ from helping_hands_rl_envs.simulators.pybullet.utils.sensor import Sensor
 class TwoViewDrawerTeapotEnv(DrawerTeapotEnv):
   def __init__(self, config):
     super().__init__(config)
-    self.wall_x = 1.1
-
     cam_forward_pos = [-10, self.workspace[1].mean(), self.workspace[2].mean()]
     cam_forward_target_pos = [self.wall_x, self.workspace[1].mean(), self.workspace[2].mean()]
     cam_forward_up_vector = [0, 0, 1]
     self.sensor_forward = Sensor(cam_forward_pos, cam_forward_up_vector, cam_forward_target_pos,
                                  self.workspace[2][1] - self.workspace[2][0], near=10, far=self.wall_x+10)
-
-    self.wall_id = None
-
-  def initialize(self):
-    super().initialize()
-    root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
-    urdf_filepath = os.path.join(root_dir, 'simulators/urdf/', 'wall.urdf')
-    self.wall_id = pb.loadURDF(urdf_filepath,
-                                     [self.wall_x,
-                                      self.workspace[1].mean(),
-                                      0],
-                                     pb.getQuaternionFromEuler([0, 0, 0]),
-                                     globalScaling=1)
 
   def _getHeightmapForward(self):
     return self.sensor_forward.getHeightmap(self.heightmap_size)

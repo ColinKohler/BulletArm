@@ -1,36 +1,13 @@
-import pybullet as pb
 import numpy as np
-import os
-import time
-import helping_hands_rl_envs
 
-import matplotlib.pyplot as plt
-
-from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.envs.pybullet_envs.two_view_envs.drawer_teapot_env import DrawerTeapotEnv
-from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
-from helping_hands_rl_envs.simulators.pybullet.utils.sensor import Sensor
 from helping_hands_rl_envs.simulators.pybullet.utils.renderer import Renderer
 
 class MViewDrawerTeapotEnv(DrawerTeapotEnv):
   def __init__(self, config):
     super().__init__(config)
-    self.wall_x = 1.2
     self.renderer = Renderer(self.workspace)
-
-    self.wall_id = None
     self.view_thetas = [-np.pi / 9, 0, np.pi / 9]
-
-  def initialize(self):
-    super().initialize()
-    root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
-    urdf_filepath = os.path.join(root_dir, 'simulators/urdf/', 'wall.urdf')
-    self.wall_id = pb.loadURDF(urdf_filepath,
-                                     [self.wall_x,
-                                      self.workspace[1].mean(),
-                                      0],
-                                     pb.getQuaternionFromEuler([0, 0, 0]),
-                                     globalScaling=1)
 
   def _getObservation(self, action=None):
     ''''''
