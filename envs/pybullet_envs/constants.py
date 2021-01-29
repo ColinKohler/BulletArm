@@ -24,4 +24,5 @@ DEFAULT_CONFIG = {
   'num_objects' : 1,
   'object_type' : 'cube',
   'hard_reset_freq': 1,
+  'view_type': 'render', # render or camera
 }
