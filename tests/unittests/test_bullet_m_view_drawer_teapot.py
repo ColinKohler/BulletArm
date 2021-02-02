@@ -19,11 +19,11 @@ class TestBulletTwoViewDrawerTeapot(unittest.TestCase):
   planner_config = {'random_orientation': True, 'half_rotation': True}
 
   def testPlanner(self):
-    # 0.872
-    # 0.970
-    self.env_config['render'] = True
+    # no pos variation: 0.986
+    # pos variation: 0.980
+    self.env_config['render'] = False
 
-    env = env_factory.createEnvs(1, 'pybullet', 'multi_view_drawer_teapot', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(20, 'pybullet', 'multi_view_drawer_teapot', self.env_config, self.planner_config)
     total = 0
     s = 0
     step_times = []

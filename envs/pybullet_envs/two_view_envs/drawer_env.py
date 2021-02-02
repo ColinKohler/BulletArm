@@ -18,6 +18,8 @@ class DrawerEnv(PyBulletEnv):
     self.wall_x = 1.2
     self.wall_id = None
 
+    self.drawer_pos_variation = 0.1
+
   def resetDrawerEnv(self):
     self.resetPybulletEnv()
 
@@ -27,8 +29,14 @@ class DrawerEnv(PyBulletEnv):
       self.drawer_theta = 0
     drawer_rotq = pb.getQuaternionFromEuler((0, 0, self.drawer_theta))
 
-    self.drawer1.reset((self.workspace[0].mean() + 0.41, 0, 0), drawer_rotq)
-    self.drawer2.reset((self.workspace[0].mean() + 0.41, 0, 0.36*0.5), drawer_rotq)
+    drawer_pos_x = self.workspace[0].mean() + 0.41 - 0.05
+    drawer_pos_y = 0
+
+    drawer_pos_x += ((np.random.random()-0.5) * self.drawer_pos_variation)
+    drawer_pos_y += ((np.random.random()-0.5) * self.drawer_pos_variation)
+
+    self.drawer1.reset((drawer_pos_x, drawer_pos_y, 0), drawer_rotq)
+    self.drawer2.reset((drawer_pos_x, drawer_pos_y, 0.36*0.5), drawer_rotq)
 
   def reset(self):
     self.resetDrawerEnv()
