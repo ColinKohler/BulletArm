@@ -59,10 +59,12 @@ class PyBulletEnv(BaseEnv):
       raise NotImplementedError
 
     if config['physics_mode'] == 'fast':
+      self.physic_mode = 'fast'
       self.num_solver_iterations = 50
       self.solver_residual_threshold = 1e-7
       self.robot.position_gain = 0.02
     elif config['physics_mode'] == 'slow':
+      self.physic_mode = 'slow'
       self.num_solver_iterations = 200
       self.solver_residual_threshold = 1e-7
       self.robot.position_gain = 0.01
@@ -77,9 +79,9 @@ class PyBulletEnv(BaseEnv):
     self.max_block_size = self.block_original_size * self.block_scale_range[1]
 
     self.pick_pre_offset = 0.10
-    self.pick_offset = 0.005
+    self.pick_offset = self.block_scale_range[1]*self.block_original_size/2
     self.place_pre_offset = 0.10
-    self.place_offset = self.block_scale_range[1]*self.block_original_size
+    self.place_offset = self.block_scale_range[1]*self.block_original_size/2
 
     # Setup camera
     ws_size = self.workspace[0][1] - self.workspace[0][0]
@@ -461,6 +463,8 @@ class PyBulletEnv(BaseEnv):
         handle = pb_obj_generation.generateRandomObj(position, orientation, scale, z_scale)
       else:
         raise NotImplementedError
+      if self.physic_mode == 'slow':
+        pb.changeDynamics(handle.object_id, -1, linearDamping=0.04, angularDamping=0.04, restitution=0, contactStiffness=3000, contactDamping=100)
       shape_handles.append(handle)
     self.objects.extend(shape_handles)
 
@@ -674,7 +678,7 @@ class PyBulletEnv(BaseEnv):
       safe_z_pos = self.workspace[2][0]
     if motion_primative == constants.PICK_PRIMATIVE:
       safe_z_pos -= self.pick_offset
-      safe_z_pos = max(safe_z_pos, 0.02)
+      safe_z_pos = max(safe_z_pos, 0.01)
     else:
       safe_z_pos += self.place_offset
     return safe_z_pos
