@@ -49,7 +49,7 @@ class TestBulletRampBlockStackingDeconstruct(unittest.TestCase):
   def testReset(self):
     self.env_config['render'] = True
     num_processes = 1
-    env = env_factory.createEnvs(num_processes, 'rl', 'pybullet', 'tilt_block_stacking', self.env_config, {})
+    env = env_factory.createEnvs(num_processes, 'pybullet', 'ramp_block_stacking', self.env_config, self.planner_config)
     while True:
       states, hand_obs, depths = env.reset()
       print(1)

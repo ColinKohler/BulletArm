@@ -13,7 +13,8 @@ class TestBulletRampHouseBuilding3Deconstruct(unittest.TestCase):
   env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 90, 'render': False, 'fast_mode': True,
                 'seed': 0, 'action_sequence': 'xyzrrrp', 'num_objects': 6, 'max_episode_steps': 20,
                 'random_orientation': True, 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False,
-                'robot': 'kuka', 'workspace_check': 'point', 'in_hand_mode': 'proj', 'object_scale_range': (0.6, 0.6)}
+                'robot': 'kuka', 'workspace_check': 'point', 'in_hand_mode': 'proj', 'object_scale_range': (0.6, 0.6),
+                'hard_reset_freq': 1000}
 
   planner_config = {'random_orientation': True}
 

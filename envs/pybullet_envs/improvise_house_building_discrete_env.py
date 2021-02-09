@@ -15,7 +15,7 @@ class ImproviseHouseBuildingDiscreteEnv(PyBulletEnv):
   def reset(self):
     ''''''
     while True:
-      super(ImproviseHouseBuildingDiscreteEnv, self).reset()
+      self.resetPybulletEnv()
       try:
         self._generateShapes(constants.ROOF, 1, random_orientation=self.random_orientation)
         for i in range(self.num_obj-1):

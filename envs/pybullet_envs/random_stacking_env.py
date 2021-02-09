@@ -22,7 +22,7 @@ class RandomStackingEnv(PyBulletEnv):
 
   def reset(self):
     ''''''
-    super(RandomStackingEnv, self).reset()
+    self.resetPybulletEnv()
     self._generateShapes(constants.RANDOM, self.num_obj, random_orientation=self.random_orientation, z_scale=1.5)
     return self._getObservation()
 

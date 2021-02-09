@@ -86,7 +86,7 @@ class RampBaseEnv(PyBulletEnv):
 
   def resetWithRampAndObj(self, obj_dict):
     while True:
-      super().reset()
+      self.resetPybulletEnv()
       self.resetRamp()
       try:
         existing_pos = []

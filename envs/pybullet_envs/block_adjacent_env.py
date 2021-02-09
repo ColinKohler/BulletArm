@@ -10,7 +10,7 @@ class BlockAdjacentEnv(PyBulletEnv):
 
   def reset(self):
     ''''''
-    super(BlockAdjacentEnv, self).reset()
+    self.resetPybulletEnv()
     self._generateShapes(constants.CUBE, self.num_obj, random_orientation=self.random_orientation)
     return self._getObservation()
 

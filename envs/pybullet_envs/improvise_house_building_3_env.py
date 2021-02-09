@@ -16,7 +16,7 @@ class ImproviseHouseBuilding3Env(PyBulletEnv):
   def reset(self):
     ''''''
     while True:
-      super(ImproviseHouseBuilding3Env, self).reset()
+      self.resetPybulletEnv()
       try:
         padding = pybullet_util.getPadding(constants.BRICK, self.max_block_size)
         min_distance = pybullet_util.getMinDistance(constants.BRICK, self.max_block_size)

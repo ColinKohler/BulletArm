@@ -31,7 +31,7 @@ class RandomPickingEnv(PyBulletEnv):
   def reset(self):
     ''''''
     while True:
-      super(RandomPickingEnv, self).reset()
+      self.resetPybulletEnv()
       try:
         for i in range(self.num_obj):
           self._generateShapes(constants.RANDOM, 1, random_orientation=self.random_orientation, z_scale=npr.choice([1, 2], p=[0.75, 0.25]))

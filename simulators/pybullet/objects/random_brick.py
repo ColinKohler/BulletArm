@@ -21,5 +21,4 @@ class RandomBrick(PybulletObject):
                                    baseVisualShapeIndex=visualShapeId,
                                    basePosition=pos,
                                    baseOrientation=rot)
-    pb.changeDynamics(object_id, -1, mass=0.1, lateralFriction=1.0, spinningFriction=0.0, rollingFriction=0.0)
     super(RandomBrick, self).__init__(constants.BRICK, object_id)

@@ -21,7 +21,7 @@ class HouseBuilding4Planner(BlockStructureBasePlanner):
     for b1, b2 in perm:
       if not self.isObjOnGround(b1) or not self.isObjOnGround(b2):
         continue
-      if self.getDistance(b1, b2) < 2.2 * self.getMaxBlockSize():
+      if self.getDistance(b1, b2) < 2.3 * self.getMaxBlockSize():
         level1_blocks = [b1, b2]
         break
       
@@ -37,7 +37,7 @@ class HouseBuilding4Planner(BlockStructureBasePlanner):
     block2_pos = level1_blocks[1].getPosition()
     return block1_pos[-1] < self.getMaxBlockSize() and \
            block2_pos[-1] < self.getMaxBlockSize() and \
-           self.getDistance(level1_blocks[0], level1_blocks[1]) < 2.2 * self.getMaxBlockSize()
+           self.getDistance(level1_blocks[0], level1_blocks[1]) < 2.3 * self.getMaxBlockSize()
 
   def checkSecondLayer(self):
     level1_blocks, level2_blocks, bricks, roofs = self.getObjs()
