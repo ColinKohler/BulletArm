@@ -45,15 +45,18 @@ class DeconstructEnv(PyBulletEnv):
 
     return self._isHolding(), in_hand_img, self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
 
-  def reset(self):
-    ''''''
-    super(DeconstructEnv, self).reset()
+  def resetDeconstructEnv(self):
+    self.resetPybulletEnv()
     self.structure_objs = []
     self.generateStructure()
     while not self.checkStructure():
-      super(DeconstructEnv, self).reset()
+      self.resetPybulletEnv()
       self.structure_objs = []
       self.generateStructure()
+
+  def reset(self):
+    ''''''
+    self.resetDeconstructEnv()
     return self._getObservation()
 
   def _checkTermination(self):

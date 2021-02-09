@@ -11,7 +11,7 @@ class HouseBuilding2Env(PyBulletEnv):
   def reset(self):
     ''''''
     while True:
-      super(HouseBuilding2Env, self).reset()
+      self.resetPybulletEnv()
       try:
         self._generateShapes(constants.CUBE, 2, random_orientation=self.random_orientation)
         self._generateShapes(constants.ROOF, 1, random_orientation=self.random_orientation)

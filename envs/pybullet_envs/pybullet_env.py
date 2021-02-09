@@ -111,7 +111,7 @@ class PyBulletEnv(BaseEnv):
     self.object_type = config['object_type']
     self.hard_reset_freq = config['hard_reset_freq']
 
-    self.episode_count = 0
+    self.episode_count = -1
     self.table_id = None
     self.heightmap = None
     self.current_episode_steps = 1
@@ -119,8 +119,6 @@ class PyBulletEnv(BaseEnv):
     self.last_obj = None
     self.state = {}
     self.pb_state = None
-
-    self.initialize()
 
   def initialize(self):
     ''''''
@@ -150,12 +148,10 @@ class PyBulletEnv(BaseEnv):
     # Step simulation
     pb.stepSimulation()
 
-    return self._getObservation()
-
-  def reset(self):
+  def resetPybulletEnv(self):
+    # soft reset has bug in older pybullet versions. 2.7,1 works good
     self.episode_count += 1
-    # Since both Colin and Ondrej have the problem of soft reset, always do hard reset here
-    if self.episode_count >= self.hard_reset_freq:
+    if self.episode_count % self.hard_reset_freq == 0:
       self.initialize()
       self.episode_count = 0
 
@@ -180,6 +176,9 @@ class PyBulletEnv(BaseEnv):
         break
 
     pb.stepSimulation()
+
+  def reset(self):
+    self.resetPybulletEnv()
     return self._getObservation()
 
   def step(self, action):

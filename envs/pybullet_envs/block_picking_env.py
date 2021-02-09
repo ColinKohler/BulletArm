@@ -29,7 +29,7 @@ class BlockPickingEnv(PyBulletEnv):
 
   def reset(self):
     ''''''
-    super(BlockPickingEnv, self).reset()
+    self.resetPybulletEnv()
     self._generateShapes(constants.CUBE, self.num_obj, random_orientation=self.random_orientation)
     self.obj_grasped = 0
     return self._getObservation()

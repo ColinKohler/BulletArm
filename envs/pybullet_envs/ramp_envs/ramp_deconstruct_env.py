@@ -17,16 +17,19 @@ class RampDeconstructEnv(DeconstructEnv, RampBaseEnv):
     self.pick_offset = 0.0
     self.place_offset = 0.015
 
-  def reset(self):
-    super(DeconstructEnv, self).reset()
+  def resetRampDeconstructEnv(self):
+    self.resetPybulletEnv()
     self.resetRamp()
     self.structure_objs = []
     self.generateStructure()
     while not self.checkStructure():
-      super(DeconstructEnv, self).reset()
+      self.resetPybulletEnv()
       self.resetRamp()
       self.structure_objs = []
       self.generateStructure()
+
+  def reset(self):
+    self.resetRampDeconstructEnv()
     return self._getObservation()
 
   def get1BaseXY(self, padding):

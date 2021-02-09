@@ -11,7 +11,7 @@ class BrickStackingEnv(PyBulletEnv):
   def reset(self):
     ''''''
     while True:
-      super(BrickStackingEnv, self).reset()
+      self.resetPybulletEnv()
       try:
         self._generateShapes(constants.BRICK, 1, random_orientation=self.random_orientation)
         self._generateShapes(constants.CUBE, self.num_cubes, random_orientation=self.random_orientation)
