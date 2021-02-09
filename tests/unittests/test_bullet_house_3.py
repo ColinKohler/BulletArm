@@ -212,6 +212,7 @@ class TestBulletHouse3(unittest.TestCase):
   def testBlockValidBrickOrRoofOnBlock(self):
     self.env_config['seed'] = 1
     self.env_config['random_orientation'] = False
+    self.planner_config['random_orientation'] = False
     self.env_config['render'] = True
 
     env = env_factory.createEnvs(1, 'pybullet', 'house_building_3', self.env_config, self.planner_config)
@@ -231,7 +232,7 @@ class TestBulletHouse3(unittest.TestCase):
     (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 3)
 
-    action = np.array([[1, position[2][0], position[2][1], 0]])
+    action = np.array([[1, position[2][0], position[2][1], np.pi/2]])
     (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 4)
 

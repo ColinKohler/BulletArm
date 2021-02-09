@@ -14,7 +14,7 @@ class TestBulletHouse1(unittest.TestCase):
                 'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 3, 'random_orientation': False,
                 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
                 'workspace_check': 'point'}
-  planner_config = {'pos_noise': 0, 'rot_noise': 0}
+  planner_config = {'pos_noise': 0, 'rot_noise': 0, 'random_orientation': False}
 
   def testStepLeft(self):
     num_random_o = 0

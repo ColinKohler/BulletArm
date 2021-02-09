@@ -39,7 +39,7 @@ class BlockStructureBasePlanner(BasePlanner):
     if objects is None: objects = self.env.objects
     objects, object_poses = self.getSortedObjPoses(objects=objects)
 
-    x, y, z, r = object_poses[0][0], object_poses[0][1], object_poses[0][2]+self.env.pick_offset, object_poses[0][5]
+    x, y, z, r = object_poses[0][0], object_poses[0][1], object_poses[0][2], object_poses[0][5]
     for obj, pose in zip(objects, object_poses):
       if self.isObjOnTop(obj):
         x, y, z, r = pose[0], pose[1], pose[2]+self.env.pick_offset, pose[5]
@@ -56,7 +56,7 @@ class BlockStructureBasePlanner(BasePlanner):
     if objects is None: objects = self.env.objects
     objects, object_poses = self.getSortedObjPoses(roll=True, objects=objects)
 
-    x, y, z, r = object_poses[0][0], object_poses[0][1], object_poses[0][2]+self.env.pick_offset, object_poses[0][5]
+    x, y, z, r = object_poses[0][0], object_poses[0][1], object_poses[0][2], object_poses[0][5]
     for obj, pose in zip(objects, object_poses):
       if self.isObjOnTop(obj):
         x, y, z, r = pose[0], pose[1], pose[2]+self.env.pick_offset, pose[5]
@@ -73,10 +73,10 @@ class BlockStructureBasePlanner(BasePlanner):
     if objects is None: objects = self.env.objects
     objects, object_poses = self.getSortedObjPoses(objects=objects, ascend=True)
 
-    x, y, z, r = object_poses[0][0], object_poses[0][1], object_poses[0][2] + self.env.pick_offset, object_poses[0][5]
+    x, y, z, r = object_poses[0][0], object_poses[0][1], object_poses[0][2], object_poses[0][5]
     for obj, pose in zip(objects, object_poses):
       if self.isObjOnTop(obj):
-        x, y, z, r = pose[0], pose[1], pose[2] + self.env.pick_offset, pose[5]
+        x, y, z, r = pose[0], pose[1], pose[2], pose[5]
         break
 
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
@@ -86,10 +86,10 @@ class BlockStructureBasePlanner(BasePlanner):
     npr.shuffle(objects)
     object_poses = self.env.getObjectPoses(objects)
 
-    x, y, z, r = object_poses[0][0], object_poses[0][1], object_poses[0][2] + self.env.pick_offset, object_poses[0][5]
+    x, y, z, r = object_poses[0][0], object_poses[0][1], object_poses[0][2], object_poses[0][5]
     for obj, pose in zip(objects, object_poses):
       if self.isObjOnTop(obj):
-        x, y, z, r = pose[0], pose[1], pose[2] + self.env.pick_offset, pose[5]
+        x, y, z, r = pose[0], pose[1], pose[2], pose[5]
         break
 
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
@@ -102,10 +102,10 @@ class BlockStructureBasePlanner(BasePlanner):
     """
     if objects is None: objects = self.env.objects
     objects, object_poses = self.getSortedObjPoses(objects=objects)
-    x, y, z, r = object_poses[0][0], object_poses[0][1], object_poses[0][2]+self.env.place_offset, object_poses[0][5]
+    x, y, z, r = object_poses[0][0], object_poses[0][1], object_poses[0][2]+self.env.max_block_size/2+self.env.place_offset, object_poses[0][5]
     for obj, pose in zip(objects, object_poses):
       if not self.isObjectHeld(obj):
-        x, y, z, r = pose[0], pose[1], pose[2]+self.env.place_offset, pose[5]
+        x, y, z, r = pose[0], pose[1], pose[2]+self.env.max_block_size/2+self.env.place_offset, pose[5]
         break
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
@@ -162,8 +162,12 @@ class BlockStructureBasePlanner(BasePlanner):
     """
     place_pos = self.getValidPositions(self.env.max_block_size * 2, self.env.max_block_size * 2, [], 1)[0]
     another_obj_position = another_obj.getPosition()
-    sample_range = [[another_obj_position[0] - max_dist_to_another, another_obj_position[0] + max_dist_to_another],
-                    [another_obj_position[1] - max_dist_to_another, another_obj_position[1] + max_dist_to_another]]
+    if self.random_orientation:
+      sample_range = [[another_obj_position[0] - max_dist_to_another, another_obj_position[0] + max_dist_to_another],
+                      [another_obj_position[1] - max_dist_to_another, another_obj_position[1] + max_dist_to_another]]
+    else:
+      sample_range = [[another_obj_position[0] - 0.001, another_obj_position[0] + 0.001],
+                      [another_obj_position[1] - max_dist_to_another, another_obj_position[1] + max_dist_to_another]]
     existing_pos = [o.getXYPosition() for o in list(filter(lambda x: not self.isObjectHeld(x) and not another_obj == x, self.env.objects))]
     for i in range(100):
       try:
@@ -175,7 +179,7 @@ class BlockStructureBasePlanner(BasePlanner):
         break
     x, y, z, r = place_pos[0], place_pos[1], self.env.place_offset, 0
     slope, intercept, r_value, p_value, std_err = scipy.stats.linregress([x, another_obj_position[0]], [y, another_obj_position[1]])
-    r = np.arctan(slope)
+    r = np.arctan(slope) if self.random_orientation else 0
 
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
@@ -188,7 +192,7 @@ class BlockStructureBasePlanner(BasePlanner):
     obj_positions = np.array([o.getPosition() for o in bottom_objs])
     slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(obj_positions[:, 0], obj_positions[:, 1])
     x, y, z = obj_positions.mean(0)
-    z += +self.env.place_offset
+    z += self.env.max_block_size/2+self.env.place_offset
     r = np.arctan(slope) + np.pi / 2
 
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
@@ -224,7 +228,7 @@ class BlockStructureBasePlanner(BasePlanner):
       top_obj_positions = [o.getXYPosition() for o in top_objs]
       x, y = possible_points[np.argmax(scipy.spatial.distance.cdist(possible_points, top_obj_positions).min(axis=1))]
 
-    z = bottom_pos[2] + self.env.place_offset
+    z = bottom_pos[2] + self.env.max_block_size/2+self.env.place_offset
     r = bottom_rot
 
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
