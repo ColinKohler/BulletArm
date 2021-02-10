@@ -16,6 +16,7 @@ from helping_hands_rl_envs.planners.deconstruct_planner import DeconstructPlanne
 from helping_hands_rl_envs.planners.ramp_block_stacking_planner import RampBlockStackingPlanner
 from helping_hands_rl_envs.planners.ramp_deconstruct_planner import RampDeconstructPlanner
 from helping_hands_rl_envs.planners.drawer_teapot_planner import DrawerTeapotPlanner
+from helping_hands_rl_envs.planners.bowl_stacking_planner import BowlStackingPlanner
 
 PLANNERS = {
   'random' : RandomPlanner,
@@ -50,5 +51,7 @@ PLANNERS = {
   'ramp_improvise_house_building_2_deconstruct': RampDeconstructPlanner,
   'ramp_improvise_house_building_3_deconstruct': RampDeconstructPlanner,
   'two_view_drawer_teapot': DrawerTeapotPlanner,
-  'multi_view_drawer_teapot': DrawerTeapotPlanner
+  'multi_view_drawer_teapot': DrawerTeapotPlanner,
+  'cup_stacking': BlockStackingPlanner,
+  'bowl_stacking': BowlStackingPlanner,
 }

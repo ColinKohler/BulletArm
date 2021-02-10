@@ -15,6 +15,8 @@ ROOF = 6
 RANDOM = 7
 TEAPOT = 8
 TEAPOT_LID = 9
+CUP = 10
+BOWL = 11
 
 # Motion primatives
 NUM_PRIMATIVES = 2

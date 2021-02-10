@@ -43,6 +43,8 @@ from helping_hands_rl_envs.envs.pybullet_envs.random_stacking_env import createR
 from helping_hands_rl_envs.envs.pybullet_envs.multi_task_env import createMultiTaskEnv
 from helping_hands_rl_envs.envs.pybullet_envs.two_view_envs.two_view_drawer_teapot_env import createTwoViewDrawerTeapotEnv
 from helping_hands_rl_envs.envs.pybullet_envs.two_view_envs.mview_drawer_teapot_env import createMViewDrawerTeapotEnv
+from helping_hands_rl_envs.envs.pybullet_envs.cup_stacking_env import createCupStackingEnv
+from helping_hands_rl_envs.envs.pybullet_envs.bowl_stacking_env import createBowlStackingEnv
 
 CREATE_NUMPY_ENV_FNS = {
   'block_picking' : createBlockPickingEnv,
@@ -101,4 +103,6 @@ CREATE_PYBULLET_ENV_FNS = {
   'ramp_improvise_house_building_3_deconstruct': createRampImproviseHouseBuilding3DeconstructEnv,
   'two_view_drawer_teapot': createTwoViewDrawerTeapotEnv,
   'multi_view_drawer_teapot': createMViewDrawerTeapotEnv,
+  'cup_stacking': createCupStackingEnv,
+  'bowl_stacking': createBowlStackingEnv,
 }

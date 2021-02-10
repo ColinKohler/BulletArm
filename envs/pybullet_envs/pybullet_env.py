@@ -410,22 +410,26 @@ class PyBulletEnv(BaseEnv):
                            min_distance=None, padding=None, random_orientation=False, z_scale=1):
     ''''''
     if padding is None:
-      if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER):
+      if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.CUP):
         padding = self.max_block_size * 3.5
       elif shape_type == constants.BRICK:
         padding = self.max_block_size * 3.4
       elif shape_type == constants.ROOF:
         padding = self.max_block_size * 3.4
+      elif shape_type == constants.BOWL:
+        padding = 0.15
       else:
         raise ValueError('Attempted to generate invalid shape.')
 
     if min_distance is None:
-      if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER):
+      if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.CUP):
         min_distance = self.max_block_size * 2.4
       elif shape_type == constants.BRICK:
         min_distance = self.max_block_size * 3.4
       elif shape_type == constants.ROOF:
         min_distance = self.max_block_size * 3.4
+      elif shape_type == constants.BOWL:
+        min_distance = 0.15
       else:
         raise ValueError('Attempted to generate invalid shape.')
 
@@ -463,6 +467,11 @@ class PyBulletEnv(BaseEnv):
         handle = pb_obj_generation.generateCylinder(position, orientation, scale)
       elif shape_type == constants.RANDOM:
         handle = pb_obj_generation.generateRandomObj(position, orientation, scale, z_scale)
+      elif shape_type == constants.CUP:
+        handle = pb_obj_generation.generateCup(position, orientation, scale)
+      elif shape_type == constants.BOWL:
+        handle = pb_obj_generation.generateBowl(position, orientation, scale)
+
       else:
         raise NotImplementedError
       if self.physic_mode == 'slow':
