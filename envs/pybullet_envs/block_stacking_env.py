@@ -20,7 +20,7 @@ class BlockStackingEnv(PyBulletEnv):
     while True:
       self.resetPybulletEnv()
       try:
-        self._generateShapes(object_type, self.num_objects, random_orientation=self.random_orientation)
+        self._generateShapes(object_type, self.num_obj, random_orientation=self.random_orientation)
       except NoValidPositionException as e:
         continue
       else:
