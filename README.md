@@ -1,34 +1,84 @@
 # Helping Hands RL Environments 
-This repository holds the environments for the various pick and place tasks we have been working on in the lab. At the moment all 
-of the environments are 2.5D top-down grasping tasks where a robot arm has to pick/place object on a table. Moving forward I
-expect to extend this to work in 3D with 6-DOF grasping on more complicated tasks. 
+This repository holds the environments for the various pick and place tasks we have been working on in the lab. 
+The environments include a set of 2.5D top-down tasks where a robot arm has to pick/place object on a table, and a set of 6D tasks where a robot has to pick/place objects initialized on two ramps
 
-# Data Collection
+## Getting Started
+1. Install Python 3.7
+1. Clone this repo
+    ```
+    git clone https://github.com/ColinKohler/helping_hands_rl_envs.git
+    cd helping_hands_rl_envs
+    ```
+1. Install dependencies
+    ```
+    pip install -r requirements.txt 
+    ```
+1. Install this package
+    ```
+    pip install .
+    ```
+1. Run the block stacking demo
+    ```python
+    import numpy as np
+    from helping_hands_rl_envs import env_factory
+    
+    workspace = np.asarray([[0.3, 0.6],
+                            [-0.15, 0.15],
+                            [0, 0.50]])
+    # environment parameters
+    env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 90, 'render': True, 'fast_mode': True,
+                  'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 4, 'random_orientation': True,
+                  'reward_type': 'sparse', 'robot': 'kuka', 'workspace_check': 'point'}
+    # planner parameters
+    planner_config = {'random_orientation': True}
+    # create 1 block_stacking environment
+    env = env_factory.createEnvs(1, 'pybullet', 'block_stacking', env_config, planner_config)
+    env.reset()
+    for i in range(5, -1, -1):
+        action = env.getNextAction()
+        (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
+        input('press enter to continue')
+    env.close()
+    ```
+
+## Environments
+### 2.5D Environments
+- **block_picking**: Pick up all blocks.
+- **block_stacking**: Pick up blocks and place them in a stack. 
+- **block_adjacent**: TODO
+- **brick_stacking**: TODO
+- **pyramid_stacking**: TODO
+- **house_building_1**: Build a house structure with a block stack and a small triangle roof on top.
+- **house_building_2**: Build a house structure with two block bases and a large triangle roof.
+- **house_building_3**: Build a house structure with two block bases, one brick in the middle, and a large triangle roof.
+- **house_building_4**: Build a house structure with two block bases, one brick in the second layer, two blocks in the third layer, and a large triangle roof.
+- **house_building_x**: TODO
+- **improvise_house_building_2**: Build a house structure with two random shape bases and a large triangle roof.
+- **improvise_house_building_3**: Build a house structure with two random shape bases, one brick in the middle, and a large triangle roof.
+- **improvise_house_building_discrete**: Build a house structure with 4 random shapes and a large triangle roof. The heights of the random shapes are sampled from two discrete numbers.
+- **improvise_house_building_random**: Build a house structure with 4 random shapes and a large triangle roof. The heights of the random shapes are sampled from continuous numbers.
+
+### 6D Environments
+- **ramp_block_stacking**: Finish block_stacking in the workspace with two ramps
+- **ramp_house_building_1**: Finish house_building_1 in the workspace with two ramps
+- **ramp_house_building_2**: Finish house_building_2 in the workspace with two ramps
+- **ramp_house_building_3**: Finish house_building_3 in the workspace with two ramps
+- **ramp_house_building_4**: Finish house_building_4 in the workspace with two ramps
+- **ramp_improvise_house_building_2**: Finish improvise_house_building_2 in the workspace with two ramps
+- **ramp_improvise_house_building_3**: Finish improvise_house_building_3 in the workspace with two ramps
+
+## Parameter List
+TODO
+
+## Data Collection
 Originally this reposity was designed for online learning but it works equally well for data collection. Although you can use the
 master branch as is for data collection, The cpk_refactor branch has a number of additional features, including planners, which
 make data collection much easier. This branch will eventually get merged into master once finalized.
 
-# Extending this Repository
+## Extending this Repository
 If you are simply using this as a base for a very different problem feel free to fork this repository but if you are simply 
 extending the existing functionality, such as adding new environments, please considering contributing to the repository! 
 In order to keep things clean, please cut a branch for the feature you are working on and submit a pull request when its complete.
 If there is additional functionality you think would be nice to have but are unsure how to implement, I would suggest opening a 
 issue and we can discuss it there!
 
-# Environments
-- **BlockPicking:** Pick up a block on a table. Block size and initial pose are stochastic.
-- **BlockStacking:** Pick up blocks and place them in a stack. Block size and initial pose are 
-                     stochastic.
-- **BrickStacking:** Pick up rectangular blocks and place them in a stack. Block size and initial pose are 
-                     stochastic.
-- **BlockCylinderStacking:** Pick up disks and place them in a stack. Disk size and initial pose are 
-                             stochastic.
-- **HouseBuilding1**:
-- **HouseBuilding2**:
-
-# Simulators
-- **PyBullet Simulator:** Primary simulator.
-- **Numpy Simulator:** Less realistic but much fast. Typically used for early prototyping.
-
-# Getting Started
-Coming soon! For now you can look in the 'tests' directory to get an idea of how to use things.
