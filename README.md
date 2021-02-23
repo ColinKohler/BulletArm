@@ -35,6 +35,7 @@ The environments include a set of 2.5D top-down tasks where a robot arm has to p
     for i in range(5, -1, -1):
         action = env.getNextAction()
         (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
+        input('press enter to continue')
     env.close()
     ```
 
