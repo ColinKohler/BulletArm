@@ -25,11 +25,13 @@ The environments include a set of 2.5D top-down tasks where a robot arm has to p
     workspace = np.asarray([[0.3, 0.6],
                             [-0.15, 0.15],
                             [0, 0.50]])
+    # environment parameters
     env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 90, 'render': True, 'fast_mode': True,
                   'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 4, 'random_orientation': True,
                   'reward_type': 'sparse', 'robot': 'kuka', 'workspace_check': 'point'}
-    
+    # planner parameters
     planner_config = {'random_orientation': True}
+    # create 1 block_stacking environment
     env = env_factory.createEnvs(1, 'pybullet', 'block_stacking', env_config, planner_config)
     env.reset()
     for i in range(5, -1, -1):
