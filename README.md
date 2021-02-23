@@ -2,32 +2,6 @@
 This repository holds the environments for the various pick and place tasks we have been working on in the lab. 
 The environments include a set of 2.5D top-down tasks where a robot arm has to pick/place object on a table, and a set of 6D tasks where a robot has to pick/place objects initialized on two ramps
 
-## Environments
-### 2.5D Environments
-- **block_picking**: Pick up all blocks.
-- **block_stacking**: Pick up blocks and place them in a stack. 
-- **block_adjacent**: TODO
-- **brick_stacking**: TODO
-- **pyramid_stacking**: TODO
-- **house_building_1**: Build a house structure with a block stack and a small triangle roof on top.
-- **house_building_2**: Build a house structure with two block bases and a large triangle roof.
-- **house_building_3**: Build a house structure with two block bases, one brick in the middle, and a large triangle roof.
-- **house_building_4**: Build a house structure with two block bases, one brick in the second layer, two blocks in the third layer, and a large triangle roof.
-- **house_building_x**: TODO
-- **improvise_house_building_2**: Build a house structure with two random shape bases and a large triangle roof.
-- **improvise_house_building_3**: Build a house structure with two random shape bases, one brick in the middle, and a large triangle roof.
-- **improvise_house_building_discrete**: Build a house structure with 4 random shapes and a large triangle roof. The heights of the random shapes are sampled from two discrete numbers.
-- **improvise_house_building_random**: Build a house structure with 4 random shapes and a large triangle roof. The heights of the random shapes are sampled from continuous numbers.
-
-### 6D Environments
-- **ramp_block_stacking**: Finish block_stacking in the workspace with two ramps
-- **ramp_house_building_1**: Finish house_building_1 in the workspace with two ramps
-- **ramp_house_building_2**: Finish house_building_2 in the workspace with two ramps
-- **ramp_house_building_3**: Finish house_building_3 in the workspace with two ramps
-- **ramp_house_building_4**: Finish house_building_4 in the workspace with two ramps
-- **ramp_improvise_house_building_2**: Finish improvise_house_building_2 in the workspace with two ramps
-- **ramp_improvise_house_building_3**: Finish improvise_house_building_3 in the workspace with two ramps
-
 ## Getting Started
 1. Install Python 3.7
 1. Clone this repo
@@ -63,6 +37,32 @@ The environments include a set of 2.5D top-down tasks where a robot arm has to p
         (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
     env.close()
     ```
+
+## Environments
+### 2.5D Environments
+- **block_picking**: Pick up all blocks.
+- **block_stacking**: Pick up blocks and place them in a stack. 
+- **block_adjacent**: TODO
+- **brick_stacking**: TODO
+- **pyramid_stacking**: TODO
+- **house_building_1**: Build a house structure with a block stack and a small triangle roof on top.
+- **house_building_2**: Build a house structure with two block bases and a large triangle roof.
+- **house_building_3**: Build a house structure with two block bases, one brick in the middle, and a large triangle roof.
+- **house_building_4**: Build a house structure with two block bases, one brick in the second layer, two blocks in the third layer, and a large triangle roof.
+- **house_building_x**: TODO
+- **improvise_house_building_2**: Build a house structure with two random shape bases and a large triangle roof.
+- **improvise_house_building_3**: Build a house structure with two random shape bases, one brick in the middle, and a large triangle roof.
+- **improvise_house_building_discrete**: Build a house structure with 4 random shapes and a large triangle roof. The heights of the random shapes are sampled from two discrete numbers.
+- **improvise_house_building_random**: Build a house structure with 4 random shapes and a large triangle roof. The heights of the random shapes are sampled from continuous numbers.
+
+### 6D Environments
+- **ramp_block_stacking**: Finish block_stacking in the workspace with two ramps
+- **ramp_house_building_1**: Finish house_building_1 in the workspace with two ramps
+- **ramp_house_building_2**: Finish house_building_2 in the workspace with two ramps
+- **ramp_house_building_3**: Finish house_building_3 in the workspace with two ramps
+- **ramp_house_building_4**: Finish house_building_4 in the workspace with two ramps
+- **ramp_improvise_house_building_2**: Finish improvise_house_building_2 in the workspace with two ramps
+- **ramp_improvise_house_building_3**: Finish improvise_house_building_3 in the workspace with two ramps
 
 ## Parameter List
 TODO
