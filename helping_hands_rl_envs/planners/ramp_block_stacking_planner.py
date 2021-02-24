@@ -51,10 +51,10 @@ class RampBlockStackingPlanner(BlockStructureBasePlanner):
 
     objects, object_poses = self.getSortedObjPoses(objects=objects, roll=True)
 
-    x, y, z, rx, ry, rz = object_poses[0][0], object_poses[0][1], object_poses[0][2] + self.env.pick_offset, object_poses[0][3], object_poses[0][4], object_poses[0][5]
+    x, y, z, rx, ry, rz = object_poses[0][0], object_poses[0][1], object_poses[0][2], object_poses[0][3], object_poses[0][4], object_poses[0][5]
     for obj, pose in zip(objects, object_poses):
       if self.isObjOnTop(obj):
-        x, y, z, rx, ry, rz = pose[0], pose[1], pose[2] + self.env.pick_offset, pose[3], pose[4], pose[5]
+        x, y, z, rx, ry, rz = pose[0], pose[1], pose[2], pose[3], pose[4], pose[5]
         break
 
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, (rz, ry, rx))

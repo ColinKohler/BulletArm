@@ -1,0 +1,7 @@
+attrdict
+GitPython
+numpy>=1.19.5
+pybullet>=2.7.1
+scikit-image>=0.14.2
+scipy>=1.2.1
+tqdm

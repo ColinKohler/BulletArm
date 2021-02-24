@@ -103,7 +103,6 @@ class PyBulletEnv(BaseEnv):
     self.perfect_place = config['perfect_place']
     self.workspace_check = config['workspace_check']
     self.num_random_objects = config['num_random_objects']
-    self.num_objects = config['num_objects']
     self.random_orientation = config['random_orientation']
     self.check_random_obj_valid = config['check_random_obj_valid']
     self.random_orientation = config['random_orientation']
