@@ -109,6 +109,8 @@ class PyBulletEnv(BaseEnv):
     self.reward_type = config['reward_type']
     self.object_type = config['object_type']
     self.hard_reset_freq = config['hard_reset_freq']
+    self.min_object_distance = config['min_object_distance']
+    self.min_boarder_padding = config['min_boarder_padding']
 
     self.episode_count = -1
     self.table_id = None
@@ -402,28 +404,46 @@ class PyBulletEnv(BaseEnv):
       orientation = pb.getQuaternionFromEuler([0., 0., 0.])
     return orientation
 
+  def _getDefaultBoarderPadding(self, shape_type):
+    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER):
+      padding = self.max_block_size * 2.4
+    elif shape_type == constants.BRICK:
+      padding = self.max_block_size * 3.4
+    elif shape_type == constants.ROOF:
+      padding = self.max_block_size * 3.4
+    else:
+      raise ValueError('Attempted to generate invalid shape.')
+    return padding
+
+  def _getDefaultMinDistance(self, shape_type):
+    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER):
+      min_distance = self.max_block_size * 2.4
+    elif shape_type == constants.BRICK:
+      min_distance = self.max_block_size * 3.4
+    elif shape_type == constants.ROOF:
+      min_distance = self.max_block_size * 3.4
+    else:
+      raise ValueError('Attempted to generate invalid shape.')
+    return min_distance
+
   def _generateShapes(self, shape_type=0, num_shapes=1, scale=None, pos=None, rot=None,
                            min_distance=None, padding=None, random_orientation=False, z_scale=1):
     ''''''
+    # if padding is not set, use the default padding
     if padding is None:
-      if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER):
-        padding = self.max_block_size * 2.4
-      elif shape_type == constants.BRICK:
-        padding = self.max_block_size * 3.4
-      elif shape_type == constants.ROOF:
-        padding = self.max_block_size * 3.4
-      else:
-        raise ValueError('Attempted to generate invalid shape.')
+      padding = self._getDefaultBoarderPadding(shape_type)
 
+    # if self.min_boarder_padding is set, padding can not be smaller than self.min_boarder_padding
+    if self.min_boarder_padding is not None:
+      padding = max(padding, self.min_boarder_padding)
+
+    # if min_distance is not set, use the default min_distance
     if min_distance is None:
-      if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER):
-        min_distance = self.max_block_size * 2.4
-      elif shape_type == constants.BRICK:
-        min_distance = self.max_block_size * 3.4
-      elif shape_type == constants.ROOF:
-        min_distance = self.max_block_size * 3.4
-      else:
-        raise ValueError('Attempted to generate invalid shape.')
+      min_distance = self._getDefaultMinDistance(shape_type)
+
+    # if self.min_object_distance is set, min_distance can not be smaller than self.min_object_distance
+    if self.min_object_distance is not None:
+      min_distance = max(min_distance, self.min_object_distance)
 
     shape_handles = list()
     positions = [o.getXYPosition() for o in self.objects]

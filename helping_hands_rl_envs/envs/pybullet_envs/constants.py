@@ -24,4 +24,6 @@ DEFAULT_CONFIG = {
   'num_objects' : 1,
   'object_type' : 'cube',
   'hard_reset_freq': 1,
+  'min_object_distance': None,
+  'min_boarder_padding': None,
 }
