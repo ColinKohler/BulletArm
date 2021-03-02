@@ -407,7 +407,7 @@ class PyBulletEnv(BaseEnv):
     ''''''
     if padding is None:
       if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER):
-        padding = self.max_block_size * 3.5
+        padding = self.max_block_size * 2.4
       elif shape_type == constants.BRICK:
         padding = self.max_block_size * 3.4
       elif shape_type == constants.ROOF:
