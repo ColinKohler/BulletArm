@@ -35,6 +35,18 @@ class CabinetEnv(PyBulletEnv):
     self.robot.push(push_pos, pb.getQuaternionFromEuler((np.pi/10, -np.pi/2, 0)), 0.2, dynamic=False)
     pass
 
+  def _isObjOnTop(self, obj, objects=None):
+    if not objects:
+      objects = self.objects
+    obj_position = obj.getPosition()
+    for o in objects:
+      if self._isObjectHeld(o) or o is obj:
+        continue
+      block_position = o.getPosition()
+      if obj.isTouching(o) and block_position[-1] > obj_position[-1]:
+        return False
+    return True
+
 
 if __name__ == '__main__':
   workspace = np.asarray([[0.3, 0.7],
