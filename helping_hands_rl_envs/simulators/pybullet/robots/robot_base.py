@@ -111,6 +111,22 @@ class RobotBase:
     self.moveTo(pre_pos, pre_rot, dynamic)
     self.moveToJ(self.home_positions_joint, dynamic)
 
+  def push(self, pos, rot, offset, dynamic=True):
+    goal_pos = copy.copy(pos)
+    m = np.array(pb.getMatrixFromQuaternion(rot)).reshape(3, 3)
+    goal_pos += m[:, 1] * offset
+
+    pre_pos = copy.copy(pos)
+    m = np.array(pb.getMatrixFromQuaternion(rot)).reshape(3, 3)
+    pre_pos -= m[:, 1] * 0.1
+
+    self.closeGripper(primative=constants.PULL_PRIMATIVE)
+    self.moveTo(pre_pos, rot, dynamic)
+    self.moveTo(pos, rot, True)
+    self.moveTo(goal_pos, rot, True)
+    self.openGripper()
+    self.moveToJ(self.home_positions_joint, dynamic)
+
   def pull(self, pos, rot, offset, dynamic=True):
     pre_pos = copy.copy(pos)
     m = np.array(pb.getMatrixFromQuaternion(rot)).reshape(3, 3)
@@ -125,6 +141,39 @@ class RobotBase:
     self.moveTo(pre_pos, rot, True)
     self.openGripper()
     self.moveToJ(self.home_positions_joint, dynamic)
+
+  def roundPull(self, pos, rot, offset, radius, left=True, dynamic=True):
+    pre_pos = copy.copy(pos)
+    m = np.eye(4)
+    m[:3, :3] = np.array(pb.getMatrixFromQuaternion(rot)).reshape(3, 3)
+    pre_pos += m[:3, 2] * offset
+    waypoint_theta = np.linspace(0, np.pi/2, 10)
+    waypoint_pos = []
+    waypoint_rot = []
+    for theta in waypoint_theta:
+      dx = -np.sin(theta) * radius
+      if left:
+        dy = (1 - np.cos(theta)) * radius
+      else:
+        dy = -(1 - np.cos(theta)) * radius
+      waypoint_pos.append((pos[0] + dx, pos[1] + dy, pos[2]))
+      if left:
+        m_prime = m.dot(transformations.euler_matrix(0, theta, 0))
+        # m_prime = m.dot(transformations.euler_matrix(0, 0, 0))
+      else:
+        m_prime = m.dot(transformations.euler_matrix(0, -theta, 0))
+      waypoint_rot.append(transformations.quaternion_from_matrix(m_prime))
+
+    self.moveTo(pre_pos, rot, dynamic)
+    self.moveTo(pos, rot, True)
+    self.closeGripper(primative=constants.PULL_PRIMATIVE)
+    for i in range(len(waypoint_theta)):
+      self.moveTo(waypoint_pos[i], waypoint_rot[i], True)
+
+    self.openGripper()
+    self.moveToJ(self.home_positions_joint, dynamic)
+
+
 
   def moveTo(self, pos, rot, dynamic=True, pos_th=1e-3, rot_th=1e-3):
     if dynamic or not self.holding_obj:
