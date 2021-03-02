@@ -13,13 +13,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-				<mesh filename="bowl1.obj" scale="0.2 0.2 0.2"/>
+				<mesh filename="bowl2.obj" scale="0.2 0.2 0.2"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-	 	    <mesh filename="bowl1.obj" scale="0.2 0.2 0.2"/>
+	 	    <mesh filename="bowl2.obj" scale="0.2 0.2 0.2"/>
       </geometry>
     </collision>
   </link>
@@ -37,7 +37,7 @@
     </visual>
   </link>
   <joint name="base2grasp" type="fixed">
-    <origin rpy="0 0 0" xyz="0.09 0 0"/>
+    <origin rpy="0 0 0" xyz="0.09 0 0.02"/>
     <parent link="baseLink"/>
     <child link="grasp"/>
   </joint>
