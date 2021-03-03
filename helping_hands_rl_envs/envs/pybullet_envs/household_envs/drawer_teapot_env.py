@@ -4,7 +4,7 @@ import numpy as np
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.pybullet.objects.teapot_base import TeapotBase
 from helping_hands_rl_envs.simulators.pybullet.objects.teapot_lid import TeapotLid
-from helping_hands_rl_envs.envs.pybullet_envs.two_view_envs.drawer_env import DrawerEnv
+from helping_hands_rl_envs.envs.pybullet_envs.household_envs.drawer_env import DrawerEnv
 
 
 class DrawerTeapotEnv(DrawerEnv):

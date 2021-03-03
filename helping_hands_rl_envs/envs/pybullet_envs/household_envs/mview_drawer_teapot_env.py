@@ -1,6 +1,6 @@
 import numpy as np
 
-from helping_hands_rl_envs.envs.pybullet_envs.two_view_envs.drawer_teapot_env import DrawerTeapotEnv
+from helping_hands_rl_envs.envs.pybullet_envs.household_envs.drawer_teapot_env import DrawerTeapotEnv
 from helping_hands_rl_envs.simulators.pybullet.utils.renderer import Renderer
 from helping_hands_rl_envs.simulators.pybullet.utils.sensor import Sensor
 
