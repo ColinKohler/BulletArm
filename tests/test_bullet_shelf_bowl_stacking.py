@@ -9,7 +9,7 @@ from helping_hands_rl_envs import env_factory
 
 class TestBulletBowlStacking(unittest.TestCase):
   workspace = np.asarray([[0.3, 0.7],
-                          [-0.2, 0.2],
+                          [-0.4, 0.4],
                           [0, 0.50]])
   env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 128, 'render': False, 'fast_mode': True,
                 'seed': 0, 'action_sequence': 'pxyzrrr', 'num_objects': 4, 'random_orientation': True,
@@ -22,7 +22,7 @@ class TestBulletBowlStacking(unittest.TestCase):
     self.env_config['render'] = True
     self.env_config['seed'] = 0
     num_processes = 1
-    env = env_factory.createEnvs(num_processes, 'pybullet', 'bowl_stacking', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(num_processes, 'pybullet', 'shelf_bowl_stacking', self.env_config, self.planner_config)
     total = 0
     s = 0
     step_times = []

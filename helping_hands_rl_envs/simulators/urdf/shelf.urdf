@@ -1,0 +1,179 @@
+<?xml version="1.0" ?>
+<robot name="shelf">
+  <link name="world">
+  </link>
+
+  <link name="shelf">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="1"/>
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
+    </inertial>
+  </link>
+
+  <joint name="world_to_shelf" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="world"/>
+    <child link="shelf"/>
+  </joint>
+
+  <link name="shelf_bottom_wall">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="1"/>
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.4 0.6 0.02"/>
+      </geometry>
+      <material name="white">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0.0"/>
+      <geometry>
+        <box size="0.4 0.6 0.02"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="shelf2bw" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0.01"/>
+    <parent link="shelf"/>
+    <child link="shelf_bottom_wall"/>
+  </joint>
+
+  <link name="shelf_left_wall">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="1"/>
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.4 0.02 0.4"/>
+      </geometry>
+      <material name="white">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0.0"/>
+      <geometry>
+        <box size="0.4 0.02 0.4"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="shelf2lw" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0.3 0.2"/>
+    <parent link="shelf"/>
+    <child link="shelf_left_wall"/>
+  </joint>
+
+  <link name="shelf_right_wall">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="1"/>
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.4 0.02 0.4"/>
+      </geometry>
+      <material name="white">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0.0"/>
+      <geometry>
+        <box size="0.4 0.02 0.4"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="shelf2rw" type="fixed">
+    <origin rpy="0 0 0" xyz="0 -0.3 0.2"/>
+    <parent link="shelf"/>
+    <child link="shelf_right_wall"/>
+  </joint>
+
+  <link name="shelf_back_wall">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="1"/>
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.02 0.6 0.4"/>
+      </geometry>
+      <material name="white">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0.0"/>
+      <geometry>
+        <box size="0.02 0.6 0.4"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="shelf2bkw" type="fixed">
+    <origin rpy="0 0 0" xyz="0.2 0 0.2"/>
+    <parent link="shelf"/>
+    <child link="shelf_back_wall"/>
+  </joint>
+
+  <link name="shelf_middle_wall">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="1"/>
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.4 0.6 0.02"/>
+      </geometry>
+      <material name="white">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0.0"/>
+      <geometry>
+        <box size="0.4 0.6 0.02"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="shelf2mw" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0.25"/>
+    <parent link="shelf"/>
+    <child link="shelf_middle_wall"/>
+  </joint>
+
+  <link name="shelf_middle_wall_target1">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="0"/>
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.02 0.02 0.03"/>
+      </geometry>
+    </visual>
+  </link>
+    <joint name="mw2mwt1" type="fixed">
+    <origin rpy="0 0 0" xyz="0 -0.1 0"/>
+    <parent link="shelf_middle_wall"/>
+    <child link="shelf_middle_wall_target1"/>
+  </joint>
+
+</robot>

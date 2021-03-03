@@ -5,7 +5,7 @@ from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
 from helping_hands_rl_envs.planners.block_stacking_planner import BlockStackingPlanner
 
-class BowlStackingPlanner(BlockStackingPlanner):
+class ShelfBowlStackingPlanner(BlockStackingPlanner):
   def __init__(self, env, config):
     super().__init__(env, config)
 
@@ -23,6 +23,9 @@ class BowlStackingPlanner(BlockStackingPlanner):
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, (rz, ry, rx))
 
   def getPlacingAction(self):
+    if not self.env.anyObjectOnTarget1():
+      return self.placeOnShelf()
+
     objects = self.env.objects
     objects, object_poses = self.getSortedObjPoses(objects=objects)
     x, y, z, rx, ry, rz = object_poses[0][0], object_poses[0][1], object_poses[0][2] + self.env.place_offset, 0, np.pi/10, object_poses[0][5]
@@ -32,6 +35,12 @@ class BowlStackingPlanner(BlockStackingPlanner):
         break
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, (rz, ry, rx))
 
+  def placeOnShelf(self):
+    x, y, z = self.env.shelf.getTarget1Pos()
+    x -= 0.05
+    z += self.env.place_offset
+    rz, ry, rx = np.pi, 0, 0
+    return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, (rz, ry, rx))
 
   def getSortedObjPoses(self, roll=False, objects=None, ascend=False):
     if objects is None: objects = self.env.objects

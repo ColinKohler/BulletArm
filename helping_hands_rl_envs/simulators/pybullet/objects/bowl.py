@@ -47,7 +47,8 @@ class Bowl(PybulletObject):
     rot_e = transformations.euler_from_quaternion(rot_q)
     x, y, z = pos
     rx, ry, rz = rot_e
-    theta = np.random.random() * 2 * np.pi
+    # theta = np.random.random() * 2 * np.pi
+    theta = 0
     rz = rz + theta
     ry += np.pi/10
     dx = np.cos(rz) * getBowlRadius(self.model_id) * self.scale

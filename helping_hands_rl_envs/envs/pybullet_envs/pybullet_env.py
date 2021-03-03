@@ -416,7 +416,7 @@ class PyBulletEnv(BaseEnv):
       elif shape_type == constants.ROOF:
         padding = self.max_block_size * 3.4
       elif shape_type == constants.BOWL:
-        padding = 0.15
+        padding = 0.17
       else:
         raise ValueError('Attempted to generate invalid shape.')
 
@@ -428,7 +428,7 @@ class PyBulletEnv(BaseEnv):
       elif shape_type == constants.ROOF:
         min_distance = self.max_block_size * 3.4
       elif shape_type == constants.BOWL:
-        min_distance = 0.15
+        min_distance = 0.17
       else:
         raise ValueError('Attempted to generate invalid shape.')
 

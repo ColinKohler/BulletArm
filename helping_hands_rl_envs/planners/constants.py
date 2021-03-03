@@ -17,6 +17,7 @@ from helping_hands_rl_envs.planners.ramp_block_stacking_planner import RampBlock
 from helping_hands_rl_envs.planners.ramp_deconstruct_planner import RampDeconstructPlanner
 from helping_hands_rl_envs.planners.drawer_teapot_planner import DrawerTeapotPlanner
 from helping_hands_rl_envs.planners.bowl_stacking_planner import BowlStackingPlanner
+from helping_hands_rl_envs.planners.shelf_bowl_stacking_planner import ShelfBowlStackingPlanner
 
 PLANNERS = {
   'random' : RandomPlanner,
@@ -54,4 +55,5 @@ PLANNERS = {
   'multi_view_drawer_teapot': DrawerTeapotPlanner,
   'cup_stacking': BlockStackingPlanner,
   'bowl_stacking': BowlStackingPlanner,
+  'shelf_bowl_stacking': ShelfBowlStackingPlanner
 }
