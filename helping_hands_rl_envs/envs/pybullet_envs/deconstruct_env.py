@@ -93,6 +93,13 @@ class DeconstructEnv(PyBulletEnv):
   def generateStructureShape(self, pos, rot, obj_type, scale=None):
     '''
     '''
+    # add the random initialization offset
+    x_offset = (np.random.random()-1) * self.deconstruct_init_offset
+    y_offset = (np.random.random()-1) * self.deconstruct_init_offset
+    pos = list(pos)
+    pos[0] += x_offset
+    pos[1] += y_offset
+
     if scale is None:
       scale = npr.choice(np.arange(self.block_scale_range[0], self.block_scale_range[1] + 0.01, 0.02))
 

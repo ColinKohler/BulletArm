@@ -26,4 +26,8 @@ DEFAULT_CONFIG = {
   'hard_reset_freq': 1,
   'min_object_distance': None,
   'min_boarder_padding': None,
+  # The random offset range for each object when generating the goal structure. This will help to reduce the domain gap
+  # (because when constructing, the objects are aligned less perfectly), but will also decrease the optimality of the expert.
+  # This is the sum of the + and - amount, e.g., for 0.005, the offset will be randomly sampled from -0.0025 to 0.0025
+  'deconstruct_init_offset': 0,
 }

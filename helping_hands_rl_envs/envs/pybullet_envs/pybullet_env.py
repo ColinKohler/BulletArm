@@ -111,6 +111,7 @@ class PyBulletEnv(BaseEnv):
     self.hard_reset_freq = config['hard_reset_freq']
     self.min_object_distance = config['min_object_distance']
     self.min_boarder_padding = config['min_boarder_padding']
+    self.deconstruct_init_offset = config['deconstruct_init_offset']
 
     self.episode_count = -1
     self.table_id = None
