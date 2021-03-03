@@ -47,53 +47,16 @@ class ShelfBowlStackingEnv(PyBulletEnv):
 
   def _checkTermination(self):
     return self._checkStack() and self.anyObjectOnTarget1()
-    
-  def _getValidPositions(self, border_padding, min_distance, existing_positions, num_shapes, sample_range=None):
-    existing_positions_copy = copy.deepcopy(existing_positions)
-    sample_range = copy.deepcopy(sample_range)
-    valid_positions = list()
-    for i in range(num_shapes):
-      # Generate random drop config
-      x_extents = self.object_init_space[0][1] - self.object_init_space[0][0]
-      y_extents = self.object_init_space[1][1] - self.object_init_space[1][0]
 
-      is_position_valid = False
-      for j in range(100):
-        if is_position_valid:
-          break
-        if sample_range:
-          sample_range[0][0] = max(sample_range[0][0], self.object_init_space[0][0]+border_padding/2)
-          sample_range[0][1] = min(sample_range[0][1], self.object_init_space[0][1]-border_padding/2)
-          sample_range[1][0] = max(sample_range[1][0], self.object_init_space[1][0]+border_padding/2)
-          sample_range[1][1] = min(sample_range[1][1], self.object_init_space[1][1]-border_padding/2)
-          position = [(sample_range[0][1] - sample_range[0][0]) * npr.random_sample() + sample_range[0][0],
-                      (sample_range[1][1] - sample_range[1][0]) * npr.random_sample() + sample_range[1][0]]
-        else:
-          position = [(x_extents - border_padding) * npr.random_sample() + self.object_init_space[0][0] + border_padding / 2,
-                      (y_extents - border_padding) * npr.random_sample() + self.object_init_space[1][0] +  border_padding / 2]
-
-        if self.pos_candidate is not None:
-          position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0] - position[0]).argmin()]
-          position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1] - position[1]).argmin()]
-          if not (self.object_init_space[0][0]+border_padding/2 < position[0] < self.object_init_space[0][1]-border_padding/2 and
-                  self.object_init_space[1][0]+border_padding/2 < position[1] < self.object_init_space[1][1]-border_padding/2):
-            continue
-
-        if existing_positions_copy:
-          distances = np.array(list(map(lambda p: np.linalg.norm(np.array(p)-position), existing_positions_copy)))
-          is_position_valid = np.all(distances > min_distance)
-          # is_position_valid = np.all(np.sum(np.abs(np.array(positions) - np.array(position[:-1])), axis=1) > min_distance)
-        else:
-          is_position_valid = True
-      if is_position_valid:
-        existing_positions_copy.append(position)
-        valid_positions.append(position)
-      else:
-        break
-    if len(valid_positions) == num_shapes:
-      return valid_positions
+  def _getValidOrientation(self, random_orientation):
+    if random_orientation:
+      orientation = pb.getQuaternionFromEuler([0., 0., np.pi * -(np.random.random_sample() * 0.5 + 0.5)])
     else:
-      raise NoValidPositionException
+      orientation = pb.getQuaternionFromEuler([0., 0., 0.])
+    return orientation
+    
+  def getValidSpace(self):
+    return self.object_init_space
 
 def createShelfBowlStackingEnv(config):
   return ShelfBowlStackingEnv(config)

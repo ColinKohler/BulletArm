@@ -5,9 +5,16 @@ from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
 from helping_hands_rl_envs.planners.block_stacking_planner import BlockStackingPlanner
 
-class ShelfBowlStackingPlanner(BlockStackingPlanner):
+class ShelfBowlStackingPlanner(BasePlanner):
   def __init__(self, env, config):
     super().__init__(env, config)
+
+  def getNextAction(self):
+    if self.isHolding():
+      return self.getPlacingAction()
+    else:
+      return self.getPickingAction()
+
 
   def getPickingAction(self):
     objects = self.env.objects
@@ -39,7 +46,7 @@ class ShelfBowlStackingPlanner(BlockStackingPlanner):
     x, y, z = self.env.shelf.getTarget1Pos()
     x -= 0.05
     z += self.env.place_offset
-    rz, ry, rx = np.pi, 0, 0
+    rz, ry, rx = np.pi, np.pi/6, 0
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, (rz, ry, rx))
 
   def getSortedObjPoses(self, roll=False, objects=None, ascend=False):

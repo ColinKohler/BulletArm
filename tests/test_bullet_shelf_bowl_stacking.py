@@ -12,7 +12,7 @@ class TestBulletBowlStacking(unittest.TestCase):
                           [-0.4, 0.4],
                           [0, 0.50]])
   env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 128, 'render': False, 'fast_mode': True,
-                'seed': 0, 'action_sequence': 'pxyzrrr', 'num_objects': 4, 'random_orientation': True,
+                'seed': 0, 'action_sequence': 'pxyzrrr', 'num_objects': 3, 'random_orientation': True,
                 'reward_type': 'sparse', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
                 'workspace_check': 'point', 'physic_mode': 'slow', 'hard_reset_freq': 1000}
 
