@@ -85,7 +85,7 @@ class PyBulletEnv(BaseEnv):
     self.pull_offset = 0.25
 
     # Setup camera
-    ws_size = self.workspace[0][1] - self.workspace[0][0]
+    ws_size = max(self.workspace[0][1] - self.workspace[0][0], self.workspace[1][1] - self.workspace[1][0])
     cam_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 10]
     target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
     cam_up_vector = [-1, 0, 0]
