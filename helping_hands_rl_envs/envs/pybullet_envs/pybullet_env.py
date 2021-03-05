@@ -113,6 +113,8 @@ class PyBulletEnv(BaseEnv):
     self.min_object_distance = config['min_object_distance']
     self.min_boarder_padding = config['min_boarder_padding']
     self.deconstruct_init_offset = config['deconstruct_init_offset']
+    self.pick_top_down_approach = config['pick_top_down_approach']
+    self.place_top_down_approach = config['place_top_down_approach']
 
     self.episode_count = -1
     self.table_id = None
@@ -260,14 +262,14 @@ class PyBulletEnv(BaseEnv):
         if self.perfect_grasp and not self._checkPerfectGrasp(x, y, z, rot, self.objects):
           return
         self.robot.pick(pos, rot_q, self.pick_pre_offset, dynamic=self.dynamic,
-                        objects=self.objects, simulate_grasp=self.simulate_grasp)
+                        objects=self.objects, simulate_grasp=self.simulate_grasp, top_down_approach=self.pick_top_down_approach)
     elif motion_primative == constants.PLACE_PRIMATIVE:
       obj = self.robot.holding_obj
       if self.robot.holding_obj is not None:
         if self.perfect_place and not self._checkPerfectPlace(x, y, z, rot, self.objects):
           return
         self.robot.place(pos, rot_q, self.place_pre_offset,
-                         dynamic=self.dynamic, simulate_grasp=self.simulate_grasp)
+                         dynamic=self.dynamic, simulate_grasp=self.simulate_grasp, top_down_approach=self.place_top_down_approach)
     elif motion_primative == constants.PUSH_PRIMATIVE:
       pass
     elif motion_primative == constants.PULL_PRIMATIVE:

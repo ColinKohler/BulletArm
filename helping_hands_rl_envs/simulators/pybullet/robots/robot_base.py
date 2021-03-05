@@ -59,14 +59,19 @@ class RobotBase:
     if np.linalg.norm(end_pos[:-1]-obj_pos[:-1]) < 0.05 and np.abs(end_pos[-1]-obj_pos[-1]) < 0.025:
       return sorted_obj[0]
 
-  def pick(self, pos, rot, offset, dynamic=True, objects=None, simulate_grasp=True):
+  def pick(self, pos, rot, offset, dynamic=True, objects=None, simulate_grasp=True, top_down_approach=False):
     ''''''
     # Setup pre-grasp pos and default orientation
     self.openGripper()
     pre_pos = copy.copy(pos)
-    m = np.array(pb.getMatrixFromQuaternion(rot)).reshape(3, 3)
-    pre_pos += m[:, 2] * offset
-    # rot = pb.getQuaternionFromEuler([np.pi/2.,-np.pi,np.pi/2])
+    if top_down_approach:
+      # approach the object top-down
+      pre_pos[2] += offset
+    else:
+      # approach the object along the z direction of the ee
+      m = np.array(pb.getMatrixFromQuaternion(rot)).reshape(3, 3)
+      pre_pos += m[:, 2] * offset
+
     pre_rot = rot
 
     # Move to pre-grasp pose and then grasp pose
@@ -90,12 +95,18 @@ class RobotBase:
     self.moveToJ(self.home_positions_joint, dynamic)
     self.checkGripperClosed()
 
-  def place(self, pos, rot, offset, dynamic=True, simulate_grasp=True):
+  def place(self, pos, rot, offset, dynamic=True, simulate_grasp=True, top_down_approach=False):
     ''''''
     # Setup pre-grasp pos and default orientation
     pre_pos = copy.copy(pos)
-    m = np.array(pb.getMatrixFromQuaternion(rot)).reshape(3, 3)
-    pre_pos += m[:, 2] * offset
+    if top_down_approach:
+      # approach the object top-down
+      pre_pos[2] += offset
+    else:
+      # approach the object along the z direction of the ee
+      m = np.array(pb.getMatrixFromQuaternion(rot)).reshape(3, 3)
+      pre_pos += m[:, 2] * offset
+
     pre_rot = rot
 
     # Move to pre-grasp pose and then grasp pose

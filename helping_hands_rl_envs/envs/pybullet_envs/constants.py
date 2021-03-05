@@ -31,4 +31,8 @@ DEFAULT_CONFIG = {
   # (because when constructing, the objects are aligned less perfectly), but will also decrease the optimality of the expert.
   # This is the sum of the + and - amount, e.g., for 0.005, the offset will be randomly sampled from -0.0025 to 0.0025
   'deconstruct_init_offset': 0,
+  # If approaching the object top-down in picking. If False, the arm will approach along the direction of the ee
+  'pick_top_down_approach': False,
+  # If approaching the object top-down in placing. If False, the arm will approach along the direction of the ee
+  'place_top_down_approach': False
 }
