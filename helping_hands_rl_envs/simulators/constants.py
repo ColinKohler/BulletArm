@@ -17,6 +17,7 @@ TEAPOT = 8
 TEAPOT_LID = 9
 CUP = 10
 BOWL = 11
+PLATE = 12
 
 # Motion primatives
 NUM_PRIMATIVES = 2

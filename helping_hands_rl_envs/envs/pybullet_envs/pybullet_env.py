@@ -422,6 +422,8 @@ class PyBulletEnv(BaseEnv):
       padding = self.max_block_size * 3.4
     elif shape_type == constants.BOWL:
       padding = 0.17
+    elif shape_type == constants.PLATE:
+      padding = 0.2
     else:
       raise ValueError('Attempted to generate invalid shape.')
     return padding
@@ -435,6 +437,8 @@ class PyBulletEnv(BaseEnv):
       min_distance = self.max_block_size * 3.4
     elif shape_type == constants.BOWL:
       min_distance = 0.17
+    elif shape_type == constants.PLATE:
+      min_distance = 0.2
     else:
       raise ValueError('Attempted to generate invalid shape.')
     return min_distance
@@ -496,6 +500,8 @@ class PyBulletEnv(BaseEnv):
         handle = pb_obj_generation.generateCup(position, orientation, scale)
       elif shape_type == constants.BOWL:
         handle = pb_obj_generation.generateBowl(position, orientation, scale)
+      elif shape_type == constants.PLATE:
+        handle = pb_obj_generation.generatePlate(position, orientation, scale)
 
       else:
         raise NotImplementedError

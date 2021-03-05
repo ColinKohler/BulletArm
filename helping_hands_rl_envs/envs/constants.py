@@ -46,6 +46,8 @@ from helping_hands_rl_envs.envs.pybullet_envs.household_envs.mview_drawer_teapot
 from helping_hands_rl_envs.envs.pybullet_envs.cup_stacking_env import createCupStackingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.bowl_stacking_env import createBowlStackingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.household_envs.shelf_bowl_stacking_env import createShelfBowlStackingEnv
+from helping_hands_rl_envs.envs.pybullet_envs.household_envs.shelf_plate_stacking_env import createShelfPlateStackingEnv
+
 
 CREATE_NUMPY_ENV_FNS = {
   'block_picking' : createBlockPickingEnv,
@@ -107,4 +109,5 @@ CREATE_PYBULLET_ENV_FNS = {
   'cup_stacking': createCupStackingEnv,
   'bowl_stacking': createBowlStackingEnv,
   'shelf_bowl_stacking': createShelfBowlStackingEnv,
+  'shelf_plate_stacking': createShelfPlateStackingEnv,
 }

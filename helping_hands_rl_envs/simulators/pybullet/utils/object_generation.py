@@ -14,6 +14,7 @@ from helping_hands_rl_envs.simulators.pybullet.objects.random_object import Rand
 from helping_hands_rl_envs.simulators.pybullet.objects.random_brick import RandomBrick
 from helping_hands_rl_envs.simulators.pybullet.objects.cup import Cup
 from helping_hands_rl_envs.simulators.pybullet.objects.bowl import Bowl
+from helping_hands_rl_envs.simulators.pybullet.objects.plate import Plate
 
 def generateCube(pos, rot, scale):
   ''''''
@@ -36,6 +37,9 @@ def generateCup(pos, rot, scale):
 
 def generateBowl(pos, rot, scale):
   return Bowl(pos, rot, scale)
+
+def generatePlate(pos, rot, scale):
+  return Plate(pos, rot, scale)
 
 def generateRandomObj(pos, rot, scale, z_scale=1):
   return RandomObject(pos, rot, scale, z_scale)

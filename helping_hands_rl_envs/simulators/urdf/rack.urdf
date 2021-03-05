@@ -1,0 +1,94 @@
+<?xml version="1.0" ?>
+<robot name="rack">
+  <link name="world">
+  </link>
+
+  <link name="rack">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="1"/>
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
+    </inertial>
+  </link>
+
+  <joint name="world_to_rack" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="world"/>
+    <child link="rack"/>
+  </joint>
+
+  <link name="rack_bottom">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="1"/>
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.1 0.1 0.01"/>
+      </geometry>
+      <material name="white">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0.0"/>
+      <geometry>
+        <box size="0.1 0.1 0.01"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="rack2b" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0.005"/>
+    <parent link="rack"/>
+    <child link="rack_bottom"/>
+  </joint>
+
+  <link name="rack_vertical">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="1"/>
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.1 0.2"/>
+      </geometry>
+      <material name="white">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0.0"/>
+      <geometry>
+        <box size="0.01 0.1 0.2"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="rack2v" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0.1"/>
+    <parent link="rack"/>
+    <child link="rack_vertical"/>
+  </joint>
+
+  <link name="rack_object_pose">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="0"/>
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.02 0.02 0.02"/>
+      </geometry>
+    </visual>
+  </link>
+  <joint name="v2rop" type="fixed">
+    <origin rpy="0 -1.77 0" xyz="-0.05 0 0.05"/>
+    <parent link="rack_vertical"/>
+    <child link="rack_object_pose"/>
+  </joint>
+</robot>
