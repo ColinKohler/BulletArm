@@ -60,7 +60,7 @@ class DrawerTeapotEnv(DrawerEnv):
     rot = pb.getQuaternionFromEuler((0, -np.pi/2, 0))
     self.robot.pull(handle1_pos, rot, 0.25, False)
 
-    teapot_handle_pos = self.objects[0].getHandlePos()
+    teapot_handle_pos = self.objects[0].getGraspPosition()
     self.robot.pick(teapot_handle_pos, self.objects[0].getRotation(), 0.1, objects=self.objects, dynamic=False)
     self.robot.place([0.37, 0, 0.1], [0, 0, 0, 1], 0.1, False)
 

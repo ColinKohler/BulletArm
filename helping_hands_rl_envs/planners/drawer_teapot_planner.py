@@ -17,12 +17,12 @@ class DrawerTeapotPlanner(BasePlanner):
     return self.encodeAction(constants.PULL_PRIMATIVE, handle1_pos[0], handle1_pos[1], handle1_pos[2], rot)
 
   def pickTeapot(self):
-    pos = self.env.objects[0].getHandlePos()
+    pos = self.env.objects[0].getGraspPosition()
     rx, ry, rz = list(pb.getEulerFromQuaternion(self.env.objects[0].getRotation()))
     return self.encodeAction(constants.PICK_PRIMATIVE, pos[0], pos[1], pos[2], (rz, ry, rx))
 
   def pickTeapotLid(self):
-    pos = self.env.objects[1].getPosition()
+    pos = self.env.objects[1].getGraspPosition()
     rx, ry, rz = list(pb.getEulerFromQuaternion(self.env.objects[1].getRotation()))
     return self.encodeAction(constants.PICK_PRIMATIVE, pos[0], pos[1], pos[2], (rz, ry, rx))
 

@@ -10,8 +10,6 @@ from helping_hands_rl_envs.simulators.pybullet.objects.pybullet_object import Py
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 
-BOWL1_OFFSET=0.09
-
 def getBowlRadius(model_id):
   if model_id == 1:
     return 0.09
@@ -41,6 +39,12 @@ class Bowl(PybulletObject):
     object_id = pb.loadURDF(urdf_filepath, basePosition=pos, baseOrientation=rot, globalScaling=scale)
 
     super(Bowl, self).__init__(constants.CUBE, object_id)
+
+  def getGraspRotation(self):
+    return self.getGraspPose()[1]
+
+  def getGraspPosition(self):
+    return self.getGraspPose()[0]
 
   def getGraspPose(self):
     pos, rot_q = self.getPose()

@@ -16,7 +16,7 @@ class TeapotLid(PybulletObject):
     super().__init__(constants.TEAPOT, object_id)
     self.scale = scale
 
-  def getHandlePos(self):
+  def getGraspPosition(self):
     pos, rot = pb.getBasePositionAndOrientation(self.object_id)
     T = transformations.quaternion_matrix(rot)
     pos = np.array(pos)
@@ -32,4 +32,4 @@ class TeapotLid(PybulletObject):
     return pos
 
   def getPosition(self):
-    return self.getHandlePos()
+    return self.getGraspPosition()

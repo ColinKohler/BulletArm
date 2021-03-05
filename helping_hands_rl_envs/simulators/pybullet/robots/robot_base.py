@@ -54,9 +54,9 @@ class RobotBase:
     if not objects:
       return None
     end_pos = self._getEndEffectorPosition()
-    sorted_obj = sorted(objects, key=lambda o: np.linalg.norm(end_pos-o.getPosition()))
-    obj_pos = sorted_obj[0].getPosition()
-    if np.linalg.norm(end_pos[:-1]-obj_pos[:-1]) < 0.07 and np.abs(end_pos[-1]-obj_pos[-1]) < 0.05:
+    sorted_obj = sorted(objects, key=lambda o: np.linalg.norm(end_pos-o.getGraspPosition()))
+    obj_pos = sorted_obj[0].getGraspPosition()
+    if np.linalg.norm(end_pos[:-1]-obj_pos[:-1]) < 0.05 and np.abs(end_pos[-1]-obj_pos[-1]) < 0.025:
       return sorted_obj[0]
 
   def pick(self, pos, rot, offset, dynamic=True, objects=None, simulate_grasp=True):

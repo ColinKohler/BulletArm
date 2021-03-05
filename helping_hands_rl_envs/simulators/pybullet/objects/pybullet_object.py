@@ -29,6 +29,15 @@ class PybulletObject(object):
     pos, rot = pb.getBasePositionAndOrientation(self.object_id)
     return list(pos), list(rot)
 
+  def getGraspPosition(self):
+    return self.getPosition()
+
+  def getGraspRotation(self):
+    return self.getRotation()
+
+  def getGraspPose(self):
+    return self.getPose()
+
   def setVelocity(self, linear_velocity, angular_velocity):
     return pb.resetBaseVelocity(self.object_id, linear_velocity, angular_velocity)
 
