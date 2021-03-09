@@ -22,6 +22,18 @@
 	 	    <mesh filename="plate1.obj" scale="0.4 0.4 0.4"/>
       </geometry>
     </collision>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 -0.017"/>
+      <geometry>
+        <cylinder radius="0.12" length="0.025"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 -0.017"/>
+      <geometry>
+        <cylinder radius="0.12" length="0.025"/>
+      </geometry>
+    </collision>
   </link>
   <link name="grasp">
     <inertial>
