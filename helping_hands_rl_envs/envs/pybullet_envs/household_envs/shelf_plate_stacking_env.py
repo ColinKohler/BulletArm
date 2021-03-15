@@ -7,6 +7,7 @@ import numpy.random as npr
 import helping_hands_rl_envs
 from helping_hands_rl_envs.simulators.pybullet.equipments.shelf import Shelf
 from helping_hands_rl_envs.simulators.pybullet.equipments.rack import Rack
+from helping_hands_rl_envs.simulators.pybullet.objects.plate import PLACE_RY_OFFSET, PLACE_Z_OFFSET
 from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
@@ -16,13 +17,15 @@ from helping_hands_rl_envs.planners.shelf_bowl_stacking_planner import ShelfBowl
 class ShelfPlateStackingEnv(PyBulletEnv):
   def __init__(self, config):
     super().__init__(config)
-    self.place_offset = 0.04
     self.shelf = Shelf()
     self.rack = Rack(n=self.num_obj+1)
     self.object_init_space = np.asarray([[0.3, 0.7],
                                          [-0.4, 0],
                                          [0, 0.40]])
-  
+    self.plate_model_id = None
+    self.place_offset = None
+    self.place_ry_offset = None
+
   def initialize(self):
     super().initialize()
     self.shelf.initialize(pos=[0.6, 0.3, 0])
@@ -34,22 +37,29 @@ class ShelfPlateStackingEnv(PyBulletEnv):
       for rack_id in self.rack.ids:
         pb.changeDynamics(rack_id, -1, linearDamping=0.04, angularDamping=0.04, restitution=0,
                           contactStiffness=3000, contactDamping=100)
-
+    self.robot.gripper_joint_limit = [0, 0.15]
     pass
 
   def reset(self):
     ''''''
+    self.plate_model_id = np.random.choice([1, 2, 6, 7, 8, 9])
+    self.place_ry_offset = PLACE_RY_OFFSET[self.plate_model_id]
+    self.place_offset = PLACE_Z_OFFSET[self.plate_model_id]
     while True:
       self.resetPybulletEnv()
       try:
         plate_pos_list = self.rack.getObjInitPosList()
         for pos in plate_pos_list:
-          self._generateShapes(constants.PLATE, 1, pos=[pos], rot=[transformations.quaternion_from_euler(0, -np.deg2rad(110), 0)])
+          self._generateShapes(constants.PLATE, 1, pos=[pos], rot=[transformations.quaternion_from_euler(0, -np.deg2rad(110), 0)], model_id=self.plate_model_id)
       except NoValidPositionException as e:
         continue
       else:
         break
+
     return self._getObservation()
+
+  def getPlaceRyOffset(self):
+    return PLACE_RY_OFFSET[self.plate_model_id]
 
   def anyObjectOnTarget1(self):
     for obj in self.objects:

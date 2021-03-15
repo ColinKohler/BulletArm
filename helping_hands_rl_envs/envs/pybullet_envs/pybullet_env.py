@@ -444,7 +444,7 @@ class PyBulletEnv(BaseEnv):
     return min_distance
 
   def _generateShapes(self, shape_type=0, num_shapes=1, scale=None, pos=None, rot=None,
-                           min_distance=None, padding=None, random_orientation=False, z_scale=1):
+                           min_distance=None, padding=None, random_orientation=False, z_scale=1, model_id=1):
     ''''''
     # if padding is not set, use the default padding
     if padding is None:
@@ -501,7 +501,7 @@ class PyBulletEnv(BaseEnv):
       elif shape_type == constants.BOWL:
         handle = pb_obj_generation.generateBowl(position, orientation, scale)
       elif shape_type == constants.PLATE:
-        handle = pb_obj_generation.generatePlate(position, orientation, scale)
+        handle = pb_obj_generation.generatePlate(position, orientation, scale, model_id)
 
       else:
         raise NotImplementedError

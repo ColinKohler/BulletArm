@@ -22,11 +22,39 @@ def getZOffset(model_id):
   else:
     raise NotImplementedError
 
+PLACE_RY_OFFSET = {
+  1: np.deg2rad(55),
+  2: np.deg2rad(60),
+  3: np.deg2rad(60),
+  4: np.deg2rad(60),
+  5: np.deg2rad(60),
+  6: np.deg2rad(60),
+  7: np.deg2rad(60),
+  8: np.deg2rad(70),
+  9: np.deg2rad(60),
+  10: np.deg2rad(60),
+  11: np.deg2rad(60),
+}
+
+PLACE_Z_OFFSET = {
+  1: 0.04,
+  2: 0.04,
+  3: 0.04,
+  4: 0.04,
+  5: 0.04,
+  6: 0.04,
+  7: 0.05,
+  8: 0.06,
+  9: 0.04,
+  10: 0.05,
+  11: 0.05,
+}
+
 class Plate(PybulletObject):
-  def __init__(self, pos, rot, scale):
+  def __init__(self, pos, rot, scale, model_id):
     self.scale = scale
     root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
-    self.model_id = 1
+    self.model_id = model_id
     urdf_filepath = os.path.join(root_dir, constants.URDF_PATH, 'plate/plate{}.urdf'.format(self.model_id))
     object_id = pb.loadURDF(urdf_filepath, basePosition=pos, baseOrientation=rot, globalScaling=scale)
 

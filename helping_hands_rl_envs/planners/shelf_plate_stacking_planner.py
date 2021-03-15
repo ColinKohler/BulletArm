@@ -8,7 +8,6 @@ from helping_hands_rl_envs.planners.block_stacking_planner import BlockStackingP
 class ShelfPlateStackingPlanner(BasePlanner):
   def __init__(self, env, config):
     super().__init__(env, config)
-    self.ry_offset = (np.deg2rad(55))
 
   def getNextAction(self):
     if self.isHolding():
@@ -36,10 +35,10 @@ class ShelfPlateStackingPlanner(BasePlanner):
 
     objects = self.env.objects
     objects, object_poses = self.getSortedObjPoses(objects=objects)
-    x, y, z, rx, ry, rz = object_poses[0][0], object_poses[0][1], object_poses[0][2] + self.env.place_offset, 0, self.ry_offset, object_poses[0][5]
+    x, y, z, rx, ry, rz = object_poses[0][0], object_poses[0][1], object_poses[0][2] + self.env.place_offset, 0, self.env.place_ry_offset, object_poses[0][5]
     for obj, pose in zip(objects, object_poses):
       if not self.isObjectHeld(obj):
-        x, y, z, rx, ry, rz = pose[0], pose[1], pose[2] + self.env.place_offset, 0, self.ry_offset, pose[5]
+        x, y, z, rx, ry, rz = pose[0], pose[1], pose[2] + self.env.place_offset, 0, self.env.place_ry_offset, pose[5]
         break
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, (rz, ry, rx))
 
@@ -47,7 +46,7 @@ class ShelfPlateStackingPlanner(BasePlanner):
     x, y, z = self.env.shelf.getTarget1Pos()
     x -= 0.09
     z += self.env.place_offset
-    rz, ry, rx = np.pi, self.ry_offset, 0
+    rz, ry, rx = np.pi, self.env.place_ry_offset, 0
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, (rz, ry, rx))
 
   def getSortedObjPoses(self, roll=False, objects=None, ascend=False):

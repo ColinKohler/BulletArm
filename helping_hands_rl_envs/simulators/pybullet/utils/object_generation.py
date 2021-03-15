@@ -38,8 +38,8 @@ def generateCup(pos, rot, scale):
 def generateBowl(pos, rot, scale):
   return Bowl(pos, rot, scale)
 
-def generatePlate(pos, rot, scale):
-  return Plate(pos, rot, scale)
+def generatePlate(pos, rot, scale, model_id):
+  return Plate(pos, rot, scale, model_id)
 
 def generateRandomObj(pos, rot, scale, z_scale=1):
   return RandomObject(pos, rot, scale, z_scale)
