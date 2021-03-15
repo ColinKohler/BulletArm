@@ -1,23 +1,38 @@
-# Helping Hands RL Environments 
-This repository holds the environments for the various pick and place tasks we have been working on in the lab. 
-The environments include a set of 2.5D top-down tasks where a robot arm has to pick/place object on a table, and a set of 6D tasks where a robot has to pick/place objects initialized on two ramps
+# Helping Hands RL Environments
+- [License](https://github.com/ColinKohler/helping_hands_rl_envs/blob/master/LICENSE)
 
-## Getting Started
+This package contains various simulated robotics environments used for research in the [Helping Hands](https://www2.ccs.neu.edu/research/helpinghands/) lab.
+The majority of these environments entail a robotic arm armed with a paralel jaw gripper executing a series of manipulation based tasks. For a full list of 
+the tasks currently implemented see below. The core simulator used for most tasks is [PyBullet](https://github.com/bulletphysics/bullet3) but a simple numpy
+based simulator is included for quick prototyping. 
+
+## Table of Contents
+1. [Requirments](#requirements)
+2. [Installation](#install)
+3. [Environments](#envs)
+4. [Parameters](#parameters)
+5. [Publications](#publications)
+
+<a name="requirments"></a>
+## Requirments
+
+<a name="install"></a>
+## Install
 1. Install Python 3.7
-1. Clone this repo
+2. Clone this repo
     ```
     git clone https://github.com/ColinKohler/helping_hands_rl_envs.git
     cd helping_hands_rl_envs
     ```
-1. Install dependencies
+3. Install dependencies
     ```
     pip install -r requirements.txt 
     ```
-1. Install this package
+4. Install this package
     ```
     pip install .
     ```
-1. Run the block stacking demo
+5. Run the block stacking demo
     ```python
     import numpy as np
     from helping_hands_rl_envs import env_factory
@@ -40,7 +55,8 @@ The environments include a set of 2.5D top-down tasks where a robot arm has to p
         input('press enter to continue')
     env.close()
     ```
-
+    
+<a name="envs"></a>
 ## Environments
 ### 2.5D Environments
 - **block_picking**: Pick up all blocks.
@@ -67,18 +83,9 @@ The environments include a set of 2.5D top-down tasks where a robot arm has to p
 - **ramp_improvise_house_building_2**: Finish improvise_house_building_2 in the workspace with two ramps
 - **ramp_improvise_house_building_3**: Finish improvise_house_building_3 in the workspace with two ramps
 
-## Parameter List
-TODO
+<a name="parameters"></a>
+## Parameters
 
-## Data Collection
-Originally this reposity was designed for online learning but it works equally well for data collection. Although you can use the
-master branch as is for data collection, The cpk_refactor branch has a number of additional features, including planners, which
-make data collection much easier. This branch will eventually get merged into master once finalized.
-
-## Extending this Repository
-If you are simply using this as a base for a very different problem feel free to fork this repository but if you are simply 
-extending the existing functionality, such as adding new environments, please considering contributing to the repository! 
-In order to keep things clean, please cut a branch for the feature you are working on and submit a pull request when its complete.
-If there is additional functionality you think would be nice to have but are unsure how to implement, I would suggest opening a 
-issue and we can discuss it there!
-
+<a name="publications"></a>
+## Publications
+If you like this package and use it in your own work, please cite this repository.
