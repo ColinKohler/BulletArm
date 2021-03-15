@@ -73,6 +73,11 @@ def worker(remote, parent_remote, env_fn, planner_fn=None):
           remote.send(planner.getNextAction())
         else:
           raise ValueError('Attempting to use a planner which was not initialized.')
+      elif cmd == 'get_random_action':
+        if planner:
+          remote.send(planner.getRandomAction())
+        else:
+          raise ValueError('Attempting to use a planner which was not initialized.')
       elif cmd == 'get_value':
         if planner:
           remote.send(planner.getValue())
@@ -300,6 +305,16 @@ class MultiRunner(object):
     action = np.stack(action)
     return action
 
+  def getRandomAction(self):
+    '''
+
+    '''
+    for remote in self.remotes:
+      remote.send(('get_random_action', None))
+    action = [remote.recv() for remote in self.remotes]
+    action = np.stack(action)
+    return action
+
   def getValue(self):
     '''
 
@@ -474,6 +489,15 @@ class SingleRunner(object):
     '''
     if self.planner:
       return self.planner.getNextAction()
+    else:
+      raise ValueError('Attempting to use a planner which was not initialized.')
+
+  def getRandomAction(self):
+    '''
+
+    '''
+    if self.planner:
+      return self.planner.getRandomAction()
     else:
       raise ValueError('Attempting to use a planner which was not initialized.')
 

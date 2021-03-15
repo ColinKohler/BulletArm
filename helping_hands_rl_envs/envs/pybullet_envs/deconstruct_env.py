@@ -16,8 +16,8 @@ class DeconstructEnv(PyBulletEnv):
     super(DeconstructEnv, self).__init__(config)
     self.pick_offset = 0.01
     self.terminate_min_dist = 2.4*self.min_block_size
-    self.structure_objs = []
-    self.prev_obj_pos = ()
+    self.structure_objs = list()
+    self.prev_obj_pos = None
 
   def takeAction(self, action):
     # keep track of the current positions of all objects
@@ -25,10 +25,13 @@ class DeconstructEnv(PyBulletEnv):
     PyBulletEnv.takeAction(self, action)
 
   def isSimValid(self):
-    # compare the object positions with the previous step. Only allow one object to move at each action step
-    curr_obj_pos = self.getObjectPositions(omit_hold=False)
-    dist = np.linalg.norm(curr_obj_pos - self.prev_obj_pos, axis=1)
-    return (dist > 0.005).sum() == 1 and PyBulletEnv.isSimValid(self)
+    if self.prev_obj_pos is None:
+      return True
+    else:
+      # Compare the object positions with the previous step. Only allow one object to move at each action step
+      curr_obj_pos = self.getObjectPositions(omit_hold=False)
+      dist = np.linalg.norm(curr_obj_pos - self.prev_obj_pos, axis=1)
+      return (dist > 0.005).sum() == 1 and PyBulletEnv.isSimValid(self)
 
   def _getObservation(self, action=None):
     '''
@@ -43,15 +46,15 @@ class DeconstructEnv(PyBulletEnv):
       motion_primative, x, y, z, rot = self._decodeAction(action)
       in_hand_img = self.getInHandImage(self.heightmap, x, y, z, rot, old_heightmap)
 
-    return self._isHolding(), in_hand_img, self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
+    return self._isHolding(), in_hand_img, self.heightmap.reshape([1, self.heightmap_size, self.heightmap_size])
 
   def resetDeconstructEnv(self):
     self.resetPybulletEnv()
-    self.structure_objs = []
+    self.structure_objs = list()
     self.generateStructure()
     while not self.checkStructure():
       self.resetPybulletEnv()
-      self.structure_objs = []
+      self.structure_objs = list()
       self.generateStructure()
 
   def reset(self):

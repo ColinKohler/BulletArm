@@ -50,6 +50,12 @@ class BasePlanner(object):
       rot = np.clip(rot + npr.uniform(-self.rot_noise, self.rot_noise), 0., np.pi)
     return rot
 
+  def getRandomAction(self):
+    if self.isHolding():
+      return self.getRandomPlacingAction()
+    else:
+      return self.getRandomPickingAction()
+
   def getRandomPickingAction(self):
     x = npr.uniform(self.env.workspace[0, 0] + 0.025, self.env.workspace[0, 1] - 0.025)
     y = npr.uniform(self.env.workspace[1, 0] + 0.025, self.env.workspace[1, 1] - 0.025)
