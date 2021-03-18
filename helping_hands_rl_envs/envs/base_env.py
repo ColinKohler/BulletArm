@@ -285,7 +285,7 @@ class BaseEnv(object):
     else:
       # end_effector rotate counter clockwise along z, so in hand img rotate clockwise
       crop = sk_transform.rotate(crop, np.rad2deg(-rz))
-      return crop.reshape((self.in_hand_size, self.in_hand_size, 1))
+      return crop.reshape((1, self.in_hand_size, self.in_hand_size))
 
   def getInHandOccupancyGridProj(self, crop, z, rot):
     rx, ry, rz = rot
@@ -326,6 +326,6 @@ class BaseEnv(object):
 
   def getEmptyInHand(self):
     if self.in_hand_mode.find('proj') > -1:
-      return np.zeros((self.in_hand_size, self.in_hand_size, 3))
+      return np.zeros((3, self.in_hand_size, self.in_hand_size))
     else:
-      return np.zeros((self.in_hand_size, self.in_hand_size, 1))
+      return np.zeros((1, self.in_hand_size, self.in_hand_size))

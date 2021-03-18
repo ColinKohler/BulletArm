@@ -10,6 +10,7 @@ from helping_hands_rl_envs.planners.house_building_1_planner import HouseBuildin
 from helping_hands_rl_envs.planners.house_building_2_planner import HouseBuilding2Planner
 from helping_hands_rl_envs.planners.house_building_3_planner import HouseBuilding3Planner
 from helping_hands_rl_envs.planners.house_building_4_planner import HouseBuilding4Planner
+from helping_hands_rl_envs.planners.deconstruct_planner import DeconstructPlanner
 from helping_hands_rl_envs.planners.play_planner import PlayPlanner
 
 class MultiTaskPlanner(object):
@@ -34,10 +35,21 @@ class MultiTaskPlanner(object):
         self.planners.append(HouseBuilding3Planner(env.envs[i], config))
       elif config['planner_type'] == 'house_building_4':
         self.planners.append(HouseBuilding4Planner(env.envs[i], config))
+      elif config['planner_type'] == 'deconstruct_house_1':
+        self.planners.append(DeconstructPlanner(env.envs[i], config))
+      elif config['planner_type'] == 'deconstruct_house_2':
+        self.planners.append(DeconstructPlanner(env.envs[i], config))
+      elif config['planner_type'] == 'deconstruct_house_3':
+        self.planners.append(DeconstructPlanner(env.envs[i], config))
+      elif config['planner_type'] == 'deconstruct_house_4':
+        self.planners.append(DeconstructPlanner(env.envs[i], config))
       elif config['planner_type'] == 'play':
         self.planners.append(PlayPlanner(env.envs[i], config))
       else:
         raise ValueError('Planner type not implemented in Multi-task planner')
+
+  def getRandomAction(self):
+    return self.planners[self.active_env_id].getRandomAction()
 
   def getNextAction(self):
     return self.planners[self.env.active_env_id].getNextAction()

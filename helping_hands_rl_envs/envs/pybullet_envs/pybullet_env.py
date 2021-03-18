@@ -354,7 +354,7 @@ class PyBulletEnv(BaseEnv):
       motion_primative, x, y, z, rot = self._decodeAction(action)
       in_hand_img = self.getInHandImage(old_heightmap, x, y, z, rot, self.heightmap)
 
-    return self._isHolding(), in_hand_img, self.heightmap.reshape([self.heightmap_size, self.heightmap_size, 1])
+    return self._isHolding(), in_hand_img, self.heightmap.reshape([1, self.heightmap_size, self.heightmap_size])
 
   def _getHeightmap(self):
     return self.sensor.getHeightmap(self.heightmap_size)

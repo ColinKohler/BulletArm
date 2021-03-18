@@ -2,10 +2,16 @@ from helping_hands_rl_envs.envs.pybullet_envs.block_stacking_env import createBl
 from helping_hands_rl_envs.envs.pybullet_envs.pyramid_stacking_env import createPyramidStackingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.brick_stacking_env import createBrickStackingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.block_adjacent_env import createBlockAdjacentEnv
+
 from helping_hands_rl_envs.envs.pybullet_envs.house_building_1_env import createHouseBuilding1Env
 from helping_hands_rl_envs.envs.pybullet_envs.house_building_2_env import createHouseBuilding2Env
 from helping_hands_rl_envs.envs.pybullet_envs.house_building_3_env import createHouseBuilding3Env
 from helping_hands_rl_envs.envs.pybullet_envs.house_building_4_env import createHouseBuilding4Env
+
+from helping_hands_rl_envs.envs.pybullet_envs.house_building_1_deconstruct_env import createHouseBuilding1DeconstructEnv
+from helping_hands_rl_envs.envs.pybullet_envs.house_building_2_deconstruct_env import createHouseBuilding2DeconstructEnv
+from helping_hands_rl_envs.envs.pybullet_envs.house_building_3_deconstruct_env import createHouseBuilding3DeconstructEnv
+from helping_hands_rl_envs.envs.pybullet_envs.house_building_4_deconstruct_env import createHouseBuilding4DeconstructEnv
 
 class MultiTaskEnv(object):
   ''''''
@@ -37,6 +43,19 @@ class MultiTaskEnv(object):
       elif config['env_type'] == 'house_building_4':
         self.envs.append(createHouseBuilding4Env(config))
         self.env_types.append('house_building_4')
+      elif config['env_type'] == 'deconstruct_house_1':
+        self.envs.append(createHouseBuilding1DeconstructEnv(config))
+        self.env_types.append('deconstruct_house_1')
+      elif config['env_type'] == 'deconstruct_house_2':
+        self.envs.append(createHouseBuilding2DeconstructEnv(config))
+        self.env_types.append('deconstruct_house_2')
+      elif config['env_type'] == 'deconstruct_house_3':
+        self.envs.append(createHouseBuilding3DeconstructEnv(config))
+        self.env_types.append('deconstruct_house_3')
+      elif config['env_type'] == 'deconstruct_house_4':
+        self.envs.append(createHouseBuilding4DeconstructEnv(config))
+        self.env_types.append('deconstruct_house_4')
+
       else:
         raise ValueError('Env type not implemented in Multi-task env.')
 
