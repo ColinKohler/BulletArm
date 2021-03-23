@@ -12,9 +12,9 @@ class TestBulletShelfPlateStacking(unittest.TestCase):
                           [-0.4, 0.4],
                           [0, 0.50]])
   env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 128, 'render': False, 'fast_mode': True,
-                'seed': 0, 'action_sequence': 'pxyzrrr', 'num_objects': 3, 'random_orientation': True,
+                'seed': 0, 'action_sequence': 'pxyzrrr', 'num_objects': 2, 'random_orientation': True,
                 'reward_type': 'sparse', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
-                'workspace_check': 'point', 'physics_mode': 'slow', 'hard_reset_freq': 1000, 'object_scale_range': (0.60, 0.60),
+                'workspace_check': 'point', 'physics_mode': 'fast', 'hard_reset_freq': 1000, 'object_scale_range': (0.60, 0.60),
                 'pick_top_down_approach': True, 'place_top_down_approach': True}
 
   planner_config = {'random_orientation': True, 'half_rotation': False}
@@ -23,7 +23,7 @@ class TestBulletShelfPlateStacking(unittest.TestCase):
     self.env_config['render'] = True
     self.env_config['seed'] = 0
     num_processes = 1
-    env = env_factory.createEnvs(num_processes, 'pybullet', 'shelf_plate_stacking', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(num_processes, 'pybullet', 'drawer_shelf_plate_stacking', self.env_config, self.planner_config)
     total = 0
     s = 0
     step_times = []

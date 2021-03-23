@@ -19,6 +19,7 @@ from helping_hands_rl_envs.planners.drawer_teapot_planner import DrawerTeapotPla
 from helping_hands_rl_envs.planners.bowl_stacking_planner import BowlStackingPlanner
 from helping_hands_rl_envs.planners.shelf_bowl_stacking_planner import ShelfBowlStackingPlanner
 from helping_hands_rl_envs.planners.shelf_plate_stacking_planner import ShelfPlateStackingPlanner
+from helping_hands_rl_envs.planners.drawer_shelf_plate_stacking_planner import DrawerShelfPlateStackingPlanner
 
 PLANNERS = {
   'random' : RandomPlanner,
@@ -58,4 +59,5 @@ PLANNERS = {
   'bowl_stacking': BowlStackingPlanner,
   'shelf_bowl_stacking': ShelfBowlStackingPlanner,
   'shelf_plate_stacking': ShelfPlateStackingPlanner,
+  'drawer_shelf_plate_stacking': DrawerShelfPlateStackingPlanner,
 }

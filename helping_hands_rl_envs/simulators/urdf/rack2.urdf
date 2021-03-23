@@ -18,7 +18,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <box size="0.1 0.1 0.01"/>
+        <box size="0.05 0.1 0.01"/>
       </geometry>
       <material name="white">
         <color rgba="1 1 1 1"/>
@@ -27,7 +27,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0.0"/>
       <geometry>
-        <box size="0.1 0.1 0.01"/>
+        <box size="0.05 0.1 0.01"/>
       </geometry>
     </collision>
   </link>
@@ -79,7 +79,7 @@
     </visual>
   </link>
   <joint name="v2rop" type="fixed">
-    <origin rpy="0 -1.77 0" xyz="-0.05 0 0.05"/>
+    <origin rpy="0 -1.57 0" xyz="-0.025 0 0.05"/>
     <parent link="rack_vertical"/>
     <child link="rack_object_pose"/>
   </joint>

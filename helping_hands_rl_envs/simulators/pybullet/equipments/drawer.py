@@ -4,16 +4,23 @@ import numpy as np
 
 import helping_hands_rl_envs
 from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
+from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 from helping_hands_rl_envs.simulators.pybullet.equipments.drawer_handle import DrawerHandle
+from helping_hands_rl_envs.simulators.pybullet.objects.pybullet_object import PybulletObject
+from typing import List
 
 class Drawer:
-  def __init__(self):
+  def __init__(self, model_id=1):
+    assert model_id in [1, 2]
     self.root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
+    self.model_id = model_id
     self.id = None
     self.handle = None
+    self.object_init_link_id = 5
+    self.cids = []
 
   def initialize(self, pos=(0,0,0), rot=(0,0,0,1)):
-    drawer_urdf_filepath = os.path.join(self.root_dir, 'simulators/urdf/drawer.urdf')
+    drawer_urdf_filepath = os.path.join(self.root_dir, 'simulators/urdf/drawer{}.urdf'.format(self.model_id))
     self.id = pb.loadURDF(drawer_urdf_filepath, pos, rot, globalScaling=0.5)
     self.handle = DrawerHandle(self.id)
 
@@ -55,4 +62,28 @@ class Drawer:
     return pb.getJointState(self.id, 1)[0] < 0.02
 
   def getObjInitPos(self):
-    return pb.getLinkState(self.id, 5)[0]
+    return pb.getLinkState(self.id, self.object_init_link_id)[0]
+
+  def getObjInitRot(self):
+    return pb.getLinkState(self.id, self.object_init_link_id)[1]
+
+  def constraintObjects(self, objects: List[PybulletObject]):
+    drawer_pos, drawer_rot = self.getObjInitPos(), self.getObjInitRot()
+    wTd = transformations.quaternion_matrix(drawer_rot)
+    wTd[:3, 3] = drawer_pos
+    self.cids = []
+    for obj in objects:
+      pos, rot = obj.getPose()
+      wTo = transformations.quaternion_matrix(rot)
+      wTo[:3, 3] = pos
+      dTo = np.linalg.inv(wTd).dot(wTo)
+      cid = pb.createConstraint(self.id, self.object_init_link_id, obj.object_id, -1,
+                                jointType=pb.JOINT_FIXED, jointAxis=[0, 0, 0],
+                                parentFramePosition=dTo[:3, 3],
+                                childFramePosition=[0, 0, 0],
+                                parentFrameOrientation=transformations.quaternion_from_matrix(dTo))
+      self.cids.append(cid)
+
+  def releaseObjectConstraints(self):
+    for cid in self.cids:
+      pb.removeConstraint(cid)

@@ -23,6 +23,7 @@ def getZOffset(model_id):
     raise NotImplementedError
 
 PLACE_RY_OFFSET = {
+  0: np.deg2rad(80),
   1: np.deg2rad(55),
   2: np.deg2rad(60),
   3: np.deg2rad(60),
@@ -37,6 +38,7 @@ PLACE_RY_OFFSET = {
 }
 
 PLACE_Z_OFFSET = {
+  0: 0.06,
   1: 0.04,
   2: 0.04,
   3: 0.04,

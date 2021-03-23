@@ -7,11 +7,11 @@ from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 
 class Rack:
-  def __init__(self, n=3):
+  def __init__(self, n=3, dist=0.1):
     self.root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
     self.n = n
     self.ids = []
-    self.dist = 0.1
+    self.dist = dist
 
   def getEachPos(self, pos=(0,0,0), rot=(0,0,0,1)):
     poss = []
@@ -24,11 +24,17 @@ class Rack:
       poss.append((x, y, z))
     return poss
 
-  def initialize(self, pos=(0,0,0), rot=(0,0,0,1)):
-    urdf_filepath = os.path.join(self.root_dir, 'simulators/urdf/rack.urdf')
+  def initialize(self, pos=(0,0,0), rot=(0,0,0,1), fixed=False):
+    urdf_filepath = os.path.join(self.root_dir, 'simulators/urdf/rack2.urdf')
     poss = self.getEachPos(pos, rot)
     for i in range(self.n):
-      self.ids.append(pb.loadURDF(urdf_filepath, poss[i], rot))
+      self.ids.append(pb.loadURDF(urdf_filepath, poss[i], rot, useFixedBase=fixed))
+      if len(self.ids) > 1:
+        pb.createConstraint(self.ids[-2], -1, self.ids[-1], -1,
+                            jointType=pb.JOINT_FIXED, jointAxis=[0, 0, 0],
+                            parentFramePosition=[self.dist, 0, 0],
+                            childFramePosition=[0, 0, 0],
+                            childFrameOrientation=pb.getQuaternionFromEuler([0, 0, 0]))
 
     # base_x, base_y, base_z = pos
     # rx, ry, rz = transformations.euler_from_quaternion(rot)
@@ -53,11 +59,11 @@ class Rack:
   def getObjInitPosList(self):
     poss = []
     for idx in self.ids:
-      poss.append(pb.getLinkState(idx, 3)[0])
+      poss.append(pb.getLinkState(idx, 2)[0])
     return poss[1:]
 
   def getObjInitRotList(self):
     rots = []
     for idx in self.ids:
-      rots.append(pb.getLinkState(idx, 3)[1])
+      rots.append(pb.getLinkState(idx, 2)[1])
     return rots[1:]

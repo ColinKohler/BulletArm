@@ -4,12 +4,14 @@ import numpy as np
 
 import helping_hands_rl_envs
 from helping_hands_rl_envs.simulators.pybullet.utils.pybullet_util import constants
+from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 
 BOX = 0
 CYLINDER = 1
 
 class DrawerHandle:
   def __init__(self, drawer_id):
+    self.drawer_id = drawer_id
     self.drawer_fw_id = 6
     self.grip_type = np.random.choice(2)
     grip_to_drawer_range = [0.03, 0.05]
@@ -61,7 +63,7 @@ class DrawerHandle:
     self.id = pb.createMultiBody(0.1, grip_collision_id, grip_visual_id,
                                  basePosition = grip_position,
                                  baseOrientation = pb.getQuaternionFromEuler([0, 0, 0]),
-                                 linkMasses=[0.01, 0.01],
+                                 linkMasses=[1, 1],
                                  linkCollisionShapeIndices=[left_visual_id, right_visual_id],
                                  linkVisualShapeIndices=[left_visual_id, right_visual_id],
                                  linkPositions=[[self.sidebar_length / 2, self.sidebar_dist / 2, 0],
@@ -87,6 +89,16 @@ class DrawerHandle:
     for _ in range(100):
       pb.stepSimulation()
     pass
+
+  def reset(self):
+    drawer_fw_pos = pb.getLinkState(self.drawer_id, self.drawer_fw_id)[0]
+    drawer_fw_rot = pb.getLinkState(self.drawer_id, self.drawer_fw_id)[1]
+    m = np.array(pb.getMatrixFromQuaternion(drawer_fw_rot)).reshape(3, 3)
+    pos = np.array(drawer_fw_pos) + m[:, 0] * self.grip_to_drawer
+    # rot_matrix = m @ np.array(transformations.euler_matrix(0, 0, np.pi))[:3, :3]
+    rot_matrix = np.eye(4)
+    rot_matrix[:3, :3] = m @ np.array(transformations.euler_matrix(0, 0, np.pi))[:3, :3]
+    pb.resetBasePositionAndOrientation(self.id, pos, transformations.quaternion_from_matrix(rot_matrix))
 
   def getPosition(self):
     pos, rot = pb.getBasePositionAndOrientation(self.id)

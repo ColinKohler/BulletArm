@@ -47,6 +47,7 @@ from helping_hands_rl_envs.envs.pybullet_envs.cup_stacking_env import createCupS
 from helping_hands_rl_envs.envs.pybullet_envs.bowl_stacking_env import createBowlStackingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.household_envs.shelf_bowl_stacking_env import createShelfBowlStackingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.household_envs.shelf_plate_stacking_env import createShelfPlateStackingEnv
+from helping_hands_rl_envs.envs.pybullet_envs.household_envs.drawer_shelf_plate_stacking_env import createDrawerShelfPlateStackingEnv
 
 
 CREATE_NUMPY_ENV_FNS = {
@@ -110,4 +111,5 @@ CREATE_PYBULLET_ENV_FNS = {
   'bowl_stacking': createBowlStackingEnv,
   'shelf_bowl_stacking': createShelfBowlStackingEnv,
   'shelf_plate_stacking': createShelfPlateStackingEnv,
+  'drawer_shelf_plate_stacking': createDrawerShelfPlateStackingEnv,
 }
