@@ -76,6 +76,9 @@ class BaseEnv(object):
 
     self.offset = 0.01
 
+  def normalizeRot(self, rx, ry, rz):
+    return rx, ry, rz
+
   def _decodeAction(self, action):
     """
     decode input action base on self.action_sequence
@@ -113,6 +116,7 @@ class BaseEnv(object):
     #   rz -= np.pi
     #   rx = -rx
     #   ry = -ry
+    rx, ry, rz = self.normalizeRot(rx, ry, rz)
     rot = (rx, ry, rz)
 
     return motion_primative, x, y, z, rot

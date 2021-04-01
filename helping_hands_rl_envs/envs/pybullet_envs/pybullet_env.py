@@ -115,6 +115,7 @@ class PyBulletEnv(BaseEnv):
     self.deconstruct_init_offset = config['deconstruct_init_offset']
     self.pick_top_down_approach = config['pick_top_down_approach']
     self.place_top_down_approach = config['place_top_down_approach']
+    self.half_rotation = config['half_rotation']
 
     self.episode_count = -1
     self.table_id = None
@@ -735,3 +736,21 @@ class PyBulletEnv(BaseEnv):
     #   rot[2] -= np.pi
 
     return rot
+
+  def normalizeRot(self, rx, ry, rz):
+    while rz < 0:
+      rz += 2*np.pi
+    while rz > 2*np.pi:
+      rz -= 2*np.pi
+
+    if self.half_rotation:
+      if rz > np.pi:
+        rz -= np.pi
+        rx = -rx
+        ry = -ry
+      if type(self.robot) is Kuka:
+        rz -= np.pi
+        rx = -rx
+        ry = -ry
+    return rx, ry, rz
+

@@ -34,5 +34,7 @@ DEFAULT_CONFIG = {
   # If approaching the object top-down in picking. If False, the arm will approach along the direction of the ee
   'pick_top_down_approach': False,
   # If approaching the object top-down in placing. If False, the arm will approach along the direction of the ee
-  'place_top_down_approach': False
+  'place_top_down_approach': False,
+  # If True, constraint the top-down rotation in a 180 degree range
+  'half_rotation': True,
 }
