@@ -219,6 +219,11 @@ class BaseEnv(object):
 
     return round(x_pixel), round(y_pixel)
 
+  def _getPosFromPixels(self, x_pixel, y_pixel):
+    x = x_pixel * self.heightmap_resolution + self.workspace[0][0]
+    y = y_pixel * self.heightmap_resolution + self.workspace[1][0]
+    return x, y
+
   def _isObjectOnCandidatePose(self, obj):
     '''
     Checks if the object has drifted off the candidate positions.
