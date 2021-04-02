@@ -48,6 +48,7 @@ from helping_hands_rl_envs.envs.pybullet_envs.bowl_stacking_env import createBow
 from helping_hands_rl_envs.envs.pybullet_envs.household_envs.shelf_bowl_stacking_env import createShelfBowlStackingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.household_envs.shelf_plate_stacking_env import createShelfPlateStackingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.household_envs.drawer_shelf_plate_stacking_env import createDrawerShelfPlateStackingEnv
+from helping_hands_rl_envs.envs.pybullet_envs.household_envs.block_bin_packing_env import createBlockBinPackingEnv
 
 
 CREATE_NUMPY_ENV_FNS = {
@@ -112,4 +113,5 @@ CREATE_PYBULLET_ENV_FNS = {
   'shelf_bowl_stacking': createShelfBowlStackingEnv,
   'shelf_plate_stacking': createShelfPlateStackingEnv,
   'drawer_shelf_plate_stacking': createDrawerShelfPlateStackingEnv,
+  'block_bin_packing': createBlockBinPackingEnv,
 }

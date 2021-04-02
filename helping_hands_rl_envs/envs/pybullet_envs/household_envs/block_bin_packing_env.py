@@ -18,13 +18,13 @@ class BlockBinPackingEnv(PyBulletEnv):
     super().__init__(config)
     self.box = Box()
     self.object_init_space = np.asarray([[0.3, 0.7],
-                                         [-0.4, 0],
+                                         [-0.3, 0.1],
                                          [0, 0.40]])
     self.box_pos = [0.5, 0.2, 0]
-    self.box_size = [0.15, 0.15, 0.1]
+    self.box_size = [0.2, 0.15, 0.1]
     self.box_range = np.array([[self.box_pos[0]-self.box_size[0]/2, self.box_pos[0]+self.box_size[0]/2],
                                [self.box_pos[1]-self.box_size[1]/2, self.box_pos[1]+self.box_size[1]/2]])
-    self.z_threshold = 0.03
+    self.z_threshold = 0.1
 
   def getValidSpace(self):
     return self.object_init_space
@@ -39,7 +39,7 @@ class BlockBinPackingEnv(PyBulletEnv):
     while True:
       self.resetPybulletEnv()
       try:
-        self._generateShapes(constants.RANDOM, self.num_obj, random_orientation=self.random_orientation)
+        self._generateShapes(constants.RANDOM_BLOCK, self.num_obj, random_orientation=self.random_orientation)
       except NoValidPositionException:
         continue
       else:
@@ -72,7 +72,7 @@ class BlockBinPackingEnv(PyBulletEnv):
 
   def getReward(self):
     max_z = max(map(lambda x: pb.getAABB(x.object_id)[1][2], self.objects))
-    return self.z_threshold - max_z
+    return 100 * (self.z_threshold - max_z)
 
   def isObjInBox(self, obj):
     return self.box_range[0][0] < obj.getPosition()[0] < self.box_range[0][1] and self.box_range[1][0] < obj.getPosition()[1] < self.box_range[1][1]
@@ -80,14 +80,17 @@ class BlockBinPackingEnv(PyBulletEnv):
   def getObjsOutsideBox(self):
     return list(filter(lambda obj: not self.isObjInBox(obj), self.objects))
 
+def createBlockBinPackingEnv(config):
+  return BlockBinPackingEnv(config)
+
 if __name__ == '__main__':
-  workspace = np.asarray([[0.1, 0.9],
-                          [-0.4, 0.4],
+  workspace = np.asarray([[0.2, 0.8],
+                          [-0.3, 0.3],
                           [0, 0.50]])
   env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 128, 'render': True, 'fast_mode': True,
-                'seed': 1, 'action_sequence': 'pxyr', 'num_objects': 6, 'random_orientation': False,
+                'seed': 2, 'action_sequence': 'pxyr', 'num_objects': 9, 'random_orientation': False,
                 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
-                'object_init_space_check': 'point', 'physics_mode': 'fast', 'object_scale_range': (1, 1)}
+                'object_init_space_check': 'point', 'physics_mode': 'fast', 'object_scale_range': (0.8, 0.8)}
   planner_config = {'random_orientation': True}
 
   env = BlockBinPackingEnv(env_config)

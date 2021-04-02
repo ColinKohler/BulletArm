@@ -64,6 +64,18 @@ class BlockStructureBasePlanner(BasePlanner):
 
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
+  def pickLargestObjOnTop(self, objects=None):
+    if objects is None: objects = self.env.objects
+    objects, object_poses = self.getSizeSortedObjPoses(objects=objects)
+
+    x, y, z, r = object_poses[0][0], object_poses[0][1], object_poses[0][2], object_poses[0][5]
+    for obj, pose in zip(objects, object_poses):
+      if self.isObjOnTop(obj):
+        x, y, z, r = pose[0], pose[1], pose[2], pose[5]
+        break
+
+    return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
+
   def pickShortestObjOnTop(self, objects=None,):
     """
     pick up the shortest object that is on top
@@ -251,6 +263,24 @@ class BlockStructureBasePlanner(BasePlanner):
     objects = objects[sorted_inds]
     object_poses = object_poses[sorted_inds]
     return objects, object_poses
+
+  def getSizeSortedObjPoses(self, objects=None, ascend=False):
+    if objects is None: objects = self.env.objects
+    objects = np.array(list(filter(lambda x: not self.isObjectHeld(x), objects)))
+    object_poses = self.env.getObjectPoses(objects)
+
+    AABBs = list(map(lambda obj: pb.getAABB(obj.object_id), objects))
+    sizes = list(map(lambda x: (x[1][0] - x[0][0]) * (x[1][1] - x[0][1]) * (x[1][2] - x[0][2]), AABBs))
+
+    if ascend:
+      sorted_inds = np.argsort(sizes)
+    else:
+      sorted_inds = np.flip(np.argsort(sizes))
+
+    objects = objects[sorted_inds]
+    object_poses = object_poses[sorted_inds]
+    return objects, object_poses
+
 
   def isNear(self, obj_1, obj_2):
     return np.allclose(obj_1.getZPosition(), obj_2.getZPosition(), atol=0.01) and \

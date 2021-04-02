@@ -18,6 +18,7 @@ TEAPOT_LID = 9
 CUP = 10
 BOWL = 11
 PLATE = 12
+RANDOM_BLOCK = 13
 
 # Motion primatives
 NUM_PRIMATIVES = 2

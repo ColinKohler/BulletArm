@@ -415,7 +415,7 @@ class PyBulletEnv(BaseEnv):
     return orientation
 
   def _getDefaultBoarderPadding(self, shape_type):
-    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.CUP):
+    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.CUP, constants.RANDOM_BLOCK):
       padding = self.max_block_size * 2.4
     elif shape_type == constants.BRICK:
       padding = self.max_block_size * 3.4
@@ -430,7 +430,7 @@ class PyBulletEnv(BaseEnv):
     return padding
 
   def _getDefaultMinDistance(self, shape_type):
-    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.CUP):
+    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.CUP, constants.RANDOM_BLOCK):
       min_distance = self.max_block_size * 2.4
     elif shape_type == constants.BRICK:
       min_distance = self.max_block_size * 3.4
@@ -503,6 +503,8 @@ class PyBulletEnv(BaseEnv):
         handle = pb_obj_generation.generateBowl(position, orientation, scale)
       elif shape_type == constants.PLATE:
         handle = pb_obj_generation.generatePlate(position, orientation, scale, model_id)
+      elif shape_type == constants.RANDOM_BLOCK:
+        handle = pb_obj_generation.generateRandomBlock(position, orientation, scale)
 
       else:
         raise NotImplementedError
