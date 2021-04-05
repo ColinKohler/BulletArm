@@ -308,7 +308,6 @@ class PyBulletEnv(BaseEnv):
     #   return
     [pb.stepSimulation() for _ in range(iteration)]
 
-  # TODO: This does not work w/cylinders
   def didBlockFall(self):
     if self.last_action is None:
       return False
@@ -319,6 +318,8 @@ class PyBulletEnv(BaseEnv):
     if obj:
       return motion_primative == constants.PLACE_PRIMATIVE and \
              np.linalg.norm(np.array(obj.getXYPosition()) - np.array([x,y])) > obj.size / 2.
+      #return motion_primative == constants.PLACE_PRIMATIVE and \
+      #       not np.allclose(obj.getZPosition(), z, atol=0.02)
     else:
       return False
 
@@ -337,7 +338,8 @@ class PyBulletEnv(BaseEnv):
 
   def _getObservation(self, action=None):
     ''''''
-    old_heightmap = self.heightmap
+    import copy
+    old_heightmap = copy.deepcopy(self.heightmap)
     self.heightmap = self._getHeightmap()
 
     if action is None or self._isHolding() == False:

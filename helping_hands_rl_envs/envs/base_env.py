@@ -144,6 +144,7 @@ class BaseEnv(object):
       rz -= np.pi
       rx = -rx
       ry = -ry
+
     primitive_idx, x_idx, y_idx, z_idx, rot_idx = map(lambda a: self.action_sequence.find(a),
                                                       ['p', 'x', 'y', 'z', 'r'])
     action = np.zeros(len(self.action_sequence), dtype=np.float)
@@ -260,10 +261,8 @@ class BaseEnv(object):
     next_heightmap = np.pad(next_heightmap, int(self.in_hand_size / 2), 'constant', constant_values=0.0)
 
     x, y = self._getPixelsFromPos(x, y)
-    x = np.clip(x, self.in_hand_size / 2, self.heightmap_size-1-self.in_hand_size/2)
-    y = np.clip(y, self.in_hand_size / 2, self.heightmap_size-1-self.in_hand_size/2)
-    x = round(x + self.in_hand_size / 2)
-    y = round(y + self.in_hand_size / 2)
+    x = x + int(self.in_hand_size / 2)
+    y = y + int(self.in_hand_size / 2)
 
     # Get the corners of the crop
     x_min = int(x - self.in_hand_size / 2)
