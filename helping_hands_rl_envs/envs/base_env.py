@@ -90,7 +90,7 @@ class BaseEnv(object):
     x = action[x_idx]
     y = action[y_idx]
     z = action[z_idx] if z_idx != -1 else self._getPrimativeHeight(motion_primative, x, y)
-    rz, ry, rx = 0, np.pi, 0
+    rz, ry, rx = 0, 0, 0
     if self.action_sequence.count('r') <= 1:
       rz = action[rot_idx] if rot_idx != -1 else 0
       ry = 0
@@ -104,15 +104,6 @@ class BaseEnv(object):
       ry = action[rot_idx + 1]
       rx = action[rot_idx + 2]
 
-    # [-pi, 0] is easier for the arm(kuka) to execute
-    while rz < -np.pi:
-      rz += np.pi
-      rx = -rx
-      ry = -ry
-    while rz > 0:
-      rz -= np.pi
-      rx = -rx
-      ry = -ry
     rot = (rx, ry, rz)
 
     return motion_primative, x, y, z, rot
@@ -140,10 +131,7 @@ class BaseEnv(object):
       rz -= np.pi * 2
     while rz < 0:
       rz += np.pi * 2
-    if rz > np.pi:
-      rz -= np.pi
-      rx = -rx
-      ry = -ry
+
     primitive_idx, x_idx, y_idx, z_idx, rot_idx = map(lambda a: self.action_sequence.find(a),
                                                       ['p', 'x', 'y', 'z', 'r'])
     action = np.zeros(len(self.action_sequence), dtype=np.float)
