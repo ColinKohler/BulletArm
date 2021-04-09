@@ -21,10 +21,10 @@ class BlockBinPackingEnv(PyBulletEnv):
                                          [-0.3, 0.1],
                                          [0, 0.40]])
     self.box_pos = [0.5, 0.2, 0]
-    self.box_size = [0.2, 0.15, 0.1]
+    self.box_size = [0.2, 0.15, 0.15]
     self.box_range = np.array([[self.box_pos[0]-self.box_size[0]/2, self.box_pos[0]+self.box_size[0]/2],
                                [self.box_pos[1]-self.box_size[1]/2, self.box_pos[1]+self.box_size[1]/2]])
-    self.z_threshold = 0.1
+    self.z_threshold = 0.15
 
   def getValidSpace(self):
     return self.object_init_space
@@ -39,7 +39,7 @@ class BlockBinPackingEnv(PyBulletEnv):
     while True:
       self.resetPybulletEnv()
       try:
-        self._generateShapes(constants.RANDOM_BLOCK, self.num_obj, random_orientation=self.random_orientation)
+        self._generateShapes(constants.RANDOM_BLOCK, self.num_obj, random_orientation=self.random_orientation, padding=self.min_boarder_padding, min_distance=self.min_object_distance)
       except NoValidPositionException:
         continue
       else:
