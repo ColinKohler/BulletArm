@@ -62,4 +62,6 @@ PLANNERS = {
   'shelf_plate_stacking': ShelfPlateStackingPlanner,
   'drawer_shelf_plate_stacking': DrawerShelfPlateStackingPlanner,
   'block_bin_packing': BlockBinPackingPlanner,
+  'random_block_picking': BlockPickingPlanner,
+  'random_household_picking': BlockPickingPlanner,
 }

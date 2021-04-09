@@ -49,6 +49,8 @@ from helping_hands_rl_envs.envs.pybullet_envs.household_envs.shelf_bowl_stacking
 from helping_hands_rl_envs.envs.pybullet_envs.household_envs.shelf_plate_stacking_env import createShelfPlateStackingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.household_envs.drawer_shelf_plate_stacking_env import createDrawerShelfPlateStackingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.household_envs.block_bin_packing_env import createBlockBinPackingEnv
+from helping_hands_rl_envs.envs.pybullet_envs.random_block_picking_env import createRandomBlockPickingEnv
+from helping_hands_rl_envs.envs.pybullet_envs.random_household_picking_env import createRandomHouseholdPickingEnv
 
 
 CREATE_NUMPY_ENV_FNS = {
@@ -114,4 +116,6 @@ CREATE_PYBULLET_ENV_FNS = {
   'shelf_plate_stacking': createShelfPlateStackingEnv,
   'drawer_shelf_plate_stacking': createDrawerShelfPlateStackingEnv,
   'block_bin_packing': createBlockBinPackingEnv,
+  'random_block_picking': createRandomBlockPickingEnv,
+  'random_household_picking': createRandomHouseholdPickingEnv,
 }
