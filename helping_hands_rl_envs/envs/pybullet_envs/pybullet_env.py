@@ -1,3 +1,5 @@
+import os
+import pickle
 import copy
 import numpy as np
 import numpy.random as npr
@@ -16,9 +18,6 @@ from helping_hands_rl_envs.simulators.pybullet.objects.pybullet_object import Py
 import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
-
-import pickle
-import os
 
 class PyBulletEnv(BaseEnv):
   '''
@@ -338,8 +337,7 @@ class PyBulletEnv(BaseEnv):
 
   def _getObservation(self, action=None):
     ''''''
-    import copy
-    old_heightmap = copy.deepcopy(self.heightmap)
+    old_heightmap = copy.copy(self.heightmap)
     self.heightmap = self._getHeightmap()
 
     if action is None or self._isHolding() == False:
