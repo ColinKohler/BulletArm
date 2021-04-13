@@ -11,10 +11,10 @@ class TestBulletBlockStacking(unittest.TestCase):
   workspace = np.asarray([[0.35, 0.65],
                           [-0.15, 0.15],
                           [0, 0.50]])
-  env_config = {'workspace': workspace, 'max_steps': 20, 'obs_size': 90, 'render': True, 'fast_mode': True,
+  env_config = {'workspace': workspace, 'max_steps': 5, 'obs_size': 90, 'render': True, 'fast_mode': True,
                 'seed': 0, 'action_sequence': 'pxyzr', 'num_objects': 2, 'random_orientation': False,
                 'reward_type': 'dense', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
-                'workspace_check': 'point', 'in_hand_mode': 'raw', 'object_scale_range': (0.60, 0.60),
+                'workspace_check': 'point', 'in_hand_mode': 'raw', 'object_scale_range': (0.6, 0.6),
                 'hard_reset_freq': 1000, 'physics_mode' : 'fast'}
 
   planner_config = {'random_orientation': True}
@@ -32,10 +32,10 @@ class TestBulletBlockStacking(unittest.TestCase):
 
   def testPlanner2(self):
     self.env_config['num_objects'] = 5
-    self.env_config['render'] = False
+    self.env_config['render'] = True
     self.env_config['random_orientation'] = True
     self.env_config['seed'] = 0
-    num_processes = 10
+    num_processes = 1
     env = env_factory.createEnvs(num_processes, 'pybullet', 'random_household_picking', self.env_config, self.planner_config)
     total = 0
     s = 0

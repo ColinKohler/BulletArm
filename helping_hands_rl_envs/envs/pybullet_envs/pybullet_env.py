@@ -430,8 +430,10 @@ class PyBulletEnv(BaseEnv):
   def _getDefaultMinDistance(self, shape_type):
     if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.CUP, constants.RANDOM_BLOCK):
       min_distance = self.max_block_size * 2.4
-    elif shape_type in (constants.BRICK, constants.ROOF, constants.RANDOM_HOUSEHOLD):
+    elif shape_type in (constants.BRICK, constants.ROOF):
       min_distance = self.max_block_size * 3.4
+    elif shape_type in [constants.RANDOM_HOUSEHOLD]:
+      min_distance = self.max_block_size * 4
     elif shape_type == constants.BOWL:
       min_distance = 0.17
     elif shape_type == constants.PLATE:
