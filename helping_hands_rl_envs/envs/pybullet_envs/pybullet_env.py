@@ -631,28 +631,53 @@ class PyBulletEnv(BaseEnv):
     return True
 
   def _checkPerfectGrasp(self, x, y, z, rot, objects):
+    '''
+    check if the grasp at (x, y, z, rot) is a perfect grasp (gripper's rotation aligned with the object's rotation)
+    this method only checks rz, and only works for basic block stacking tasks
+    :param x: x of the grasp pose
+    :param y: y of the grasp pose
+    :param z: z of the grasp pose
+    :param rot: rotation of the grasp pose
+    :param objects: candidate objects to grasp
+    :return: True if the relative rotation between the gripper and the target object is smaller than pi/12
+    '''
     end_pos = np.array([x, y, z])
     sorted_obj = sorted(objects, key=lambda o: np.linalg.norm(end_pos - o.getPosition()))
     obj_pos, obj_rot = sorted_obj[0].getPose()
     obj_type = self.object_types[sorted_obj[0]]
+    # For cylinders, the gripper is always aligned
+    if obj_type is constants.CYLINDER:
+      return True
     obj_rot = pb.getEulerFromQuaternion(obj_rot)
-    angle = np.pi - np.abs(np.abs(rot - obj_rot[2]) - np.pi)
+    # The relative angle between the gripper and the target object in [0, pi] range
+    angle = np.pi - np.abs(np.abs(rot[2] - obj_rot[2]) - np.pi)
+    # Cubes are symmetric for pi/2 rotation
     if obj_type is constants.CUBE:
       while angle > np.pi / 2:
         angle -= np.pi / 2
       angle = min(angle, np.pi / 2 - angle)
-    elif obj_type is constants.TRIANGLE or obj_type is constants.ROOF:
-      angle = abs(angle - np.pi/2)
+    # Bricks, roofs, and triangles are symmetric for pi rotation
+    elif obj_type in [constants.BRICK, constants.ROOF, constants.TRIANGLE]:
       angle = min(angle, np.pi - angle)
     return angle < np.pi / 12
 
   def _checkPerfectPlace(self, x, y, z, rot, objects):
+    '''
+    check if the place at (x, y, z, rot) is a perfect place (gripper's rotation aligned with the object's rotation)
+    this method only checks rz, and only works for basic block stacking tasks
+    :param x: x of the place pose
+    :param y: y of the place pose
+    :param z: z of the place pose
+    :param rot: rotation of the place pose
+    :param objects: candidate objects to place on
+    :return: True if the relative rotation between the gripper and the target object is smaller than pi/12
+    '''
     end_pos = np.array([x, y, z])
     sorted_obj = sorted(objects, key=lambda o: np.linalg.norm(end_pos - o.getPosition()))
     obj_pos, obj_rot = sorted_obj[0].getPose()
-    obj_type = self.object_types[sorted_obj[0]]
+    holding_obj_type = self._getHoldingObjType()
     obj_rot = pb.getEulerFromQuaternion(obj_rot)
-    angle = np.pi - np.abs(np.abs(rot - obj_rot[2]) - np.pi)
+    angle = np.pi - np.abs(np.abs(rot[2] - obj_rot[2]) - np.pi)
     if angle > np.pi/2:
       angle -= np.pi/2
     angle = min(angle, np.pi / 2 - angle)
