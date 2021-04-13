@@ -46,6 +46,8 @@ class Box:
                                  linkJointAxis=[[0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1]]
     )
 
+  def reset(self, pos=(0,0,0), rot=(0,0,0,1)):
+    pb.resetBasePositionAndOrientation(self.id, pos, rot)
 
   def remove(self):
     if self.id:

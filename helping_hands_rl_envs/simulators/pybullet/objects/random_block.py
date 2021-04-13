@@ -19,7 +19,7 @@ total_num_objects = len(found_object_directories)
 base_rotation_map = {
   '0.obj': (0, 0, np.pi/2),
   '1.obj': (np.pi/2, 0, np.pi/2),
-  '2.obj': (0, np.pi/2, np.pi/2),
+  '2.obj': (0, np.pi/2, 1.8),
   '3.obj': (0, 0, np.pi/2),
   '4.obj': (0, 0, np.pi/2),
   '6.obj': (0, np.pi/2, np.pi/2),
