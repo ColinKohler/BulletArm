@@ -640,7 +640,7 @@
     </joint>
     <link name='left_finger_tip'>
       <contact>
-        <lateral_friction>0.8</lateral_friction>
+        <lateral_friction>10</lateral_friction>
         <spinning_friction>.1</spinning_friction>
       </contact>
       <pose frame=''>-0.02 0.024 1.49 0 0.2 0</pose>
@@ -815,7 +815,7 @@
     </joint>
     <link name='right_finger_tip'>
       <contact>
-        <lateral_friction>0.8</lateral_friction>
+        <lateral_friction>10</lateral_friction>
         <spinning_friction>.1</spinning_friction>
       </contact>
       <pose frame=''>0.02 0.024 1.49 0 -0.2 0</pose>

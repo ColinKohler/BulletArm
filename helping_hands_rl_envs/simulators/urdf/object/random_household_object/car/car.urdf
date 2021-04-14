@@ -3,7 +3,7 @@
   <link name="baseLink">
     <contact>
       <friction_anchor/>
-      <lateral_friction value="20.0"/>
+      <lateral_friction value="10.0"/>
       <rolling_friction value="0.0"/>
     </contact>
     <inertial>
@@ -14,13 +14,13 @@
     <visual>
       <origin rpy="0 0 1.57" xyz="0 0 0.0"/>
       <geometry>
-        <mesh filename="car1.obj" scale="0.2 0.2 0.3"/>
+        <mesh filename="car4.obj" scale="0.2 0.2 0.2"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 1.57" xyz="0 0 0.0"/>
       <geometry>
-        <mesh filename="car1.obj" scale="0.2 0.2 0.3"/>
+        <mesh filename="car4.obj" scale="0.2 0.2 0.2"/>
       </geometry>
     </collision>
   </link>

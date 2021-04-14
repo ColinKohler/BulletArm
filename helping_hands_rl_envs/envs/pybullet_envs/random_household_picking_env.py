@@ -10,6 +10,7 @@ class RandomHouseholdPickingEnv(PyBulletEnv):
   def __init__(self, config):
     super(RandomHouseholdPickingEnv, self).__init__(config)
     self.obj_grasped = 0
+    self.pick_offset = 0.03
 
   def step(self, action):
     pre_obj_grasped = self.obj_grasped

@@ -12,9 +12,9 @@ class TestBulletBlockStacking(unittest.TestCase):
                           [-0.15, 0.15],
                           [0, 0.50]])
   env_config = {'workspace': workspace, 'max_steps': 5, 'obs_size': 90, 'render': True, 'fast_mode': True,
-                'seed': 0, 'action_sequence': 'pxyzr', 'num_objects': 2, 'random_orientation': False,
+                'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 2, 'random_orientation': False,
                 'reward_type': 'dense', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
-                'workspace_check': 'point', 'in_hand_mode': 'raw', 'object_scale_range': (0.6, 0.6),
+                'workspace_check': 'point', 'in_hand_mode': 'raw', 'object_scale_range': (0.5, 0.5),
                 'hard_reset_freq': 1000, 'physics_mode' : 'fast'}
 
   planner_config = {'random_orientation': True}
