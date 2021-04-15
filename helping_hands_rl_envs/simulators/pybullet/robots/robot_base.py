@@ -35,6 +35,7 @@ class RobotBase:
     }
 
     self.position_gain = 0.02
+    self.adjust_gripper_after_lift = False
 
   def saveState(self):
     self.state = {
@@ -79,14 +80,23 @@ class RobotBase:
     if simulate_grasp:
       self.moveTo(pos, rot, True, pos_th=1e-3, rot_th=1e-3)
 
-      # Grasp object and lift up to pre pose
+      # Close gripper, if fully closed (nothing grasped), open gripper
       gripper_fully_closed = self.closeGripper()
-      self.adjustGripperCommand()
       if gripper_fully_closed:
         self.openGripper()
 
-      self.moveTo(pre_pos, pre_rot, True)
-      for i in range(10):
+      # Adjust gripper command after moving to pre pose. This will create more chance for a grasp, but while moving to
+      # pre pose the gripper will shift around.
+      if self.adjust_gripper_after_lift:
+        self.moveTo(pre_pos, pre_rot, True)
+        self.adjustGripperCommand()
+      # Adjust gripper command before moving to pre pose. This will make the gripper more stable while moving to the pre
+      # pose, but will reduce the chance for a grasp, especially in the cluttered scene.
+      else:
+        self.adjustGripperCommand()
+        self.moveTo(pre_pos, pre_rot, True)
+
+      for i in range(100):
         pb.stepSimulation()
     else:
       self.moveTo(pos, rot, dynamic)

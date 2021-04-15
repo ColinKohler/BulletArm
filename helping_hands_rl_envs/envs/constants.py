@@ -49,6 +49,8 @@ from helping_hands_rl_envs.envs.pybullet_envs.household_envs.drawer_shelf_plate_
 from helping_hands_rl_envs.envs.pybullet_envs.block_bin_packing_env import createBlockBinPackingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.random_block_picking_env import createRandomBlockPickingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.random_household_picking_env import createRandomHouseholdPickingEnv
+from helping_hands_rl_envs.envs.pybullet_envs.random_block_picking_clutter_env import createRandomBlockPickingClutterEnv
+from helping_hands_rl_envs.envs.pybullet_envs.random_household_picking_clutter_env import createRandomHouseholdPickingClutterEnv
 from helping_hands_rl_envs.envs.pybullet_envs.bowl_spoon_cup_env import BowlSpoonCupEnv
 
 CREATE_NUMPY_ENV_FNS = {
@@ -116,5 +118,7 @@ CREATE_PYBULLET_ENV_FNS = {
   'block_bin_packing': createBlockBinPackingEnv,
   'random_block_picking': createRandomBlockPickingEnv,
   'random_household_picking': createRandomHouseholdPickingEnv,
+  'random_block_picking_clutter': createRandomBlockPickingClutterEnv,
+  'random_household_picking_clutter': createRandomHouseholdPickingClutterEnv,
   'bowl_spoon_cup': BowlSpoonCupEnv,
 }

@@ -84,6 +84,8 @@ class PyBulletEnv(BaseEnv):
     self.place_offset = self.block_scale_range[1]*self.block_original_size/2
     self.pull_offset = 0.25
 
+    self.object_init_z = 0.020
+
     # Setup camera
     ws_size = max(self.workspace[0][1] - self.workspace[0][0], self.workspace[1][1] - self.workspace[1][0])
     cam_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 10]
@@ -116,6 +118,8 @@ class PyBulletEnv(BaseEnv):
     self.pick_top_down_approach = config['pick_top_down_approach']
     self.place_top_down_approach = config['place_top_down_approach']
     self.half_rotation = config['half_rotation']
+
+    self.robot.adjust_gripper_after_lift = config['adjust_gripper_after_lift']
 
     self.episode_count = -1
     self.table_id = None
@@ -472,7 +476,7 @@ class PyBulletEnv(BaseEnv):
       if valid_positions is None:
         return None
       for position in valid_positions:
-        position.append(0.020)
+        position.append(self.object_init_z)
     else:
       valid_positions = pos
 

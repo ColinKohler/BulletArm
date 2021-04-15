@@ -37,4 +37,9 @@ DEFAULT_CONFIG = {
   'place_top_down_approach': False,
   # If True, constraint the top-down rotation in a 180 degree range
   'half_rotation': True,
+  # If true, adjusting the gripper command w.r.t. the object grasped after moving to pre pose, otherwise adjusting the
+  # gripper command before moving to pre pose. Adjusting after lifting will create more chance for a grasp, but while
+  # moving to pre pose the gripper will shift around. Adjusting before lifting will make the gripper more stable while
+  # moving to the pre pose, but will reduce the chance for a grasp, especially in the cluttered scene.
+  'adjust_gripper_after_lift': False
 }
