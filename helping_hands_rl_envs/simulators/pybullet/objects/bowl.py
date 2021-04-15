@@ -38,7 +38,7 @@ class Bowl(PybulletObject):
     urdf_filepath = os.path.join(root_dir, constants.URDF_PATH, 'bowl/bowl{}.urdf'.format(self.model_id))
     object_id = pb.loadURDF(urdf_filepath, basePosition=pos, baseOrientation=rot, globalScaling=scale)
 
-    super(Bowl, self).__init__(constants.CUBE, object_id)
+    super(Bowl, self).__init__(constants.BOWL, object_id)
 
   def getGraspRotation(self):
     return self.getGraspPose()[1]

@@ -21,6 +21,7 @@ from helping_hands_rl_envs.planners.shelf_bowl_stacking_planner import ShelfBowl
 from helping_hands_rl_envs.planners.shelf_plate_stacking_planner import ShelfPlateStackingPlanner
 from helping_hands_rl_envs.planners.drawer_shelf_plate_stacking_planner import DrawerShelfPlateStackingPlanner
 from helping_hands_rl_envs.planners.block_bin_packing_planner import BlockBinPackingPlanner
+from helping_hands_rl_envs.planners.bowl_spoon_cup_planner import BowlSpoonCupPlanner
 
 PLANNERS = {
   'random' : RandomPlanner,
@@ -64,4 +65,5 @@ PLANNERS = {
   'block_bin_packing': BlockBinPackingPlanner,
   'random_block_picking': BlockPickingPlanner,
   'random_household_picking': BlockPickingPlanner,
+  'bowl_spoon_cup': BowlSpoonCupPlanner,
 }

@@ -415,9 +415,9 @@ class PyBulletEnv(BaseEnv):
     return orientation
 
   def _getDefaultBoarderPadding(self, shape_type):
-    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.CUP, constants.RANDOM_BLOCK, constants.RANDOM_HOUSEHOLD):
+    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK, constants.RANDOM_HOUSEHOLD):
       padding = self.max_block_size * 2.4
-    elif shape_type in (constants.BRICK, constants.ROOF):
+    elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON):
       padding = self.max_block_size * 3.4
     elif shape_type == constants.BOWL:
       padding = 0.17
@@ -428,9 +428,9 @@ class PyBulletEnv(BaseEnv):
     return padding
 
   def _getDefaultMinDistance(self, shape_type):
-    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.CUP, constants.RANDOM_BLOCK):
+    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK):
       min_distance = self.max_block_size * 2.4
-    elif shape_type in (constants.BRICK, constants.ROOF):
+    elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON):
       min_distance = self.max_block_size * 3.4
     elif shape_type in [constants.RANDOM_HOUSEHOLD]:
       min_distance = self.max_block_size * 4
@@ -441,6 +441,9 @@ class PyBulletEnv(BaseEnv):
     else:
       raise ValueError('Attempted to generate invalid shape.')
     return min_distance
+
+  def _getExistingXYPositions(self):
+    return [o.getXYPosition() for o in self.objects]
 
   def _generateShapes(self, shape_type=0, num_shapes=1, scale=None, pos=None, rot=None,
                            min_distance=None, padding=None, random_orientation=False, z_scale=1, model_id=1):
@@ -462,7 +465,7 @@ class PyBulletEnv(BaseEnv):
       min_distance = max(min_distance, self.min_object_distance)
 
     shape_handles = list()
-    positions = [o.getXYPosition() for o in self.objects]
+    positions = self._getExistingXYPositions()
 
     if pos is None:
       valid_positions = self._getValidPositions(padding, min_distance, positions, num_shapes)
@@ -505,6 +508,8 @@ class PyBulletEnv(BaseEnv):
         handle = pb_obj_generation.generateRandomBlock(position, orientation, scale)
       elif shape_type == constants.RANDOM_HOUSEHOLD:
         handle = pb_obj_generation.generateRandomHouseHoldObj(position, orientation, scale)
+      elif shape_type == constants.SPOON:
+        handle = pb_obj_generation.generateSpoon(position, orientation, scale)
 
       else:
         raise NotImplementedError
