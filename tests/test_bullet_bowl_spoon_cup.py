@@ -14,14 +14,16 @@ class TestBulletBowlStacking(unittest.TestCase):
   env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 128, 'render': False, 'fast_mode': True,
                 'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 4, 'random_orientation': True,
                 'reward_type': 'sparse', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
-                'workspace_check': 'point', 'physic_mode': 'fast', 'hard_reset_freq': 1000, 'object_scale_range': (0.5, 0.5)}
+                'workspace_check': 'point', 'physic_mode': 'fast', 'hard_reset_freq': 1000, 'object_scale_range': (0.5, 0.5),
+                # 'adjust_gripper_after_lift': True,
+                }
 
   planner_config = {'random_orientation': True, 'half_rotation': False}
 
   def testPlanner2(self):
-    self.env_config['render'] = True
+    self.env_config['render'] = False
     self.env_config['seed'] = 0
-    num_processes = 1
+    num_processes = 10
     env = env_factory.createEnvs(num_processes, 'pybullet', 'bowl_spoon_cup', self.env_config, self.planner_config)
     total = 0
     s = 0

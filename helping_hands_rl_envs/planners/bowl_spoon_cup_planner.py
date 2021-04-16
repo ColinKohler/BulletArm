@@ -22,20 +22,22 @@ class BowlSpoonCupPlanner(BlockStackingPlanner):
   def getPlacingAction(self):
     if self.getHoldingObjType() is constants.BOWL:
       pos = copy(self.env.blanket_pos[:2])
-      pos[0] += 0.08 * np.cos(self.env.blanket_rz)
-      pos[1] += 0.08 * np.sin(self.env.blanket_rz)
+      pos[0] += 0.09 * np.cos(self.env.blanket_rz)
+      pos[1] += 0.09 * np.sin(self.env.blanket_rz)
       x, y, z = pos[0], pos[1], self.env.place_offset
       rx, ry, rz = 0, 0, self.env.blanket_rz
       return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, (rz, ry, rx))
     elif self.getHoldingObjType() is constants.SPOON:
       pos = self.env.objects[0].getPosition()
       x, y, z = pos[0], pos[1], pos[2]
-      rx, ry, rz = 0, 0, self.env.blanket_rz
+      x += 0.02 * np.cos(self.env.blanket_rz)
+      y += 0.02 * np.sin(self.env.blanket_rz)
+      rx, ry, rz = 0, 0, self.env.blanket_rz + np.pi/2
       return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, (rz, ry, rx))
     else:
       pos = copy(self.env.blanket_pos[:2])
-      pos[0] -= 0.07 * np.cos(self.env.blanket_rz)
-      pos[1] -= 0.07 * np.sin(self.env.blanket_rz)
+      pos[0] -= 0.06 * np.cos(self.env.blanket_rz)
+      pos[1] -= 0.06 * np.sin(self.env.blanket_rz)
       x, y, z = pos[0], pos[1], self.env.place_offset
       rx, ry, rz = 0, 0, self.env.blanket_rz+np.pi/2
       return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, (rz, ry, rx))

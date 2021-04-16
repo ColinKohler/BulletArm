@@ -13,7 +13,7 @@ class BowlSpoonCupEnv(PyBulletEnv):
     self.blanket_rz = 0
     self.blanket_size = [0.2, 0.15, 0.002]
     self.blanket = Blanket()
-    self.place_offset = 0.03
+    self.place_offset = 0.04
 
   def resetBlanket(self):
     self.blanket_rz = -np.pi/2 + np.random.random_sample() * 2 * np.pi
@@ -54,7 +54,7 @@ class BowlSpoonCupEnv(PyBulletEnv):
     angle_diff = abs(theta - self.blanket_rz)
     angle_diff = min(angle_diff, abs(angle_diff - np.pi))
 
-    angle_right = angle_diff < np.pi/18
+    angle_right = angle_diff < np.pi/10
     bowl_spoon_close = np.linalg.norm(np.array(bowl_xy)-spoon_xy) < 0.05
     spoon_touch_bowl = self.objects[0].isTouching(self.objects[1])
     bowl_touch_blanket = self.objects[0].isTouching(self.blanket)
