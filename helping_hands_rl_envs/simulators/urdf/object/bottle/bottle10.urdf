@@ -14,25 +14,25 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0.06"/>
       <geometry>
-        <mesh filename="bottle4.obj" scale="0.13 0.13 0.17"/>
+        <mesh filename="bottle10.obj" scale="0.2 0.2 0.2"/>
       </geometry>
     </visual>
     <!--<collision>-->
       <!--<origin rpy="0 0 0" xyz="0 0 0.06"/>-->
       <!--<geometry>-->
-        <!--<mesh filename="bottle4.obj" scale="0.13 0.13 0.17"/>-->
+        <!--<mesh filename="bottle10.obj" scale="0.2 0.2 0.2"/>-->
       <!--</geometry>-->
     <!--</collision>-->
     <!--<visual>-->
-      <!--<origin rpy="0 0 0" xyz="0 0 0.06"/>-->
-      <!--<geometry>-->
-        <!--<cylinder radius="0.028" length="0.18"/>-->
-      <!--</geometry>-->
+    <!--<origin rpy="0 0 0" xyz="0 0 0.06"/>-->
+    <!--<geometry>-->
+    <!--<cylinder radius="0.028" length="0.21"/>-->
+    <!--</geometry>-->
     <!--</visual>-->
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0.06"/>
       <geometry>
-        <cylinder radius="0.028" length="0.18"/>
+        <cylinder radius="0.028" length="0.21"/>
       </geometry>
     </collision>
   </link>
@@ -50,7 +50,7 @@
     <!--</visual>-->
   </link>
   <joint name="base2grasp" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 0.13"/>
+    <origin rpy="0 0 0" xyz="0 0 0.14"/>
     <parent link="baseLink"/>
     <child link="grasp"/>
   </joint>

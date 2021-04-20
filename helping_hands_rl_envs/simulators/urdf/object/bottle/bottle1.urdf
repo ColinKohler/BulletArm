@@ -17,10 +17,16 @@
         <mesh filename="bottle1.obj" scale="0.15 0.15 0.15"/>
       </geometry>
     </visual>
-    <collision>
+    <!--<collision>-->
+      <!--<origin rpy="0 0 0" xyz="0 0 0.05"/>-->
+      <!--<geometry>-->
+        <!--<mesh filename="bottle1.obj" scale="0.15 0.15 0.15"/>-->
+      <!--</geometry>-->
+    <!--</collision>-->
+        <collision>
       <origin rpy="0 0 0" xyz="0 0 0.05"/>
       <geometry>
-        <mesh filename="bottle1.obj" scale="0.15 0.15 0.15"/>
+        <cylinder radius="0.028" length="0.16"/>
       </geometry>
     </collision>
   </link>
@@ -30,12 +36,12 @@
       <mass value="0"/>
       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <box size="0.02 0.02 0.02"/>
-      </geometry>
-    </visual>
+    <!--<visual>-->
+      <!--<origin rpy="0 0 0" xyz="0 0 0"/>-->
+      <!--<geometry>-->
+        <!--<box size="0.02 0.02 0.02"/>-->
+      <!--</geometry>-->
+    <!--</visual>-->
   </link>
   <joint name="base2grasp" type="fixed">
     <origin rpy="0 0 0" xyz="0 0 0.1"/>

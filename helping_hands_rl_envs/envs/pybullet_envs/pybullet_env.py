@@ -419,9 +419,9 @@ class PyBulletEnv(BaseEnv):
     return orientation
 
   def _getDefaultBoarderPadding(self, shape_type):
-    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK, constants.RANDOM_HOUSEHOLD):
+    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK, constants.RANDOM_HOUSEHOLD, constants.BOTTLE):
       padding = self.max_block_size * 2.4
-    elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON, constants.BOTTLE):
+    elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON):
       padding = self.max_block_size * 3.4
     elif shape_type == constants.BOWL:
       padding = 0.17
@@ -432,9 +432,9 @@ class PyBulletEnv(BaseEnv):
     return padding
 
   def _getDefaultMinDistance(self, shape_type):
-    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK):
+    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK, constants.BOTTLE):
       min_distance = self.max_block_size * 2.4
-    elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON, constants.BOTTLE):
+    elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON):
       min_distance = self.max_block_size * 3.4
     elif shape_type in [constants.RANDOM_HOUSEHOLD]:
       min_distance = self.max_block_size * 4

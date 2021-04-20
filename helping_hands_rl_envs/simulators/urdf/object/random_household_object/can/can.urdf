@@ -16,6 +16,9 @@
       <geometry>
         <mesh filename="can1.obj" scale="0.15 0.15 0.15"/>
       </geometry>
+      <material name="red">
+        <color rgba="1 0 0 1" />
+      </material>
     </visual>
     <collision>
       <origin rpy="1.57 0 0" xyz="0 0 0"/>

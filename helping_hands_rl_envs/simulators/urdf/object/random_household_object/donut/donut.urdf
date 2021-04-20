@@ -15,6 +15,9 @@
       <geometry>
         <mesh filename="donut2.obj" scale="0.1 0.1 0.15"/>
       </geometry>
+      <material name="">
+        <color rgba="0.81 0.7 0.6 1" />
+      </material>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>

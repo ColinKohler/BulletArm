@@ -16,14 +16,14 @@ from helping_hands_rl_envs.planners.bottle_tray_planner import BottleTrayPlanner
 class BottleTrayEnv(PyBulletEnv):
   def __init__(self, config):
     super().__init__(config)
-    self.place_offset = 0.12
+    self.place_offset = 0.2*self.block_scale_range[1]
 
     self.box = Box()
-    self.object_init_space = np.asarray([[0.3, 0.7],
-                                         [-0.3, 0.1],
+    self.object_init_space = np.asarray([[0.2, 0.6],
+                                         [-0.3, 0.12],
                                          [0, 0.40]])
-    self.box_pos = [0.5, 0.2, 0]
-    self.box_size = [0.2, 0.15, 0.05]
+    self.box_pos = [0.4, 0.2, 0]
+    self.box_size = [0.24, 0.16, 0.05]
     self.box_range = np.array([[self.box_pos[0]-self.box_size[0]/2, self.box_pos[0]+self.box_size[0]/2],
                                [self.box_pos[1]-self.box_size[1]/2, self.box_pos[1]+self.box_size[1]/2]])
     self.x_candidate = np.linspace(self.box_range[0][0], self.box_range[0][1], 7)[1:-1:2]
@@ -52,15 +52,28 @@ class BottleTrayEnv(PyBulletEnv):
         continue
       else:
         break
+
     return self._getObservation()
+
+  def step(self, action):
+    motion_primative, x, y, z, rot = self._decodeAction(action)
+    if motion_primative == constants.PICK_PRIMATIVE:
+      self.place_offset = z
+    return super().step(action)
 
   def _checkTermination(self):
     for obj in self.objects:
-      if self.isObjInBox(obj):
+      if self.isObjInBox(obj) and self._checkObjUpright(obj):
         continue
       else:
         return False
     return True
+
+  def isSimValid(self):
+    for obj in self.objects:
+      if not self._checkObjUpright(obj):
+        return False
+    return super().isSimValid()
 
   def isObjInBox(self, obj):
     return self.box_range[0][0] < obj.getPosition()[0] < self.box_range[0][1] and self.box_range[1][0] < obj.getPosition()[1] < self.box_range[1][1]
@@ -78,7 +91,7 @@ if __name__ == '__main__':
   env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 128, 'render': True, 'fast_mode': True,
                 'seed': 2, 'action_sequence': 'pxyr', 'num_objects': 6, 'random_orientation': False,
                 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
-                'object_init_space_check': 'point', 'physics_mode': 'fast', 'object_scale_range': (0.6, 0.6)}
+                'object_init_space_check': 'point', 'physics_mode': 'fast', 'object_scale_range': (1, 1)}
   planner_config = {'random_orientation': True}
 
   env = BottleTrayEnv(env_config)

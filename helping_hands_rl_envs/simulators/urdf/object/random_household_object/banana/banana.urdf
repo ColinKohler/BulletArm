@@ -16,6 +16,9 @@
       <geometry>
         <mesh filename="banana1.obj" scale="0.2 0.2 0.2"/>
       </geometry>
+      <material name="">
+        <color rgba="1 0.88 0.2 1" />
+      </material>
     </visual>
     <collision>
       <origin rpy="1.57 0 1.57" xyz="0.03 0 0"/>
