@@ -309,7 +309,6 @@ class BaseEnv(object):
     occupancy = np.ceil(occupancy)
 
     projection = np.stack((occupancy.sum(0), occupancy.sum(1), occupancy.sum(2)))
-    projection = np.rollaxis(projection, 0, 3)
     # fig, axs = plt.subplots(1, 3, figsize=(15, 5))
     # axs[0].imshow(projection[:, :, 0])
     # axs[1].imshow(projection[:, :, 1])
