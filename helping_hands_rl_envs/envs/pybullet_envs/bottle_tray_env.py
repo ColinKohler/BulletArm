@@ -19,7 +19,7 @@ class BottleTrayEnv(PyBulletEnv):
     self.place_offset = 0.2*self.block_scale_range[1]
     self.box = Box()
     self.box_rz = 0
-    self.box_size = [0.24, 0.16, 0.05]
+    self.box_size = [0.1*self.block_scale_range[1]*3, 0.1*self.block_scale_range[1]*2, 0.05]
     self.box_pos = [0.4, 0.2, 0]
     self.place_pos_candidate = []
     pass

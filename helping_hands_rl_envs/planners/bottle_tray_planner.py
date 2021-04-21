@@ -20,7 +20,7 @@ class BottleTrayPlanner(BlockStructureBasePlanner):
   def getPlacingAction(self):
     x, y = self.env.place_pos_candidate[len(self.env.getObjsOutsideBox())-1]
     z = self.env.place_offset
-    r = 0
+    r = np.random.random() * np.pi
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
 
