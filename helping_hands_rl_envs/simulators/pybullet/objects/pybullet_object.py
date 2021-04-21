@@ -57,6 +57,13 @@ class PybulletObject(object):
         return True
     return False
 
+  def isTouchingId(self, id):
+    contact_points = self.getContactPoints()
+    for p in contact_points:
+      if p[2] == id:
+        return True
+    return False
+
   def resetPose(self, pos, rot):
     pb.resetBasePositionAndOrientation(self.object_id, pos, rot)
 

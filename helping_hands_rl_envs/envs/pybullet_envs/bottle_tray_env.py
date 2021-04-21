@@ -17,26 +17,39 @@ class BottleTrayEnv(PyBulletEnv):
   def __init__(self, config):
     super().__init__(config)
     self.place_offset = 0.2*self.block_scale_range[1]
-
     self.box = Box()
-    self.object_init_space = np.asarray([[0.2, 0.6],
-                                         [-0.3, 0.12],
-                                         [0, 0.40]])
-    self.box_pos = [0.4, 0.2, 0]
+    self.box_rz = 0
     self.box_size = [0.24, 0.16, 0.05]
-    self.box_range = np.array([[self.box_pos[0]-self.box_size[0]/2, self.box_pos[0]+self.box_size[0]/2],
-                               [self.box_pos[1]-self.box_size[1]/2, self.box_pos[1]+self.box_size[1]/2]])
-    self.x_candidate = np.linspace(self.box_range[0][0], self.box_range[0][1], 7)[1:-1:2]
-    self.y_candidate = np.linspace(self.box_range[1][0], self.box_range[1][1], 5)[1:-1:2]
-    self.place_pos_candidate = [
-      [self.x_candidate[0], self.y_candidate[0]], [self.x_candidate[0], self.y_candidate[1]],
-      [self.x_candidate[1], self.y_candidate[0]], [self.x_candidate[1], self.y_candidate[1]],
-      [self.x_candidate[2], self.y_candidate[0]], [self.x_candidate[2], self.y_candidate[1]],
-    ]
+    self.box_pos = [0.4, 0.2, 0]
+    self.place_pos_candidate = []
     pass
 
-  def getValidSpace(self):
-    return self.object_init_space
+  def resetBox(self):
+    self.box_rz = np.random.random_sample() * np.pi
+    self.box_pos = self._getValidPositions(np.linalg.norm([self.box_size[0]/3, self.box_size[1]/4])*2, 0, [], 1)[0]
+    self.box_pos.append(0)
+    self.box.reset(self.box_pos, pb.getQuaternionFromEuler((0, 0, self.box_rz)))
+
+    dx = self.box_size[0]/6
+    dy = self.box_size[1]/4
+
+    pos_candidates = np.array([[2*dx, -dy], [2*dx, dy],
+                               [0, -dy], [0, dy],
+                               [-2*dx, -dy], [-2*dx, dy]])
+
+    R = np.array([[np.cos(self.box_rz), -np.sin(self.box_rz)],
+                  [np.sin(self.box_rz), np.cos(self.box_rz)]])
+
+    transformed_pos_candidate = R.dot(pos_candidates.T).T
+    self.place_pos_candidate = transformed_pos_candidate + self.box_pos[:2]
+
+    pass
+
+  def _getExistingXYPositions(self):
+    positions = [o.getXYPosition() for o in self.objects]
+    for pos in self.place_pos_candidate:
+      positions.append(list(pos))
+    return positions
 
   def initialize(self):
     super().initialize()
@@ -46,6 +59,7 @@ class BottleTrayEnv(PyBulletEnv):
   def reset(self):
     while True:
       self.resetPybulletEnv()
+      self.resetBox()
       try:
         self._generateShapes(constants.BOTTLE, self.num_obj, random_orientation=self.random_orientation, padding=self.min_boarder_padding, min_distance=self.min_object_distance)
       except NoValidPositionException:
@@ -76,7 +90,7 @@ class BottleTrayEnv(PyBulletEnv):
     return super().isSimValid()
 
   def isObjInBox(self, obj):
-    return self.box_range[0][0] < obj.getPosition()[0] < self.box_range[0][1] and self.box_range[1][0] < obj.getPosition()[1] < self.box_range[1][1]
+    return obj.isTouchingId(self.box.id)
 
   def getObjsOutsideBox(self):
     return list(filter(lambda obj: not self.isObjInBox(obj), self.objects))
