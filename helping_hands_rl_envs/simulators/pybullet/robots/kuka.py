@@ -50,6 +50,7 @@ class Kuka(RobotBase):
     # ]
 
     self.gripper_joint_limit = [0, 0.2]
+    self.adjust_gripper_offset = 0.01
 
   def initialize(self):
     ''''''
@@ -102,7 +103,7 @@ class Kuka(RobotBase):
 
   def adjustGripperCommand(self):
     p1, p2 = self._getGripperJointPosition()
-    mean = (p1 + p2) / 2 - 0.01
+    mean = (p1 + p2) / 2 - self.adjust_gripper_offset
     self._sendGripperCommand(mean, mean)
 
   def checkGripperClosed(self):

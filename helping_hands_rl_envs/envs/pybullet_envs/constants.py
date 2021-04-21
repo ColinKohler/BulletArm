@@ -41,5 +41,8 @@ DEFAULT_CONFIG = {
   # gripper command before moving to pre pose. Adjusting after lifting will create more chance for a grasp, but while
   # moving to pre pose the gripper will shift around. Adjusting before lifting will make the gripper more stable while
   # moving to the pre pose, but will reduce the chance for a grasp, especially in the cluttered scene.
-  'adjust_gripper_after_lift': False
+  'adjust_gripper_after_lift': False,
+  # The offset when adjusting gripper commands after gripper closes at an object. A bigger value increases the chance
+  # for a grasp, but reduces the stability while holding it. Recommended value 0.01 or 0.001
+  'kuka_adjust_gripper_offset': 0.01,
 }

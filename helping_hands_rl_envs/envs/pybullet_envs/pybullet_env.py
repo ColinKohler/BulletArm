@@ -120,6 +120,8 @@ class PyBulletEnv(BaseEnv):
     self.half_rotation = config['half_rotation']
 
     self.robot.adjust_gripper_after_lift = config['adjust_gripper_after_lift']
+    if config['robot'] == 'kuka':
+      self.robot.adjust_gripper_offset = config['kuka_adjust_gripper_offset']
 
     self.episode_count = -1
     self.table_id = None
