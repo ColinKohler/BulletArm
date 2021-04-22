@@ -3,7 +3,7 @@ import numpy as np
 from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
-from helping_hands_rl_envs.simulators.pybullet.equipments.box import Box
+from helping_hands_rl_envs.simulators.pybullet.equipments.container_box import ContainerBox
 
 class RandomBlockPickingClutterEnv(PyBulletEnv):
   '''
@@ -12,7 +12,7 @@ class RandomBlockPickingClutterEnv(PyBulletEnv):
     super(RandomBlockPickingClutterEnv, self).__init__(config)
     self.object_init_z = 0.1
     self.obj_grasped = 0
-    self.box = Box()
+    self.box = ContainerBox()
 
   def initialize(self):
     super().initialize()

@@ -19,6 +19,7 @@ from helping_hands_rl_envs.simulators.pybullet.objects.random_block import Rando
 from helping_hands_rl_envs.simulators.pybullet.objects.random_household_object import RandomHouseHoldObject
 from helping_hands_rl_envs.simulators.pybullet.objects.spoon import Spoon
 from helping_hands_rl_envs.simulators.pybullet.objects.bottle import Bottle
+from helping_hands_rl_envs.simulators.pybullet.objects.box import Box
 
 def generateCube(pos, rot, scale):
   ''''''
@@ -62,3 +63,6 @@ def generateSpoon(pos, rot, scale):
 
 def generateBottle(pos, rot, scale):
   return Bottle(pos, rot, scale)
+
+def generateBox(pos, rot, scale):
+  return Box(pos, rot, scale)

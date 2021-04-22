@@ -1,12 +1,7 @@
-import os
 import pybullet as pb
-import copy
 import numpy as np
-import numpy.random as npr
 
-import helping_hands_rl_envs
-from helping_hands_rl_envs.simulators.pybullet.equipments.box import Box
-from helping_hands_rl_envs.simulators.pybullet.objects.plate import PLACE_RY_OFFSET, PLACE_Z_OFFSET
+from helping_hands_rl_envs.simulators.pybullet.equipments.container_box import ContainerBox
 from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
@@ -17,7 +12,7 @@ class BottleTrayEnv(PyBulletEnv):
   def __init__(self, config):
     super().__init__(config)
     self.place_offset = 0.2*self.block_scale_range[1]
-    self.box = Box()
+    self.box = ContainerBox()
     self.box_rz = 0
     self.box_size = [0.1*self.block_scale_range[1]*3, 0.1*self.block_scale_range[1]*2, 0.05]
     self.box_pos = [0.4, 0.2, 0]

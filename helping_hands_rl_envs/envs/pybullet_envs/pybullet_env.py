@@ -423,7 +423,7 @@ class PyBulletEnv(BaseEnv):
   def _getDefaultBoarderPadding(self, shape_type):
     if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK, constants.RANDOM_HOUSEHOLD, constants.BOTTLE):
       padding = self.max_block_size * 2.4
-    elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON):
+    elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON, constants.BOX):
       padding = self.max_block_size * 3.4
     elif shape_type == constants.BOWL:
       padding = 0.17
@@ -436,7 +436,7 @@ class PyBulletEnv(BaseEnv):
   def _getDefaultMinDistance(self, shape_type):
     if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK, constants.BOTTLE):
       min_distance = self.max_block_size * 2.4
-    elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON):
+    elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON, constants.BOX):
       min_distance = self.max_block_size * 3.4
     elif shape_type in [constants.RANDOM_HOUSEHOLD]:
       min_distance = self.max_block_size * 4
@@ -518,6 +518,8 @@ class PyBulletEnv(BaseEnv):
         handle = pb_obj_generation.generateSpoon(position, orientation, scale)
       elif shape_type == constants.BOTTLE:
         handle = pb_obj_generation.generateBottle(position, orientation, scale)
+      elif shape_type == constants.BOX:
+        handle = pb_obj_generation.generateBox(position, orientation, scale)
 
       else:
         raise NotImplementedError

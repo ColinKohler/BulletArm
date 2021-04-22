@@ -5,7 +5,7 @@ import numpy as np
 import numpy.random as npr
 
 import helping_hands_rl_envs
-from helping_hands_rl_envs.simulators.pybullet.equipments.box import Box
+from helping_hands_rl_envs.simulators.pybullet.equipments.container_box import ContainerBox
 from helping_hands_rl_envs.simulators.pybullet.objects.plate import PLACE_RY_OFFSET, PLACE_Z_OFFSET
 from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
@@ -16,7 +16,7 @@ from helping_hands_rl_envs.planners.block_bin_packing_planner import BlockBinPac
 class BlockBinPackingEnv(PyBulletEnv):
   def __init__(self, config):
     super().__init__(config)
-    self.box = Box()
+    self.box = ContainerBox()
     self.object_init_space = np.asarray([[0.3, 0.7],
                                          [-0.3, 0.1],
                                          [0, 0.40]])
