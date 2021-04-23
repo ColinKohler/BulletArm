@@ -7,8 +7,10 @@ class BoxPalletizingPlanner(BlockStructureBasePlanner):
     super(BoxPalletizingPlanner, self).__init__(env, config)
 
   def getPickingAction(self):
-    # return self.pickSecondTallestObjOnTop(self.env.getObjsOutsideBox())
-    return self.pickLargestObjOnTop([self.env.objects[-1]])
+    obj_on_ground = list(filter(lambda o: self.env._isObjOnGround(o), self.env.objects))
+    if len(obj_on_ground) == 0:
+      obj_on_ground = [self.env.objects[-1]]
+    return self.pickLargestObjOnTop(obj_on_ground)
 
   def getPlacingAction(self):
     n_level1, n_level2, n_level3 = self.env.getNEachLevel()
@@ -28,4 +30,5 @@ class BoxPalletizingPlanner(BlockStructureBasePlanner):
 
 
   def getStepsLeft(self):
-    return 100
+    n_level1, n_level2, n_level3 = self.env.getNEachLevel()
+    return 2*(self.env.num_obj - n_level1 - n_level2 - n_level3) - int(self.isHolding())

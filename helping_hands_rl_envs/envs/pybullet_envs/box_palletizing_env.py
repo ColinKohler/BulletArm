@@ -14,7 +14,7 @@ class BoxPalletizingEnv(PyBulletEnv):
     super().__init__(config)
     self.pallet_height = 0.0435*self.block_scale_range[1]
     self.pallet_pos = [0.5, 0.1, self.pallet_height/2]
-    self.pallet_size = [self.block_scale_range[1]*0.066*3, self.block_scale_range[1]*0.1*2]
+    self.pallet_size = [self.block_scale_range[1]*0.076*3, self.block_scale_range[1]*0.11*2]
     self.pallet_rz = 0
     self.pallet = None
     self.box_height = 0.056 * self.block_scale_range[1]
@@ -32,8 +32,8 @@ class BoxPalletizingEnv(PyBulletEnv):
     return positions
 
   def resetPallet(self):
-    # self.pallet_rz = np.random.random_sample() * np.pi
-    self.pallet_rz = np.random.choice(np.linspace(0, np.pi, 8, endpoint=False))
+    self.pallet_rz = np.random.random_sample() * np.pi
+    # self.pallet_rz = np.random.choice(np.linspace(0, np.pi, 8, endpoint=False))
     self.pallet_pos = self._getValidPositions(np.linalg.norm([self.pallet_size[0]/2, self.pallet_size[1]/2])*2, 0, [], 1)[0]
     self.pallet_pos.append(self.pallet_height/2)
 
@@ -99,14 +99,6 @@ class BoxPalletizingEnv(PyBulletEnv):
     self.current_episode_steps += 1
 
     return obs, reward, done
-
-  def isSimValid(self):
-    n_obj_on_ground = len(list(filter(lambda o: self._isObjOnGround(o), self.objects)))
-    n_level1, n_level2, n_level3 = self.getNEachLevel()
-    all_upright = all(map(lambda o: self._checkObjUpright(o), self.objects))
-    rz_valid = self.checkRzValid()
-
-    return n_obj_on_ground <= 1 and n_level1 <= 6 and n_level2 <= 6 and n_level3 <= 6 and rz_valid and all_upright
 
   def _checkTermination(self):
     n_level1, n_level2, n_level3 = self.getNEachLevel()

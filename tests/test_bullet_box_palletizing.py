@@ -20,6 +20,18 @@ class TestBulletBowlStacking(unittest.TestCase):
 
   planner_config = {'random_orientation': True, 'half_rotation': True}
 
+  def testPlanner(self):
+    self.env_config['render'] = False
+    env = env_factory.createEnvs(1, 'pybullet', 'box_palletizing', self.env_config, self.planner_config)
+    env.reset()
+    for i in range(35, -1, -1):
+      action = env.getNextAction()
+      (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
+      self.assertEqual(env.getStepsLeft(), i)
+    self.assertEqual(rewards, 1)
+    self.assertEqual(dones, 1)
+    env.close()
+
   def testPlanner2(self):
     self.env_config['render'] = True
     self.env_config['seed'] = 0
