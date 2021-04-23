@@ -421,9 +421,9 @@ class PyBulletEnv(BaseEnv):
     return orientation
 
   def _getDefaultBoarderPadding(self, shape_type):
-    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK, constants.RANDOM_HOUSEHOLD, constants.BOTTLE):
+    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK, constants.RANDOM_HOUSEHOLD, constants.BOTTLE, constants.BOX):
       padding = self.max_block_size * 2.4
-    elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON, constants.BOX):
+    elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON):
       padding = self.max_block_size * 3.4
     elif shape_type == constants.BOWL:
       padding = 0.17

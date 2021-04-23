@@ -13,7 +13,7 @@ class Box(PybulletObject):
   def __init__(self, pos, rot, scale):
     root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
     urdf_filepath = os.path.join(root_dir, constants.URDF_PATH, 'box/box.urdf')
-    object_id = pb.loadURDF(urdf_filepath, basePosition=pos, baseOrientation=rot, globalScaling=scale)
+    object_id = pb.loadURDF(urdf_filepath, basePosition=pos, baseOrientation=rot, globalScaling=scale, flags=pb.URDF_ENABLE_SLEEPING)
     shade = np.random.rand() + 0.5
     color = np.float32([shade * 156, shade * 117, shade * 95, 255]) / 255
     pb.changeVisualShape(object_id, -1, rgbaColor=color)
