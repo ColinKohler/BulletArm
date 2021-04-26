@@ -26,8 +26,10 @@ class BoxPalletizingEnv(PyBulletEnv):
     self.even_place_pos_candidate = []
 
   def _getExistingXYPositions(self):
-    positions = [o.getXYPosition() for o in self.objects]
+    positions = []
     for pos in self.odd_place_pos_candidate:
+      positions.append(list(pos))
+    for pos in self.even_place_pos_candidate:
       positions.append(list(pos))
     return positions
 
