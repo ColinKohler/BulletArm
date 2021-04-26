@@ -72,11 +72,17 @@ class BoxPalletizingEnv(PyBulletEnv):
         break
 
   def reset(self):
-    if self.pallet is not None:
-      pb.removeBody(self.pallet.object_id)
-    self.resetPybulletEnv()
-    self.resetPallet()
-    self.generateOneBox()
+    while True:
+      if self.pallet is not None:
+        pb.removeBody(self.pallet.object_id)
+      self.resetPybulletEnv()
+      self.resetPallet()
+      try:
+        self._generateShapes(constants.BOX, 1, random_orientation=self.random_orientation)
+      except NoValidPositionException:
+        continue
+      else:
+        break
     return self._getObservation()
 
   def step(self, action):
