@@ -419,7 +419,8 @@ class PyBulletEnv(BaseEnv):
     return orientation
 
   def _getDefaultBoarderPadding(self, shape_type):
-    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK, constants.RANDOM_HOUSEHOLD):
+    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK,
+                      constants.RANDOM_HOUSEHOLD, constants.TEST_TUBE, constants.SWAB):
       padding = self.max_block_size * 2.4
     elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON):
       padding = self.max_block_size * 3.4
@@ -432,7 +433,8 @@ class PyBulletEnv(BaseEnv):
     return padding
 
   def _getDefaultMinDistance(self, shape_type):
-    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK):
+    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK,
+                      constants.TEST_TUBE, constants.SWAB):
       min_distance = self.max_block_size * 2.4
     elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON):
       min_distance = self.max_block_size * 3.4
@@ -514,6 +516,10 @@ class PyBulletEnv(BaseEnv):
         handle = pb_obj_generation.generateRandomHouseHoldObj(position, orientation, scale)
       elif shape_type == constants.SPOON:
         handle = pb_obj_generation.generateSpoon(position, orientation, scale)
+      elif shape_type == constants.TEST_TUBE:
+        handle = pb_obj_generation.generateTestTube(position, orientation, scale, model_id=None)
+      elif shape_type == constants.SWAB:
+        handle = pb_obj_generation.generateSwab(position, orientation, scale, model_id=None)
 
       else:
         raise NotImplementedError

@@ -40,7 +40,7 @@ class CovidTestEnv(PyBulletEnv):
 
   def initialize(self):
     super().initialize()
-    self.box.initialize(pos=self.box_pos1, size=self.new_tube_box_size, color=[0.9, 0.9, 0.9, 1])
+    self.box.initialize(pos=self.box_pos1, size=self.new_tube_box_size, color=[0.9, 0.9, 1, 1])
     self.box.initialize(pos=self.box_pos2, size=self.swap_box_size, color=[1, 0.5, 0.5, 1])
     self.box.initialize(pos=self.box_pos3, size=self.santilizing_box_size, color=[0.5, 0.5, 0.5, 0.6])
     self.box.initialize(pos=self.box_pos4, size=self.used_tube_box_size, color=[1, 1, 0.5, 1])
@@ -75,10 +75,13 @@ class CovidTestEnv(PyBulletEnv):
     while True:
       self.resetPybulletEnv()
       try:
-        self._generateShapes(constants.RANDOM_BLOCK, self.num_obj, random_orientation=self.random_orientation,
-                             pos=[(0.3, 0.12, 0.12)])
-        for i in range(4):
-          self._generateShapes(constants.CYLINDER, random_orientation=self.random_orientation,
+        # self._generateShapes(constants.RANDOM_BLOCK, self.num_obj, random_orientation=self.random_orientation,
+        #                      pos=[(0.3, 0.12, 0.12)])
+        for i in range(5):
+          self._generateShapes(constants.TEST_TUBE, random_orientation=self.random_orientation,
+                               pos=[(0.3, 0.12, 0.12)])
+        for i in range(5):
+          self._generateShapes(constants.SWAB, random_orientation=self.random_orientation,
                                pos=[(0.3, 0.03, 0.12)])
       except NoValidPositionException:
         continue
@@ -122,7 +125,7 @@ if __name__ == '__main__':
                           [0, 0.50]])
   env_config = {'workspace': workspace, 'object_init_space': object_init_space, 'max_steps': 10, 'obs_size': 128,
                 'render': True, 'fast_mode': True, 'seed': 0, 'action_sequence': 'pxyzrrr', 'num_objects': 9,
-                'random_orientation': False, 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False,
+                'random_orientation': True, 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False,
                 'robot': 'kuka', 'object_init_space_check': 'point', 'physics_mode': 'slow'}
   planner_config = {'random_orientation': True}
 

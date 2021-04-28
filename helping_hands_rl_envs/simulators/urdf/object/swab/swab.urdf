@@ -1,47 +1,51 @@
 <?xml version="1.0" ?>
-<!--covid_test_tube-->
-<robot name="test_tube">
+<!--covid_swab-->
+<robot name="swab">
   <link name="baseLink">
+    <contact>
+      <lateral_friction value="1.0"/>
+      <inertia_scaling value="3.0"/>
+    </contact>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-	    <mesh filename="covid_test_tube_container.obj" scale="1 1 1"/>
+	    <mesh filename="swab_rod.obj" scale="1 1 1"/>
       </geometry>
-      <material name="tranparent">
-        <color rgba="0.9 0.9 0.9 0.6"/>
+      <material name="light wood yellow">
+        <color rgba="0.8706, 0.7216, 0.5294 1"/>
       </material>
     </visual>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+       <mass value=".01"/>
+       <inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05"/>
+    </inertial>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-	    <mesh filename="covid_test_tube_container.obj" scale="1 1 1"/>
+	    <mesh filename="swab_rod.obj" scale="1 1 1"/>
       </geometry>
     </collision>
   </link>
 
-  <link name="cap">
+  <link name="tip">
     <contact>
-      <lateral_friction value="200.0"/>
+      <lateral_friction value="1.0"/>
       <inertia_scaling value="3.0"/>
     </contact>
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-       <mass value=".05"/>
-       <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
-    </inertial>
     <visual>
-      <origin rpy="0 0 0" xyz="-0.007 0 0"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-	    <mesh filename="covid_test_tube_cap.obj" scale="1 1 1"/>
+	    <mesh filename="swab_cotton_tip.obj" scale="1 1 1"/>
       </geometry>
-      <material name="red">
-        <color rgba="1 0.4 0.4 1.0"/>
+      <material name="white">
+        <color rgba="1 1 1 1.0"/>
       </material>
     </visual>
     <collision>
-      <origin rpy="0 0 0" xyz="-0.007 0 0"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-	    <mesh filename="covid_test_tube_cap.obj" scale="1 1 1"/>
+	    <mesh filename="swab_cotton_tip.obj" scale="1 1 1"/>
       </geometry>
     </collision>
   </link>
@@ -50,7 +54,7 @@
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
        <mass value="0"/>
-       <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
+       <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
     </inertial>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -60,9 +64,9 @@
     </visual>
   </link>
 
-  <joint name="cap2base" type="fixed">
+  <joint name="tip2base" type="fixed">
     <origin rpy="0 0 0" xyz="0.025 0 0"/>
-    <parent link="cap"/>
+    <parent link="tip"/>
     <child link="baseLink"/>
   </joint>
 
