@@ -15,7 +15,7 @@ class TestBulletHouse4(unittest.TestCase):
                 'seed': 0, 'action_sequence': 'pxyzr', 'num_objects': 6, 'random_orientation': True,
                 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
                 'workspace_check': 'point', 'in_hand_mode': 'raw', 'object_scale_range': (0.60, 0.60),
-                'hard_reset_freq': 1000, 'physics_mode' : 'fast'}
+                'hard_reset_freq': 1000, 'physics_mode': 'fast'}
   planner_config = {'pos_noise': 0, 'rot_noise': 0}
 
   def testStepLeft(self):

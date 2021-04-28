@@ -57,6 +57,21 @@ based simulator is included for quick prototyping.
     ```
     
 <a name="envs"></a>
+## Realistic Environments
+### Household
+- **arrange_bottles**: Arrange bottles in kitchen after cooking.
+  The bottles are placed randomly and needs to be arranged in a tray/on a shelf.
+### Industry
+- **box_palletizing**: Palletizing boxes with the same height.
+- **gear_box_assembly**: Assembly gears with different size to pivot in specific order.
+- **cable_plugging**: Pick a connector and plug into corresponding interface.
+### Medical
+- **covid_test**: Pick up a test tube ; Place at the ‘test area’ ; Pick up a swap ;
+  Place at the ‘test area’; Pick up test tupe ; Place into the tube box ; Challenge: Swap is too small to pick up.
+- **vaccination_surgical_preparation**: 
+   Pick up vaccine/ scalpel; Place in the tray; Pick up iodine tincture bottle;
+   Place in the tray; Challenge:; Scalpel too flat.
+
 ## Environments
 ### 2.5D Environments
 - **block_picking**: Pick up all blocks.

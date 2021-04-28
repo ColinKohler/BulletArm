@@ -1,0 +1,63 @@
+<?xml version="1.0" ?>
+<!--covid_test_tube-->
+<robot name="test_tube">
+  <link name="baseLink">
+    <contact>
+      <lateral_friction value="200.0"/>
+      <inertia_scaling value="3.0"/>
+    </contact>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+       <mass value=".05"/>
+       <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+	    <mesh filename="covid_test_tube_cap.obj" scale="1 1 1"/>
+      </geometry>
+      <material name="red">
+        <color rgba="1 0.5 0.5 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+	    <mesh filename="covid_test_tube_cap.obj" scale="1 1 1"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 -0.025 0"/>
+      <geometry>
+	    <mesh filename="covid_test_tube_container.obj" scale="1 1 1"/>
+      </geometry>
+      <material name="tranparent">
+        <color rgba="0.9 0.9 0.9 0.6"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 -0.025 0"/>
+      <geometry>
+	    <mesh filename="covid_test_tube_container.obj" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="grasp">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+       <mass value="0"/>
+       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01"/>
+      </geometry>
+    </visual>
+  </link>
+  <joint name="base2grasp" type="fixed">
+    <origin rpy="0 1.3 0" xyz="0.17 0 0.005"/>
+    <parent link="baseLink"/>
+    <child link="grasp"/>
+  </joint>
+</robot>
