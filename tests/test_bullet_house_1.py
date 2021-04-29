@@ -1,7 +1,6 @@
 import unittest
 import time
 import numpy as np
-import torch
 from tqdm import tqdm
 
 from helping_hands_rl_envs import env_factory
@@ -19,7 +18,7 @@ class TestBulletHouse1(unittest.TestCase):
   def testStepLeft(self):
     num_random_o = 0
     self.env_config['num_random_objects'] = num_random_o
-    self.env_config['render'] = True
+    self.env_config['render'] = False
     env = env_factory.createEnvs(1, 'pybullet', 'house_building_1', self.env_config, self.planner_config)
     env.reset()
 
@@ -69,7 +68,7 @@ class TestBulletHouse1(unittest.TestCase):
     env.close()
 
   def testPlanner(self):
-    self.env_config['render'] = True
+    self.env_config['render'] = False
     self.env_config['random_orientation'] = True
     self.env_config['num_objects'] = 3
     self.env_config['hard_reset_freq'] = 10

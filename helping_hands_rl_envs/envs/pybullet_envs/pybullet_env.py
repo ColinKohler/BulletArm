@@ -1,3 +1,5 @@
+import os
+import pickle
 import copy
 import numpy as np
 import numpy.random as npr
@@ -16,9 +18,6 @@ from helping_hands_rl_envs.simulators.pybullet.objects.pybullet_object import Py
 import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
-
-import pickle
-import os
 
 class PyBulletEnv(BaseEnv):
   '''
@@ -320,7 +319,6 @@ class PyBulletEnv(BaseEnv):
     #   return
     [pb.stepSimulation() for _ in range(iteration)]
 
-  # TODO: This does not work w/cylinders
   def didBlockFall(self):
     if self.last_action is None:
       return False
@@ -331,6 +329,8 @@ class PyBulletEnv(BaseEnv):
     if obj:
       return motion_primative == constants.PLACE_PRIMATIVE and \
              np.linalg.norm(np.array(obj.getXYPosition()) - np.array([x,y])) > obj.size / 2.
+      #return motion_primative == constants.PLACE_PRIMATIVE and \
+      #       not np.allclose(obj.getZPosition(), z, atol=0.02)
     else:
       return False
 
@@ -352,7 +352,7 @@ class PyBulletEnv(BaseEnv):
 
   def _getObservation(self, action=None):
     ''''''
-    old_heightmap = self.heightmap
+    old_heightmap = copy.copy(self.heightmap)
     self.heightmap = self._getHeightmap()
 
     if action is None or self._isHolding() == False:

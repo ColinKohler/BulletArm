@@ -551,7 +551,7 @@ class SingleRunner(object):
     '''
 
     '''
-    self.env.didBlockFall()
+    return self.env.didBlockFall()
 
   def setPosCandidate(self, pos_candidate):
     '''
