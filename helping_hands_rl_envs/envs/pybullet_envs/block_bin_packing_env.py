@@ -17,17 +17,20 @@ class BlockBinPackingEnv(PyBulletEnv):
   def __init__(self, config):
     super().__init__(config)
     self.box = ContainerBox()
-    self.object_init_space = np.asarray([[0.3, 0.7],
-                                         [-0.3, 0.1],
-                                         [0, 0.40]])
-    self.box_pos = [0.5, 0.2, 0]
-    self.box_size = [0.22, 0.15, 0.12]
+    self.box_pos = [0.60, 0.12, 0]
+    self.box_size = [0.20, 0.15, 0.12]
     self.box_range = np.array([[self.box_pos[0]-self.box_size[0]/2, self.box_pos[0]+self.box_size[0]/2],
                                [self.box_pos[1]-self.box_size[1]/2, self.box_pos[1]+self.box_size[1]/2]])
     self.z_threshold = 0.12
 
-  def getValidSpace(self):
-    return self.object_init_space
+  def _getExistingXYPositions(self):
+    positions = [o.getXYPosition() for o in self.objects]
+    xs = np.linspace(self.box_range[0, 0]+0.02, self.box_range[0, 1], 4)
+    ys = np.linspace(self.box_range[1, 0]+0.02, self.box_range[1, 1], 4)
+    for x in xs:
+      for y in ys:
+        positions.append([x, y])
+    return positions
 
   def initialize(self):
     super().initialize()

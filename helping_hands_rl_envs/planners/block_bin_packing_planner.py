@@ -22,7 +22,7 @@ class BlockBinPackingPlanner(BlockStructureBasePlanner):
     box_pixel_max = self.env._getPixelsFromPos(self.env.box_range[0, 1]-0.03, self.env.box_range[1, 1]-0.03)
     box_pixel_min = list(map(lambda x: int(x), box_pixel_min))
     box_pixel_max = list(map(lambda x: int(x), box_pixel_max))
-    avg_heightmap = ndimage.uniform_filter(self.env.heightmap, 0.1//self.env.heightmap_resolution, mode='nearest')
+    avg_heightmap = ndimage.uniform_filter(self.env.heightmap, 0.1*self.env.block_scale_range[1]//self.env.heightmap_resolution, mode='nearest')
     avg_heightmap_box = avg_heightmap[box_pixel_min[0]:box_pixel_max[0], box_pixel_min[1]:box_pixel_max[1]]
     min_pixel = np.argmin(avg_heightmap_box)
     min_pixel = min_pixel // avg_heightmap_box.shape[1], min_pixel % avg_heightmap_box.shape[1]
