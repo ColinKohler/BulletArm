@@ -39,7 +39,8 @@ class BlockBinPackingEnv(PyBulletEnv):
     while True:
       self.resetPybulletEnv()
       try:
-        self._generateShapes(constants.RANDOM_BLOCK, self.num_obj, random_orientation=self.random_orientation, padding=self.min_boarder_padding, min_distance=self.min_object_distance)
+        self._generateShapes(constants.RANDOM_BLOCK, self.num_obj, random_orientation=self.random_orientation,
+                             padding=self.min_boarder_padding, min_distance=self.min_object_distance)
       except NoValidPositionException:
         continue
       else:
