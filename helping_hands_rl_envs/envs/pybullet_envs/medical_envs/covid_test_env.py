@@ -28,14 +28,14 @@ class CovidTestEnv(PyBulletEnv):
     self.end_effector_santilized_t = 0
 
     self.box = BoxColor()
-    self.new_tube_box_pos = [0.3, 0.12, 0]
-    self.new_tube_box_size = [0.12, 0.08, 0.02]
-    self.swap_box_pos = [0.3, 0.03, 0]
-    self.swap_box_size = [0.12, 0.08, 0.05]
-    self.santilizing_box_pos = [0.3, -0.045, 0]
-    self.santilizing_box_size = [0.12, 0.04, 0.08]
-    self.used_tube_box_pos = [0.3, -0.12, 0]
-    self.used_tube_box_size = [0.12, 0.08, 0.03]
+    self.new_tube_box_pos = [0.32, 0.24, 0]
+    self.new_tube_box_size = [0.24, 0.16, 0.02]
+    self.swap_box_pos = [0.32, 0.06, 0]
+    self.swap_box_size = [0.24, 0.16, 0.01]
+    self.santilizing_box_pos = [0.32, -0.09, 0]
+    self.santilizing_box_size = [0.24, 0.08, 0.05]
+    self.used_tube_box_pos = [0.32, -0.24, 0]
+    self.used_tube_box_size = [0.24, 0.16, 0.03]
 
   def initialize(self):
     super().initialize()
@@ -58,17 +58,18 @@ class CovidTestEnv(PyBulletEnv):
       try:
         # self._generateShapes(constants.RANDOM_BLOCK, self.num_obj, random_orientation=self.random_orientation,
         #                      pos=[(0.3, 0.12, 0.12)])
-        for i in range(4):
+        for i in range(3):
           self._generateShapes(constants.TEST_TUBE, random_orientation=self.random_orientation,
-                               pos=[(0.3, 0.12, 0.12)])
-        for i in range(4):
+                               pos=[(0.32, 0.24, 0.24)])
+        for i in range(6):
           self._generateShapes(constants.SWAB, random_orientation=self.random_orientation,
-                               pos=[(0.3, 0.03, 0.12)])
+                               pos=[(0.32, 0.06, 0.24)])
       except NoValidPositionException:
         continue
       else:
         break
 
+    self._getObservation()
     return self._getObservation()
 
   def step(self, action):

@@ -23,24 +23,39 @@ class CovidTestPlanner(BlockStructureBasePlanner):
     if constants.TEST_TUBE in on_table_obj_type:
       if constants.SWAB in on_table_obj_type:
         self.ready_packing_tube = True
-        return self.pickLargestObjOnTop(on_table_obj)
-      return self.pickShortestObjOnTop(self.env.getSwabs())
-    return self.pickLargestObjOnTop(self.env.getTubes())
+        return self.pickStickOnTop(on_table_obj)
+      return self.pickStickOnTop(self.env.getSwabs())
+    return self.pickStickOnTop(self.env.getTubes())
+
+  def pickStickOnTop(self, objects=None):
+    if objects is None: objects = self.env.objects
+    objects, object_poses = self.getSizeSortedObjPoses(objects=objects)
+
+    x, y, z, r = object_poses[0][0], object_poses[0][1], object_poses[0][2], object_poses[0][5]
+    for obj, pose in zip(objects, object_poses):
+      if self.isObjOnTop(obj):
+        x, y, z, r = pose[0], pose[1], pose[2], pose[5]
+        r += 1.57
+        break
+
+    return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
   def santilize(self):
     x, y, z = self.env.santilizing_box_pos
     z = 0.03
-    r = 1.57
+    r = 0
+    self.ready_santilize = False
+    self.ready_packing_tube = False
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
   def getPlacingAction(self):
     if self.ready_packing_tube:
-      x, y, z = self.env.old_tube_box_pos
+      x, y, z = self.env.used_tube_box_pos
       z = 0.02
       r = 1.57
       self.ready_santilize = True
       return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
-    return self.placeOnGround(min_dist=0.01)
+    return self.encodeAction(constants.PLACE_PRIMATIVE, 0.8, 0, 0.02, 0)
 
   def getStepsLeft(self):
     return 100
