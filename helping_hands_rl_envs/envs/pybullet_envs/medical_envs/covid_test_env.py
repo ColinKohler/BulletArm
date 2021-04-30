@@ -29,13 +29,13 @@ class CovidTestEnv(PyBulletEnv):
 
     self.box = BoxColor()
     self.new_tube_box_pos = [0.32, 0.24, 0]
-    self.new_tube_box_size = [0.24, 0.16, 0.02]
+    self.new_tube_box_size = [0.24, 0.16, 0.03]
     self.swap_box_pos = [0.32, 0.06, 0]
-    self.swap_box_size = [0.24, 0.16, 0.01]
+    self.swap_box_size = [0.24, 0.16, 0.02]
     self.santilizing_box_pos = [0.32, -0.09, 0]
     self.santilizing_box_size = [0.24, 0.08, 0.05]
     self.used_tube_box_pos = [0.32, -0.24, 0]
-    self.used_tube_box_size = [0.24, 0.16, 0.03]
+    self.used_tube_box_size = [0.24, 0.16, 0.04]
 
   def initialize(self):
     super().initialize()
@@ -60,10 +60,10 @@ class CovidTestEnv(PyBulletEnv):
         #                      pos=[(0.3, 0.12, 0.12)])
         for i in range(3):
           self._generateShapes(constants.TEST_TUBE, random_orientation=self.random_orientation,
-                               pos=[(0.32, 0.24, 0.24)])
+                               pos=[(0.32, 0.24, 0.1)])
         for i in range(6):
           self._generateShapes(constants.SWAB, random_orientation=self.random_orientation,
-                               pos=[(0.32, 0.06, 0.24)])
+                               pos=[(0.32, 0.06, 0.1)])
       except NoValidPositionException:
         continue
       else:

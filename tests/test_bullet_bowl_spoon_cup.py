@@ -21,9 +21,9 @@ class TestBulletBowlStacking(unittest.TestCase):
   planner_config = {'random_orientation': True, 'half_rotation': False}
 
   def testPlanner2(self):
-    self.env_config['render'] = False
+    self.env_config['render'] = True
     self.env_config['seed'] = 0
-    num_processes = 10
+    num_processes = 1
     env = env_factory.createEnvs(num_processes, 'pybullet', 'bowl_spoon_cup', self.env_config, self.planner_config)
     total = 0
     s = 0

@@ -2,6 +2,7 @@ import numpy as np
 from scipy import ndimage
 import numpy.random as npr
 import matplotlib.pyplot as plt
+import random
 
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
 from helping_hands_rl_envs.planners.block_structure_base_planner import BlockStructureBasePlanner
@@ -25,14 +26,15 @@ class CovidTestPlanner(BlockStructureBasePlanner):
         self.ready_packing_tube = True
         return self.pickStickOnTop(on_table_obj)
       return self.pickStickOnTop(self.env.getSwabs())
-    return self.pickStickOnTop(self.env.getTubes())
+    return self.pickStickOnTop(self.env.getSwabs())
 
   def pickStickOnTop(self, objects=None):
     if objects is None: objects = self.env.objects
     objects, object_poses = self.getSizeSortedObjPoses(objects=objects)
-
     x, y, z, r = object_poses[0][0], object_poses[0][1], object_poses[0][2], object_poses[0][5]
-    for obj, pose in zip(objects, object_poses):
+    obj_list = [(pair) for pair in zip (objects, object_poses)]
+    random.shuffle(obj_list)
+    for obj, pose in obj_list:
       if self.isObjOnTop(obj):
         x, y, z, r = pose[0], pose[1], pose[2], pose[5]
         r += 1.57
