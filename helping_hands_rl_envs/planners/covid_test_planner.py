@@ -26,7 +26,7 @@ class CovidTestPlanner(BlockStructureBasePlanner):
         self.ready_packing_tube = True
         return self.pickStickOnTop(on_table_obj)
       return self.pickStickOnTop(self.env.getSwabs())
-    return self.pickStickOnTop(self.env.getSwabs())
+    return self.pickStickOnTop(self.env.getTubes())
 
   def pickStickOnTop(self, objects=None):
     if objects is None: objects = self.env.objects
@@ -38,6 +38,7 @@ class CovidTestPlanner(BlockStructureBasePlanner):
       if self.isObjOnTop(obj):
         x, y, z, r = pose[0], pose[1], pose[2], pose[5]
         r += 1.57
+        z -= 0.002
         break
 
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)

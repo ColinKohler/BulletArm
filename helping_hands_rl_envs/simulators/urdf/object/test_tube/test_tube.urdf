@@ -3,7 +3,7 @@
 <robot name="test_tube">
   <link name="baseLink">
     <contact>
-      <lateral_friction value="300.0"/>
+      <lateral_friction value="200.0"/>
       <inertia_scaling value="3.0"/>
     </contact>
     <inertial>
@@ -14,7 +14,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-	    <mesh filename="covid_test_tube_container.obj" scale="3 3 3"/>
+	    <mesh filename="covid_test_tube_container.obj" scale="2 2 2"/>
       </geometry>
       <material name="tranparent">
         <color rgba="0.9 0.9 0.9 0.4"/>
@@ -23,34 +23,34 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-	    <mesh filename="covid_test_tube_container.obj" scale="3 3 3"/>
+	    <mesh filename="covid_test_tube_container.obj" scale="2 2 2"/>
       </geometry>
     </collision>
   </link>
 
   <link name="cap">
     <contact>
-      <lateral_friction value="300.0"/>
+      <lateral_friction value="200.0"/>
       <inertia_scaling value="3.0"/>
     </contact>
     <inertial>
-      <origin rpy="0 0 0" xyz="-0.021 0 0"/>
+      <origin rpy="0 0 0" xyz="-0.014 0 0"/>
        <mass value=".01"/>
        <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
     </inertial>
     <visual>
-      <origin rpy="0 0 0" xyz="-0.021 0 0"/>
+      <origin rpy="0 0 0" xyz="-0.014 0 0"/>
       <geometry>
-	    <mesh filename="covid_test_tube_cap.obj" scale="3 3 3"/>
+	    <mesh filename="covid_test_tube_cap.obj" scale="2 2 2"/>
       </geometry>
       <material name="red">
         <color rgba="1 0.4 0.4 1.0"/>
       </material>
     </visual>
     <collision>
-      <origin rpy="0 0 0" xyz="-0.021 0 0"/>
+      <origin rpy="0 0 0" xyz="-0.014 0 0"/>
       <geometry>
-	    <mesh filename="covid_test_tube_cap.obj" scale="3 3 3"/>
+	    <mesh filename="covid_test_tube_cap.obj" scale="2 2 2"/>
       </geometry>
     </collision>
   </link>
@@ -64,13 +64,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <box size="0.02 0.02 0.02"/>
+        <box size="0.01 0.01 0.01"/>
       </geometry>
     </visual>
   </link>
 
   <joint name="base2cap" type="fixed">
-    <origin rpy="0 0 0" xyz="-0.075 0 0"/>
+    <origin rpy="0 0 0" xyz="-0.05 0 0"/>
     <parent link="baseLink"/>
     <child link="cap"/>
   </joint>

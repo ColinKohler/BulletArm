@@ -74,13 +74,13 @@ class TestTube(PybulletObject):
   #   return list(pos), list(rot)
 
   def getGraspRotation(self):
-    link_state = pb.getLinkState(self.object_id, 0)
-    rot_q = link_state[1]
+    base_state = pb.getBasePositionAndOrientation(self.object_id)
+    rot_q = base_state[0]
     return list(rot_q)
 
   def getGraspPosition(self):
-    link_state = pb.getLinkState(self.object_id, 0)
-    pos = link_state[0]
+    base_state = pb.getBasePositionAndOrientation(self.object_id)
+    pos = base_state[0]
     return list(pos)
 
   def getGraspPose(self):
