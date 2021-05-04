@@ -58,9 +58,9 @@ class CovidTestEnv(PyBulletEnv):
       try:
         # self._generateShapes(constants.RANDOM_BLOCK, self.num_obj, random_orientation=self.random_orientation,
         #                      pos=[(0.3, 0.12, 0.12)])
-        for i in range(1):
+        for i in range(3):
           self._generateShapes(constants.TEST_TUBE, rot=[pb.getQuaternionFromEuler([0., 0., 0.])],
-                               pos=[(0.32, 0.24, 0.05)])
+                               pos=[(0.32, 0.24, 0.08)])
           # self._generateShapes(constants.TEST_TUBE, rot=[pb.getQuaternionFromEuler([0., 0., 0.])],
           #                      pos=[(0.32, 0.24, 0.05)])
         for i in range(6):
