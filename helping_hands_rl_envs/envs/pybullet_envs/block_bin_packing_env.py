@@ -17,30 +17,46 @@ class BlockBinPackingEnv(PyBulletEnv):
   def __init__(self, config):
     super().__init__(config)
     self.box = ContainerBox()
+    self.box_rz = 0
     self.box_pos = [0.60, 0.12, 0]
-    self.box_size = [0.20, 0.15, 0.12]
-    self.box_range = np.array([[self.box_pos[0]-self.box_size[0]/2, self.box_pos[0]+self.box_size[0]/2],
-                               [self.box_pos[1]-self.box_size[1]/2, self.box_pos[1]+self.box_size[1]/2]])
-    self.z_threshold = 0.12
+    self.box_size = [0.22*self.block_scale_range[1], 0.18*self.block_scale_range[1], 0.1]
+    self.box_placeholder_pos = []
+    self.z_threshold = self.box_size[-1]
+
+  def resetBox(self):
+    self.box_rz = np.random.random_sample() * np.pi
+    self.box_pos = self._getValidPositions(np.linalg.norm([self.box_size[0], self.box_size[1]]), 0, [], 1)[
+      0]
+    self.box_pos.append(0)
+    self.box.reset(self.box_pos, pb.getQuaternionFromEuler((0, 0, self.box_rz)))
+
+    dx = self.box_size[0] / 6
+    dy = self.box_size[1] / 4
+
+    pos_candidates = np.array([[2 * dx, -dy], [2 * dx, dy],
+                               [0, -dy], [0, dy],
+                               [-2 * dx, -dy], [-2 * dx, dy]])
+
+    R = np.array([[np.cos(self.box_rz), -np.sin(self.box_rz)],
+                  [np.sin(self.box_rz), np.cos(self.box_rz)]])
+
+    transformed_pos_candidate = R.dot(pos_candidates.T).T
+    self.box_placeholder_pos = transformed_pos_candidate + self.box_pos[:2]
 
   def _getExistingXYPositions(self):
     positions = [o.getXYPosition() for o in self.objects]
-    xs = np.linspace(self.box_range[0, 0]+0.02, self.box_range[0, 1], 4)
-    ys = np.linspace(self.box_range[1, 0]+0.02, self.box_range[1, 1], 4)
-    for x in xs:
-      for y in ys:
-        positions.append([x, y])
+    for pos in self.box_placeholder_pos:
+      positions.append(list(pos))
     return positions
 
   def initialize(self):
     super().initialize()
     self.box.initialize(pos=self.box_pos, size=self.box_size)
 
-    pass
-
   def reset(self):
     while True:
       self.resetPybulletEnv()
+      self.resetBox()
       try:
         self._generateShapes(constants.RANDOM_BLOCK, self.num_obj, random_orientation=self.random_orientation, padding=self.min_boarder_padding, min_distance=self.min_object_distance)
       except NoValidPositionException:
@@ -78,7 +94,12 @@ class BlockBinPackingEnv(PyBulletEnv):
     return 100 * (self.z_threshold - max_z)
 
   def isObjInBox(self, obj):
-    return self.box_range[0][0] < obj.getPosition()[0] < self.box_range[0][1] and self.box_range[1][0] < obj.getPosition()[1] < self.box_range[1][1]
+    R = np.array([[np.cos(-self.box_rz), -np.sin(-self.box_rz)],
+                  [np.sin(-self.box_rz), np.cos(-self.box_rz)]])
+    obj_pos = obj.getPosition()[:2]
+    transformed_relative_obj_pos = R.dot(np.array([np.array(obj_pos) - self.box_pos[:2]]).T).T[0]
+
+    return -self.box_size[0]/2 < transformed_relative_obj_pos[0] < self.box_size[0]/2 and -self.box_size[1]/2 < transformed_relative_obj_pos[1] < self.box_size[1]/2
 
   def getObjsOutsideBox(self):
     return list(filter(lambda obj: not self.isObjInBox(obj), self.objects))
