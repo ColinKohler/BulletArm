@@ -13,6 +13,7 @@ from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 from helping_hands_rl_envs.planners.shelf_bowl_stacking_planner import ShelfBowlStackingPlanner
+from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 
 class CovidTestEnv(PyBulletEnv):
   def __init__(self, config):
@@ -28,13 +29,13 @@ class CovidTestEnv(PyBulletEnv):
     self.end_effector_santilized_t = 0
 
     self.box = BoxColor()
-    self.new_tube_box_pos = [0.32, 0.24, 0]
+    self.new_tube_box_pos = [0.22, 0.24, 0]
     self.new_tube_box_size = [0.24, 0.16, 0.03]
-    self.swap_box_pos = [0.32, 0.06, 0]
+    self.swap_box_pos = [0.22, 0.06, 0]
     self.swap_box_size = [0.24, 0.16, 0.02]
-    self.santilizing_box_pos = [0.32, -0.09, 0]
+    self.santilizing_box_pos = [0.22, -0.09, 0]
     self.santilizing_box_size = [0.24, 0.08, 0.05]
-    self.used_tube_box_pos = [0.32, -0.24, 0]
+    self.used_tube_box_pos = [0.22, -0.24, 0]
     self.used_tube_box_size = [0.24, 0.16, 0.04]
 
   def initialize(self):
@@ -53,19 +54,21 @@ class CovidTestEnv(PyBulletEnv):
     self.end_effector_santilized_t = 0
     self.place_ry_offset = PLACE_RY_OFFSET[self.plate_model_id]
     self.place_offset = PLACE_Z_OFFSET[self.plate_model_id]
+    self.placed_swab = False
+    self.resetted = True
     while True:
       self.resetPybulletEnv()
       try:
         # self._generateShapes(constants.RANDOM_BLOCK, self.num_obj, random_orientation=self.random_orientation,
         #                      pos=[(0.3, 0.12, 0.12)])
-        for i in range(3):
-          self._generateShapes(constants.TEST_TUBE, rot=[pb.getQuaternionFromEuler([0., 0., 0.])],
-                               pos=[(0.32, 0.24, 0.08)])
+        for i in range(1):
+          self._generateShapes(constants.TEST_TUBE, rot=[pb.getQuaternionFromEuler([0., 0., 0])],
+                               pos=[(0.22, 0.24, 0.02)])
           # self._generateShapes(constants.TEST_TUBE, rot=[pb.getQuaternionFromEuler([0., 0., 0.])],
           #                      pos=[(0.32, 0.24, 0.05)])
-        for i in range(6):
+        for i in range(4):
           self._generateShapes(constants.SWAB, random_orientation=self.random_orientation,
-                               pos=[(0.32, 0.06, 0.1)])
+                               pos=[(0.22, 0.06, 0.1)])
       except NoValidPositionException:
         continue
       else:
@@ -82,6 +85,38 @@ class CovidTestEnv(PyBulletEnv):
     elif motion_primative == 0 and \
             self.isObjInBox([x, y, z], self.santilizing_box_pos, self.santilizing_box_size):
       self.end_effector_santilized_t = 1
+    on_table_obj, on_table_obj_type = self.OnTableObj()
+    on_table_tube = None
+    on_table_swab = None
+    if constants.TEST_TUBE in on_table_obj_type \
+      and constants.SWAB in on_table_obj_type:
+      for obj in on_table_obj:
+        if obj.object_type_id == constants.SWAB:
+          obj_rot_ = pb.getQuaternionFromEuler([0, 0, 0])
+          obj.resetPose([0.22, 0.06, 0.1], obj_rot_)
+          self.placed_swab = True
+        if obj.object_type_id == constants.TEST_TUBE:
+          rot = 2 * np.pi * np.random.rand()
+          x_offset = 0.2 * np.random.rand()
+          y_offset = 0.7 * np.random.rand() - 0.35
+          obj_rot_ = pb.getQuaternionFromEuler([0, 0, rot])
+          obj.resetPose([0.5, 0., 0.1], obj_rot_)
+          self.placed_swab = True
+      # for obj in on_table_obj:
+      #   if obj.object_type_id == constants.SWAB:
+      #     on_table_swab = obj
+      #   elif obj.object_type_id == constants.TEST_TUBE:
+      #     on_table_tube = obj
+      #   if on_table_tube is not None and on_table_swab is not None:
+      #     obj_pos, obj_rot = on_table_tube.getPose()
+      #     oTtube = pybullet_util.getMatrix(obj_pos, obj_rot)
+      #     swab_rot = pb.getQuaternionFromEuler([0, 0, 3.14])
+      #     tubeTswab = pybullet_util.getMatrix([0.04, 0, 0], swab_rot)
+      #     oTswab = oTtube.dot(tubeTswab)
+      #     obj_pos_ = oTswab[:3, -1]
+      #     obj_rot_ = transformations.quaternion_from_matrix(oTswab)
+      #     on_table_swab.resetPose(obj_pos_, obj_rot_)
+
     self.wait(100)
     obs = self._getObservation(action)
     done = self._checkTermination()
@@ -168,7 +203,7 @@ if __name__ == '__main__':
   object_init_space = np.asarray([[0.3, 0.7],
                           [-0.4, 0.4],
                           [0, 0.40]])
-  workspace = np.asarray([[0.2, 0.8],
+  workspace = np.asarray([[0.1, 0.7],
                           [-0.3, 0.3],
                           [0, 0.50]])
   env_config = {'workspace': workspace, 'object_init_space': object_init_space, 'max_steps': 10, 'obs_size': 128,

@@ -60,7 +60,7 @@ class TestTube(PybulletObject):
     urdf_filepath = os.path.join(root_dir, constants.URDF_PATH, 'test_tube/test_tube.urdf')
     object_id = pb.loadURDF(urdf_filepath, basePosition=pos, baseOrientation=rot, globalScaling=scale)
 
-    super(TestTube, self).__init__(constants.CUBE, object_id)
+    super(TestTube, self).__init__(constants.TEST_TUBE, object_id)
 
   # def getRotation(self):
   #   link_state = pb.getLinkState(self.object_id, 0)

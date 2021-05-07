@@ -60,7 +60,7 @@ class Swab(PybulletObject):
     urdf_filepath = os.path.join(root_dir, constants.URDF_PATH, 'swab/swab.urdf')
     object_id = pb.loadURDF(urdf_filepath, basePosition=pos, baseOrientation=rot, globalScaling=scale)
 
-    super(Swab, self).__init__(constants.CUBE, object_id)
+    super(Swab, self).__init__(constants.SWAB, object_id)
 
   # def getRotation(self):
   #   link_state = pb.getLinkState(self.object_id, 0)

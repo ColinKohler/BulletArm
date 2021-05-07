@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from helping_hands_rl_envs import env_factory
 
 class TestBulletCovidTest(unittest.TestCase):
-  workspace = np.asarray([[0.2, 0.8],
+  workspace = np.asarray([[0.1, 0.7],
                           [-0.3, 0.3],
                           [0, 0.50]])
   env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 128, 'render': False, 'fast_mode': True,
@@ -20,9 +20,9 @@ class TestBulletCovidTest(unittest.TestCase):
   planner_config = {'random_orientation': True, 'half_rotation': False}
 
   def testPlanner2(self):
-    self.env_config['render'] = True
+    self.env_config['render'] = False
     self.env_config['seed'] = 0
-    num_processes = 1
+    num_processes = 10
     env = env_factory.createEnvs(num_processes, 'pybullet', 'covid_test', self.env_config, self.planner_config)
     total = 0
     s = 0
@@ -40,6 +40,7 @@ class TestBulletCovidTest(unittest.TestCase):
       t = time.time() - t0
       step_times.append(t)
 
+      pbar.update(dones.sum())
       pbar.set_description(
         '{}/{}, SR: {:.3f}, plan time: {:.2f}, action time: {:.2f}, avg step time: {:.2f}'
           .format(s, total, float(s) / total if total != 0 else 0, t_plan, t_action, np.mean(step_times))
