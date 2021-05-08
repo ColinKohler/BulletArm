@@ -30,15 +30,15 @@ class CovidTestEnv(PyBulletEnv):
 
     self.box = BoxColor()
     self.new_tube_box_pos = [0.22, 0.12, 0]
-    self.new_tube_box_size = [0.24, 0.36, 0.02]
+    self.new_tube_box_size = [0.24, 0.36, 0.01]
     # self.swap_box_pos = [0.22, 0.06, 0]
     # self.swap_box_size = [0.24, 0.16, 0.04]
     self.santilizing_box_pos = [0.22, -0.11, 0]
     self.santilizing_box_size = [0.24, 0.08, 0.05]
-    self.used_tube_box_pos = [0.22, -0.24, 0]
-    self.used_tube_box_size = [0.24, 0.16, 0.04]
+    self.used_tube_box_pos = [0.22, -0.23, 0]
+    self.used_tube_box_size = [0.24, 0.14, 0.1]
     self.test_box_pos = [0.52, 0.00, 0]
-    self.test_box_size = [0.32, 0.6, 0.01]
+    self.test_box_size = [0.32, 0.6, 0.015]
     self.tube_pos_candidate = [[(0.16, 0.22, 0.01)],
                                [(0.22, 0.22, 0.01)],
                                [(0.28, 0.22, 0.01)]]
@@ -169,16 +169,19 @@ class CovidTestEnv(PyBulletEnv):
   #   return False
 
   def _checkTermination(self):
-    # if not self.no_obj_split:
-    #   return False
-    for obj in self.objects:
-      if self.isObjInBox(obj.getPosition(), self.used_tube_box_pos, self.used_tube_box_size)\
-              and self.object_types[obj] == constants.TEST_TUBE\
-              and self.placed_swab\
-              and self.end_effector_santilized_t == 1:
-        return True
-      else:
-        continue
+    # prepare multiple swab-tube pair
+    if len(self.getTubes()) == 0 and self.end_effector_santilized_t == 1:
+      return True
+
+    # # prepare one swab-tube pair
+    # for obj in self.objects:
+    #   if self.isObjInBox(obj.getPosition(), self.used_tube_box_pos, self.used_tube_box_size)\
+    #           and self.object_types[obj] == constants.TEST_TUBE\
+    #           and self.placed_swab\
+    #           and self.end_effector_santilized_t == 1:
+    #     return True
+    #   else:
+    #     continue
     return False
 
   def OnTableObj(self):
