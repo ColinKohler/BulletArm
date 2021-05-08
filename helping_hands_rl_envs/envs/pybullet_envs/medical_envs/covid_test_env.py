@@ -29,19 +29,28 @@ class CovidTestEnv(PyBulletEnv):
     self.end_effector_santilized_t = 0
 
     self.box = BoxColor()
-    self.new_tube_box_pos = [0.22, 0.24, 0]
-    self.new_tube_box_size = [0.24, 0.16, 0.03]
-    self.swap_box_pos = [0.22, 0.06, 0]
-    self.swap_box_size = [0.24, 0.16, 0.02]
-    self.santilizing_box_pos = [0.22, -0.09, 0]
+    self.new_tube_box_pos = [0.22, 0.12, 0]
+    self.new_tube_box_size = [0.24, 0.36, 0.02]
+    # self.swap_box_pos = [0.22, 0.06, 0]
+    # self.swap_box_size = [0.24, 0.16, 0.04]
+    self.santilizing_box_pos = [0.22, -0.11, 0]
     self.santilizing_box_size = [0.24, 0.08, 0.05]
     self.used_tube_box_pos = [0.22, -0.24, 0]
     self.used_tube_box_size = [0.24, 0.16, 0.04]
+    self.test_box_pos = [0.52, 0.00, 0]
+    self.test_box_size = [0.32, 0.6, 0.01]
+    self.tube_pos_candidate = [[(0.16, 0.22, 0.01)],
+                               [(0.22, 0.22, 0.01)],
+                               [(0.28, 0.22, 0.01)]]
+    self.swab_pos_candidate = [[(0.16, 0.05, 0.01)],
+                               [(0.22, 0.05, 0.01)],
+                               [(0.28, 0.05, 0.01)]]
 
   def initialize(self):
     super().initialize()
     self.box.initialize(pos=self.new_tube_box_pos, size=self.new_tube_box_size, color=[0.9, 0.9, 1, 1])
-    self.box.initialize(pos=self.swap_box_pos, size=self.swap_box_size, color=[1, 0.5, 0.5, 1])
+    # self.box.initialize(pos=self.swap_box_pos, size=self.swap_box_size, color=[1, 0.5, 0.5, 1])
+    self.box.initialize(pos=self.test_box_pos, size=self.test_box_size, color=[0.9, 0.9, 0.9, 0.6])
     self.box.initialize(pos=self.santilizing_box_pos, size=self.santilizing_box_size, color=[0.5, 0.5, 0.5, 0.6])
     self.box.initialize(pos=self.used_tube_box_pos, size=self.used_tube_box_size, color=[1, 1, 0.5, 1])
     self.robot.gripper_joint_limit = [0, 0.15]
@@ -56,19 +65,22 @@ class CovidTestEnv(PyBulletEnv):
     self.place_offset = PLACE_Z_OFFSET[self.plate_model_id]
     self.placed_swab = False
     self.resetted = True
+    self.no_obj_split = True
     while True:
       self.resetPybulletEnv()
       try:
         # self._generateShapes(constants.RANDOM_BLOCK, self.num_obj, random_orientation=self.random_orientation,
         #                      pos=[(0.3, 0.12, 0.12)])
-        for i in range(1):
-          self._generateShapes(constants.TEST_TUBE, rot=[pb.getQuaternionFromEuler([0., 0., 0])],
-                               pos=[(0.22, 0.24, 0.02)])
-          # self._generateShapes(constants.TEST_TUBE, rot=[pb.getQuaternionFromEuler([0., 0., 0.])],
-          #                      pos=[(0.32, 0.24, 0.05)])
-        for i in range(4):
-          self._generateShapes(constants.SWAB, random_orientation=self.random_orientation,
-                               pos=[(0.22, 0.06, 0.1)])
+        tube_rot = 1.57 + np.random.rand() - 0.5
+        for i in range(3):
+          self._generateShapes(constants.TEST_TUBE,
+                               rot=[pb.getQuaternionFromEuler([0., 0., tube_rot])],
+                               pos=self.tube_pos_candidate[i])
+        swab_rot = -1.57 + np.random.rand() - 0.5
+        for i in range(3):
+          self._generateShapes(constants.SWAB,
+                               rot=[pb.getQuaternionFromEuler([0., 0., swab_rot])],
+                               pos=self.swab_pos_candidate[i])
       except NoValidPositionException:
         continue
       else:
@@ -93,15 +105,18 @@ class CovidTestEnv(PyBulletEnv):
       for obj in on_table_obj:
         if obj.object_type_id == constants.SWAB:
           obj_rot_ = pb.getQuaternionFromEuler([0, 0, 0])
-          obj.resetPose([0.22, 0.06, 0.1], obj_rot_)
-          self.placed_swab = True
+          self.objects.remove(obj)
+          pb.removeBody(obj.object_id)
+          # obj.resetPose([0.22, 0.06, 0.1], obj_rot_)
         if obj.object_type_id == constants.TEST_TUBE:
           rot = 2 * np.pi * np.random.rand()
-          x_offset = 0.2 * np.random.rand()
-          y_offset = 0.7 * np.random.rand() - 0.35
+          x_offset = 0.2 * np.random.rand() - 0.1
+          y_offset = 0.5 * np.random.rand() - 0.25
           obj_rot_ = pb.getQuaternionFromEuler([0, 0, rot])
-          obj.resetPose([0.5, 0., 0.1], obj_rot_)
-          self.placed_swab = True
+          obj.resetPose([0.5 + x_offset, 0. + y_offset, 0.1], obj_rot_)
+
+        self.wait(20)
+        self.placed_swab = True
       # for obj in on_table_obj:
       #   if obj.object_type_id == constants.SWAB:
       #     on_table_swab = obj
@@ -154,9 +169,12 @@ class CovidTestEnv(PyBulletEnv):
   #   return False
 
   def _checkTermination(self):
+    # if not self.no_obj_split:
+    #   return False
     for obj in self.objects:
       if self.isObjInBox(obj.getPosition(), self.used_tube_box_pos, self.used_tube_box_size)\
               and self.object_types[obj] == constants.TEST_TUBE\
+              and self.placed_swab\
               and self.end_effector_santilized_t == 1:
         return True
       else:
@@ -167,9 +185,17 @@ class CovidTestEnv(PyBulletEnv):
     obj_list = []
     obj_type_list = []
     for obj in self.objects:
-      if self._isObjOnGround(obj):
+      if self.isObjInBox(obj.getPosition(), self.test_box_pos, self.test_box_size):
         obj_list.append(obj)
         obj_type_list.append(self.object_types[obj])
+      # if self._isObjOnGround(obj) \
+      #         and 0.33 < obj.getPosition()[0] < 0.7:
+      #   obj_list.append(obj)
+      #   obj_type_list.append(self.object_types[obj])
+      # elif self._isObjOnGround(obj) \
+      #         and (0.33 > obj.getPosition()[0] \
+      #               or obj.getPosition()[0] > 0.7):
+      #   self.no_obj_split = False
     return obj_list, obj_type_list
 
   def InBoxObj(self, box_pos, box_size):
@@ -180,20 +206,18 @@ class CovidTestEnv(PyBulletEnv):
     return obj_list
 
   def getSwabs(self):
-    return self.InBoxObj(self.swap_box_pos, self.swap_box_size)
+    swabs = []
+    for obj in self.InBoxObj(self.new_tube_box_pos, self.new_tube_box_size):
+      if obj.object_type_id == constants.SWAB:
+        swabs.append(obj)
+    return swabs
 
   def getTubes(self):
-    return self.InBoxObj(self.new_tube_box_pos, self.new_tube_box_size)
-
-  # def _getValidOrientation(self, random_orientation):
-  #   if random_orientation:
-  #     orientation = pb.getQuaternionFromEuler([0., 0., np.pi * -(np.random.random_sample() * 0.5 + 0.5)])
-  #   else:
-  #     orientation = pb.getQuaternionFromEuler([0., 0., 0.])
-  #   return orientation
-  #
-  # def getValidSpace(self):
-  #   return self.object_init_space
+    tubes = []
+    for obj in self.InBoxObj(self.new_tube_box_pos, self.new_tube_box_size):
+      if obj.object_type_id == constants.TEST_TUBE:
+        tubes.append(obj)
+    return tubes
 
 def createCovidTestEnv(config):
   return CovidTestEnv(config)

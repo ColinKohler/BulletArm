@@ -3,8 +3,9 @@
 <robot name="test_tube">
   <link name="baseLink">
     <contact>
-      <lateral_friction value="200.0"/>
+      <lateral_friction value="1.0"/>
       <inertia_scaling value="3.0"/>
+      <rolling_friction value="1.0"/>
     </contact>
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -30,8 +31,9 @@
 
   <link name="cap">
     <contact>
-      <lateral_friction value="200.0"/>
+      <lateral_friction value="1.0"/>
       <inertia_scaling value="3.0"/>
+      <rolling_friction value="1.0"/>
     </contact>
     <inertial>
       <origin rpy="0 0 0" xyz="-0.014 0 0"/>

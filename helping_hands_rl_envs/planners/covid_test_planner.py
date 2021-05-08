@@ -28,7 +28,7 @@ class CovidTestPlanner(BlockStructureBasePlanner):
 
     on_table_obj, on_table_obj_type = self.env.OnTableObj()
     if self.env.placed_swab:
-      if on_table_obj == []:
+      if on_table_obj == [] or on_table_obj is None:
         return self.santilize()
       return self.pickStickOnTop(on_table_obj)
 
@@ -39,7 +39,7 @@ class CovidTestPlanner(BlockStructureBasePlanner):
     return self.pickStickOnTop(self.env.getTubes())
 
   def pickStickOnTop(self, objects=None):
-    if objects is None: objects = self.env.objects
+    if objects is None or objects == []: objects = self.env.objects
     objects, object_poses = self.getSizeSortedObjPoses(objects=objects)
     x, y, z, r = object_poses[0][0], object_poses[0][1], object_poses[0][2], object_poses[0][5]
     obj_list = [(pair) for pair in zip (objects, object_poses)]
@@ -57,7 +57,6 @@ class CovidTestPlanner(BlockStructureBasePlanner):
     x, y, z = self.env.santilizing_box_pos
     z = 0.03
     r = 0
-    self.ready_santilize = False
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
   def getPlacingAction(self):
@@ -68,15 +67,20 @@ class CovidTestPlanner(BlockStructureBasePlanner):
       self.ready_santilize = True
       return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
     in_hand_obj = self.env.robot.getPickedObj(self.env.objects)
-    if in_hand_obj.object_type_id != constants.TEST_TUBE:
+    if in_hand_obj == [] or in_hand_obj is None:
+      rand_x, rand_y, rot = 0, 0, 0
+      rand_z = 0.1
+    elif in_hand_obj.object_type_id == constants.TEST_TUBE:
+      rand_x = 0.1 * np.random.rand()
+      rand_y = 0.1 * np.random.rand() + 0.1
+      rot = 1.57
+      rand_z = 0.02
+    else:
       rand_x = 0.1 * np.random.rand()
       rand_y = 0.1 * np.random.rand() - 0.1
       rot = 0.
-    else:
-      rand_x = 0.1 * np.random.rand() - 0.1
-      rand_y = 0.1 * np.random.rand() + 0.1
-      rot = 1.57
-    return self.encodeAction(constants.PLACE_PRIMATIVE, 0.5 + rand_x, rand_y, 0.01, rot)
+      rand_z = 0.02
+    return self.encodeAction(constants.PLACE_PRIMATIVE, 0.5 + rand_x, rand_y, rand_z, rot)
 
   def getStepsLeft(self):
     return 100
