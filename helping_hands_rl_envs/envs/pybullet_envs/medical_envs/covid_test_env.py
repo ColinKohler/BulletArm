@@ -29,22 +29,39 @@ class CovidTestEnv(PyBulletEnv):
     self.end_effector_santilized_t = 0
 
     self.box = BoxColor()
-    self.new_tube_box_pos = [0.22, 0.12, 0]
-    self.new_tube_box_size = [0.24, 0.36, 0.01]
-    # self.swap_box_pos = [0.22, 0.06, 0]
-    # self.swap_box_size = [0.24, 0.16, 0.04]
-    self.santilizing_box_pos = [0.22, -0.11, 0]
-    self.santilizing_box_size = [0.24, 0.08, 0.05]
-    self.used_tube_box_pos = [0.22, -0.23, 0]
-    self.used_tube_box_size = [0.24, 0.14, 0.1]
-    self.test_box_pos = [0.52, 0.00, 0]
-    self.test_box_size = [0.32, 0.6, 0.015]
-    self.tube_pos_candidate = [[(0.16, 0.22, 0.01)],
-                               [(0.22, 0.22, 0.01)],
-                               [(0.28, 0.22, 0.01)]]
-    self.swab_pos_candidate = [[(0.16, 0.05, 0.01)],
-                               [(0.22, 0.05, 0.01)],
-                               [(0.28, 0.05, 0.01)]]
+    self.new_tube_box_pos = [0.4, 0.1, 0]
+    self.new_tube_box_size = [0.18, 0.18, 0.01]
+    self.santilizing_box_pos = [0.4, -0.05, 0]
+    self.santilizing_box_size = [0.18, 0.09, 0.05]
+    self.used_tube_box_pos = [0.4, -0.15, 0]
+    self.used_tube_box_size = [0.18, 0.09, 0.03]
+    self.test_box_pos = [0.6, 0.00, 0]
+    self.test_box_size = [0.18, 0.38, 0.015]
+    self.tube_pos_candidate = [[(0.35, 0.15, 0.01)],
+                               [(0.4, 0.15, 0.01)],
+                               [(0.45, 0.15, 0.01)]]
+    self.swab_pos_candidate = [[(0.35, 0.08, 0.01)],
+                               [(0.4, 0.08, 0.01)],
+                               [(0.45, 0.08, 0.01)]]
+
+    # # for
+      # workspace = np.asarray([[0.1, 0.7],
+      #                         [-0.3, 0.3],
+      #                         [0, 0.50]])
+    # self.new_tube_box_pos = [0.22, 0.12, 0]
+    # self.new_tube_box_size = [0.24, 0.36, 0.01]
+    # self.santilizing_box_pos = [0.22, -0.11, 0]
+    # self.santilizing_box_size = [0.24, 0.08, 0.05]
+    # self.used_tube_box_pos = [0.22, -0.23, 0]
+    # self.used_tube_box_size = [0.24, 0.14, 0.1]
+    # self.test_box_pos = [0.52, 0.00, 0]
+    # self.test_box_size = [0.32, 0.6, 0.015]
+    # self.tube_pos_candidate = [[(0.16, 0.22, 0.01)],
+    #                            [(0.22, 0.22, 0.01)],
+    #                            [(0.28, 0.22, 0.01)]]
+    # self.swab_pos_candidate = [[(0.16, 0.05, 0.01)],
+    #                            [(0.22, 0.05, 0.01)],
+    #                            [(0.28, 0.05, 0.01)]]
 
   def initialize(self):
     super().initialize()
@@ -110,10 +127,12 @@ class CovidTestEnv(PyBulletEnv):
           # obj.resetPose([0.22, 0.06, 0.1], obj_rot_)
         if obj.object_type_id == constants.TEST_TUBE:
           rot = 2 * np.pi * np.random.rand()
-          x_offset = 0.2 * np.random.rand() - 0.1
-          y_offset = 0.5 * np.random.rand() - 0.25
+          x_offset = (self.test_box_size[0] - 0.04) * np.random.rand()\
+                     - (self.test_box_size[0] - 0.04) / 2
+          y_offset = (self.test_box_size[1] - 0.04) * np.random.rand()\
+                     - (self.test_box_size[1] - 0.04) / 2
           obj_rot_ = pb.getQuaternionFromEuler([0, 0, rot])
-          obj.resetPose([0.5 + x_offset, 0. + y_offset, 0.1], obj_rot_)
+          obj.resetPose([0.6 + x_offset, 0. + y_offset, 0.1], obj_rot_)
 
         self.wait(20)
         self.placed_swab = True
@@ -230,13 +249,14 @@ if __name__ == '__main__':
   object_init_space = np.asarray([[0.3, 0.7],
                           [-0.4, 0.4],
                           [0, 0.40]])
-  workspace = np.asarray([[0.1, 0.7],
-                          [-0.3, 0.3],
-                          [0, 0.50]])
+  workspace_size = 0.4
+  workspace = np.asarray([[0.5 - workspace_size / 2, 0.5 + workspace_size / 2],
+                          [0 - workspace_size / 2, 0 + workspace_size / 2],
+                          [0, 0 + workspace_size]])
   env_config = {'workspace': workspace, 'object_init_space': object_init_space, 'max_steps': 10, 'obs_size': 128,
                 'render': True, 'fast_mode': True, 'seed': 0, 'action_sequence': 'pxyzrrr', 'num_objects': 9,
                 'random_orientation': True, 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False,
-                'robot': 'kuka', 'object_init_space_check': 'point', 'physics_mode': 'slow'}
+                'object_scale_range': (0.6, 0.6), 'robot': 'kuka', 'object_init_space_check': 'point', 'physics_mode': 'slow'}
   planner_config = {'random_orientation': True}
 
   env = CovidTestEnv(env_config)
