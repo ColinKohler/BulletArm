@@ -20,32 +20,80 @@ class CovidTestEnv(PyBulletEnv):
     super().__init__(config)
     # self.shelf = Shelf()
     # self.rack = Rack(n=self.num_obj+1, dist=0.05)
-    self.object_init_space = np.asarray([[0.3, 0.7],
-                                         [-0.4, 0],
-                                         [0, 0.40]])
+    self.object_init_space = np.array([[0.3, 0.7],
+                                       [-0.4, 0],
+                                       [0, 0.40]])
     self.plate_model_id = None
     self.place_offset = None
     self.place_ry_offset = None
     self.end_effector_santilized_t = 0
 
-    self.box = BoxColor()
-    self.new_tube_box_pos = [0.4, 0.1, 0]
-    self.new_tube_box_size = [0.18, 0.18, 0.01]
-    self.santilizing_box_pos = [0.4, -0.05, 0]
-    self.santilizing_box_size = [0.18, 0.09, 0.05]
-    self.used_tube_box_pos = [0.4, -0.15, 0]
-    self.used_tube_box_size = [0.18, 0.09, 0.03]
-    self.test_box_pos = [0.6, 0.00, 0]
-    self.test_box_size = [0.18, 0.38, 0.015]
-    self.tube_pos_candidate = [[(0.35, 0.15, 0.01)],
-                               [(0.4, 0.15, 0.01)],
-                               [(0.45, 0.15, 0.01)]]
-    self.swab_pos_candidate = [[(0.35, 0.08, 0.01)],
-                               [(0.4, 0.08, 0.01)],
-                               [(0.45, 0.08, 0.01)]]
+    # for workspace = 0.4, flexible
+    # rot90 x n
+    R0 = np.array([[1., 0.],
+                   [0., 1.]])
+    R1 = np.array([[0., -1.],
+                   [1., 0.]])
+    R2 = np.array([[-1., 0.],
+                   [0., -1.]])
+    R3 = np.array([[0., 1.],
+                   [-1., 0.]])
+    self.rot90 = [R0, R1, R2, R3]
+    # flip transform
+    Nf = R0
+    Vf = np.array([[-1., 0.],
+                   [0., 1.]])
+    self.flips = [Nf, Vf]
 
-    # # for
-      # workspace = np.asarray([[0.1, 0.7],
+    self.box = BoxColor()
+    self.new_tube_box_size = np.array([0.225, 0.225, 0.005])
+    self.santilizing_box_size = np.array([0.225, 0.065, 0.03])
+    self.used_tube_box_size = np.array([0.225, 0.095, 0.02])
+    self.test_box_size = np.array([0.165, 0.395, 0.01])
+
+    workspace_x = self.workspace[0, 1] - self.workspace[0, 0]
+    workspace_y = self.workspace[1, 1] - self.workspace[1, 0]
+    center_x = (self.workspace[0, 0] + self.workspace[0, 1]) / 2
+    center_y = (self.workspace[1, 0] + self.workspace[1, 1]) / 2
+    self.workspace_center = np.array([center_x, center_y, 0])
+    upper_x = -workspace_x / 2 + self.new_tube_box_size[0] / 2
+    lower_x = workspace_x / 2 - self.test_box_size[0] / 2
+    new_tube_box_y = workspace_y / 2 - self.new_tube_box_size[1] / 2
+    used_tube_box_y = -workspace_y / 2 + self.used_tube_box_size[1] / 2
+    santilizing_box_y = (new_tube_box_y - self.new_tube_box_size[1] / 2 +
+                        used_tube_box_y + self.used_tube_box_size[1] / 2) / 2
+    self.new_tube_box_pos = np.array([upper_x, new_tube_box_y, 0])
+    self.used_tube_box_pos = np.array([upper_x, used_tube_box_y, 0])
+    self.santilizing_box_pos = np.array([upper_x, santilizing_box_y, 0])
+    self.test_box_pos = np.array([lower_x, 0, 0])
+
+    self.tube_pos_candidate = np.array([[-self.new_tube_box_size[0]/3, self.new_tube_box_size[1]/4, 0.01],
+                                       [                           0, self.new_tube_box_size[1]/4, 0.01],
+                                       [ self.new_tube_box_size[0]/3, self.new_tube_box_size[1]/4, 0.01]])
+    self.swab_pos_candidate = np.array([[-self.new_tube_box_size[0]/3, -self.new_tube_box_size[1]/6, 0.01],
+                                       [                           0, -self.new_tube_box_size[1]/6, 0.01],
+                                       [ self.new_tube_box_size[0]/3, -self.new_tube_box_size[1]/6, 0.01]])
+    self.tube_pos_candidate += self.new_tube_box_pos
+    self.swab_pos_candidate += self.new_tube_box_pos
+
+    # # for workspace = 0.4
+    # self.box = BoxColor()
+    # self.new_tube_box_pos = [0.4, 0.075, 0]
+    # self.new_tube_box_size = [0.24, 0.24, 0.005]
+    # self.santilizing_box_pos = [0.4, -0.075, 0]
+    # self.santilizing_box_size = [0.24, 0.05, 0.03]
+    # self.used_tube_box_pos = [0.4, -0.15, 0]
+    # self.used_tube_box_size = [0.24, 0.09, 0.02]
+    # self.test_box_pos = [0.6, 0.00, 0]
+    # self.test_box_size = [0.15, 0.39, 0.01]
+    # self.tube_pos_candidate = [[(0.35, 0.15, 0.01)],
+    #                            [(0.4, 0.15, 0.01)],
+    #                            [(0.45, 0.15, 0.01)]]
+    # self.swab_pos_candidate = [[(0.35, 0.08, 0.01)],
+    #                            [(0.4, 0.08, 0.01)],
+    #                            [(0.45, 0.08, 0.01)]]
+
+    # # for workspace = np.asarray([[0.1, 0.7],
       #                         [-0.3, 0.3],
       #                         [0, 0.50]])
     # self.new_tube_box_pos = [0.22, 0.12, 0]
@@ -65,24 +113,51 @@ class CovidTestEnv(PyBulletEnv):
 
   def initialize(self):
     super().initialize()
-    self.box.initialize(pos=self.new_tube_box_pos, size=self.new_tube_box_size, color=[0.9, 0.9, 1, 1])
-    # self.box.initialize(pos=self.swap_box_pos, size=self.swap_box_size, color=[1, 0.5, 0.5, 1])
-    self.box.initialize(pos=self.test_box_pos, size=self.test_box_size, color=[0.9, 0.9, 0.9, 0.6])
-    self.box.initialize(pos=self.santilizing_box_pos, size=self.santilizing_box_size, color=[0.5, 0.5, 0.5, 0.6])
-    self.box.initialize(pos=self.used_tube_box_pos, size=self.used_tube_box_size, color=[1, 1, 0.5, 1])
     self.robot.gripper_joint_limit = [0, 0.15]
     pass
 
   def reset(self):
     ''''''
     # self.plate_model_id = np.random.choice([1, 2, 6, 7, 8, 9])
-    self.plate_model_id = 0
-    self.end_effector_santilized_t = 0
-    self.place_ry_offset = PLACE_RY_OFFSET[self.plate_model_id]
-    self.place_offset = PLACE_Z_OFFSET[self.plate_model_id]
+    # self.plate_model_id = 0
+    # self.end_effector_santilized_t = 0
+    # self.place_ry_offset = PLACE_RY_OFFSET[self.plate_model_id]
+    # self.place_offset = PLACE_Z_OFFSET[self.plate_model_id]
     self.placed_swab = False
     self.resetted = True
     self.no_obj_split = True
+
+    # initial boxs in D4 group: rot90 + reflection
+    rot_n = np.random.randint(0,4)
+    flip = np.random.randint(0,2)
+    # rot_n = 0
+    # flip = 0
+
+    self.new_tube_box_pos[:2] = self.flips[flip].dot(self.rot90[rot_n].dot(self.new_tube_box_pos[:2].T)).T
+    self.used_tube_box_pos[:2] = self.flips[flip].dot(self.rot90[rot_n].dot(self.used_tube_box_pos[:2].T)).T
+    self.santilizing_box_pos[:2] = self.flips[flip].dot(self.rot90[rot_n].dot(self.santilizing_box_pos[:2].T)).T
+    self.test_box_pos[:2] = self.flips[flip].dot(self.rot90[rot_n].dot(self.test_box_pos[:2].T)).T
+
+    self.new_tube_box_pos += self.workspace_center
+    self.used_tube_box_pos += self.workspace_center
+    self.santilizing_box_pos += self.workspace_center
+    self.test_box_pos += self.workspace_center
+
+    self.box.initialize(pos=self.new_tube_box_pos, rot=pb.getQuaternionFromEuler((0,0,90*rot_n)),
+                        size=self.new_tube_box_size, color=[0.9, 0.9, 1, 1])
+    self.box.initialize(pos=self.test_box_pos, rot=pb.getQuaternionFromEuler((0,0,90*rot_n)),
+                        size=self.test_box_size, color=[0.9, 0.9, 0.9, 0.6])
+    self.box.initialize(pos=self.santilizing_box_pos, rot=pb.getQuaternionFromEuler((0,0,90*rot_n)),
+                        size=self.santilizing_box_size, color=[0.5, 0.5, 0.5, 0.6])
+    self.box.initialize(pos=self.used_tube_box_pos, rot=pb.getQuaternionFromEuler((0,0,90*rot_n)),
+                        size=self.used_tube_box_size, color=[1, 1, 0.5, 1])
+
+    self.tube_pos_candidate[:,:2] = self.flips[flip].dot(self.rot90[rot_n].dot(self.tube_pos_candidate[:,:2].T)).T
+    self.swab_pos_candidate[:,:2] = self.flips[flip].dot(self.rot90[rot_n].dot(self.swab_pos_candidate[:,:2].T)).T
+
+    self.tube_pos_candidate += self.workspace_center
+    self.swab_pos_candidate += self.workspace_center
+
     while True:
       self.resetPybulletEnv()
       try:
@@ -92,12 +167,12 @@ class CovidTestEnv(PyBulletEnv):
         for i in range(3):
           self._generateShapes(constants.TEST_TUBE,
                                rot=[pb.getQuaternionFromEuler([0., 0., tube_rot])],
-                               pos=self.tube_pos_candidate[i])
+                               pos=[tuple(self.tube_pos_candidate[i])])
         swab_rot = -1.57 + np.random.rand() - 0.5
         for i in range(3):
           self._generateShapes(constants.SWAB,
                                rot=[pb.getQuaternionFromEuler([0., 0., swab_rot])],
-                               pos=self.swab_pos_candidate[i])
+                               pos=[tuple(self.swab_pos_candidate[i])])
       except NoValidPositionException:
         continue
       else:
@@ -127,12 +202,12 @@ class CovidTestEnv(PyBulletEnv):
           # obj.resetPose([0.22, 0.06, 0.1], obj_rot_)
         if obj.object_type_id == constants.TEST_TUBE:
           rot = 2 * np.pi * np.random.rand()
-          x_offset = (self.test_box_size[0] - 0.04) * np.random.rand()\
-                     - (self.test_box_size[0] - 0.04) / 2
-          y_offset = (self.test_box_size[1] - 0.04) * np.random.rand()\
-                     - (self.test_box_size[1] - 0.04) / 2
+          x_offset = (self.test_box_size[0] - 0.08) * np.random.rand()\
+                     - (self.test_box_size[0] - 0.08) / 2
+          y_offset = (self.test_box_size[1] - 0.08) * np.random.rand()\
+                     - (self.test_box_size[1] - 0.08) / 2
           obj_rot_ = pb.getQuaternionFromEuler([0, 0, rot])
-          obj.resetPose([0.6 + x_offset, 0. + y_offset, 0.1], obj_rot_)
+          obj.resetPose([0.6 + x_offset, 0. + y_offset, 0.05], obj_rot_)
 
         self.wait(20)
         self.placed_swab = True
