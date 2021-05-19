@@ -16,6 +16,9 @@
       <geometry>
         <mesh filename="bottle4.obj" scale="0.13 0.13 0.17"/>
       </geometry>
+      <material name="">
+        <color rgba="1 1 1 1" />
+      </material>
     </visual>
     <!--<collision>-->
       <!--<origin rpy="0 0 0" xyz="0 0 0.06"/>-->

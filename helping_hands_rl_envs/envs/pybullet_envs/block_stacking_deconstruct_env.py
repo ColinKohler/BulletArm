@@ -24,5 +24,5 @@ class BlockStackingDeconstructEnv(DeconstructEnv):
                                   constants.CUBE)
     self.wait(50)
 
-def createHouseBuilding1DeconstructEnv(config):
+def createBlockStackingDeconstructEnv(config):
   return BlockStackingDeconstructEnv(config)

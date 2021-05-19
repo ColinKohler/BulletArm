@@ -13,6 +13,7 @@ from helping_hands_rl_envs.envs.pybullet_envs.improvise_house_building_2_env imp
 from helping_hands_rl_envs.envs.pybullet_envs.improvise_house_building_3_env import createImproviseHouseBuilding3Env
 from helping_hands_rl_envs.envs.pybullet_envs.improvise_house_building_discrete_env import createImproviseHouseBuildingDiscreteEnv
 from helping_hands_rl_envs.envs.pybullet_envs.improvise_house_building_random_env import createImproviseHouseBuildingRandomEnv
+from helping_hands_rl_envs.envs.pybullet_envs.block_stacking_deconstruct_env import createBlockStackingDeconstructEnv
 from helping_hands_rl_envs.envs.pybullet_envs.house_building_1_deconstruct_env import createHouseBuilding1DeconstructEnv
 from helping_hands_rl_envs.envs.pybullet_envs.house_building_2_deconstruct_env import createHouseBuilding2DeconstructEnv
 from helping_hands_rl_envs.envs.pybullet_envs.house_building_3_deconstruct_env import createHouseBuilding3DeconstructEnv
@@ -84,6 +85,7 @@ CREATE_PYBULLET_ENV_FNS = {
   'improvise_house_building_3' : createImproviseHouseBuilding3Env,
   'improvise_house_building_discrete' : createImproviseHouseBuildingDiscreteEnv,
   'improvise_house_building_random' : createImproviseHouseBuildingRandomEnv,
+  'block_stacking_deconstruct': createBlockStackingDeconstructEnv,
   'house_building_1_deconstruct' : createHouseBuilding1DeconstructEnv,
   'house_building_2_deconstruct' : createHouseBuilding2DeconstructEnv,
   'house_building_3_deconstruct' : createHouseBuilding3DeconstructEnv,
