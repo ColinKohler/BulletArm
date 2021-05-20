@@ -3,7 +3,7 @@
 <robot name="swab">
   <link name="baseLink">
     <contact>
-      <lateral_friction value="10.0"/>
+      <lateral_friction value="1.0"/>
       <inertia_scaling value="3.0"/>
     </contact>
     <visual>

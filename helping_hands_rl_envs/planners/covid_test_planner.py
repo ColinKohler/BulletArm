@@ -65,7 +65,7 @@ class CovidTestPlanner(BlockStructureBasePlanner):
       if self.isObjOnTop(obj):
         x, y, z, r = pose[0], pose[1], pose[2], pose[5]
         r += 1.57
-        # z -= 0.002
+        # z -= 0.001
         break
 
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
@@ -73,16 +73,20 @@ class CovidTestPlanner(BlockStructureBasePlanner):
   def santilize(self):
     x, y, z = self.env.santilizing_box_pos
     z = 0.03
-    r = 0
+    if self.env.rot_n % 2 == 1:
+      r = np.pi / 2
+    else:
+      r = 0
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
   def getPlacingAction(self):
     # for multiple swab-tube pair
     if self.place_on == 'used_tube_box':
       x, y, z = self.env.used_tube_box_pos
-      y += 0.02 * np.random.rand() - 0.01
+      x += 0.03 * np.random.rand() - 0.015
+      y += 0.03 * np.random.rand() - 0.015
       z = 0.05
-      r = 1.57
+      r = 1.57 + self.env.rot90x + 0.2 * np.random.rand() - 0.1
       self.ready_santilize = True
       return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
@@ -98,16 +102,18 @@ class CovidTestPlanner(BlockStructureBasePlanner):
       rand_x, rand_y, rot = 0, 0, 0
       rand_z = 0.1
     elif in_hand_obj.object_type_id == constants.TEST_TUBE:
-      rand_x = 0.1 * np.random.rand()
-      rand_y = 0.1 * np.random.rand() + 0.05
-      rot = 1.57
+      x, y, z = self.env.test_box_pos
+      rand_x = x + 0.05 * np.random.rand() - 0.025
+      rand_y = y + 0.05 * np.random.rand() - 0.025
+      rot = 1.57 + self.env.rot90x
       rand_z = 0.02
     else:
-      rand_x = 0.1 * np.random.rand()
-      rand_y = 0.1 * np.random.rand() - 0.1
-      rot = 0.
+      x, y, z = self.env.test_box_pos
+      rand_x = x + 0.05 * np.random.rand() - 0.025
+      rand_y = y + 0.05 * np.random.rand() - 0.025
+      rot = self.env.rot90x
       rand_z = 0.02
-    return self.encodeAction(constants.PLACE_PRIMATIVE, 0.55 + rand_x, rand_y, rand_z, rot)
+    return self.encodeAction(constants.PLACE_PRIMATIVE, rand_x, rand_y, rand_z, rot)
 
   def getStepsLeft(self):
     return 100
