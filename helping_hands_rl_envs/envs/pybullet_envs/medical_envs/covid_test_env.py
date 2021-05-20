@@ -165,9 +165,9 @@ class CovidTestEnv(PyBulletEnv):
   def reset(self):
     # self.plate_model_id = np.random.choice([1, 2, 6, 7, 8, 9])
     # self.plate_model_id = 0
-    # self.end_effector_santilized_t = 0
     # self.place_ry_offset = PLACE_RY_OFFSET[self.plate_model_id]
-    # self.place_offset = PLACE_Z_OFFSET[self.plate_model_id]
+    self.place_offset = 0  # ZXP ???
+    self.end_effector_santilized_t = 0
     self.placed_swab = False
     self.resetted = True
     self.no_obj_split = True
@@ -223,11 +223,15 @@ class CovidTestEnv(PyBulletEnv):
           pb.removeBody(obj.object_id)
           # obj.resetPose([0.22, 0.06, 0.1], obj_rot_)
         if obj.object_type_id == constants.TEST_TUBE:
+          if self.rot_n % 2 == 1:
+            rot_test_box_size = [self.test_box_size[1], self.test_box_size[0]]
+          else:
+            rot_test_box_size = self.test_box_size[:2]
           rot = 2 * np.pi * np.random.rand()
-          x_offset = (self.test_box_size[0] - 0.08) * np.random.rand()\
-                     - (self.test_box_size[0] - 0.08) / 2
-          y_offset = (self.test_box_size[1] - 0.08) * np.random.rand()\
-                     - (self.test_box_size[1] - 0.08) / 2
+          x_offset = (rot_test_box_size[0] - 0.08) * np.random.rand()\
+                     - (rot_test_box_size[0] - 0.08) / 2
+          y_offset = (rot_test_box_size[1] - 0.08) * np.random.rand()\
+                     - (rot_test_box_size[1] - 0.08) / 2
           obj_rot_ = pb.getQuaternionFromEuler([0, 0, rot])
           obj.resetPose(self.test_box_pos + [x_offset, y_offset, 0.05], obj_rot_)
 
