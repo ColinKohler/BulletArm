@@ -39,6 +39,13 @@ class PyBulletEnv(BaseEnv):
     # Connect to pybullet and add data files to path
     if config['render']:
       self.client = pb.connect(pb.GUI)
+      # For screenshotting envs
+      # pb.configureDebugVisualizer(pb.COV_ENABLE_GUI, 0)
+      # pb.resetDebugVisualizerCamera(
+      #     cameraDistance=1.1,
+      #     cameraYaw=90,
+      #     cameraPitch=-40,
+      #     cameraTargetPosition=[0, 0, 0])
     else:
       self.client = pb.connect(pb.DIRECT)
     pb.setAdditionalSearchPath(pybullet_data.getDataPath())
