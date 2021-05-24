@@ -24,7 +24,7 @@ class CovidTestEnv(PyBulletEnv):
                                        [-0.4, 0],
                                        [0, 0.40]])
     self.plate_model_id = None
-    self.place_offset = None
+    # self.place_offset = None
     self.place_ry_offset = None
     self.end_effector_santilized_t = 0
 
@@ -166,7 +166,7 @@ class CovidTestEnv(PyBulletEnv):
     # self.plate_model_id = np.random.choice([1, 2, 6, 7, 8, 9])
     # self.plate_model_id = 0
     # self.place_ry_offset = PLACE_RY_OFFSET[self.plate_model_id]
-    self.place_offset = 0  # ZXP ???
+    # self.place_offset = 0  # ZXP ???
     self.end_effector_santilized_t = 0
     self.placed_swab = False
     self.resetted = True

@@ -18,6 +18,7 @@ class CovidTestPlanner(BlockStructureBasePlanner):
   def reset(self):
     self.ready_santilize = False
     self.place_on = None
+    self.prev_place = None
 
   def getPickingAction(self):
     if self.env.resetted:
@@ -107,10 +108,16 @@ class CovidTestPlanner(BlockStructureBasePlanner):
       rand_y = y + 0.05 * np.random.rand() - 0.025
       rot = 1.57 + self.env.rot90x
       rand_z = 0.02
-    else:
+      self.prev_place = [rand_x, rand_y, rand_z, rot]
+    else:  # placing swab
+      rand_x, rand_y, rand_z, rot = self.prev_place
       x, y, z = self.env.test_box_pos
-      rand_x = x + 0.05 * np.random.rand() - 0.025
-      rand_y = y + 0.05 * np.random.rand() - 0.025
+      if self.env.rot_n % 2 == 1:
+        rand_x = rand_x + 0.1 * (np.random.rand() > 0.5 - 0.5)
+        rand_y = rand_y + 0.05 * np.random.rand() - 0.025
+      else:
+        rand_x = rand_x + 0.05 * np.random.rand() - 0.025
+        rand_y = rand_y + 0.1 * (np.random.rand() > 0.5 - 0.5)
       rot = self.env.rot90x
       rand_z = 0.02
     return self.encodeAction(constants.PLACE_PRIMATIVE, rand_x, rand_y, rand_z, rot)

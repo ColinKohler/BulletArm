@@ -27,7 +27,7 @@ class TestBulletCovidTest(unittest.TestCase):
   def testPlanner2(self):
     self.env_config['render'] = False
     self.env_config['seed'] = 0
-    num_processes = 1
+    num_processes = 10
     env = env_factory.createEnvs(num_processes, 'pybullet', 'covid_test', self.env_config, self.planner_config)
     total = 0
     s = 0
