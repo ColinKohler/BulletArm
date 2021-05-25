@@ -67,3 +67,6 @@ class BumpyBase:
                                  baseVisualShapeIndex=pf_visual_shape,
                                  basePosition=[pos[0], pos[1], self.bump_offset/2],
                                  baseOrientation=pb.getQuaternionFromEuler((0, 0, rz)))
+
+  def isObjOnPlatform(self, obj):
+    return obj.isTouchingId(self.platform_id)

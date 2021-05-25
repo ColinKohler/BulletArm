@@ -191,7 +191,7 @@ class BlockStructureBasePlanner(BasePlanner):
         break
     x, y, z, r = place_pos[0], place_pos[1], self.env.place_offset, 0
     slope, intercept, r_value, p_value, std_err = scipy.stats.linregress([x, another_obj_position[0]], [y, another_obj_position[1]])
-    r = np.arctan(slope) if self.random_orientation else 0
+    r = np.arctan(slope)+np.pi/2 if self.random_orientation else 0
 
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 

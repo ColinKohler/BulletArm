@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 from helping_hands_rl_envs import env_factory
 
 class TestBulletHouse4(unittest.TestCase):
-  workspace = np.asarray([[0.35, 0.65],
-                          [-0.15, 0.15],
+  workspace = np.asarray([[0.3, 0.7],
+                          [-0.2, 0.2],
                           [0, 0.50]])
   env_config = {'workspace': workspace, 'max_steps': 20, 'obs_size': 90, 'render': True, 'fast_mode': True,
                 'seed': 0, 'action_sequence': 'pxyzr', 'num_objects': 6, 'random_orientation': True,

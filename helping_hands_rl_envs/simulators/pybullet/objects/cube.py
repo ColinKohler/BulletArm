@@ -8,6 +8,7 @@ import os
 import helping_hands_rl_envs
 from helping_hands_rl_envs.simulators.pybullet.objects.pybullet_object import PybulletObject
 from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 
 class Cube(PybulletObject):
   def __init__(self, pos, rot, scale):
@@ -22,3 +23,23 @@ class Cube(PybulletObject):
 
   def getHeight(self):
     return self.size
+
+  def getRotation(self):
+    pos, rot = self.getPose()
+    return rot
+
+  def getPose(self):
+    pos, rot = pb.getBasePositionAndOrientation(self.object_id)
+    T = transformations.quaternion_matrix(rot)
+    t = 0
+    while T[2, 2] < 0.5 and t < 4:
+      T = T.dot(transformations.euler_matrix(np.pi/2, 0, 0))
+      t += 1
+
+    t = 0
+    while T[2, 2] < 0.5 and t < 4:
+      T = T.dot(transformations.euler_matrix(0, np.pi/2, 0))
+      t += 1
+
+    rot = transformations.quaternion_from_matrix(T)
+    return list(pos), list(rot)
