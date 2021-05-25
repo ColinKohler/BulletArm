@@ -90,7 +90,7 @@ class BottleTrayEnv(PyBulletEnv):
   def getObjsOutsideBox(self):
     return list(filter(lambda obj: not self.isObjInBox(obj), self.objects))
 
-def createBlockBinPackingEnv(config):
+def createBottleTrayEnv(config):
   return BottleTrayEnv(config)
 
 if __name__ == '__main__':

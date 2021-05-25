@@ -74,6 +74,9 @@ class BumpyBoxPalletizingEnv(BoxPalletizingEnv, BumpyBase):
     pb.changeDynamics(box.object_id, -1, linearDamping=0.04, angularDamping=0.04, restitution=0,
                       contactStiffness=3000, contactDamping=100)
 
+def createBumpyBoxPalletizingEnv(config):
+  return BumpyBoxPalletizingEnv(config)
+
 if __name__ == '__main__':
   workspace = np.asarray([[0.3, 0.7],
                           [-0.2, 0.2],
