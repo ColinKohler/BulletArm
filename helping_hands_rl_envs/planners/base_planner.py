@@ -92,6 +92,7 @@ class BasePlanner(object):
           rz -= np.pi
           rx = -rx
           ry = -ry
+        r = rz, ry, rx
     return self.env._encodeAction(primitive, x, y, z, r)
 
   def getObjects(self, obj_type=None):

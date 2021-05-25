@@ -27,8 +27,7 @@ class BumpyBoxPalletizingEnv(BoxPalletizingEnv, BumpyBase):
 
   def generateOneBox(self):
     super().generateOneBox()
-    pb.changeDynamics(self.objects[-1].object_id, -1, linearDamping=0.04, angularDamping=0.04, restitution=0,
-                      contactStiffness=3000, contactDamping=100)
+    self._changeBoxDynamics(self.objects[-1])
     for _ in range(100):
       pb.stepSimulation()
 
@@ -39,12 +38,13 @@ class BumpyBoxPalletizingEnv(BoxPalletizingEnv, BumpyBase):
       self.resetPybulletEnv()
       BumpyBase.resetBumps(self)
       self.resetPallet()
+      pb.changeDynamics(self.pallet.object_id, -1, linearDamping=0.04, angularDamping=0.04, restitution=0,
+                        contactStiffness=3000, contactDamping=100)
       BumpyBase.resetPlatform(self, self.pallet_pos, self.pallet_rz, self.pallet_size)
 
       try:
         self._generateShapes(constants.BOX, 1, random_orientation=self.random_orientation)
-        pb.changeDynamics(self.objects[-1].object_id, -1, linearDamping=0.04, angularDamping=0.04, restitution=0,
-                          contactStiffness=3000, contactDamping=100)
+        self._changeBoxDynamics(self.objects[-1])
       except NoValidPositionException:
         continue
       else:
@@ -69,6 +69,10 @@ class BumpyBoxPalletizingEnv(BoxPalletizingEnv, BumpyBase):
       if p[2] == self.table_id or p[2] in self.bump_ids:
         return True
     return False
+
+  def _changeBoxDynamics(self, box):
+    pb.changeDynamics(box.object_id, -1, linearDamping=0.04, angularDamping=0.04, restitution=0,
+                      contactStiffness=3000, contactDamping=100)
 
 if __name__ == '__main__':
   workspace = np.asarray([[0.3, 0.7],

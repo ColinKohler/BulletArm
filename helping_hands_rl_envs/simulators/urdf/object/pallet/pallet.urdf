@@ -20,10 +20,22 @@
         <color rgba="0.8706, 0.7216, 0.5294 1"/>
       </material>
     </visual>
+    <!--<visual>-->
+      <!--<origin rpy="0 0 0" xyz="0 0 0"/>-->
+      <!--<geometry>-->
+        <!--<box size="0.29 0.24 0.038"/>-->
+      <!--</geometry>-->
+    <!--</visual>-->
+    <!--<collision>-->
+      <!--<origin rpy="0 0 0" xyz="0 0 0"/>-->
+      <!--<geometry>-->
+        <!--<mesh filename="pallet.obj" scale="0.25 0.25 0.25"/>-->
+      <!--</geometry>-->
+    <!--</collision>-->
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="pallet.obj" scale="0.25 0.25 0.25"/>
+        <box size="0.29 0.24 0.038"/>
       </geometry>
     </collision>
   </link>

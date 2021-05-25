@@ -94,9 +94,10 @@ class BoxPalletizingEnv(PyBulletEnv):
     n_obj_on_ground = len(list(filter(lambda o: self._isObjOnGround(o), self.objects)))
     level1_objs, level2_objs, level3_objs = self.getObjEachLevel()
     # if level 2 is filled, freeze the level 1 boxes to speed up simulation
-    if len(level2_objs) == 6:
+    if len(level2_objs) == 6 and len(level3_objs) == 0:
       for obj in level1_objs:
         pb.changeDynamics(obj.object_id, -1, mass=0)
+        pb.resetBaseVelocity(obj.object_id, [0, 0, 0], [0, 0, 0])
     if self.isSimValid() and len(self.objects) < self.num_obj and not self._isHolding() and n_obj_on_ground == 0:
       self.generateOneBox()
     obs = self._getObservation(action)
