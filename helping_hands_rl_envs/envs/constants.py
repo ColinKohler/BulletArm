@@ -55,6 +55,7 @@ from helping_hands_rl_envs.envs.pybullet_envs.random_household_picking_clutter_e
 from helping_hands_rl_envs.envs.pybullet_envs.bowl_spoon_cup_env import BowlSpoonCupEnv
 from helping_hands_rl_envs.envs.pybullet_envs.bottle_tray_env import BottleTrayEnv
 from helping_hands_rl_envs.envs.pybullet_envs.box_palletizing_env import BoxPalletizingEnv
+from helping_hands_rl_envs.envs.pybullet_envs.bumpy_envs.bumpy_box_palletizing_env import BumpyBoxPalletizingEnv
 
 CREATE_NUMPY_ENV_FNS = {
   'block_picking' : createBlockPickingEnv,
@@ -127,4 +128,5 @@ CREATE_PYBULLET_ENV_FNS = {
   'bowl_spoon_cup': BowlSpoonCupEnv,
   'bottle_tray': BottleTrayEnv,
   'box_palletizing': BoxPalletizingEnv,
+  'bumpy_box_palletizing': BumpyBoxPalletizingEnv,
 }

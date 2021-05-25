@@ -73,4 +73,5 @@ PLANNERS = {
   'bowl_spoon_cup': BowlSpoonCupPlanner,
   'bottle_tray': BottleTrayPlanner,
   'box_palletizing': BoxPalletizingPlanner,
+  'bumpy_box_palletizing': BoxPalletizingPlanner,
 }

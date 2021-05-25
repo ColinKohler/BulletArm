@@ -76,11 +76,22 @@ class BasePlanner(object):
     x, y = self.addNoiseToPos(x, y, primitive)
     # TODO: addNoiseToRot with 3 rots
     if self.rot_noise: r = self.addNoiseToRot(r)
-    if not hasattr(r, '__len__') and self.half_rotation:
-      while r < 0:
-        r += np.pi
-      while r > np.pi:
-        r -= np.pi
+    if self.half_rotation:
+      if not hasattr(r, '__len__'):
+        while r < 0:
+          r += np.pi
+        while r > np.pi:
+          r -= np.pi
+      else:
+        rz, ry, rx = r
+        while rz < 0:
+          rz += np.pi
+          rx = -rx
+          ry = -ry
+        while rz > np.pi:
+          rz -= np.pi
+          rx = -rx
+          ry = -ry
     return self.env._encodeAction(primitive, x, y, z, r)
 
   def getObjects(self, obj_type=None):

@@ -13,6 +13,7 @@ class BoxPalletizingEnv(PyBulletEnv):
   def __init__(self, config):
     super().__init__(config)
     self.pallet_height = 0.0435*self.block_scale_range[1]
+    self.pallet_z = self.pallet_height/2
     self.pallet_pos = [0.5, 0.1, self.pallet_height/2]
     self.pallet_size = [self.block_scale_range[1]*0.076*3, self.block_scale_range[1]*0.11*2]
     self.pallet_rz = 0
@@ -37,7 +38,7 @@ class BoxPalletizingEnv(PyBulletEnv):
     self.pallet_rz = np.random.random_sample() * np.pi
     # self.pallet_rz = np.random.choice(np.linspace(0, np.pi, 8, endpoint=False))
     self.pallet_pos = self._getValidPositions(np.linalg.norm([self.pallet_size[0]/2, self.pallet_size[1]/2])*2, 0, [], 1)[0]
-    self.pallet_pos.append(self.pallet_height/2)
+    self.pallet_pos.append(self.pallet_z)
 
     self.pallet = Pallet(self.pallet_pos, transformations.quaternion_from_euler(0, 0, self.pallet_rz), self.block_scale_range[1])
 
