@@ -214,14 +214,18 @@ class CovidTestEnv(PyBulletEnv):
     on_table_obj, on_table_obj_type = self.OnTableObj()
     on_table_tube = None
     on_table_swab = None
+    num_on_table_tube = 0
+    num_on_table_swab = 0
     if constants.TEST_TUBE in on_table_obj_type \
       and constants.SWAB in on_table_obj_type:
       for obj in on_table_obj:
+        if num_on_table_tube > 1 or num_on_table_swab > 1:
+          break
         if obj.object_type_id == constants.SWAB:
           # obj_rot_ = pb.getQuaternionFromEuler([0, 0, 0])
           self.objects.remove(obj)
           pb.removeBody(obj.object_id)
-          # obj.resetPose([0.22, 0.06, 0.1], obj_rot_)
+          num_on_table_swab += 1
         if obj.object_type_id == constants.TEST_TUBE:
           if self.rot_n % 2 == 1:
             rot_test_box_size = [self.test_box_size[1], self.test_box_size[0]]
@@ -234,6 +238,7 @@ class CovidTestEnv(PyBulletEnv):
                      - (rot_test_box_size[1] - 0.08) / 2
           obj_rot_ = pb.getQuaternionFromEuler([0, 0, rot])
           obj.resetPose(self.test_box_pos + [x_offset, y_offset, 0.05], obj_rot_)
+          num_on_table_tube += 1
 
         self.wait(20)
         self.placed_swab = True
@@ -261,7 +266,10 @@ class CovidTestEnv(PyBulletEnv):
       reward = 0
 
     if not done:
-      done = self.current_episode_steps >= self.max_steps or not self.isSimValid()
+      done = self.current_episode_steps >= self.max_steps\
+             or not self.isSimValid()\
+             or num_on_table_tube > 1\
+             or num_on_table_swab > 1
     self.current_episode_steps += 1
 
     return obs, reward, done
@@ -290,7 +298,9 @@ class CovidTestEnv(PyBulletEnv):
 
   def _checkTermination(self):
     # prepare multiple swab-tube pair
-    if len(self.numTubesInUsedBox()) == 3 and self.end_effector_santilized_t == 1:
+    if self.end_effector_santilized_t == 1\
+            and len(self.numTubesInUsedBox()) == 3\
+            and len(self.numSwabs()) == 0:
       return True
 
     # # prepare one swab-tube pair
@@ -364,6 +374,13 @@ class CovidTestEnv(PyBulletEnv):
       if obj.object_type_id == constants.TEST_TUBE:
         tubes.append(obj)
     return tubes
+
+  def numSwabs(self):
+    swabs = []
+    for obj in self.objects:
+      if obj.object_type_id == constants.SWAB:
+        swabs.append(obj)
+    return swabs
 
 
 def createCovidTestEnv(config):
