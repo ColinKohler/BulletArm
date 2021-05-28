@@ -171,6 +171,7 @@ class CovidTestEnv(PyBulletEnv):
     self.placed_swab = False
     self.resetted = True
     self.no_obj_split = True
+    self.swab_delet_times = 0
 
     while True:
       self.resetPybulletEnv()
@@ -216,17 +217,23 @@ class CovidTestEnv(PyBulletEnv):
     on_table_swab = None
     num_on_table_tube = 0
     num_on_table_swab = 0
+    for obj in on_table_obj:
+      if obj.object_type_id == constants.SWAB:
+        num_on_table_swab += 1
+      if obj.object_type_id == constants.TEST_TUBE:
+        num_on_table_tube += 1
+    if num_on_table_tube == 0 and num_on_table_swab == 0:
+      self.swab_delet_times = 0
     if constants.TEST_TUBE in on_table_obj_type \
       and constants.SWAB in on_table_obj_type:
       for obj in on_table_obj:
         if num_on_table_tube > 1 or num_on_table_swab > 1:
           break
-        if obj.object_type_id == constants.SWAB:
-          # obj_rot_ = pb.getQuaternionFromEuler([0, 0, 0])
+        if obj.object_type_id == constants.SWAB and self.swab_delet_times == 0:
           self.objects.remove(obj)
           pb.removeBody(obj.object_id)
-          num_on_table_swab += 1
-        if obj.object_type_id == constants.TEST_TUBE:
+          self.swab_delet_times += 1
+        if obj.object_type_id == constants.TEST_TUBE and self.swab_delet_times == 0:
           if self.rot_n % 2 == 1:
             rot_test_box_size = [self.test_box_size[1], self.test_box_size[0]]
           else:
@@ -238,7 +245,6 @@ class CovidTestEnv(PyBulletEnv):
                      - (rot_test_box_size[1] - 0.08) / 2
           obj_rot_ = pb.getQuaternionFromEuler([0, 0, rot])
           obj.resetPose(self.test_box_pos + [x_offset, y_offset, 0.05], obj_rot_)
-          num_on_table_tube += 1
 
         self.wait(20)
         self.placed_swab = True
