@@ -91,13 +91,6 @@ class CovidTestPlanner(BlockStructureBasePlanner):
       self.ready_santilize = True
       return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
-    # # for one swab-tube pair
-    # if self.env.placed_swab:
-    #   x, y, z = self.env.used_tube_box_pos
-    #   z = 0.02
-    #   r = 1.57
-    #   self.ready_santilize = True
-    #   return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
     in_hand_obj = self.env.robot.getPickedObj(self.env.objects)
     if in_hand_obj == [] or in_hand_obj is None:
       rand_x, rand_y, rot = 0, 0, 0
@@ -110,7 +103,11 @@ class CovidTestPlanner(BlockStructureBasePlanner):
       rand_z = 0.02
       self.prev_place = [rand_x, rand_y, rand_z, rot]
     else:  # placing swab
-      rand_x, rand_y, rand_z, rot = self.prev_place
+      if self.prev_place is None:
+        rand_x, rand_y, rand_z = self.env.test_box_pos
+        rot = 0
+      else:
+        rand_x, rand_y, rand_z, rot = self.prev_place
       x, y, z = self.env.test_box_pos
       if self.env.rot_n % 2 == 1:
         rand_x = rand_x + 0.1 * (np.random.rand() > 0.5 - 0.5)

@@ -76,40 +76,6 @@ class CovidTestEnv(PyBulletEnv):
     self.tube_pos_candidate_o += self.new_tube_box_pos_o
     self.swab_pos_candidate_o += self.new_tube_box_pos_o
 
-    # # for workspace = 0.4
-    # self.box = BoxColor()
-    # self.new_tube_box_pos = [0.4, 0.075, 0]
-    # self.new_tube_box_size = [0.24, 0.24, 0.005]
-    # self.santilizing_box_pos = [0.4, -0.075, 0]
-    # self.santilizing_box_size = [0.24, 0.05, 0.03]
-    # self.used_tube_box_pos = [0.4, -0.15, 0]
-    # self.used_tube_box_size = [0.24, 0.09, 0.02]
-    # self.test_box_pos = [0.6, 0.00, 0]
-    # self.test_box_size = [0.15, 0.39, 0.01]
-    # self.tube_pos_candidate = [[(0.35, 0.15, 0.01)],
-    #                            [(0.4, 0.15, 0.01)],
-    #                            [(0.45, 0.15, 0.01)]]
-    # self.swab_pos_candidate = [[(0.35, 0.08, 0.01)],
-    #                            [(0.4, 0.08, 0.01)],
-    #                            [(0.45, 0.08, 0.01)]]
-
-    # # for workspace = np.asarray([[0.1, 0.7],
-      #                         [-0.3, 0.3],
-      #                         [0, 0.50]])
-    # self.new_tube_box_pos = [0.22, 0.12, 0]
-    # self.new_tube_box_size = [0.24, 0.36, 0.01]
-    # self.santilizing_box_pos = [0.22, -0.11, 0]
-    # self.santilizing_box_size = [0.24, 0.08, 0.05]
-    # self.used_tube_box_pos = [0.22, -0.23, 0]
-    # self.used_tube_box_size = [0.24, 0.14, 0.1]
-    # self.test_box_pos = [0.52, 0.00, 0]
-    # self.test_box_size = [0.32, 0.6, 0.015]
-    # self.tube_pos_candidate = [[(0.16, 0.22, 0.01)],
-    #                            [(0.22, 0.22, 0.01)],
-    #                            [(0.28, 0.22, 0.01)]]
-    # self.swab_pos_candidate = [[(0.16, 0.05, 0.01)],
-    #                            [(0.22, 0.05, 0.01)],
-    #                            [(0.28, 0.05, 0.01)]]
 
   def initialize(self):
     super().initialize()
@@ -207,11 +173,11 @@ class CovidTestEnv(PyBulletEnv):
       rot_santilizing_box_size = [self.santilizing_box_size[1], self.santilizing_box_size[0]]
     else:
       rot_santilizing_box_size = self.santilizing_box_size[:2]
-    if self.end_effector_santilized_t > 0:
-      self.end_effector_santilized_t += 1
-    elif motion_primative == 0 and \
+    if motion_primative == 0 and \
             self.isObjInBox([x, y, z], self.santilizing_box_pos, rot_santilizing_box_size):
       self.end_effector_santilized_t = 1
+    elif self.end_effector_santilized_t > 0:
+      self.end_effector_santilized_t += 1
     on_table_obj, on_table_obj_type = self.OnTableObj()
     on_table_tube = None
     on_table_swab = None
