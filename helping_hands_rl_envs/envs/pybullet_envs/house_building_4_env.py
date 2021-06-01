@@ -1,4 +1,5 @@
 from copy import deepcopy
+import numpy as np
 from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
@@ -32,7 +33,9 @@ class HouseBuilding4Env(PyBulletEnv):
       return False
 
     level2_blocks = list(set(blocks) - set(level1_blocks))
-    return self._checkOnTop(level1_blocks[0], bricks[0]) and \
+    level1_dist = np.linalg.norm(np.array(level1_blocks[0].getPosition()) - np.array(level1_blocks[1].getPosition()))
+    return level1_dist < 2.5 * self.max_block_size and \
+           self._checkOnTop(level1_blocks[0], bricks[0]) and \
            self._checkOnTop(level1_blocks[1], bricks[0]) and \
            self._checkOnTop(bricks[0], level2_blocks[0]) and \
            self._checkOnTop(bricks[0], level2_blocks[1]) and \
