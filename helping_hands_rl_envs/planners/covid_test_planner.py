@@ -35,11 +35,12 @@ class CovidTestPlanner(BlockStructureBasePlanner):
     elif len(on_table_obj) != 0:
       self.place_on = 'used_tube_box'
       return self.pickStickOnTop(on_table_obj)
-    elif len(in_box_tubes) != 0:
+    # elif len(in_box_tubes) != 0:
+    else:
       self.place_on = 'table'
       return self.pickStickOnTop(in_box_tubes)
-    else:
-      return self.santilize()
+    # else:
+    #   return self.santilize()
 
     # # prepare one swab-tube pair
     # if self.ready_santilize:
