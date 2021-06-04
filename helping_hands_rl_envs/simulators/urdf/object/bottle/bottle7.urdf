@@ -14,16 +14,22 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0.06"/>
       <geometry>
-        <mesh filename="bottle7.obj" scale="0.2 0.2 0.2"/>
+        <mesh filename="bottle7.obj" scale="0.2 0.2 0.16"/>
       </geometry>
       <material name="">
         <color rgba="0.25 0.25 0.25 1" />
       </material>
     </visual>
+    <!--<collision>-->
+      <!--<origin rpy="0 0 0" xyz="0 0 0.06"/>-->
+      <!--<geometry>-->
+        <!--<mesh filename="bottle7.obj" scale="0.2 0.2 0.16"/>-->
+      <!--</geometry>-->
+    <!--</collision>-->
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0.06"/>
       <geometry>
-        <mesh filename="bottle7.obj" scale="0.2 0.2 0.2"/>
+        <cylinder radius="0.028" length="0.168"/>
       </geometry>
     </collision>
   </link>

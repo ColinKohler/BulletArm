@@ -67,7 +67,7 @@ class BottleTrayEnv(PyBulletEnv):
   def step(self, action):
     motion_primative, x, y, z, rot = self._decodeAction(action)
     if motion_primative == constants.PICK_PRIMATIVE:
-      self.place_offset = z
+      self.place_offset = z + 0.005
     return super().step(action)
 
   def _checkTermination(self):

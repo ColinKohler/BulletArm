@@ -11,20 +11,20 @@ class ContainerBox:
     self.id = None
 
   def initialize(self, pos=(0,0,0), rot=(0,0,0,1), size=(0.2, 0.2, 0.2)):
-    bottom_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[size[0]/2, size[1]/2, 0.002], rgbaColor=[1, 1, 1, 1])
-    bottom_collision = pb.createCollisionShape(pb.GEOM_BOX, halfExtents=[size[0]/2, size[1]/2, 0.002])
+    bottom_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[size[0]/2, size[1]/2, 0.005], rgbaColor=[1, 1, 1, 1])
+    bottom_collision = pb.createCollisionShape(pb.GEOM_BOX, halfExtents=[size[0]/2, size[1]/2, 0.005])
 
-    front_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[0.002, size[1]/2, size[2]/2], rgbaColor=[1, 1, 1, 1])
-    front_collision = pb.createCollisionShape(pb.GEOM_BOX, halfExtents=[0.002, size[1]/2, size[2]/2])
+    front_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[0.005, size[1]/2, size[2]/2], rgbaColor=[1, 1, 1, 1])
+    front_collision = pb.createCollisionShape(pb.GEOM_BOX, halfExtents=[0.005, size[1]/2, size[2]/2])
 
-    back_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[0.002, size[1] / 2, size[2] / 2], rgbaColor=[1, 1, 1, 1])
-    back_collision = pb.createCollisionShape(pb.GEOM_BOX, halfExtents=[0.002, size[1] / 2, size[2] / 2])
+    back_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[0.005, size[1] / 2, size[2] / 2], rgbaColor=[1, 1, 1, 1])
+    back_collision = pb.createCollisionShape(pb.GEOM_BOX, halfExtents=[0.005, size[1] / 2, size[2] / 2])
 
-    left_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[size[0]/2, 0.002, size[2] / 2], rgbaColor=[1, 1, 1, 1])
-    left_collision = pb.createCollisionShape(pb.GEOM_BOX, halfExtents=[size[0]/2, 0.002, size[2] / 2])
+    left_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[size[0]/2, 0.005, size[2] / 2], rgbaColor=[1, 1, 1, 1])
+    left_collision = pb.createCollisionShape(pb.GEOM_BOX, halfExtents=[size[0]/2, 0.005, size[2] / 2])
 
-    right_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[size[0]/2, 0.002, size[2]/2], rgbaColor=[1, 1, 1, 1])
-    right_collision = pb.createCollisionShape(pb.GEOM_BOX, halfExtents=[size[0]/2, 0.002, size[2]/2])
+    right_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[size[0]/2, 0.005, size[2]/2], rgbaColor=[1, 1, 1, 1])
+    right_collision = pb.createCollisionShape(pb.GEOM_BOX, halfExtents=[size[0]/2, 0.005, size[2]/2])
 
     self.id = pb.createMultiBody(baseMass=0,
                                  baseCollisionShapeIndex=bottom_collision,
