@@ -162,15 +162,6 @@ class CovidTestEnv(PyBulletEnv):
   def step(self, action):
     self.takeAction(action)
     motion_primative, x, y, z, rot = self._decodeAction(action)
-    # if self.rot_n % 2 == 1:
-    #   rot_santilizing_box_size = [self.santilizing_box_size[1], self.santilizing_box_size[0]]
-    # else:
-    #   rot_santilizing_box_size = self.santilizing_box_size[:2]
-    # if motion_primative == 0 and \
-    #         self.isObjInBox([x, y, z], self.santilizing_box_pos, rot_santilizing_box_size):
-    #   self.end_effector_santilized_t = 1
-    # elif self.end_effector_santilized_t > 0:
-    #   self.end_effector_santilized_t += 1
     on_table_obj, on_table_obj_type = self.OnTableObj()
     num_on_table_tube = 0
     num_on_table_swab = 0
@@ -179,8 +170,6 @@ class CovidTestEnv(PyBulletEnv):
         num_on_table_swab += 1
       if obj.object_type_id == constants.TEST_TUBE:
         num_on_table_tube += 1
-    # if num_on_table_tube == 0 and num_on_table_swab == 0:
-    #   self.swab_delet_times = 0
 
     if num_on_table_tube == 1 and num_on_table_swab == 1 and self.used_tube is None:
       for obj in on_table_obj:
@@ -203,32 +192,6 @@ class CovidTestEnv(PyBulletEnv):
     elif num_on_table_tube == 1 and num_on_table_swab == 1 and self.used_tube:
       num_on_table_tube = 2  # end the episode
 
-    # if constants.TEST_TUBE in on_table_obj_type \
-    #   and constants.SWAB in on_table_obj_type:
-    #   for obj in on_table_obj:
-    #     if num_on_table_tube > 1 or num_on_table_swab > 1:
-    #       break
-    #     if obj.object_type_id == constants.SWAB and self.swab_delet_times == 0 and not self.used_tube:
-    #       self.objects.remove(obj)
-    #       pb.removeBody(obj.object_id)
-    #       self.swab_delet_times += 1
-    #       self.used_tube = True
-    #     if obj.object_type_id == constants.TEST_TUBE and self.swab_delet_times == 0:
-    #       if self.rot_n % 2 == 1:
-    #         rot_test_box_size = [self.test_box_size[1], self.test_box_size[0]]
-    #       else:
-    #         rot_test_box_size = self.test_box_size[:2]
-    #       rot = 2 * np.pi * np.random.rand()
-    #       x_offset = (rot_test_box_size[0] - 0.08) * np.random.rand()\
-    #                  - (rot_test_box_size[0] - 0.08) / 2
-    #       y_offset = (rot_test_box_size[1] - 0.08) * np.random.rand()\
-    #                  - (rot_test_box_size[1] - 0.08) / 2
-    #       obj_rot_ = pb.getQuaternionFromEuler([0, 0, rot])
-    #       obj.resetPose(self.test_box_pos + [x_offset, y_offset, 0.05], obj_rot_)
-    #       self.used_tube = max(self.used_tube, 1)
-    #
-    #     self.wait(20)
-    #     self.placed_swab = True
 
     if self.used_tube is not None and self.used_tube in self.tubesInUsedBox():
       self.used_tube = None
@@ -259,9 +222,6 @@ class CovidTestEnv(PyBulletEnv):
                      [box_pos[1] - box_size[1] / 2, box_pos[1] + box_size[1] / 2]])
 
   def _checkTermination(self):
-    # if self.end_effector_santilized_t == 1\
-    #         and len(self.tubesInUsedBox()) == 3\
-    #         and len(self.numSwabs()) == 0:
     if len(self.tubesInUsedBox()) == 3\
             and len(self.numSwabs()) == 0:
       return True
