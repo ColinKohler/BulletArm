@@ -23,7 +23,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <box size="0.29 0.24 0.03175"/>
+        <box size="0.3125 0.25 0.0275"/>
       </geometry>
       <material name="light wood yellow">
         <color rgba="0.8706, 0.7216, 0.5294 1"/>
@@ -38,7 +38,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <box size="0.29 0.24 0.03175"/>
+        <box size="0.3125 0.25 0.0275"/>
       </geometry>
     </collision>
   </link>

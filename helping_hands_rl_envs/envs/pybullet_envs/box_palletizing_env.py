@@ -12,7 +12,7 @@ from helping_hands_rl_envs.planners.box_palletizing_planner import BoxPalletizin
 class BoxPalletizingEnv(PyBulletEnv):
   def __init__(self, config):
     super().__init__(config)
-    self.pallet_height = 0.03175*self.block_scale_range[1]
+    self.pallet_height = 0.0275*self.block_scale_range[1]
     self.pallet_z = self.pallet_height/2
     self.pallet_pos = [0.5, 0.1, self.pallet_height/2]
     self.pallet_size = [self.block_scale_range[1]*0.076*3, self.block_scale_range[1]*0.11*2]
