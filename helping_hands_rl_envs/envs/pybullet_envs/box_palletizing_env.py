@@ -12,7 +12,7 @@ from helping_hands_rl_envs.planners.box_palletizing_planner import BoxPalletizin
 class BoxPalletizingEnv(PyBulletEnv):
   def __init__(self, config):
     super().__init__(config)
-    self.pallet_height = 0.0435*self.block_scale_range[1]
+    self.pallet_height = 0.03175*self.block_scale_range[1]
     self.pallet_z = self.pallet_height/2
     self.pallet_pos = [0.5, 0.1, self.pallet_height/2]
     self.pallet_size = [self.block_scale_range[1]*0.076*3, self.block_scale_range[1]*0.11*2]
@@ -40,7 +40,8 @@ class BoxPalletizingEnv(PyBulletEnv):
     self.pallet_pos = self._getValidPositions(np.linalg.norm([self.pallet_size[0]/2, self.pallet_size[1]/2])*2, 0, [], 1)[0]
     self.pallet_pos.append(self.pallet_z)
 
-    self.pallet = Pallet(self.pallet_pos, transformations.quaternion_from_euler(0, 0, self.pallet_rz), self.block_scale_range[1])
+    self.pallet = Pallet(self.pallet_pos, transformations.quaternion_from_euler(0, 0, self.pallet_rz),
+                         np.random.choice(np.arange(self.block_scale_range[0], self.block_scale_range[1]+0.01, 0.02)))
 
     # pos candidate for odd layer
     dx = self.pallet_size[0] / 6
@@ -73,6 +74,7 @@ class BoxPalletizingEnv(PyBulletEnv):
         continue
       else:
         break
+    self._changeBoxDynamics(self.objects[-1])
 
   def reset(self):
     while True:
@@ -82,6 +84,7 @@ class BoxPalletizingEnv(PyBulletEnv):
       self.resetPallet()
       try:
         self._generateShapes(constants.BOX, 1, random_orientation=self.random_orientation)
+        self._changeBoxDynamics(self.objects[-1])
       except NoValidPositionException:
         continue
       else:
@@ -166,6 +169,10 @@ class BoxPalletizingEnv(PyBulletEnv):
     level2_rz_ok = all(map(lambda rz: rz_close(rz, level2_rz_goal), level2_rz))
     level3_rz_ok = all(map(lambda rz: rz_close(rz, level3_rz_goal), level3_rz))
     return level1_rz_ok and level2_rz_ok and level3_rz_ok
+
+  def _changeBoxDynamics(self, box):
+    pb.changeDynamics(box.object_id, -1, linearDamping=0.04, angularDamping=0.04, restitution=0,
+                      contactStiffness=3000, contactDamping=100)
 
 def createBoxPalletizingEnv(config):
   return BoxPalletizingEnv(config)
