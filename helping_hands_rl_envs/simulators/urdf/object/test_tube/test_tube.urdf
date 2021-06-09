@@ -5,6 +5,7 @@
     <contact>
       <lateral_friction value="1.0"/>
       <inertia_scaling value="3.0"/>
+      <spinning_friction value=".1"/>
       <rolling_friction value="1.0"/>
     </contact>
     <inertial>
@@ -33,6 +34,7 @@
     <contact>
       <lateral_friction value="1.0"/>
       <inertia_scaling value="3.0"/>
+      <spinning_friction value=".1"/>
       <rolling_friction value="1.0"/>
     </contact>
     <inertial>
