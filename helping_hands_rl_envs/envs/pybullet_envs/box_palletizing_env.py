@@ -26,6 +26,8 @@ class BoxPalletizingEnv(PyBulletEnv):
     self.odd_place_pos_candidate = []
     self.even_place_pos_candidate = []
 
+    self.place_rz_valid = True
+
   def _getExistingXYPositions(self):
     positions = []
     for pos in self.odd_place_pos_candidate:
@@ -92,6 +94,12 @@ class BoxPalletizingEnv(PyBulletEnv):
     return self._getObservation()
 
   def step(self, action):
+    motion_primative, x, y, z, rot = self._decodeAction(action)
+    if self.place_rz_valid and motion_primative == constants.PLACE_PRIMATIVE:
+      angle_diff = abs(rot[2] - self.pallet_rz)
+      angle_diff = min(angle_diff, abs(angle_diff - np.pi))
+      self.place_rz_valid = angle_diff < np.pi/32 or abs(angle_diff - np.pi/2) < np.pi/32
+
     self.takeAction(action)
     self.wait(100)
     n_obj_on_ground = len(list(filter(lambda o: self._isObjOnGround(o), self.objects)))
@@ -171,7 +179,7 @@ class BoxPalletizingEnv(PyBulletEnv):
     return level1_rz_ok and level2_rz_ok and level3_rz_ok
 
   def isSimValid(self):
-    return self.checkRzValid() and super().isSimValid()
+    return self.place_rz_valid and super().isSimValid()
 
   def _changeBoxDynamics(self, box):
     pb.changeDynamics(box.object_id, -1, linearDamping=0.04, angularDamping=0.04, restitution=0,
