@@ -163,12 +163,15 @@ class BoxPalletizingEnv(PyBulletEnv):
         rz -= np.pi
       angle_diff = abs(rz - goal)
       angle_diff = min(angle_diff, abs(angle_diff - np.pi))
-      return angle_diff < np.deg2rad(30)
+      return angle_diff < np.pi/16
 
     level1_rz_ok = all(map(lambda rz: rz_close(rz, level1_rz_goal), level1_rz))
     level2_rz_ok = all(map(lambda rz: rz_close(rz, level2_rz_goal), level2_rz))
     level3_rz_ok = all(map(lambda rz: rz_close(rz, level3_rz_goal), level3_rz))
     return level1_rz_ok and level2_rz_ok and level3_rz_ok
+
+  def isSimValid(self):
+    return self.checkRzValid() and super().isSimValid()
 
   def _changeBoxDynamics(self, box):
     pb.changeDynamics(box.object_id, -1, linearDamping=0.04, angularDamping=0.04, restitution=0,
