@@ -1,0 +1,46 @@
+<?xml version="0.0" ?>
+<robot name="cube.urdf">
+  <link name="baseLink">
+    <contact>
+      <lateral_friction value="1.0"/>
+      <rolling_friction value="0.0001"/>
+      <inertia_scaling value="3.0"/>
+    </contact>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+       <mass value=".1"/>
+       <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0.00375"/>
+      <geometry>
+        <mesh filename="pallet1.obj" scale="1.25 1.25 1.25"/>
+      </geometry>
+      <material name="light wood yellow">
+        <color rgba="0.8706, 0.7216, 0.5294 1"/>
+      </material>
+    </visual>
+    <!--<visual>-->
+      <!--<origin rpy="0 0 0" xyz="0 0 0.023125"/>-->
+      <!--<geometry>-->
+        <!--<box size="0.30 0.2524 0.04625"/>-->
+      <!--</geometry>-->
+      <!--<material name="light wood yellow">-->
+        <!--<color rgba="0.8706, 0.7216, 0.5294 1"/>-->
+      <!--</material>-->
+    <!--</visual>-->
+    <!--<collision>-->
+      <!--<origin rpy="0 0 0" xyz="0 0 0.00375"/>-->
+      <!--<geometry>-->
+        <!--<mesh filename="pallet1.obj" scale="1.25 1.25 1.25"/>-->
+      <!--</geometry>-->
+    <!--</collision>-->
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0.02"/>
+      <geometry>
+        <box size="0.30 0.2524 0.04625"/>
+      </geometry>
+    </collision>
+  </link>
+</robot>
+

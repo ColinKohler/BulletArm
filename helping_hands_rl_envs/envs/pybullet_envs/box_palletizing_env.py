@@ -12,10 +12,10 @@ from helping_hands_rl_envs.planners.box_palletizing_planner import BoxPalletizin
 class BoxPalletizingEnv(PyBulletEnv):
   def __init__(self, config):
     super().__init__(config)
-    self.pallet_height = 0.0275*self.block_scale_range[1]
-    self.pallet_z = self.pallet_height/2
+    self.pallet_height = 0.04625*self.block_scale_range[1]
+    self.pallet_z = 0
     self.pallet_pos = [0.5, 0.1, self.pallet_height/2]
-    self.pallet_size = [self.block_scale_range[1]*0.076*3, self.block_scale_range[1]*0.11*2]
+    self.pallet_size = [np.mean(self.block_scale_range)*0.076*3, np.mean(self.block_scale_range)*0.11*2]
     self.pallet_rz = 0
     self.pallet = None
     self.box_height = 0.056 * self.block_scale_range[1]
@@ -53,7 +53,7 @@ class BoxPalletizingEnv(PyBulletEnv):
     R = np.array([[np.cos(self.pallet_rz), -np.sin(self.pallet_rz)],
                   [np.sin(self.pallet_rz), np.cos(self.pallet_rz)]])
     transformed_pos_candidate = R.dot(pos_candidates.T).T
-    self.odd_place_pos_candidate = transformed_pos_candidate + self.pallet_pos[:2]
+    self.even_place_pos_candidate = transformed_pos_candidate + self.pallet_pos[:2]
 
     # pos candidate for even layer
     dx = self.pallet_size[0] / 4
@@ -64,7 +64,7 @@ class BoxPalletizingEnv(PyBulletEnv):
     R = np.array([[np.cos(self.pallet_rz), -np.sin(self.pallet_rz)],
                   [np.sin(self.pallet_rz), np.cos(self.pallet_rz)]])
     transformed_pos_candidate = R.dot(pos_candidates.T).T
-    self.even_place_pos_candidate = transformed_pos_candidate + self.pallet_pos[:2]
+    self.odd_place_pos_candidate = transformed_pos_candidate + self.pallet_pos[:2]
 
   def generateOneBox(self):
     while True:
@@ -127,10 +127,10 @@ class BoxPalletizingEnv(PyBulletEnv):
       return n_level1 == 6 and n_level2 == 6 and n_level3 == (self.num_obj - n_level1 - n_level2)
 
   def getObjEachLevel(self):
-    level1_threshold = self.pallet_height + 0.5 * self.box_height - 0.01
-    level2_threshold = self.pallet_height + 1.5 * self.box_height - 0.01
-    level3_threshold = self.pallet_height + 2.5 * self.box_height - 0.01
-    level4_threshold = self.pallet_height + 3.5 * self.box_height - 0.01
+    level1_threshold = self.pallet_height + 0.25 * self.box_height - 0.01
+    level2_threshold = self.pallet_height + 1.25 * self.box_height - 0.01
+    level3_threshold = self.pallet_height + 2.25 * self.box_height - 0.01
+    level4_threshold = self.pallet_height + 3.25 * self.box_height - 0.01
     level1_objs = list(filter(lambda o: level1_threshold < o.getZPosition() < level2_threshold, self.objects))
     level2_objs = list(filter(lambda o: level2_threshold < o.getZPosition() < level3_threshold, self.objects))
     level3_objs = list(filter(lambda o: level3_threshold < o.getZPosition() < level4_threshold, self.objects))
@@ -148,13 +148,13 @@ class BoxPalletizingEnv(PyBulletEnv):
     level1_rz = list(map(lambda o: transformations.euler_from_quaternion(o.getRotation())[2], level1_objs))
     level2_rz = list(map(lambda o: transformations.euler_from_quaternion(o.getRotation())[2], level2_objs))
     level3_rz = list(map(lambda o: transformations.euler_from_quaternion(o.getRotation())[2], level3_objs))
-    level1_rz_goal = self.pallet_rz
+    level1_rz_goal = self.pallet_rz + np.pi / 2
     if level1_rz_goal > np.pi:
       level1_rz_goal -= np.pi
-    level2_rz_goal = self.pallet_rz + np.pi / 2
+    level2_rz_goal = self.pallet_rz
     if level2_rz_goal > np.pi:
       level2_rz_goal -= np.pi
-    level3_rz_goal = level1_rz_goal
+    level3_rz_goal = self.pallet_rz + np.pi / 2
 
     def rz_close(rz, goal):
       while rz < 0:

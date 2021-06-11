@@ -33,15 +33,15 @@ class BoxPalletizingPlanner(BlockStructureBasePlanner):
     if n_level1 < 6:
       x, y = self.env.odd_place_pos_candidate[n_level1]
       z = self.env.place_offset + self.env.box_height * 0.8
-      r = self.env.pallet_rz
+      r = self.env.pallet_rz + np.pi / 2
     elif n_level2 < 6:
       x, y = self.env.even_place_pos_candidate[n_level2]
       z = self.env.place_offset + self.env.box_height * 1.8
-      r = self.env.pallet_rz + np.pi / 2
+      r = self.env.pallet_rz
     else:
       x, y = self.env.odd_place_pos_candidate[n_level3]
       z = self.env.place_offset + self.env.box_height * 2.8
-      r = self.env.pallet_rz
+      r = self.env.pallet_rz + np.pi / 2
     return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
 
