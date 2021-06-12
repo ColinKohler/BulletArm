@@ -15,7 +15,7 @@ class BoxPalletizingEnv(PyBulletEnv):
     self.pallet_height = 0.04625*self.block_scale_range[1]
     self.pallet_z = 0
     self.pallet_pos = [0.5, 0.1, self.pallet_height/2]
-    self.pallet_size = [np.mean(self.block_scale_range)*0.073*3, np.mean(self.block_scale_range)*0.11*2]
+    self.pallet_size = [np.mean(self.block_scale_range)*0.072*3, np.mean(self.block_scale_range)*0.105*2]
     self.pallet_rz = 0
     self.pallet = None
     self.box_height = 0.056 * self.block_scale_range[1]

@@ -14,8 +14,8 @@ class TestBulletBowlStacking(unittest.TestCase):
   env_config = {'workspace': workspace, 'max_steps': 40, 'obs_size': 128, 'render': True, 'fast_mode': True,
                 'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 18, 'random_orientation': True,
                 'reward_type': 'sparse', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
-                'workspace_check': 'point', 'physics_mode': 'fast', 'hard_reset_freq': 1000, 'object_scale_range': (0.8, 0.8),
-                'kuka_adjust_gripper_offset': 0.002,
+                'workspace_check': 'point', 'physics_mode': 'fast', 'hard_reset_freq': 1000, 'object_scale_range': (0.77, 0.83),
+                'kuka_adjust_gripper_offset': 0.0025,
                 }
 
   planner_config = {'random_orientation': True, 'half_rotation': True}
