@@ -84,7 +84,8 @@ class CovidTestEnv(PyBulletEnv):
     '''
     assert n in (0, 1, 2, 3)
     perterb_range = np.arcsin(self.workspace_padding
-                              / (self.workspace[0, 1] - self.workspace[0, 0] - self.workspace_padding))
+                              / ((self.workspace[0, 1] - self.workspace[0, 0]) / 2 -  self.workspace_padding))
+    perterb_range = min(perterb_range, perterb_range - np.pi / 180)
     angel = n * (np.pi / 2) + np.random.uniform(-perterb_range, perterb_range)
     R_perterb_90 = np.array([[np.cos(angel), -np.sin(angel)],
                              [np.sin(angel),  np.cos(angel)]])
@@ -110,8 +111,16 @@ class CovidTestEnv(PyBulletEnv):
     self.flip = np.random.randint(0,2)
     self.R_perterb_90, self.R_angel = self.perterb_rot90(self.rot_n)
     self.R_angel_after_flip = np.pi - self.R_angel if self.flip else self.R_angel
+    self.perterb_angel = self.R_angel % (np.pi / 2)
+    self.perterb_angel = self.perterb_angel if self.perterb_angel < np.pi/4 else np.pi/2 - self.perterb_angel
+    T_range = (self.workspace_padding - (np.sin(self.perterb_angel) *
+                                         ((self.workspace[0, 1] - self.workspace[0, 0]) / 2 - self.workspace_padding)))
+    T_range = min(T_range, T_range - 0.005)
+    self.T_perterb_x = np.random.uniform(-1,1) * T_range
+    self.T_perterb_y = np.random.uniform(-1,1) * T_range
     # rot_n = 0
     # flip = 0
+    self.perterbed_workspace_center = self.workspace_center + np.array([self.T_perterb_x, self.T_perterb_y, 0])
 
     self.new_tube_box_pos = np.zeros((3))
     self.used_tube_box_pos = np.zeros((3))
@@ -122,10 +131,10 @@ class CovidTestEnv(PyBulletEnv):
     # self.santilizing_box_pos[:2] = self.flips[self.flip].dot(self.R_perterb_90.dot(self.santilizing_box_pos_o[:2].T)).T
     self.test_box_pos[:2] = self.flips[self.flip].dot(self.R_perterb_90.dot(self.test_box_pos_o[:2].T)).T
 
-    self.new_tube_box_pos += self.workspace_center
-    self.used_tube_box_pos += self.workspace_center
-    # self.santilizing_box_pos += self.workspace_center
-    self.test_box_pos += self.workspace_center
+    self.new_tube_box_pos += self.perterbed_workspace_center
+    self.used_tube_box_pos += self.perterbed_workspace_center
+    # self.santilizing_box_pos += self.perterbed_workspace_center
+    self.test_box_pos += self.perterbed_workspace_center
 
     self.boxs[0].reset(list(self.new_tube_box_pos), pb.getQuaternionFromEuler((0,0,self.R_angel_after_flip)))
     self.boxs[1].reset(list(self.test_box_pos), pb.getQuaternionFromEuler((0,0,self.R_angel_after_flip)))
@@ -137,8 +146,8 @@ class CovidTestEnv(PyBulletEnv):
     self.tube_pos_candidate[:,:2] = self.flips[self.flip].dot(self.R_perterb_90.dot(self.tube_pos_candidate_o[:,:2].T)).T
     self.swab_pos_candidate[:,:2] = self.flips[self.flip].dot(self.R_perterb_90.dot(self.swab_pos_candidate_o[:,:2].T)).T
 
-    self.tube_pos_candidate += self.workspace_center
-    self.swab_pos_candidate += self.workspace_center
+    self.tube_pos_candidate += self.perterbed_workspace_center
+    self.swab_pos_candidate += self.perterbed_workspace_center
 
   def reset(self):
     # self.end_effector_santilized_t = 0
@@ -159,9 +168,10 @@ class CovidTestEnv(PyBulletEnv):
                                rot=[pb.getQuaternionFromEuler([0., 0., tube_rot])],
                                pos=[tuple(self.tube_pos_candidate[i])])
         if self.flip == 1:
-          swab_rot = np.pi - (-1.57 + np.random.rand() - 0.5 + self.R_angel_after_flip)
+          swab_rot = np.pi - (-1.57 + np.random.rand() - 0.5 + self.R_angel)
         else:
-          swab_rot = -1.57 + np.random.rand() - 0.5 + self.R_angel_after_flip
+          swab_rot = -1.57 + np.random.rand() - 0.5 + self.R_angel
+        # swab_rot = np.pi - (-1.57 + np.random.rand() - 0.5 + self.R_angel_after_flip)
         for i in range(3):
           self._generateShapes(constants.SWAB,
                                rot=[pb.getQuaternionFromEuler([0., 0., swab_rot])],
@@ -227,8 +237,17 @@ class CovidTestEnv(PyBulletEnv):
 
     return obs, reward, done
 
-  def isObjInBox(self, obj_id, box_id):
-    return len(pb.getContactPoints(obj_id, box_id)) > 0
+  def isObjInBox(self, obj, box):
+    pos, rot = pb.getBasePositionAndOrientation(box.id)
+    pos = np.array(pos[:2])
+    rot = pb.getEulerFromQuaternion(rot)[2]
+    obj_pos, _ = pb.getBasePositionAndOrientation(obj.object_id)
+    obj_pos = np.array(obj_pos[:2])
+    obj_pos -= pos
+    R_inv = np.array([[np.cos(-rot), -np.sin(-rot)],
+                      [np.sin(-rot),  np.cos(-rot)]])
+    obj_pos = R_inv.dot(obj_pos)
+    return np.abs(obj_pos[0]) < box.size[0] / 2 and np.abs(obj_pos[1]) < box.size[1] / 2
 
   # @staticmethod
   # def box_range(box_pos, box_size):
@@ -249,15 +268,15 @@ class CovidTestEnv(PyBulletEnv):
     # else:
     #   rot_test_box_size = self.test_box_size[:2]
     for obj in self.objects:
-      if self.isObjInBox(obj.object_id, self.boxs[1].id):
+      if self.isObjInBox(obj, self.boxs[1]):
         obj_list.append(obj)
         obj_type_list.append(self.object_types[obj])
     return obj_list, obj_type_list
 
-  def InBoxObj(self, box_id):
+  def InBoxObj(self, box):
     obj_list = []
     for obj in self.objects:
-      if self.isObjInBox(obj.object_id, box_id):
+      if self.isObjInBox(obj, box):
         obj_list.append(obj)
     return obj_list
 
@@ -267,7 +286,7 @@ class CovidTestEnv(PyBulletEnv):
     #   rot_new_tube_box_size = [self.new_tube_box_size[1], self.new_tube_box_size[0]]
     # else:
     #   rot_new_tube_box_size = self.new_tube_box_size[:2]
-    for obj in self.InBoxObj(self.boxs[0].id):
+    for obj in self.InBoxObj(self.boxs[0]):
       if obj.object_type_id == constants.SWAB:
         swabs.append(obj)
     return swabs
@@ -278,7 +297,7 @@ class CovidTestEnv(PyBulletEnv):
     #   rot_new_tube_box_size = [self.new_tube_box_size[1], self.new_tube_box_size[0]]
     # else:
     #   rot_new_tube_box_size = self.new_tube_box_size[:2]
-    for obj in self.InBoxObj(self.boxs[0].id):
+    for obj in self.InBoxObj(self.boxs[0]):
       if obj.object_type_id == constants.TEST_TUBE:
         tubes.append(obj)
     return tubes
@@ -289,7 +308,7 @@ class CovidTestEnv(PyBulletEnv):
     #   rot_used_tube_box_size = [self.used_tube_box_size[1], self.used_tube_box_size[0]]
     # else:
     #   rot_used_tube_box_size = self.used_tube_box_size[:2]
-    for obj in self.InBoxObj(self.boxs[3].id):
+    for obj in self.InBoxObj(self.boxs[3]):
       if obj.object_type_id == constants.TEST_TUBE:
         tubes.append(obj)
     return tubes

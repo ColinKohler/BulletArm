@@ -9,6 +9,7 @@ class BoxColor:
   def __init__(self):
     self.root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
     self.id = None
+    self.size = None
 
   def initialize(self, pos=(0,0,0), rot=(0,0,0,1), size=(0.2, 0.2, 0.2), color=[1, 1, 1, 1]):
     bottom_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[size[0]/2, size[1]/2, 0.002], rgbaColor=color)
@@ -26,6 +27,7 @@ class BoxColor:
     right_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[size[0]/2, 0.002, size[2]/2], rgbaColor=color)
     right_collision = pb.createCollisionShape(pb.GEOM_BOX, halfExtents=[size[0]/2, 0.002, size[2]/2])
 
+    self.size = size
     self.id = pb.createMultiBody(baseMass=0,
                                  baseCollisionShapeIndex=bottom_collision,
                                  baseVisualShapeIndex=bottom_visual,
