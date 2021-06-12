@@ -172,7 +172,7 @@ class BoxPalletizingEnv(PyBulletEnv):
         rz -= np.pi
       angle_diff = abs(rz - goal)
       angle_diff = min(angle_diff, abs(angle_diff - np.pi))
-      return angle_diff < np.pi/16
+      return angle_diff < np.pi/8
 
     level1_rz_ok = all(map(lambda rz: rz_close(rz, level1_rz_goal), level1_rz))
     level2_rz_ok = all(map(lambda rz: rz_close(rz, level2_rz_goal), level2_rz))
