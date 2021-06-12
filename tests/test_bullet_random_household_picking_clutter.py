@@ -8,11 +8,12 @@ import matplotlib.pyplot as plt
 from helping_hands_rl_envs import env_factory
 
 class TestBulletBlockStacking(unittest.TestCase):
-  workspace = np.asarray([[0.35, 0.65],
-                          [-0.15, 0.15],
-                          [0, 0.50]])
-  env_config = {'workspace': workspace, 'max_steps': 20, 'obs_size': 90, 'render': False, 'fast_mode': True,
-                'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 10, 'random_orientation': True,
+  workspace_size = 0.4
+  workspace = np.asarray([[0.5-workspace_size/2, 0.5+workspace_size/2],
+                          [0-workspace_size/2, 0+workspace_size/2],
+                          [0, 0+workspace_size]])
+  env_config = {'workspace': workspace, 'max_steps': 30, 'obs_size': 128, 'render': False, 'fast_mode': True,
+                'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 15, 'random_orientation': True,
                 'reward_type': 'dense', 'simulate_grasp': True, 'perfect_grasp': True, 'robot': 'kuka',
                 'workspace_check': 'point', 'object_scale_range': (0.5, 0.5),
                 'min_object_distance': 0., 'min_boarder_padding': 0.15, 'adjust_gripper_after_lift': True

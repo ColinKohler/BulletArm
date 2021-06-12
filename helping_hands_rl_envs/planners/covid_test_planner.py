@@ -76,9 +76,7 @@ class CovidTestPlanner(BlockStructureBasePlanner):
     x, y, z = self.env.santilizing_box_pos
     z = 0.03
     if self.env.rot_n % 2 == 1:
-      r = np.pi / 2
-    else:
-      r = 0
+      r = self.env.R_angel_after_flip + np.pi / 2
     return self.encodeAction(constants.PICK_PRIMATIVE, x, y, z, r)
 
   def getPlacingAction(self):
@@ -88,7 +86,7 @@ class CovidTestPlanner(BlockStructureBasePlanner):
       x += 0.03 * np.random.rand() - 0.015
       y += 0.03 * np.random.rand() - 0.015
       z = 0.05
-      r = 1.57 + self.env.rot90x + 0.2 * np.random.rand() - 0.1
+      r = 1.57 + self.env.R_angel_after_flip + 0.2 * np.random.rand() - 0.1
       self.ready_santilize = True
       return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
@@ -100,7 +98,7 @@ class CovidTestPlanner(BlockStructureBasePlanner):
       x, y, z = self.env.test_box_pos
       rand_x = x + 0.05 * np.random.rand() - 0.025
       rand_y = y + 0.05 * np.random.rand() - 0.025
-      rot = 1.57 + self.env.rot90x
+      rot = 1.57 + self.env.R_angel_after_flip
       rand_z = 0.02
       self.prev_place = [rand_x, rand_y, rand_z, rot]
     else:  # placing swab
@@ -116,7 +114,7 @@ class CovidTestPlanner(BlockStructureBasePlanner):
       else:
         rand_x = rand_x + 0.05 * np.random.rand() - 0.025
         rand_y = rand_y + 0.1 * (np.random.rand() > 0.5 - 0.5)
-      rot = self.env.rot90x
+      rot = self.env.R_angel_after_flip
       rand_z = 0.02
     return self.encodeAction(constants.PLACE_PRIMATIVE, rand_x, rand_y, rand_z, rot)
 

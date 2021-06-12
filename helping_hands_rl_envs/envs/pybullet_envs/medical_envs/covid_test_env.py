@@ -25,38 +25,41 @@ class CovidTestEnv(PyBulletEnv):
     self.place_ry_offset = None
     self.end_effector_santilized_t = 0
 
-    # for workspace = 0.4, flexible
-    # rot90 x n
-    R0 = np.array([[1., 0.],
-                   [0., 1.]])
-    R1 = np.array([[0., -1.],
-                   [1., 0.]])
-    R2 = np.array([[-1., 0.],
-                   [0., -1.]])
-    R3 = np.array([[0., 1.],
-                   [-1., 0.]])
-    self.rot90 = [R0, R1, R2, R3]
+    # # for workspace = 0.4, flexible
+    # # rot90 x n
+    # R0 = np.array([[1., 0.],
+    #                [0., 1.]])
+    # R1 = np.array([[0., -1.],
+    #                [1., 0.]])
+    # R2 = np.array([[-1., 0.],
+    #                [0., -1.]])
+    # R3 = np.array([[0., 1.],
+    #                [-1., 0.]])
+    # self.rot90 = [R0, R1, R2, R3]
     # flip transform
-    Nf = R0
+    Nf = np.array([[1., 0.],
+                   [0., 1.]])
     Vf = np.array([[-1., 0.],
                    [0., 1.]])
     self.flips = [Nf, Vf]
 
-    self.boxs = [BoxColor(), BoxColor(), BoxColor(), BoxColor()]
-    self.new_tube_box_size = np.array([0.225, 0.225, 0.005])
-    # self.santilizing_box_size = np.array([0.225, 0.07, 0.035])
-    self.used_tube_box_size = np.array([0.225, 0.095, 0.03])
-    self.test_box_size = np.array([0.165, 0.4, 0.01])
-
     workspace_x = self.workspace[0, 1] - self.workspace[0, 0]
     workspace_y = self.workspace[1, 1] - self.workspace[1, 0]
+    self.workspace_padding = 0.025
     center_x = (self.workspace[0, 0] + self.workspace[0, 1]) / 2
     center_y = (self.workspace[1, 0] + self.workspace[1, 1]) / 2
     self.workspace_center = np.array([center_x, center_y, 0])
-    upper_x = -workspace_x / 2 + self.new_tube_box_size[0] / 2
-    lower_x = workspace_x / 2 - self.test_box_size[0] / 2
-    new_tube_box_y = workspace_y / 2 - self.new_tube_box_size[1] / 2
-    used_tube_box_y = -workspace_y / 2 + self.used_tube_box_size[1] / 2
+
+    self.boxs = [BoxColor(), BoxColor(), BoxColor(), BoxColor()]
+    self.new_tube_box_size = np.array([0.19, 0.230, 0.005])
+    # self.santilizing_box_size = np.array([0.2, 0.07, 0.035])
+    self.used_tube_box_size = np.array([0.19, 0.115, 0.03])
+    self.test_box_size = np.array([0.155, workspace_y - 2 * self.workspace_padding, 0.01])
+
+    upper_x = -(workspace_x / 2 - self.workspace_padding) + self.new_tube_box_size[0] / 2
+    lower_x = (workspace_x / 2 - self.workspace_padding) - self.test_box_size[0] / 2
+    new_tube_box_y = (workspace_y / 2 - self.workspace_padding) - self.new_tube_box_size[1] / 2
+    used_tube_box_y = -(workspace_y / 2 - self.workspace_padding) + self.used_tube_box_size[1] / 2
     # santilizing_box_y = (new_tube_box_y - self.new_tube_box_size[1] / 2 +
     #                     used_tube_box_y + self.used_tube_box_size[1] / 2) / 2
     self.new_tube_box_pos_o = np.array([upper_x, new_tube_box_y, 0])
@@ -73,6 +76,19 @@ class CovidTestEnv(PyBulletEnv):
     self.tube_pos_candidate_o += self.new_tube_box_pos_o
     self.swab_pos_candidate_o += self.new_tube_box_pos_o
 
+  def perterb_rot90(self, n):
+    '''
+    generate rotation matrix for rotating 90*n + perterbation degree
+    :param n:
+    :return:
+    '''
+    assert n in (0, 1, 2, 3)
+    perterb_range = np.arcsin(self.workspace_padding
+                              / (self.workspace[0, 1] - self.workspace[0, 0] - self.workspace_padding))
+    angel = n * (np.pi / 2) + np.random.uniform(-perterb_range, perterb_range)
+    R_perterb_90 = np.array([[np.cos(angel), -np.sin(angel)],
+                             [np.sin(angel),  np.cos(angel)]])
+    return R_perterb_90, angel
 
   def initialize(self):
     super().initialize()
@@ -90,9 +106,10 @@ class CovidTestEnv(PyBulletEnv):
   def resetBoxs(self):
 
     # initial boxs in D4 group: rot90 + reflection
-    rot_n = np.random.randint(0,4)
-    flip = np.random.randint(0,2)
-    self.flip = flip
+    self.rot_n = np.random.randint(0,4)
+    self.flip = np.random.randint(0,2)
+    self.R_perterb_90, self.R_angel = self.perterb_rot90(self.rot_n)
+    self.R_angel_after_flip = np.pi - self.R_angel if self.flip else self.R_angel
     # rot_n = 0
     # flip = 0
 
@@ -100,27 +117,25 @@ class CovidTestEnv(PyBulletEnv):
     self.used_tube_box_pos = np.zeros((3))
     # self.santilizing_box_pos = np.zeros((3))
     self.test_box_pos = np.zeros((3))
-    self.new_tube_box_pos[:2] = self.flips[flip].dot(self.rot90[rot_n].dot(self.new_tube_box_pos_o[:2].T)).T
-    self.used_tube_box_pos[:2] = self.flips[flip].dot(self.rot90[rot_n].dot(self.used_tube_box_pos_o[:2].T)).T
-    # self.santilizing_box_pos[:2] = self.flips[flip].dot(self.rot90[rot_n].dot(self.santilizing_box_pos_o[:2].T)).T
-    self.test_box_pos[:2] = self.flips[flip].dot(self.rot90[rot_n].dot(self.test_box_pos_o[:2].T)).T
+    self.new_tube_box_pos[:2] = self.flips[self.flip].dot(self.R_perterb_90.dot(self.new_tube_box_pos_o[:2].T)).T
+    self.used_tube_box_pos[:2] = self.flips[self.flip].dot(self.R_perterb_90.dot(self.used_tube_box_pos_o[:2].T)).T
+    # self.santilizing_box_pos[:2] = self.flips[self.flip].dot(self.R_perterb_90.dot(self.santilizing_box_pos_o[:2].T)).T
+    self.test_box_pos[:2] = self.flips[self.flip].dot(self.R_perterb_90.dot(self.test_box_pos_o[:2].T)).T
 
     self.new_tube_box_pos += self.workspace_center
     self.used_tube_box_pos += self.workspace_center
     # self.santilizing_box_pos += self.workspace_center
     self.test_box_pos += self.workspace_center
 
-    self.rot90x = np.pi*rot_n/2
-    self.rot_n = rot_n
-    self.boxs[0].reset(list(self.new_tube_box_pos), pb.getQuaternionFromEuler((0,0,self.rot90x)))
-    self.boxs[1].reset(list(self.test_box_pos), pb.getQuaternionFromEuler((0,0,self.rot90x)))
-    # self.boxs[2].reset(list(self.santilizing_box_pos), pb.getQuaternionFromEuler((0,0,self.rot90x)))
-    self.boxs[3].reset(list(self.used_tube_box_pos), pb.getQuaternionFromEuler((0,0,self.rot90x)))
+    self.boxs[0].reset(list(self.new_tube_box_pos), pb.getQuaternionFromEuler((0,0,self.R_angel_after_flip)))
+    self.boxs[1].reset(list(self.test_box_pos), pb.getQuaternionFromEuler((0,0,self.R_angel_after_flip)))
+    # self.boxs[2].reset(list(self.santilizing_box_pos), pb.getQuaternionFromEuler((0,0,self.R_angel_after_flip)))
+    self.boxs[3].reset(list(self.used_tube_box_pos), pb.getQuaternionFromEuler((0,0,self.R_angel_after_flip)))
 
     self.tube_pos_candidate = 0.01 * np.ones_like(self.tube_pos_candidate_o)
     self.swab_pos_candidate = 0.01 * np.ones_like(self.swab_pos_candidate_o)
-    self.tube_pos_candidate[:,:2] = self.flips[flip].dot(self.rot90[rot_n].dot(self.tube_pos_candidate_o[:,:2].T)).T
-    self.swab_pos_candidate[:,:2] = self.flips[flip].dot(self.rot90[rot_n].dot(self.swab_pos_candidate_o[:,:2].T)).T
+    self.tube_pos_candidate[:,:2] = self.flips[self.flip].dot(self.R_perterb_90.dot(self.tube_pos_candidate_o[:,:2].T)).T
+    self.swab_pos_candidate[:,:2] = self.flips[self.flip].dot(self.R_perterb_90.dot(self.swab_pos_candidate_o[:,:2].T)).T
 
     self.tube_pos_candidate += self.workspace_center
     self.swab_pos_candidate += self.workspace_center
@@ -138,15 +153,15 @@ class CovidTestEnv(PyBulletEnv):
       self.resetPybulletEnv()
       self.resetBoxs()
       try:
-        tube_rot = 1.57 + np.random.rand() - 0.5 + self.rot90x + np.random.randint(2) * np.pi
+        tube_rot = 1.57 + np.random.rand() - 0.5 + self.R_angel_after_flip + np.random.randint(2) * np.pi
         for i in range(3):
           self._generateShapes(constants.TEST_TUBE,
                                rot=[pb.getQuaternionFromEuler([0., 0., tube_rot])],
                                pos=[tuple(self.tube_pos_candidate[i])])
         if self.flip == 1:
-          swab_rot = np.pi - (-1.57 + np.random.rand() - 0.5 + self.rot90x)
+          swab_rot = np.pi - (-1.57 + np.random.rand() - 0.5 + self.R_angel_after_flip)
         else:
-          swab_rot = -1.57 + np.random.rand() - 0.5 + self.rot90x
+          swab_rot = -1.57 + np.random.rand() - 0.5 + self.R_angel_after_flip
         for i in range(3):
           self._generateShapes(constants.SWAB,
                                rot=[pb.getQuaternionFromEuler([0., 0., swab_rot])],
@@ -212,14 +227,13 @@ class CovidTestEnv(PyBulletEnv):
 
     return obs, reward, done
 
-  def isObjInBox(self, obj_pos, box_pos, box_size):
-    box_range = self.box_range(box_pos, box_size)
-    return box_range[0][0] < obj_pos[0] < box_range[0][1] and box_range[1][0] < obj_pos[1] < box_range[1][1]
+  def isObjInBox(self, obj_id, box_id):
+    return len(pb.getContactPoints(obj_id, box_id)) > 0
 
-  @staticmethod
-  def box_range(box_pos, box_size):
-    return np.array([[box_pos[0] - box_size[0] / 2, box_pos[0] + box_size[0] / 2],
-                     [box_pos[1] - box_size[1] / 2, box_pos[1] + box_size[1] / 2]])
+  # @staticmethod
+  # def box_range(box_pos, box_size):
+  #   return np.array([[box_pos[0] - box_size[0] / 2, box_pos[0] + box_size[0] / 2],
+  #                    [box_pos[1] - box_size[1] / 2, box_pos[1] + box_size[1] / 2]])
 
   def _checkTermination(self):
     if len(self.tubesInUsedBox()) == 3\
@@ -230,52 +244,52 @@ class CovidTestEnv(PyBulletEnv):
   def OnTableObj(self):
     obj_list = []
     obj_type_list = []
-    if self.rot_n % 2 == 1:
-      rot_test_box_size = [self.test_box_size[1], self.test_box_size[0]]
-    else:
-      rot_test_box_size = self.test_box_size[:2]
+    # if self.rot_n % 2 == 1:
+    #   rot_test_box_size = [self.test_box_size[1], self.test_box_size[0]]
+    # else:
+    #   rot_test_box_size = self.test_box_size[:2]
     for obj in self.objects:
-      if self.isObjInBox(obj.getPosition(), self.test_box_pos, rot_test_box_size):
+      if self.isObjInBox(obj.object_id, self.boxs[1].id):
         obj_list.append(obj)
         obj_type_list.append(self.object_types[obj])
     return obj_list, obj_type_list
 
-  def InBoxObj(self, box_pos, box_size):
+  def InBoxObj(self, box_id):
     obj_list = []
     for obj in self.objects:
-      if self.isObjInBox(obj.getPosition(), box_pos, box_size):
+      if self.isObjInBox(obj.object_id, box_id):
         obj_list.append(obj)
     return obj_list
 
   def getSwabs(self):
     swabs = []
-    if self.rot_n % 2 == 1:
-      rot_new_tube_box_size = [self.new_tube_box_size[1], self.new_tube_box_size[0]]
-    else:
-      rot_new_tube_box_size = self.new_tube_box_size[:2]
-    for obj in self.InBoxObj(self.new_tube_box_pos, rot_new_tube_box_size):
+    # if self.rot_n % 2 == 1:
+    #   rot_new_tube_box_size = [self.new_tube_box_size[1], self.new_tube_box_size[0]]
+    # else:
+    #   rot_new_tube_box_size = self.new_tube_box_size[:2]
+    for obj in self.InBoxObj(self.boxs[0].id):
       if obj.object_type_id == constants.SWAB:
         swabs.append(obj)
     return swabs
 
   def getTubes(self):
     tubes = []
-    if self.rot_n == 1 or self.rot_n == 3:
-      rot_new_tube_box_size = [self.new_tube_box_size[1], self.new_tube_box_size[0]]
-    else:
-      rot_new_tube_box_size = self.new_tube_box_size[:2]
-    for obj in self.InBoxObj(self.new_tube_box_pos, rot_new_tube_box_size):
+    # if self.rot_n == 1 or self.rot_n == 3:
+    #   rot_new_tube_box_size = [self.new_tube_box_size[1], self.new_tube_box_size[0]]
+    # else:
+    #   rot_new_tube_box_size = self.new_tube_box_size[:2]
+    for obj in self.InBoxObj(self.boxs[0].id):
       if obj.object_type_id == constants.TEST_TUBE:
         tubes.append(obj)
     return tubes
 
   def tubesInUsedBox(self):
     tubes = []
-    if self.rot_n == 1 or self.rot_n == 3:
-      rot_used_tube_box_size = [self.used_tube_box_size[1], self.used_tube_box_size[0]]
-    else:
-      rot_used_tube_box_size = self.used_tube_box_size[:2]
-    for obj in self.InBoxObj(self.used_tube_box_pos, rot_used_tube_box_size):
+    # if self.rot_n == 1 or self.rot_n == 3:
+    #   rot_used_tube_box_size = [self.used_tube_box_size[1], self.used_tube_box_size[0]]
+    # else:
+    #   rot_used_tube_box_size = self.used_tube_box_size[:2]
+    for obj in self.InBoxObj(self.boxs[3].id):
       if obj.object_type_id == constants.TEST_TUBE:
         tubes.append(obj)
     return tubes
