@@ -79,6 +79,7 @@ class BoxPalletizingEnv(PyBulletEnv):
     self._changeBoxDynamics(self.objects[-1])
 
   def reset(self):
+    self.place_rz_valid = True
     while True:
       if self.pallet is not None:
         pb.removeBody(self.pallet.object_id)
