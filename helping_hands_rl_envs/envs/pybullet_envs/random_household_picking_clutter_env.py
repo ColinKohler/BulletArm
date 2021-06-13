@@ -22,6 +22,37 @@ class RandomHouseholdPickingClutterEnv(PyBulletEnv):
     self.tray.initialize(pos=[self.workspace[0].mean(), self.workspace[1].mean(), 0],
                          size=[self.workspace_size+0.015, self.workspace_size+0.015, 0.1])
 
+  def _decodeAction(self, action):
+    """
+    decode input action base on self.action_sequence
+    Args:
+      action: action tensor
+
+    Returns: motion_primative, x, y, z, rot
+
+    """
+    primative_idx, x_idx, y_idx, z_idx, rot_idx = map(lambda a: self.action_sequence.find(a), ['p', 'x', 'y', 'z', 'r'])
+    motion_primative = action[primative_idx] if primative_idx != -1 else 0
+    x = action[x_idx]
+    y = action[y_idx]
+    z = action[z_idx] if z_idx != -1 else self._getPrimativeHeight(motion_primative, x, y)
+    rz, ry, rx = 0, 0, 0
+    if self.action_sequence.count('r') <= 1:
+      rz = action[rot_idx] if rot_idx != -1 else 0
+      ry = 0
+      rx = 0
+    elif self.action_sequence.count('r') == 2:
+      rz = action[rot_idx]
+      ry = 0
+      rx = action[rot_idx+1]
+    elif self.action_sequence.count('r') == 3:
+      rz = action[rot_idx]
+      ry = action[rot_idx + 1]
+      rx = action[rot_idx + 2]
+
+    rot = (rx, ry, rz)
+
+    return motion_primative, x, y, z, rot
 
   def step(self, action):
     pre_obj_grasped = self.obj_grasped

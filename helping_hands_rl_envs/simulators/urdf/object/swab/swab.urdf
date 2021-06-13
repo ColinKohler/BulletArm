@@ -38,7 +38,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-	    <mesh filename="swab_cotton_tip.obj" scale="2 2 2"/>
+	    <mesh filename="swab_tip_enlarged.obj" scale="2 2 2"/>
       </geometry>
       <material name="white">
         <color rgba="1 1 1 1.0"/>
@@ -52,7 +52,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-	    <mesh filename="swab_cotton_tip.obj" scale="2 2 2"/>
+	    <mesh filename="swab_tip_enlarged.obj" scale="2 2 2"/>
       </geometry>
     </collision>
   </link>
