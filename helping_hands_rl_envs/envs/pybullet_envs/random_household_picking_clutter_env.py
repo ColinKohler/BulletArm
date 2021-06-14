@@ -4,6 +4,7 @@ from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 from helping_hands_rl_envs.simulators.pybullet.equipments.tray import Tray
+from scipy.ndimage.interpolation import rotate
 import pybullet as pb
 import os
 import pybullet_data
@@ -33,31 +34,57 @@ class RandomHouseholdPickingClutterEnv(PyBulletEnv):
     """
     primative_idx, x_idx, y_idx, z_idx, rot_idx = map(lambda a: self.action_sequence.find(a), ['p', 'x', 'y', 'z', 'r'])
     motion_primative = action[primative_idx] if primative_idx != -1 else 0
-    x = action[x_idx]
-    y = action[y_idx]
-    z = action[z_idx] if z_idx != -1 else self._getPrimativeHeight(motion_primative, x, y)
-    rz, ry, rx = 0, 0, 0
     if self.action_sequence.count('r') <= 1:
       rz = action[rot_idx] if rot_idx != -1 else 0
       ry = 0
       rx = 0
-    elif self.action_sequence.count('r') == 2:
-      rz = action[rot_idx]
-      ry = 0
-      rx = action[rot_idx+1]
-    elif self.action_sequence.count('r') == 3:
-      rz = action[rot_idx]
-      ry = action[rot_idx + 1]
-      rx = action[rot_idx + 2]
+    else:
+      raise NotImplementedError
+    x = action[x_idx]
+    y = action[y_idx]
+    z = action[z_idx] if z_idx != -1 else self.getPatch_z(24, x, y, rz)
 
     rot = (rx, ry, rz)
 
     return motion_primative, x, y, z, rot
 
+
+  def getPatch_z(self, patch_size, x, y, rz):
+        """
+        get the image patch in heightmap, centered at center_pixel, rotated by rz
+        :param obs: BxCxHxW
+        :param center_pixel: Bx2
+        :param rz: B
+        :return: image patch
+        """
+        img_size = self.heightmap_size
+        x_pixel, y_pixel = self._getPixelsFromPos(x, y)
+        center_pixel = np.array([y_pixel, x_pixel])
+        transition = center_pixel - np.array([self.heightmap_size / 2, self.heightmap_size / 2])
+        R = np.asarray([[np.cos(rz), np.sin(rz)],
+                        [-np.sin(rz), np.cos(rz)]])
+        rotated_transition = R.dot(transition) + np.array([self.heightmap_size / 2, self.heightmap_size / 2])
+
+        rotated_heightmap = rotate(self.heightmap, angle=rz * 180 / np.pi, reshape=False)
+        # patch = rotated_heightmap[int(rotated_transition[0] - patch_size / 2):
+        #                           int(rotated_transition[0] + patch_size / 2),
+        #                           int(rotated_transition[1] - patch_size / 2):
+        #                           int(rotated_transition[1] + patch_size / 2)]
+        patch = rotated_heightmap[int(rotated_transition[0] - 6):
+                                  int(rotated_transition[0] + 6),
+                                  int(rotated_transition[1] - patch_size / 2):
+                                  int(rotated_transition[1] + patch_size / 2)]
+        z = (np.min(patch) + np.max(patch)) / 2
+        gripper_depth = 0.015
+        gripper_reach = 0.02
+        safe_z_pos = max(z, np.max(patch) - gripper_depth, np.min(patch) + gripper_reach)
+        return safe_z_pos
+
+
   def step(self, action):
     pre_obj_grasped = self.obj_grasped
     self.takeAction(action)
-    self.wait(100)
+    self.wait(200)
     # remove obj that above a threshold hight
     # for obj in self.objects:
     #   if obj.getPosition()[2] > self.pick_pre_offset:

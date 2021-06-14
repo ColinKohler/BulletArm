@@ -31,7 +31,8 @@
 
   <link name="tip">
     <contact>
-      <lateral_friction value="1.0"/>
+	  <friction_anchor/>
+      <lateral_friction value="2.0"/>
       <spinning_friction value=".1"/>
       <inertia_scaling value="3.0"/>
     </contact>

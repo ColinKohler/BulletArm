@@ -84,10 +84,10 @@ class CovidTestPlanner(BlockStructureBasePlanner):
     # for multiple swab-tube pair
     if self.place_on == 'used_tube_box':
       x, y, z = self.env.used_tube_box_pos.copy()
-      x += 0.03 * np.random.rand() - 0.015
-      y += 0.03 * np.random.rand() - 0.015
+      rand_x = np.random.uniform(-0.02, 0.02)
+      rand_y = np.random.uniform(-0.02, 0.02)
       z = 0.05
-      r = 1.57 + self.env.R_angel_after_flip + 0.2 * np.random.rand() - 0.1
+      r = 1.57 + self.env.R_angel_after_flip +  + np.random.uniform(-np.pi/12, np.pi/12)
       self.ready_santilize = True
       return self.encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
 
@@ -101,7 +101,7 @@ class CovidTestPlanner(BlockStructureBasePlanner):
       rand_x, rand_y = rand_trans[0], rand_trans[1]
       rand_x += x
       rand_y += y
-      rot = 1.57 + self.env.R_angel_after_flip
+      rot = 1.57 + self.env.R_angel_after_flip + np.random.uniform(-np.pi/6, np.pi/6)
       rand_z = 0.02
       self.prev_place = [rand_x, rand_y, rand_z, rot]
     else:  # placing swab
@@ -121,7 +121,7 @@ class CovidTestPlanner(BlockStructureBasePlanner):
       x, y = rand_trans[0], rand_trans[1]
       rand_x += x
       rand_y += y
-      rot = 1.57 + self.env.R_angel_after_flip
+      rot = 1.57 + self.env.R_angel_after_flip + np.random.uniform(-np.pi/6, np.pi/6)
       rand_z = 0.02
     return self.encodeAction(constants.PLACE_PRIMATIVE, rand_x, rand_y, rand_z, rot)
 
