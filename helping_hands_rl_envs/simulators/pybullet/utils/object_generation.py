@@ -15,6 +15,8 @@ from helping_hands_rl_envs.simulators.pybullet.objects.random_brick import Rando
 from helping_hands_rl_envs.simulators.pybullet.objects.cup import Cup
 from helping_hands_rl_envs.simulators.pybullet.objects.bowl import Bowl
 from helping_hands_rl_envs.simulators.pybullet.objects.plate import Plate
+from helping_hands_rl_envs.simulators.pybullet.objects.test_tube import TestTube
+from helping_hands_rl_envs.simulators.pybullet.objects.swab import Swab
 from helping_hands_rl_envs.simulators.pybullet.objects.random_block import RandomBlock
 from helping_hands_rl_envs.simulators.pybullet.objects.random_household_object import RandomHouseHoldObject
 from helping_hands_rl_envs.simulators.pybullet.objects.spoon import Spoon
@@ -45,6 +47,12 @@ def generateBowl(pos, rot, scale):
 
 def generatePlate(pos, rot, scale, model_id):
   return Plate(pos, rot, scale, model_id)
+
+def generateTestTube(pos, rot, scale, model_id):
+  return TestTube(pos, rot, scale, model_id)
+
+def generateSwab(pos, rot, scale, model_id):
+  return Swab(pos, rot, scale, model_id)
 
 def generateRandomObj(pos, rot, scale, z_scale=1):
   return RandomObject(pos, rot, scale, z_scale)

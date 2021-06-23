@@ -24,6 +24,8 @@ SPOON = 15
 BOTTLE = 16
 BOX = 17
 PALLET = 18
+TEST_TUBE = 19
+SWAB = 20
 
 # Motion primatives
 NUM_PRIMATIVES = 2

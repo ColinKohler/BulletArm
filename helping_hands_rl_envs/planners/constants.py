@@ -25,6 +25,7 @@ from helping_hands_rl_envs.planners.bowl_spoon_cup_planner import BowlSpoonCupPl
 from helping_hands_rl_envs.planners.bottle_tray_planner import BottleTrayPlanner
 from helping_hands_rl_envs.planners.box_palletizing_planner import BoxPalletizingPlanner
 from helping_hands_rl_envs.planners.bumpy_house_building_4_planner import BumpyHouseBuilding4Planner
+from helping_hands_rl_envs.planners.covid_test_planner import CovidTestPlanner
 
 PLANNERS = {
   'random' : RandomPlanner,
@@ -76,4 +77,5 @@ PLANNERS = {
   'box_palletizing': BoxPalletizingPlanner,
   'bumpy_box_palletizing': BoxPalletizingPlanner,
   'bumpy_house_building_4': BumpyHouseBuilding4Planner,
+  'covid_test':CovidTestPlanner
 }

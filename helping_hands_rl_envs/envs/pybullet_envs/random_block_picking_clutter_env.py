@@ -16,7 +16,8 @@ class RandomBlockPickingClutterEnv(PyBulletEnv):
 
   def initialize(self):
     super().initialize()
-    self.box.initialize(pos=[self.workspace[0].mean(), self.workspace[1].mean(), 0], size=[self.workspace_size+0.02, self.workspace_size+0.02, 0.02])
+    self.box.initialize(pos=[self.workspace[0].mean(), self.workspace[1].mean(), 0],
+                        size=[self.workspace_size+0.02, self.workspace_size+0.02, 0.02])
 
 
   def step(self, action):

@@ -326,6 +326,7 @@ class PyBulletEnv(BaseEnv):
     #   return
     [pb.stepSimulation() for _ in range(iteration)]
 
+  # TODO: This does not work w/cylinders
   def didBlockFall(self):
     if self.last_action is None:
       return False
@@ -336,8 +337,6 @@ class PyBulletEnv(BaseEnv):
     if obj:
       return motion_primative == constants.PLACE_PRIMATIVE and \
              np.linalg.norm(np.array(obj.getXYPosition()) - np.array([x,y])) > obj.size / 2.
-      #return motion_primative == constants.PLACE_PRIMATIVE and \
-      #       not np.allclose(obj.getZPosition(), z, atol=0.02)
     else:
       return False
 
@@ -428,7 +427,8 @@ class PyBulletEnv(BaseEnv):
     return orientation
 
   def _getDefaultBoarderPadding(self, shape_type):
-    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK, constants.RANDOM_HOUSEHOLD, constants.BOTTLE):
+    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK,
+                      constants.RANDOM_HOUSEHOLD, constants.BOTTLE, constants.TEST_TUBE, constants.SWAB):
       padding = self.max_block_size * 2.4
     elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON, constants.BOX):
       padding = self.max_block_size * 3.4
@@ -441,7 +441,8 @@ class PyBulletEnv(BaseEnv):
     return padding
 
   def _getDefaultMinDistance(self, shape_type):
-    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK, constants.BOTTLE):
+    if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK,
+                      constants.BOTTLE, constants.TEST_TUBE, constants.SWAB):
       min_distance = self.max_block_size * 2.4
     elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON, constants.BOX):
       min_distance = self.max_block_size * 3.4
@@ -527,6 +528,10 @@ class PyBulletEnv(BaseEnv):
         handle = pb_obj_generation.generateBottle(position, orientation, scale)
       elif shape_type == constants.BOX:
         handle = pb_obj_generation.generateBox(position, orientation, scale)
+      elif shape_type == constants.TEST_TUBE:
+        handle = pb_obj_generation.generateTestTube(position, orientation, scale, model_id=None)
+      elif shape_type == constants.SWAB:
+        handle = pb_obj_generation.generateSwab(position, orientation, scale, model_id=None)
 
       else:
         raise NotImplementedError
