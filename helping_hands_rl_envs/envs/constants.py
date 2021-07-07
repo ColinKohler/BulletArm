@@ -37,27 +37,17 @@ from helping_hands_rl_envs.envs.pybullet_envs.ramp_envs.ramp_house_building_3_de
 from helping_hands_rl_envs.envs.pybullet_envs.ramp_envs.ramp_house_building_4_deconstruct_env import createRampHouseBuilding4DeconstructEnv
 from helping_hands_rl_envs.envs.pybullet_envs.ramp_envs.ramp_improvise_house_building_2_deconstruct_env import createRampImproviseHouseBuilding2DeconstructEnv
 from helping_hands_rl_envs.envs.pybullet_envs.ramp_envs.ramp_improvise_house_building_3_deconstruct_env import createRampImproviseHouseBuilding3DeconstructEnv
-from helping_hands_rl_envs.envs.pybullet_envs.random_picking_env import createRandomPickingEnv
-from helping_hands_rl_envs.envs.pybullet_envs.random_stacking_env import createRandomStackingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.multi_task_env import createMultiTaskEnv
-from helping_hands_rl_envs.envs.pybullet_envs.household_envs.two_view_drawer_teapot_env import createTwoViewDrawerTeapotEnv
-from helping_hands_rl_envs.envs.pybullet_envs.household_envs.mview_drawer_teapot_env import createMViewDrawerTeapotEnv
-from helping_hands_rl_envs.envs.pybullet_envs.cup_stacking_env import createCupStackingEnv
-from helping_hands_rl_envs.envs.pybullet_envs.bowl_stacking_env import createBowlStackingEnv
-from helping_hands_rl_envs.envs.pybullet_envs.household_envs.shelf_bowl_stacking_env import createShelfBowlStackingEnv
-from helping_hands_rl_envs.envs.pybullet_envs.household_envs.shelf_plate_stacking_env import createShelfPlateStackingEnv
-from helping_hands_rl_envs.envs.pybullet_envs.household_envs.drawer_shelf_plate_stacking_env import createDrawerShelfPlateStackingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.block_bin_packing_env import createBlockBinPackingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.random_block_picking_env import createRandomBlockPickingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.random_household_picking_env import createRandomHouseholdPickingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.random_block_picking_clutter_env import createRandomBlockPickingClutterEnv
 from helping_hands_rl_envs.envs.pybullet_envs.random_household_picking_clutter_env import createRandomHouseholdPickingClutterEnv
-from helping_hands_rl_envs.envs.pybullet_envs.bowl_spoon_cup_env import createBowlSpoonCupEnv
 from helping_hands_rl_envs.envs.pybullet_envs.bottle_tray_env import createBottleTrayEnv
 from helping_hands_rl_envs.envs.pybullet_envs.box_palletizing_env import createBoxPalletizingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.bumpy_envs.bumpy_box_palletizing_env import createBumpyBoxPalletizingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.bumpy_envs.bumpy_house_building_4_env import createBumpyHouseBuilding4Env
-from helping_hands_rl_envs.envs.pybullet_envs.medical_envs.covid_test_env import createCovidTestEnv
+from helping_hands_rl_envs.envs.pybullet_envs.covid_test_env import createCovidTestEnv
 
 CREATE_PYBULLET_ENV_FNS = {
   'block_picking' : createBlockPickingEnv,
@@ -85,8 +75,6 @@ CREATE_PYBULLET_ENV_FNS = {
   'improvise_house_building_3_deconstruct' : createImproviseHouseBuilding3DeconstructEnv,
   'improvise_house_building_discrete_deconstruct' : createImproviseHouseBuildingDiscreteDeconstructEnv,
   'improvise_house_building_random_deconstruct' : createImproviseHouseBuildingRandomDeconstructEnv,
-  'random_picking' : createRandomPickingEnv,
-  'random_stacking' : createRandomStackingEnv,
   'multi_task' : createMultiTaskEnv,
   'ramp_block_stacking': createRampBlockStackingEnv,
   'ramp_house_building_1': createRampHouseBuilding1Env,
@@ -102,19 +90,11 @@ CREATE_PYBULLET_ENV_FNS = {
   'ramp_house_building_4_deconstruct': createRampHouseBuilding4DeconstructEnv,
   'ramp_improvise_house_building_2_deconstruct': createRampImproviseHouseBuilding2DeconstructEnv,
   'ramp_improvise_house_building_3_deconstruct': createRampImproviseHouseBuilding3DeconstructEnv,
-  'two_view_drawer_teapot': createTwoViewDrawerTeapotEnv,
-  'multi_view_drawer_teapot': createMViewDrawerTeapotEnv,
-  'cup_stacking': createCupStackingEnv,
-  'bowl_stacking': createBowlStackingEnv,
-  'shelf_bowl_stacking': createShelfBowlStackingEnv,
-  'shelf_plate_stacking': createShelfPlateStackingEnv,
-  'drawer_shelf_plate_stacking': createDrawerShelfPlateStackingEnv,
   'block_bin_packing': createBlockBinPackingEnv,
   'random_block_picking': createRandomBlockPickingEnv,
   'random_household_picking': createRandomHouseholdPickingEnv,
   'random_block_picking_clutter': createRandomBlockPickingClutterEnv,
   'random_household_picking_clutter': createRandomHouseholdPickingClutterEnv,
-  'bowl_spoon_cup': createBowlSpoonCupEnv,
   'bottle_tray': createBottleTrayEnv,
   'box_palletizing': createBoxPalletizingEnv,
   'bumpy_box_palletizing': createBumpyBoxPalletizingEnv,

@@ -12,7 +12,6 @@ from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
-from helping_hands_rl_envs.planners.shelf_bowl_stacking_planner import ShelfBowlStackingPlanner
 from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 
 class CovidTestEnv(PyBulletEnv):
