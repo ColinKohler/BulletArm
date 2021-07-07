@@ -59,19 +59,6 @@ from helping_hands_rl_envs.envs.pybullet_envs.bumpy_envs.bumpy_box_palletizing_e
 from helping_hands_rl_envs.envs.pybullet_envs.bumpy_envs.bumpy_house_building_4_env import createBumpyHouseBuilding4Env
 from helping_hands_rl_envs.envs.pybullet_envs.medical_envs.covid_test_env import createCovidTestEnv
 
-CREATE_NUMPY_ENV_FNS = {
-  'block_picking' : createBlockPickingEnv,
-  'block_stacking' : createBlockStackingEnv,
-  'block_adjacent' : createBlockAdjacentEnv,
-  'brick_stacking' : createBrickStackingEnv,
-  'pyramid_stacking' : createPyramidStackingEnv,
-  'house_building_1' : createHouseBuilding1Env,
-  'house_building_2' : createHouseBuilding2Env,
-  'house_building_3' : createHouseBuilding3Env,
-  'house_building_4' : createHouseBuilding4Env,
-  'house_building_5' : createHouseBuilding5Env,
-}
-
 CREATE_PYBULLET_ENV_FNS = {
   'block_picking' : createBlockPickingEnv,
   'block_stacking' : createBlockStackingEnv,
