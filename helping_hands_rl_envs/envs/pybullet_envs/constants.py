@@ -24,7 +24,6 @@ DEFAULT_CONFIG = {
   'num_objects' : 1,
   'object_type' : 'cube',
   'hard_reset_freq': 1,
-  'view_type': 'render', # render or camera
   'min_object_distance': None,
   'min_boarder_padding': None,
   # The random offset range for each object when generating the goal structure. This will help to reduce the domain gap
