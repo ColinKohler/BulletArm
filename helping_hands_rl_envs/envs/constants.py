@@ -1,6 +1,5 @@
 from helping_hands_rl_envs.envs.pybullet_envs.block_picking_env import createBlockPickingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.block_stacking_env import createBlockStackingEnv
-from helping_hands_rl_envs.envs.pybullet_envs.block_adjacent_env import createBlockAdjacentEnv
 from helping_hands_rl_envs.envs.pybullet_envs.brick_stacking_env import createBrickStackingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.pyramid_stacking_env import createPyramidStackingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.house_building_1_env import createHouseBuilding1Env
@@ -52,7 +51,6 @@ from helping_hands_rl_envs.envs.pybullet_envs.covid_test_env import createCovidT
 CREATE_PYBULLET_ENV_FNS = {
   'block_picking' : createBlockPickingEnv,
   'block_stacking' : createBlockStackingEnv,
-  'block_adjacent' : createBlockAdjacentEnv,
   'brick_stacking' : createBrickStackingEnv,
   'pyramid_stacking' : createPyramidStackingEnv,
   'house_building_1' : createHouseBuilding1Env,
