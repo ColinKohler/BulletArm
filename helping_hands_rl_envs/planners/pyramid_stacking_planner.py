@@ -4,6 +4,7 @@ import numpy.random as npr
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
 from helping_hands_rl_envs.planners.block_structure_base_planner import BlockStructureBasePlanner
 from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 
 class PyramidStackingPlanner(BlockStructureBasePlanner):
   def __init__(self, env, config):
@@ -22,7 +23,8 @@ class PyramidStackingPlanner(BlockStructureBasePlanner):
       obj_to_pick = npr.choice(objects)
 
     pos, rot = obj_to_pick.getPose()
-    return self.encodeAction(constants.PICK_PRIMATIVE, pos[0], pos[1], pos[2], rot[-1])
+    rx, ry, rz = transformations.euler_from_quaternion(rot)
+    return self.encodeAction(constants.PICK_PRIMATIVE, pos[0], pos[1], pos[2], rz)
 
   def getPlacingAction(self):
     objects = self.getObjects()
