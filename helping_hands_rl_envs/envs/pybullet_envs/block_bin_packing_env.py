@@ -19,7 +19,7 @@ class BlockBinPackingEnv(PyBulletEnv):
     self.box = ContainerBox()
     self.box_rz = 0
     self.box_pos = [0.60, 0.12, 0]
-    self.box_size = [0.22*self.block_scale_range[1], 0.18*self.block_scale_range[1], 0.1]
+    self.box_size = [0.23*self.block_scale_range[1], 0.15*self.block_scale_range[1], 0.1]
     self.box_placeholder_pos = []
     self.z_threshold = self.box_size[-1]
 
@@ -33,9 +33,11 @@ class BlockBinPackingEnv(PyBulletEnv):
     dx = self.box_size[0] / 6
     dy = self.box_size[1] / 4
 
-    pos_candidates = np.array([[2 * dx, -dy], [2 * dx, dy],
-                               [0, -dy], [0, dy],
-                               [-2 * dx, -dy], [-2 * dx, dy]])
+    pos_candidates = np.array([[3 * dx, -2*dy], [3 * dx, 2*dy],
+                               [1.5 * dx, -2 * dy], [1.5 * dx, 2 * dy],
+                               [0, -2*dy], [0, 2*dy],
+                               [-1.5 * dx, -2 * dy], [-1.5 * dx, 2 * dy],
+                               [-3 * dx, -2*dy], [-3 * dx, 2*dy]])
 
     R = np.array([[np.cos(self.box_rz), -np.sin(self.box_rz)],
                   [np.sin(self.box_rz), np.cos(self.box_rz)]])
@@ -104,6 +106,12 @@ class BlockBinPackingEnv(PyBulletEnv):
 
   def getObjsOutsideBox(self):
     return list(filter(lambda obj: not self.isObjInBox(obj), self.objects))
+
+  def _getPrimativeHeight(self, motion_primative, x, y):
+    if motion_primative == constants.PICK_PRIMATIVE:
+      return super()._getPrimativeHeight(motion_primative, x, y)
+    else:
+      return self.box_size[-1]
 
 def createBlockBinPackingEnv(config):
   return BlockBinPackingEnv(config)

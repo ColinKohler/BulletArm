@@ -25,12 +25,13 @@ class BlockBinPackingPlanner(BlockStructureBasePlanner):
     transformed_box_pos = R.dot(np.array([self.env.box_pos[:2] - workspace_center]).T).T + workspace_center
     transformed_corner_pos = box_corner_pos + transformed_box_pos
     transformed_heightmap = sk_transform.rotate(self.env.heightmap, np.rad2deg(-self.env.box_rz))
-    box_pixel_min = self.env._getPixelsFromPos(transformed_corner_pos[0, 0]+0.03, transformed_corner_pos[0, 1]+0.03)
-    box_pixel_max = self.env._getPixelsFromPos(transformed_corner_pos[1, 0]-0.03, transformed_corner_pos[1, 1]-0.03)
+    box_pixel_min = self.env._getPixelsFromPos(transformed_corner_pos[0, 0]+0.05, transformed_corner_pos[0, 1]+0.03)
+    box_pixel_max = self.env._getPixelsFromPos(transformed_corner_pos[1, 0]-0.05, transformed_corner_pos[1, 1]-0.03)
     box_pixel_min = list(map(lambda x: int(x), box_pixel_min))
     box_pixel_max = list(map(lambda x: int(x), box_pixel_max))
-    avg_heightmap = ndimage.uniform_filter(transformed_heightmap, 0.1*self.env.block_scale_range[1]//self.env.heightmap_resolution, mode='nearest')
-    avg_heightmap_box = avg_heightmap[box_pixel_min[0]:box_pixel_max[0], box_pixel_min[1]:box_pixel_max[1]]
+    heightmap_box = transformed_heightmap[box_pixel_min[0]:box_pixel_max[0], box_pixel_min[1]:box_pixel_max[1]]
+    # avg_heightmap = ndimage.uniform_filter(transformed_heightmap, 0.1*self.env.block_scale_range[1]//self.env.heightmap_resolution, mode='nearest')
+    avg_heightmap_box = ndimage.uniform_filter(heightmap_box, 0.1*self.env.block_scale_range[1]//self.env.heightmap_resolution, mode='nearest')
     min_pixel = np.argmin(avg_heightmap_box)
     min_pixel = min_pixel // avg_heightmap_box.shape[1], min_pixel % avg_heightmap_box.shape[1]
     min_pixel = np.array(min_pixel) + box_pixel_min
