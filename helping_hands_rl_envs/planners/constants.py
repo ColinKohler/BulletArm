@@ -3,7 +3,6 @@ from helping_hands_rl_envs.planners.multi_task_planner import MultiTaskPlanner
 from helping_hands_rl_envs.planners.play_planner import PlayPlanner
 from helping_hands_rl_envs.planners.block_picking_planner import BlockPickingPlanner
 from helping_hands_rl_envs.planners.block_stacking_planner import BlockStackingPlanner
-from helping_hands_rl_envs.planners.block_adjacent_planner import BlockAdjacentPlanner
 from helping_hands_rl_envs.planners.pyramid_stacking_planner import PyramidStackingPlanner
 from helping_hands_rl_envs.planners.brick_stacking_planner import BrickStackingPlanner
 from helping_hands_rl_envs.planners.house_building_1_planner import HouseBuilding1Planner
@@ -22,7 +21,6 @@ PLANNERS = {
   'play' : PlayPlanner,
   'block_picking' : BlockPickingPlanner,
   'block_stacking' : BlockStackingPlanner,
-  'block_adjacent' : BlockAdjacentPlanner,
   'pyramid_stacking' : PyramidStackingPlanner,
   'brick_stacking' : BrickStackingPlanner,
   'house_building_1' : HouseBuilding1Planner,
