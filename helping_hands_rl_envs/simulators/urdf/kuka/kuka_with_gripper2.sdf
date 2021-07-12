@@ -874,14 +874,14 @@
           <izz>0</izz>
         </inertia>
       </inertial>
-      <visual name='finger_tip'>
-        <pose frame=''>0 0 0 0 0 0</pose>
-        <geometry>
-		  <box>
-		     <size>0.02 0.02 0.02 </size>
-		  </box>
-        </geometry>
-      </visual>
+      <!--<visual name='finger_tip'>-->
+        <!--<pose frame=''>0 0 0 0 0 0</pose>-->
+        <!--<geometry>-->
+		  <!--<box>-->
+		     <!--<size>0.02 0.02 0.02 </size>-->
+		  <!--</box>-->
+        <!--</geometry>-->
+      <!--</visual>-->
     </link>
     <joint name='finger_tip_joint' type="fixed">
       <parent>base_link</parent>
