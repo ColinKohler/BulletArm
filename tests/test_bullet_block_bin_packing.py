@@ -15,15 +15,15 @@ class TestBulletShelfPlateStacking(unittest.TestCase):
                 'seed': 1, 'action_sequence': 'pxyr', 'num_objects': 8, 'random_orientation': True,
                 'reward_type': 'sparse', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
                 'workspace_check': 'point', 'physics_mode': 'fast', 'hard_reset_freq': 1000, 'object_scale_range': (0.80, 0.8),
-                'min_object_distance': 0.1, 'min_boarder_padding': 0.05
+                'min_object_distance': 0.09, 'min_boarder_padding': 0.05
                 }
 
   planner_config = {'random_orientation': True, 'half_rotation': True}
 
   def testPlanner2(self):
-    self.env_config['render'] = True
+    self.env_config['render'] = False
     self.env_config['seed'] = 0
-    num_processes = 1
+    num_processes = 20
     env = env_factory.createEnvs(num_processes, 'pybullet', 'block_bin_packing', self.env_config, self.planner_config)
     total = 0
     s = 0
