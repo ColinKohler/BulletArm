@@ -9,6 +9,13 @@ from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 class ImproviseHouseBuildingDiscreteEnv(PyBulletEnv):
   ''''''
   def __init__(self, config):
+    # env specific parameters
+    if 'object_scale_range' not in config:
+      config['object_scale_range'] = [0.6, 0.6]
+    if 'num_objects' not in config:
+      config['num_objects'] = 5
+    if 'max_steps' not in config:
+      config['max_steps'] = 10
     config['check_random_obj_valid'] = True
     super(ImproviseHouseBuildingDiscreteEnv, self).__init__(config)
 

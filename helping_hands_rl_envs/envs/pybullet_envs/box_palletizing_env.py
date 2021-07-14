@@ -11,6 +11,15 @@ from helping_hands_rl_envs.planners.box_palletizing_planner import BoxPalletizin
 
 class BoxPalletizingEnv(PyBulletEnv):
   def __init__(self, config):
+    # env specific parameters
+    if 'object_scale_range' not in config:
+      config['object_scale_range'] = [0.8, 0.8]
+    if 'num_objects' not in config:
+      config['num_objects'] = 18
+    if 'max_steps' not in config:
+      config['max_steps'] = 40
+    if 'kuka_adjust_gripper_offset' not in config:
+      config['kuka_adjust_gripper_offset'] = 0.0025
     super().__init__(config)
     self.pallet_height = 0.04625*self.block_scale_range[1]
     self.pallet_z = 0

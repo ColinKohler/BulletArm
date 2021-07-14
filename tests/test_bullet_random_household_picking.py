@@ -7,15 +7,8 @@ import matplotlib.pyplot as plt
 
 from helping_hands_rl_envs import env_factory
 
-class TestBulletBlockStacking(unittest.TestCase):
-  workspace = np.asarray([[0.35, 0.65],
-                          [-0.15, 0.15],
-                          [0, 0.50]])
-  env_config = {'workspace': workspace, 'max_steps': 5, 'obs_size': 90, 'render': True, 'fast_mode': True,
-                'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 2, 'random_orientation': False,
-                'reward_type': 'dense', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
-                'workspace_check': 'point', 'in_hand_mode': 'raw', 'object_scale_range': (0.5, 0.5),
-                'hard_reset_freq': 1000, 'physics_mode' : 'fast'}
+class TestBulletHouseholdPikcing(unittest.TestCase):
+  env_config = {}
 
   planner_config = {'random_orientation': True}
 
@@ -23,11 +16,11 @@ class TestBulletBlockStacking(unittest.TestCase):
     self.env_config['render'] = True
     env = env_factory.createEnvs(1, 'pybullet', 'random_household_picking', self.env_config, self.planner_config)
     env.reset()
-    for i in range(1, -1, -1):
+    for i in range(2, -1, -1):
       action = env.getNextAction()
       (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
       self.assertEqual(env.getStepsLeft(), i)
-      self.assertEqual(rewards, 1)
+    self.assertEqual(rewards, 1)
     env.close()
 
   def testPlanner2(self):

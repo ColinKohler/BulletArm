@@ -7,21 +7,13 @@ import matplotlib.pyplot as plt
 
 from helping_hands_rl_envs import env_factory
 
-class TestBulletBowlStacking(unittest.TestCase):
-  workspace = np.asarray([[0.3, 0.7],
-                          [-0.2, 0.2],
-                          [0, 0.50]])
-  env_config = {'workspace': workspace, 'max_steps': 40, 'obs_size': 128, 'render': True, 'fast_mode': True,
-                'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 18, 'random_orientation': True,
-                'reward_type': 'sparse', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
-                'workspace_check': 'point', 'physics_mode': 'fast', 'hard_reset_freq': 1000, 'object_scale_range': (0.77, 0.83),
-                'kuka_adjust_gripper_offset': 0.0025,
-                }
+class TestBulletBoxPalletizing(unittest.TestCase):
+  env_config = {}
 
   planner_config = {'random_orientation': True, 'half_rotation': True}
 
   def testPlanner(self):
-    self.env_config['render'] = False
+    self.env_config['render'] = True
     env = env_factory.createEnvs(1, 'pybullet', 'box_palletizing', self.env_config, self.planner_config)
     env.reset()
     for i in range(35, -1, -1):

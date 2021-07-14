@@ -6,24 +6,17 @@ import torch
 from helping_hands_rl_envs import env_factory
 
 class TestBulletHouse2(unittest.TestCase):
-  workspace = np.asarray([[0.35, 0.65],
-                          [-0.15, 0.15],
-                          [0, 0.50]])
-  env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 90, 'render': False, 'fast_mode': True,
-                'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 3, 'random_orientation': False,
-                'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka'}
+  env_config = {'random_orientation': False}
   planner_config = {'pos_noise': 0, 'rot_noise': 0}
 
   def testStepLeft(self):
-    num_random_o = 0
-    self.env_config['num_random_objects'] = num_random_o
     self.env_config['render'] = True
     env = env_factory.createEnvs(1, 'pybullet', 'house_building_2', self.env_config, self.planner_config)
     env.reset()
 
     positions = env.getObjectPositions()[0]
     # pick up the roof
-    action = [[0, positions[2+num_random_o][0], positions[2+num_random_o][1], 0]]
+    action = [[0, positions[2][0], positions[2][1], 0]]
     (states_, in_hands_, obs_), rewards, dones = env.step(np.array(action), auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 5)
     self.assertEqual(dones, 0)
@@ -33,7 +26,7 @@ class TestBulletHouse2(unittest.TestCase):
     self.assertEqual(dones, 0)
 
     positions = env.getObjectPositions()[0]
-    action = [[0, positions[1+num_random_o][0], positions[1+num_random_o][1], 0]]
+    action = [[0, positions[1][0], positions[1][1], 0]]
     (states_, in_hands_, obs_), rewards, dones = env.step(np.array(action), auto_reset=False)
     self.assertEqual(env.getStepsLeft(), 3)
     self.assertEqual(dones, 0)

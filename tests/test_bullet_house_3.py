@@ -7,13 +7,7 @@ import matplotlib.pyplot as plt
 from helping_hands_rl_envs import env_factory
 
 class TestBulletHouse3(unittest.TestCase):
-  workspace = np.asarray([[0.35, 0.65],
-                          [-0.15, 0.15],
-                          [0, 0.50]])
-  env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 90, 'render': False, 'fast_mode': True,
-                'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 4, 'random_orientation': True,
-                'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
-                'workspace_check': 'point', 'in_hand_mode': 'raw'}
+  env_config = {}
   planner_config = {'pos_noise': 0, 'rot_noise': 0}
 
   def testPlanner(self):
@@ -130,7 +124,7 @@ class TestBulletHouse3(unittest.TestCase):
     env.close()
 
   def testBlockNotValidRoofOnBrickOnBlock(self):
-    self.env_config['seed'] = 0
+    self.env_config['seed'] = 1
     self.env_config['random_orientation'] = False
     self.env_config['render'] = True
 

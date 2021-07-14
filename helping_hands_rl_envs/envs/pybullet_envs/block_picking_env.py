@@ -7,6 +7,13 @@ class BlockPickingEnv(PyBulletEnv):
   '''
   '''
   def __init__(self, config):
+    # env specific parameters
+    if 'object_scale_range' not in config:
+      config['object_scale_range'] = [0.6, 0.6]
+    if 'num_objects' not in config:
+      config['num_objects'] = 3
+    if 'max_steps' not in config:
+      config['max_steps'] = 10
     super(BlockPickingEnv, self).__init__(config)
     self.obj_grasped = 0
 

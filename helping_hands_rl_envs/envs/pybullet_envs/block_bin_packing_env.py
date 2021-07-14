@@ -15,6 +15,18 @@ from helping_hands_rl_envs.planners.block_bin_packing_planner import BlockBinPac
 
 class BlockBinPackingEnv(PyBulletEnv):
   def __init__(self, config):
+    # env specific parameters
+    if 'object_scale_range' not in config:
+      config['object_scale_range'] = [0.8, 0.8]
+    if 'num_objects' not in config:
+      config['num_objects'] = 8
+    if 'max_steps' not in config:
+      config['max_steps'] = 20
+    if 'min_object_distance' not in config:
+      config['min_object_distance'] = 0.09
+    if 'min_boarder_padding' not in config:
+      config['min_boarder_padding'] = 0.05
+
     super().__init__(config)
     self.box = ContainerBox()
     self.box_rz = 0

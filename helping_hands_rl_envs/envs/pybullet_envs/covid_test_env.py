@@ -16,6 +16,13 @@ from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 
 class CovidTestEnv(PyBulletEnv):
   def __init__(self, config):
+    # env specific parameters
+    if 'object_scale_range' not in config:
+      config['object_scale_range'] = [0.55, 0.55]
+    if 'num_objects' not in config:
+      config['num_objects'] = 6
+    if 'max_steps' not in config:
+      config['max_steps'] = 30
     super().__init__(config)
     self.object_init_space = np.array([[0.3, 0.7],
                                        [-0.4, 0],

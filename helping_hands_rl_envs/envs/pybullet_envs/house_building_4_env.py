@@ -7,6 +7,13 @@ from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 class HouseBuilding4Env(PyBulletEnv):
   ''''''
   def __init__(self, config):
+    # env specific parameters
+    if 'object_scale_range' not in config:
+      config['object_scale_range'] = [0.6, 0.6]
+    if 'num_objects' not in config:
+      config['num_objects'] = 6
+    if 'max_steps' not in config:
+      config['max_steps'] = 20
     super(HouseBuilding4Env, self).__init__(config)
 
   def reset(self):
