@@ -58,6 +58,7 @@ from helping_hands_rl_envs.envs.pybullet_envs.box_palletizing_env import createB
 from helping_hands_rl_envs.envs.pybullet_envs.bumpy_envs.bumpy_box_palletizing_env import createBumpyBoxPalletizingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.bumpy_envs.bumpy_house_building_4_env import createBumpyHouseBuilding4Env
 from helping_hands_rl_envs.envs.pybullet_envs.medical_envs.covid_test_env import createCovidTestEnv
+from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_block_picking import createCloseLoopBlockPickingEnv
 
 CREATE_NUMPY_ENV_FNS = {
   'block_picking' : createBlockPickingEnv,
@@ -132,5 +133,6 @@ CREATE_PYBULLET_ENV_FNS = {
   'box_palletizing': createBoxPalletizingEnv,
   'bumpy_box_palletizing': createBumpyBoxPalletizingEnv,
   'bumpy_house_building_4': createBumpyHouseBuilding4Env,
-  'covid_test': createCovidTestEnv
+  'covid_test': createCovidTestEnv,
+  'close_loop_block_picking': createCloseLoopBlockPickingEnv,
 }

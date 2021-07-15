@@ -19,12 +19,15 @@ class CloseLoopEnv(PyBulletEnv):
     pos = np.array(current_pos) + np.array([x, y, z])
     rot = np.array(current_rot) + np.array(rot)
     rot_q = pb.getQuaternionFromEuler(rot)
+    pos[0] = np.clip(pos[0], self.workspace[0, 0], self.workspace[0, 1])
+    pos[1] = np.clip(pos[1], self.workspace[1, 0], self.workspace[1, 1])
+    pos[2] = np.clip(pos[2], self.workspace[2, 0], self.workspace[2, 1])
     self.robot.moveTo(pos, rot_q, dynamic=True)
-    if motion_primative == constants.PICK_PRIMATIVE:
+    if motion_primative == constants.PICK_PRIMATIVE and not self.robot.gripper_closed:
       self.robot.closeGripper()
       self.wait(100)
       self.robot.holding_obj = self.robot.getPickedObj(self.objects)
-    elif motion_primative == constants.PLACE_PRIMATIVE:
+    elif motion_primative == constants.PLACE_PRIMATIVE and self.robot.gripper_closed:
       self.robot.openGripper()
       self.wait(100)
       self.robot.holding_obj = None
@@ -41,19 +44,19 @@ class CloseLoopEnv(PyBulletEnv):
   def _getObservation(self, action=None):
     ''''''
     self.heightmap = self._getHeightmap()
-    return self._isHolding(), self.heightmap.reshape([1, self.heightmap_size, self.heightmap_size])
+    return self._isHolding(), None, self.heightmap.reshape([1, self.heightmap_size, self.heightmap_size])
 
 
   def _getHeightmap(self):
     self.renderer.getNewPointCloud()
-    return self.renderer.getTopDownHeightmap(self.heightmap_size)
+    return self.renderer.getTopDownDepth(self.heightmap_size, self.robot._getEndEffectorPosition(), transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2])
 
 
 if __name__ == '__main__':
   import matplotlib.pyplot as plt
   workspace = np.asarray([[0.2, 0.8],
                           [-0.3, 0.3],
-                          [0, 0.50]])
+                          [0, 0.25]])
   env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 128, 'render': True, 'fast_mode': True,
                 'seed': 2, 'action_sequence': 'pxyzr', 'num_objects': 6, 'random_orientation': False,
                 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',

@@ -77,6 +77,7 @@ class Kuka(RobotBase):
     self.gripper_closed = False
     self.holding_obj = None
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
+    self.moveToJ(self.home_positions_joint)
 
   def closeGripper(self, max_it=100, primative=constants.PICK_PRIMATIVE):
     ''''''

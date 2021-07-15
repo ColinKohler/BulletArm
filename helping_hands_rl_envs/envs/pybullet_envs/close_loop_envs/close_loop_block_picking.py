@@ -15,7 +15,10 @@ class CloseLoopBlockPickingEnv(CloseLoopEnv):
     return self._getObservation()
 
   def _checkTermination(self):
-    return self.robot.holding_obj is not None
+    return self.robot.gripper_closed and (self.robot.holding_obj is not None)
+
+def createCloseLoopBlockPickingEnv(config):
+  return CloseLoopBlockPickingEnv(config)
 
 if __name__ == '__main__':
   import matplotlib.pyplot as plt
@@ -25,31 +28,33 @@ if __name__ == '__main__':
   env_config = {'workspace': workspace, 'max_steps': 100, 'obs_size': 128, 'render': True, 'fast_mode': True,
                 'seed': 2, 'action_sequence': 'pxyzr', 'num_objects': 1, 'random_orientation': True,
                 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
-                'object_init_space_check': 'point', 'physics_mode': 'fast', 'object_scale_range': (1, 1)}
+                'object_init_space_check': 'point', 'physics_mode': 'fast', 'object_scale_range': (1, 1), 'hard_reset_freq': 1000}
   planner_config = {'random_orientation': True}
+  env_config['seed'] = 1
   env = CloseLoopBlockPickingEnv(env_config)
-  s, obs = env.reset()
-  # while True:
-  #   current_pos = env.robot._getEndEffectorPosition()
-  #   current_rot = transformations.euler_from_quaternion(env.robot._getEndEffectorRotation())
-  #
-  #   block_pos = env.objects[0].getPosition()
-  #   block_rot = transformations.euler_from_quaternion(env.objects[0].getRotation())
-  #
-  #   pos_diff = block_pos - current_pos
-  #   rot_diff = np.array(block_rot) - current_rot
-  #   pos_diff[pos_diff // 0.01 > 1] = 0.01
-  #   pos_diff[pos_diff // -0.01 > 1] = -0.01
-  #
-  #   rot_diff[rot_diff // (np.pi/32) > 1] = np.pi/32
-  #   rot_diff[rot_diff // (-np.pi/32) > 1] = -np.pi/32
-  #
-  #   action = [-1, pos_diff[0], pos_diff[1], pos_diff[2], rot_diff[2]]
-  #   obs, reward, done = env.step(action)
+  s, in_hand, obs = env.reset()
+  while True:
+    current_pos = env.robot._getEndEffectorPosition()
+    current_rot = transformations.euler_from_quaternion(env.robot._getEndEffectorRotation())
+
+    block_pos = env.objects[0].getPosition()
+    block_rot = transformations.euler_from_quaternion(env.objects[0].getRotation())
+
+    pos_diff = block_pos - current_pos
+    rot_diff = np.array(block_rot) - current_rot
+    pos_diff[pos_diff // 0.01 > 1] = 0.01
+    pos_diff[pos_diff // -0.01 > 1] = -0.01
+
+    rot_diff[rot_diff // (np.pi/32) > 1] = np.pi/32
+    rot_diff[rot_diff // (-np.pi/32) > 1] = -np.pi/32
+
+    action = [1, pos_diff[0], pos_diff[1], pos_diff[2], rot_diff[2]]
+    obs, reward, done = env.step(action)
 
   fig, axs = plt.subplots(4, 5, figsize=(25, 20))
   for i in range(20):
     action = [-1, 0, 0, -0.01, 0]
     obs, reward, done = env.step(action)
-    axs[i//5, i%5].imshow(obs[1][0], vmax=0.3)
+    axs[i//5, i%5].imshow(obs[2][0], vmax=0.3)
+  env.reset()
   fig.show()

@@ -5,6 +5,7 @@ import cupy as cp
 import matplotlib.pyplot as plt
 from sklearn.impute import SimpleImputer
 from helping_hands_rl_envs.simulators.pybullet.utils.sensor import Sensor
+import skimage.transform as sk_transform
 
 class Renderer(object):
   def __init__(self, workspace):
@@ -36,12 +37,28 @@ class Renderer(object):
     points2 = self.sensor_2.getPointCloud(256, to_numpy=False)
     self.addPoints(points1)
     self.addPoints(points2)
-    self.points = self.points[self.points[:, 2] <= 0.25]
+    # self.points = self.points[self.points[:, 2] <= 0.25]
     # import pyrender
     # mesh = pyrender.Mesh.from_points(self.points.get())
     # scene = pyrender.Scene()
     # scene.add(mesh)
     # pyrender.Viewer(scene)
+
+  def getTopDownDepth(self, size, gripper_pos, gripper_rot):
+    self.points = self.points[self.points[:, 2] <= gripper_pos[2]]
+    # self.points = self.points[(self.workspace[0, 0] <= self.points[:, 0]) * (self.points[:, 0] <= self.workspace[0, 1])]
+    # self.points = self.points[(self.workspace[1, 0] <= self.points[:, 1]) * (self.points[:, 1] <= self.workspace[1, 1])]
+
+    render_cam_target_pos = [gripper_pos[0], gripper_pos[1], 0]
+    render_cam_up_vector = [-1, 0, 0]
+
+    render_cam_pos1 = [gripper_pos[0], gripper_pos[1], gripper_pos[2]]
+    # t0 = time.time()
+    depth = self.projectDepth(size, render_cam_pos1, render_cam_up_vector,
+                               render_cam_target_pos, self.workspace[0][1] - self.workspace[0][0])
+    depth = sk_transform.rotate(depth, np.rad2deg(gripper_rot))
+    return depth
+
 
   def getTopDownHeightmap(self, size):
     render_cam_target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
@@ -59,7 +76,7 @@ class Renderer(object):
   def clearPoints(self):
     self.points = cp.empty((0, 3))
 
-  def projectHeightmap(self, size, cam_pos, cam_up_vector, target_pos, target_size):
+  def projectDepth(self, size, cam_pos, cam_up_vector, target_pos, target_size):
     view_matrix = pb.computeViewMatrix(
       cameraEyePosition=cam_pos,
       cameraUpVector=cam_up_vector,
@@ -117,7 +134,12 @@ class Renderer(object):
     # depth[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), depth[~mask])
     imputer = SimpleImputer(missing_values=np.nan, strategy='median')
     depth = imputer.fit_transform(depth)
+    if depth.shape != (size, size):
+      depth = sk_transform.resize(depth, (size, size), mode='constant', anti_aliasing=0)
+    return depth
 
+  def projectHeightmap(self, size, cam_pos, cam_up_vector, target_pos, target_size):
+    depth = self.projectDepth(size, cam_pos, cam_up_vector, target_pos, target_size)
     return np.abs(depth - np.max(depth))
 
 
