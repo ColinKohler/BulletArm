@@ -80,4 +80,5 @@ PLANNERS = {
   'bumpy_house_building_4': BumpyHouseBuilding4Planner,
   'covid_test':CovidTestPlanner,
   'close_loop_block_picking':CloseLoopBlockPickingPlanner,
+  'close_loop_block_reaching':CloseLoopBlockPickingPlanner,
 }
