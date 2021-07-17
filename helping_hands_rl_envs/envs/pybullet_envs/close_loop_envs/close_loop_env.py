@@ -1,16 +1,23 @@
 import pybullet as pb
 import numpy as np
+import skimage.transform as sk_transform
 from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 from helping_hands_rl_envs.simulators.pybullet.utils.renderer import Renderer
+from helping_hands_rl_envs.simulators.pybullet.utils.ortho_sensor import OrthographicSensor
 
 class CloseLoopEnv(PyBulletEnv):
   def __init__(self, config):
     super().__init__(config)
     self.robot.home_positions = [-0.4446, 0.0837, -2.6123, 1.8883, -0.0457, -1.1810, 0.0699, 0., 0., 0., 0., 0., 0., 0., 0.]
     self.robot.home_positions_joint = self.robot.home_positions[:7]
-    self.renderer = Renderer(self.workspace)
+
+    self.ws_size = max(self.workspace[0][1] - self.workspace[0][0], self.workspace[1][1] - self.workspace[1][0])
+    cam_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 1]
+    target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
+    cam_up_vector = [-1, 0, 0]
+    self.sensor = OrthographicSensor(cam_pos, cam_up_vector, target_pos, self.ws_size, 0.1, 1)
 
   def step(self, action):
     motion_primative, x, y, z, rot = self._decodeAction(action)
@@ -48,8 +55,16 @@ class CloseLoopEnv(PyBulletEnv):
 
 
   def _getHeightmap(self):
-    self.renderer.getNewPointCloud()
-    return self.renderer.getTopDownDepth(self.heightmap_size, self.robot._getEndEffectorPosition(), transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2])
+    gripper_pos = self.robot._getEndEffectorPosition()
+    gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
+    target_pos = [gripper_pos[0], gripper_pos[1], 0]
+    cam_up_vector = [-1, 0, 0]
+
+    self.sensor.setCamMatrix(gripper_pos, cam_up_vector, target_pos)
+    heightmap = self.sensor.getHeightmap(self.heightmap_size)
+    depth = -heightmap + gripper_pos[2]
+    depth = sk_transform.rotate(depth, np.rad2deg(gripper_rz))
+    return depth
 
 
 if __name__ == '__main__':
