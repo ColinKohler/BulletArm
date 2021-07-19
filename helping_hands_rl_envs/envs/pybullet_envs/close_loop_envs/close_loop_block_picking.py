@@ -9,6 +9,7 @@ from helping_hands_rl_envs.planners.close_loop_block_picking_planner import Clos
 class CloseLoopBlockPickingEnv(CloseLoopEnv):
   def __init__(self, config):
     super().__init__(config)
+    self.prev_primitive = constants.PLACE_PRIMATIVE
 
   def reset(self):
     self.resetPybulletEnv()
@@ -17,7 +18,16 @@ class CloseLoopBlockPickingEnv(CloseLoopEnv):
     return self._getObservation()
 
   def _checkTermination(self):
-    return self.robot.gripper_closed and (self.robot.holding_obj is not None)
+    return self.prev_primitive == constants.PICK_PRIMATIVE and self.robot.gripper_closed and (self.robot.holding_obj is not None)
+
+  def step(self, action):
+    motion_primative, x, y, z, rot = self._decodeAction(action)
+    obs, reward, done = super().step(action)
+    if motion_primative == constants.PICK_PRIMATIVE and reward == 0:
+      reward -= 0.1
+    self.prev_primitive = motion_primative
+    return obs, reward, done
+
 
 def createCloseLoopBlockPickingEnv(config):
   return CloseLoopBlockPickingEnv(config)
