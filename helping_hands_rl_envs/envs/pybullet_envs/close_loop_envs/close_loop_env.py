@@ -6,6 +6,8 @@ from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 from helping_hands_rl_envs.simulators.pybullet.utils.renderer import Renderer
 from helping_hands_rl_envs.simulators.pybullet.utils.ortho_sensor import OrthographicSensor
+from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
+
 
 class CloseLoopEnv(PyBulletEnv):
   def __init__(self, config):
@@ -19,11 +21,26 @@ class CloseLoopEnv(PyBulletEnv):
     cam_up_vector = [-1, 0, 0]
     self.sensor = OrthographicSensor(cam_pos, cam_up_vector, target_pos, self.ws_size, 0.1, 1)
 
+  def _getValidOrientation(self, random_orientation):
+    if random_orientation:
+      orientation = pb.getQuaternionFromEuler([0., 0., np.pi * (np.random.random_sample() - 0.5)])
+    else:
+      orientation = pb.getQuaternionFromEuler([0., 0., 0.])
+    return orientation
+
   def step(self, action):
     motion_primative, x, y, z, rot = self._decodeAction(action)
     current_pos = self.robot._getEndEffectorPosition()
     current_rot = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())
-    pos = np.array(current_pos) + np.array([x, y, z])
+
+    bTg = transformations.euler_matrix(0, 0, current_rot[-1])
+    bTg[:3, 3] = current_pos
+    gTt = np.eye(4)
+    gTt[:3, 3] = [x, y, z]
+    bTt = bTg.dot(gTt)
+    pos = bTt[:3, 3]
+
+    # pos = np.array(current_pos) + np.array([x, y, z])
     rot = np.array(current_rot) + np.array(rot)
     rot_q = pb.getQuaternionFromEuler(rot)
     pos[0] = np.clip(pos[0], self.workspace[0, 0], self.workspace[0, 1])
@@ -33,11 +50,10 @@ class CloseLoopEnv(PyBulletEnv):
     if motion_primative == constants.PICK_PRIMATIVE and not self.robot.gripper_closed:
       self.robot.closeGripper()
       self.wait(100)
-      self.robot.holding_obj = self.robot.getPickedObj(self.objects)
     elif motion_primative == constants.PLACE_PRIMATIVE and self.robot.gripper_closed:
       self.robot.openGripper()
       self.wait(100)
-      self.robot.holding_obj = None
+    self.robot.holding_obj = self.robot.getPickedObj(self.objects)
     obs = self._getObservation(action)
     done = self._checkTermination()
     reward = 1.0 if done else 0.0
@@ -58,12 +74,13 @@ class CloseLoopEnv(PyBulletEnv):
     gripper_pos = self.robot._getEndEffectorPosition()
     gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
     target_pos = [gripper_pos[0], gripper_pos[1], 0]
-    cam_up_vector = [-1, 0, 0]
+    T = transformations.euler_matrix(0, 0, gripper_rz)
+    # cam_up_vector = [-1, 0, 0]
+    cam_up_vector = T.dot(np.array([-1, 0, 0, 1]))[:3]
 
     self.sensor.setCamMatrix(gripper_pos, cam_up_vector, target_pos)
     heightmap = self.sensor.getHeightmap(self.heightmap_size)
     depth = -heightmap + gripper_pos[2]
-    depth = sk_transform.rotate(depth, np.rad2deg(gripper_rz))
     return depth
 
 
