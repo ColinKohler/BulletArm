@@ -53,7 +53,7 @@ class CloseLoopEnv(PyBulletEnv):
     elif motion_primative == constants.PLACE_PRIMATIVE and self.robot.gripper_closed:
       self.robot.openGripper()
       self.wait(100)
-    self.robot.holding_obj = self.robot.getPickedObj(self.objects)
+    self.setRobotHoldingObj()
     obs = self._getObservation(action)
     done = self._checkTermination()
     reward = 1.0 if done else 0.0
@@ -63,6 +63,9 @@ class CloseLoopEnv(PyBulletEnv):
     self.current_episode_steps += 1
 
     return obs, reward, done
+
+  def setRobotHoldingObj(self):
+    self.robot.holding_obj = self.robot.getPickedObj(self.objects)
 
   def _getObservation(self, action=None):
     ''''''

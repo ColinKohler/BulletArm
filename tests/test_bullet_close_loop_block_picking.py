@@ -17,7 +17,7 @@ class TestBulletBowlStacking(unittest.TestCase):
                 'workspace_check': 'point', 'physics_mode': 'fast', 'hard_reset_freq': 1000, 'object_scale_range': (1, 1),
                 }
 
-  planner_config = {'random_orientation': False}
+  planner_config = {'random_orientation': True, 'dpos': 0.005, 'drot': np.pi/32}
 
   def testPlanner2(self):
     self.env_config['render'] = True
@@ -43,7 +43,7 @@ class TestBulletBowlStacking(unittest.TestCase):
       step_times.append(t)
 
       pbar.set_description(
-        '{}/{}, SR: {:.3f}, plan time: {:.2f}, action time: {:.2f}, avg step time: {:.2f}'
+        '{:.3f}/{}, SR: {:.3f}, plan time: {:.2f}, action time: {:.2f}, avg step time: {:.2f}'
           .format(s, total, float(s) / total if total != 0 else 0, t_plan, t_action, np.mean(step_times))
       )
     env.close()

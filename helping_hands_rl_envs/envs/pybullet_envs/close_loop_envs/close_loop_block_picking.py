@@ -16,6 +16,13 @@ class CloseLoopBlockPickingEnv(CloseLoopEnv):
     self._generateShapes(constants.CUBE, 1, random_orientation=self.random_orientation)
     return self._getObservation()
 
+  def _getValidOrientation(self, random_orientation):
+    if random_orientation:
+      orientation = pb.getQuaternionFromEuler([0., 0., np.pi/2 * (np.random.random_sample() - 0.5)])
+    else:
+      orientation = pb.getQuaternionFromEuler([0., 0., 0.])
+    return orientation
+
   def _checkTermination(self):
     gripper_z = self.robot._getEndEffectorPosition()[-1]
     return self.robot.holding_obj == self.objects[-1] and gripper_z > 0.08
@@ -23,10 +30,23 @@ class CloseLoopBlockPickingEnv(CloseLoopEnv):
   def step(self, action):
     motion_primative, x, y, z, rot = self._decodeAction(action)
     obs, reward, done = super().step(action)
+    reward *= 5
     if motion_primative == constants.PICK_PRIMATIVE and not self._isHolding():
       reward -= 0.1
+    reward -= np.abs(np.array([x, y, z, rot[-1]])).sum() * 0.1
     return obs, reward, done
 
+  def setRobotHoldingObj(self):
+    self.robot.holding_obj = None
+    for obj in self.objects:
+      obj_rot = transformations.euler_from_quaternion(obj.getRotation())[-1]
+      gripper_rot = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[-1]
+      angle_diff = abs(gripper_rot - obj_rot)
+      angle_diff = min(angle_diff, abs(angle_diff - np.pi))
+      angle_diff = min(angle_diff, abs(angle_diff - np.pi/2))
+      if len(pb.getContactPoints(self.robot.id, obj.object_id)) >= 2 and angle_diff < np.pi/12:
+        self.robot.holding_obj = obj
+        break
 
 def createCloseLoopBlockPickingEnv(config):
   return CloseLoopBlockPickingEnv(config)
