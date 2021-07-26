@@ -86,6 +86,50 @@ class CloseLoopEnv(PyBulletEnv):
     depth = -heightmap + gripper_pos[2]
     return depth
 
+  def _encodeAction(self, primitive, x, y, z, r):
+    if hasattr(r, '__len__'):
+      assert len(r) in [1, 2, 3]
+      if len(r) == 1:
+        rz = r[0]
+        ry = 0
+        rx = 0
+      elif len(r) == 2:
+        rz = r[0]
+        ry = 0
+        rx = r[1]
+      else:
+        rz = r[0]
+        ry = r[1]
+        rx = r[2]
+    else:
+      rz = r
+      ry = 0
+      rx = 0
+
+    primitive_idx, x_idx, y_idx, z_idx, rot_idx = map(lambda a: self.action_sequence.find(a),
+                                                      ['p', 'x', 'y', 'z', 'r'])
+    action = np.zeros(len(self.action_sequence), dtype=np.float)
+    if primitive_idx != -1:
+      action[primitive_idx] = primitive
+    if x_idx != -1:
+      action[x_idx] = x
+    if y_idx != -1:
+      action[y_idx] = y
+    if z_idx != -1:
+      action[z_idx] = z
+    if rot_idx != -1:
+      if self.action_sequence.count('r') == 1:
+        action[rot_idx] = rz
+      elif self.action_sequence.count('r') == 2:
+        action[rot_idx] = rz
+        action[rot_idx+1] = rx
+      elif self.action_sequence.count('r') == 3:
+        action[rot_idx] = rz
+        action[rot_idx+1] = ry
+        action[rot_idx+2] = rx
+
+    return action
+
 
 if __name__ == '__main__':
   import matplotlib.pyplot as plt

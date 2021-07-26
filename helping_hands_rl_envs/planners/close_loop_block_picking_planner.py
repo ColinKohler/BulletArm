@@ -31,7 +31,7 @@ class CloseLoopBlockPickingPlanner(BasePlanner):
       rot_diff[rot_diff // self.drot > 0] = self.drot
       rot_diff[rot_diff // -self.drot > 0] = -self.drot
 
-      if np.all(pos_diff == 0) and np.all(rot_diff == 0):
+      if np.all(np.abs(pos_diff) < 0.005) and np.all(np.abs(rot_diff) < np.pi/12):
         primitive = constants.PICK_PRIMATIVE
       else:
         primitive = constants.PLACE_PRIMATIVE
@@ -42,7 +42,7 @@ class CloseLoopBlockPickingPlanner(BasePlanner):
       x, y, z = 0, 0, self.dpos
       r = 0
       primitive = constants.PICK_PRIMATIVE
-    return self.encodeAction(primitive, x, y, z, r)
+    return self.env._encodeAction(primitive, x, y, z, r)
 
   def getStepsLeft(self):
     return 100

@@ -17,12 +17,12 @@ class TestBulletBowlStacking(unittest.TestCase):
                 'workspace_check': 'point', 'physics_mode': 'fast', 'hard_reset_freq': 1000, 'object_scale_range': (1, 1),
                 }
 
-  planner_config = {'random_orientation': True, 'dpos': 0.005, 'drot': np.pi/32}
+  planner_config = {'random_orientation': True, 'dpos': 0.05, 'drot': np.pi/8}
 
   def testPlanner2(self):
-    self.env_config['render'] = False
+    self.env_config['render'] = True
     self.env_config['seed'] = 0
-    num_processes = 10
+    num_processes = 1
     env = env_factory.createEnvs(num_processes, 'pybullet', 'close_loop_block_picking', self.env_config, self.planner_config)
     total = 0
     s = 0
