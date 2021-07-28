@@ -50,6 +50,7 @@ class CloseLoopEnv(PyBulletEnv):
     if motion_primative == constants.PICK_PRIMATIVE and not self.robot.gripper_closed:
       self.robot.closeGripper()
       self.wait(100)
+      self.robot.adjustGripperCommand()
     elif motion_primative == constants.PLACE_PRIMATIVE and self.robot.gripper_closed:
       self.robot.openGripper()
       self.wait(100)
@@ -66,6 +67,18 @@ class CloseLoopEnv(PyBulletEnv):
 
   def setRobotHoldingObj(self):
     self.robot.holding_obj = self.robot.getPickedObj(self.objects)
+
+  def setRobotHoldingObjWithRotConstraint(self):
+    self.robot.holding_obj = None
+    for obj in self.objects:
+      obj_rot = transformations.euler_from_quaternion(obj.getRotation())[-1]
+      gripper_rot = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[-1]
+      angle_diff = abs(gripper_rot - obj_rot)
+      angle_diff = min(angle_diff, abs(angle_diff - np.pi))
+      angle_diff = min(angle_diff, abs(angle_diff - np.pi / 2))
+      if len(pb.getContactPoints(self.robot.id, obj.object_id)) >= 2 and angle_diff < np.pi / 12:
+        self.robot.holding_obj = obj
+        break
 
   def _getObservation(self, action=None):
     ''''''
