@@ -17,7 +17,7 @@ class CloseLoopBlockStackingPlanner(CloseLoopPlanner):
 
       x, y, z, r = self.getActionByGoalPose(block_pos, block_rot)
 
-      if np.all(np.abs([x, y, z]) < 0.005) and np.abs(r) < np.pi/12:
+      if np.all(np.abs([x, y, z]) < self.dpos) and np.abs(r) < self.drot:
         primitive = constants.PICK_PRIMATIVE
       else:
         primitive = constants.PLACE_PRIMATIVE

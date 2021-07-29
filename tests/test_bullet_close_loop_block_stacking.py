@@ -17,7 +17,7 @@ class TestBulletBowlStacking(unittest.TestCase):
                 'workspace_check': 'point', 'physics_mode': 'fast', 'hard_reset_freq': 1000, 'object_scale_range': (1, 1),
                 }
 
-  planner_config = {'random_orientation': True, 'dpos': 0.05, 'drot': np.pi/8}
+  planner_config = {'random_orientation': True, 'dpos': 0.005, 'drot': np.pi/8}
 
   def testPlanner2(self):
     self.env_config['render'] = True

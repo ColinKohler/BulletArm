@@ -20,7 +20,7 @@ class OrthographicSensor(Sensor):
       cameraUpVector=cam_up_vector,
       cameraTargetPosition=target_pos,
     )
-    self.near = 1-cam_pos[2] - 0.03
+    self.near = 1-cam_pos[2]
     self.proj_matrix = np.array([
       [2 / self.target_size, 0, 0, 0.],
       [0, 2 / self.target_size, 0, 0.],

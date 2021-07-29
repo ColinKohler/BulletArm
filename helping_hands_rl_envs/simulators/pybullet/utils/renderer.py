@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from sklearn.impute import SimpleImputer
 from helping_hands_rl_envs.simulators.pybullet.utils.sensor import Sensor
 import skimage.transform as sk_transform
+from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 
 class Renderer(object):
   def __init__(self, workspace):
@@ -27,14 +28,14 @@ class Renderer(object):
 
     self.points = cp.empty((0, 3))
 
-  def getNewPointCloud(self):
+  def getNewPointCloud(self, res=256):
     self.clearPoints()
     # ceiling = np.array(np.meshgrid(np.linspace(self.workspace[0][0], self.workspace[0][1], 256),
     #                                np.linspace(self.workspace[1][0], self.workspace[1][1], 256))).T.reshape(-1, 2)
     # ceiling = np.concatenate((ceiling, 0.25 * np.ones((256*256, 1))), 1)
     # self.addPoints(cp.array(ceiling))
-    points1 = self.sensor_1.getPointCloud(256, to_numpy=False)
-    points2 = self.sensor_2.getPointCloud(256, to_numpy=False)
+    points1 = self.sensor_1.getPointCloud(res, to_numpy=False)
+    points2 = self.sensor_2.getPointCloud(res, to_numpy=False)
     self.addPoints(points1)
     self.addPoints(points2)
     # self.points = self.points[self.points[:, 2] <= 0.25]
@@ -44,19 +45,22 @@ class Renderer(object):
     # scene.add(mesh)
     # pyrender.Viewer(scene)
 
-  def getTopDownDepth(self, size, gripper_pos, gripper_rot):
+  def getTopDownDepth(self, target_size, img_size, gripper_pos, gripper_rz):
     self.points = self.points[self.points[:, 2] <= gripper_pos[2]]
     # self.points = self.points[(self.workspace[0, 0] <= self.points[:, 0]) * (self.points[:, 0] <= self.workspace[0, 1])]
     # self.points = self.points[(self.workspace[1, 0] <= self.points[:, 1]) * (self.points[:, 1] <= self.workspace[1, 1])]
 
     render_cam_target_pos = [gripper_pos[0], gripper_pos[1], 0]
-    render_cam_up_vector = [-1, 0, 0]
+    # render_cam_up_vector = [-1, 0, 0]
+    T = transformations.euler_matrix(0, 0, gripper_rz)
+    render_cam_up_vector = T.dot(np.array([-1, 0, 0, 1]))[:3]
+
 
     render_cam_pos1 = [gripper_pos[0], gripper_pos[1], gripper_pos[2]]
     # t0 = time.time()
-    depth = self.projectDepth(size, render_cam_pos1, render_cam_up_vector,
-                               render_cam_target_pos, self.workspace[0][1] - self.workspace[0][0])
-    depth = sk_transform.rotate(depth, np.rad2deg(gripper_rot))
+    depth = self.projectDepth(img_size, render_cam_pos1, render_cam_up_vector,
+                               render_cam_target_pos, target_size)
+    # depth = sk_transform.rotate(depth, np.rad2deg(gripper_rz))
     return depth
 
 
