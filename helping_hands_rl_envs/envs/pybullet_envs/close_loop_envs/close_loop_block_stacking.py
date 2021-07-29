@@ -10,7 +10,7 @@ from helping_hands_rl_envs.simulators.pybullet.utils.ortho_sensor import Orthogr
 class CloseLoopBlockStackingEnv(CloseLoopEnv):
   def __init__(self, config):
     super().__init__(config)
-    assert self.num_obj == 2
+    assert self.num_obj >= 2
     self.ws_size = max(self.workspace[0][1] - self.workspace[0][0], self.workspace[1][1] - self.workspace[1][0]) * 1.5
     cam_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 1]
     target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
@@ -42,8 +42,8 @@ class CloseLoopBlockStackingEnv(CloseLoopEnv):
     reward -= np.abs(np.array([rot[-1]])).sum() * 0.1
     return obs, reward, done
 
-  def setRobotHoldingObj(self):
-    self.setRobotHoldingObjWithRotConstraint()
+  # def setRobotHoldingObj(self):
+  #   self.setRobotHoldingObjWithRotConstraint()
 
 def createCloseLoopBlockStackingEnv(config):
   return CloseLoopBlockStackingEnv(config)
@@ -54,10 +54,10 @@ if __name__ == '__main__':
                           [-0.3, 0.3],
                           [0.01, 0.50]])
   env_config = {'workspace': workspace, 'max_steps': 100, 'obs_size': 128, 'render': True, 'fast_mode': True,
-                'seed': 2, 'action_sequence': 'pxyzr', 'num_objects': 2, 'random_orientation': False,
+                'seed': 2, 'action_sequence': 'pxyzr', 'num_objects': 3, 'random_orientation': True,
                 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
                 'object_init_space_check': 'point', 'physics_mode': 'fast', 'object_scale_range': (1, 1), 'hard_reset_freq': 1000}
-  planner_config = {'random_orientation': False}
+  planner_config = {'random_orientation': False, 'dpos': 0.05, 'drot': np.pi/8}
   env_config['seed'] = 1
   env = CloseLoopBlockStackingEnv(env_config)
   planner = CloseLoopBlockStackingPlanner(env, planner_config)

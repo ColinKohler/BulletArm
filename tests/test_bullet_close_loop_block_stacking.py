@@ -12,12 +12,12 @@ class TestBulletBowlStacking(unittest.TestCase):
                           [-0.2, 0.2],
                           [0.01, 0.25]])
   env_config = {'workspace': workspace, 'max_steps': 100, 'obs_size': 128, 'render': False, 'fast_mode': True,
-                'seed': 0, 'action_sequence': 'pxyzr', 'num_objects': 2, 'random_orientation': True,
+                'seed': 0, 'action_sequence': 'pxyzr', 'num_objects': 3, 'random_orientation': True,
                 'reward_type': 'sparse', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
                 'workspace_check': 'point', 'physics_mode': 'fast', 'hard_reset_freq': 1000, 'object_scale_range': (1, 1),
                 }
 
-  planner_config = {'random_orientation': True, 'dpos': 0.005, 'drot': np.pi/8}
+  planner_config = {'random_orientation': True, 'dpos': 0.05, 'drot': np.pi/8}
 
   def testPlanner2(self):
     self.env_config['render'] = True
@@ -28,8 +28,8 @@ class TestBulletBowlStacking(unittest.TestCase):
     s = 0
     step_times = []
     env.reset()
-    pbar = tqdm(total=500)
-    while total < 500:
+    pbar = tqdm(total=10)
+    while total < 10:
       t0 = time.time()
       action = env.getNextAction()
       t_plan = time.time() - t0
