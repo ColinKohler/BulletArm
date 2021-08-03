@@ -7,19 +7,28 @@ from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 from helping_hands_rl_envs.simulators.pybullet.utils.renderer import Renderer
 from helping_hands_rl_envs.simulators.pybullet.utils.ortho_sensor import OrthographicSensor
 from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
+import helping_hands_rl_envs.envs.pybullet_envs.constants as py_constants
 
 
 class CloseLoopEnv(PyBulletEnv):
   def __init__(self, config):
     super().__init__(config)
+    self.view_type = config['view_type']
+    assert self.view_type in ['render_center', 'render_fix', 'camera_center_xyzr', 'camera_center_xyr', 'camera_center_xy', 'camera_fix']
+
     self.robot.home_positions = [-0.4446, 0.0837, -2.6123, 1.8883, -0.0457, -1.1810, 0.0699, 0., 0., 0., 0., 0., 0., 0., 0.]
     self.robot.home_positions_joint = self.robot.home_positions[:7]
 
     self.ws_size = max(self.workspace[0][1] - self.workspace[0][0], self.workspace[1][1] - self.workspace[1][0])
-    cam_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 1]
+    if self.view_type.find('center') > -1:
+      self.ws_size *= 1.5
+
+    cam_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0.29]
     target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
     cam_up_vector = [-1, 0, 0]
     self.sensor = OrthographicSensor(cam_pos, cam_up_vector, target_pos, self.ws_size, 0.1, 1)
+    self.sensor.setCamMatrix(cam_pos, cam_up_vector, target_pos)
+    self.renderer = Renderer(self.workspace)
 
   def _getValidOrientation(self, random_orientation):
     if random_orientation:
@@ -89,15 +98,46 @@ class CloseLoopEnv(PyBulletEnv):
   def _getHeightmap(self):
     gripper_pos = self.robot._getEndEffectorPosition()
     gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
-    target_pos = [gripper_pos[0], gripper_pos[1], 0]
-    T = transformations.euler_matrix(0, 0, gripper_rz)
-    # cam_up_vector = [-1, 0, 0]
-    cam_up_vector = T.dot(np.array([-1, 0, 0, 1]))[:3]
+    if self.view_type == 'render_center':
+      self.renderer.getNewPointCloud()
+      return self.renderer.getTopDownDepth(self.workspace_size * 1.5, self.heightmap_size, gripper_pos, gripper_rz)
+    elif self.view_type == 'render_fix':
+      return self.renderer.getTopDownHeightmap(self.heightmap_size)
 
-    self.sensor.setCamMatrix(gripper_pos, cam_up_vector, target_pos)
-    heightmap = self.sensor.getHeightmap(self.heightmap_size)
-    depth = -heightmap + gripper_pos[2]
-    return depth
+    elif self.view_type == 'camera_center_xyzr':
+      # xyz centered, alighed
+      target_pos = [gripper_pos[0], gripper_pos[1], 0]
+      T = transformations.euler_matrix(0, 0, gripper_rz)
+      cam_up_vector = T.dot(np.array([-1, 0, 0, 1]))[:3]
+      self.sensor.setCamMatrix(gripper_pos, cam_up_vector, target_pos)
+      heightmap = self.sensor.getHeightmap(self.heightmap_size)
+      depth = -heightmap + gripper_pos[2]
+      return depth
+    elif self.view_type == 'camera_center_xyr':
+      # xy centered, aligned
+      target_pos = [gripper_pos[0], gripper_pos[1], 0]
+      T = transformations.euler_matrix(0, 0, gripper_rz)
+      cam_up_vector = T.dot(np.array([-1, 0, 0, 1]))[:3]
+      cam_pos = [gripper_pos[0], gripper_pos[1], 0.29]
+      self.sensor.setCamMatrix(cam_pos, cam_up_vector, target_pos)
+      heightmap = self.sensor.getHeightmap(self.heightmap_size)
+      depth = -heightmap + gripper_pos[2]
+      return depth
+    elif self.view_type == 'camera_center_xy':
+      # xy centered
+      target_pos = [gripper_pos[0], gripper_pos[1], 0]
+      cam_up_vector = [-1, 0, 0]
+      cam_pos = [gripper_pos[0], gripper_pos[1], 0.29]
+      self.sensor.setCamMatrix(cam_pos, cam_up_vector, target_pos)
+      heightmap = self.sensor.getHeightmap(self.heightmap_size)
+      depth = -heightmap + gripper_pos[2]
+      return depth
+    elif self.view_type == 'camera_fix':
+      heightmap = self.sensor.getHeightmap(self.heightmap_size)
+      depth = -heightmap + gripper_pos[2]
+      return depth
+    else:
+      raise NotImplementedError
 
   def _encodeAction(self, primitive, x, y, z, r):
     if hasattr(r, '__len__'):

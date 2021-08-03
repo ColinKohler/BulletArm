@@ -11,11 +11,11 @@ class CloseLoopBlockStackingEnv(CloseLoopEnv):
   def __init__(self, config):
     super().__init__(config)
     assert self.num_obj >= 2
-    self.ws_size = max(self.workspace[0][1] - self.workspace[0][0], self.workspace[1][1] - self.workspace[1][0]) * 1.5
-    cam_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 1]
-    target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
-    cam_up_vector = [-1, 0, 0]
-    self.sensor = OrthographicSensor(cam_pos, cam_up_vector, target_pos, self.ws_size, 0.1, 1)
+    # self.ws_size = max(self.workspace[0][1] - self.workspace[0][0], self.workspace[1][1] - self.workspace[1][0]) * 1.5
+    # cam_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 1]
+    # target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
+    # cam_up_vector = [-1, 0, 0]
+    # self.sensor = OrthographicSensor(cam_pos, cam_up_vector, target_pos, self.ws_size, 0.1, 1)
 
   def reset(self):
     self.resetPybulletEnv()

@@ -38,7 +38,7 @@ class Renderer(object):
     points2 = self.sensor_2.getPointCloud(res, to_numpy=False)
     self.addPoints(points1)
     self.addPoints(points2)
-    # self.points = self.points[self.points[:, 2] <= 0.25]
+    self.points = self.points[self.points[:, 2] <= self.workspace[2][1]]
     # import pyrender
     # mesh = pyrender.Mesh.from_points(self.points.get())
     # scene = pyrender.Scene()
