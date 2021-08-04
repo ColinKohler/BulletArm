@@ -14,7 +14,8 @@ class CloseLoopEnv(PyBulletEnv):
   def __init__(self, config):
     super().__init__(config)
     self.view_type = config['view_type']
-    assert self.view_type in ['render_center', 'render_fix', 'camera_center_xyzr', 'camera_center_xyr', 'camera_center_xy', 'camera_fix']
+    assert self.view_type in ['render_center', 'render_fix', 'camera_center_xyzr', 'camera_center_xyr', 'camera_center_xy', 'camera_fix',
+                              'camera_center_xyr_height', 'camera_center_xy_height', 'camera_fix_height']
 
     self.robot.home_positions = [-0.4446, 0.0837, -2.6123, 1.8883, -0.0457, -1.1810, 0.0699, 0., 0., 0., 0., 0., 0., 0., 0.]
     self.robot.home_positions_joint = self.robot.home_positions[:7]
@@ -113,7 +114,7 @@ class CloseLoopEnv(PyBulletEnv):
       heightmap = self.sensor.getHeightmap(self.heightmap_size)
       depth = -heightmap + gripper_pos[2]
       return depth
-    elif self.view_type == 'camera_center_xyr':
+    elif self.view_type in ['camera_center_xyr', 'camera_center_xyr_height']:
       # xy centered, aligned
       target_pos = [gripper_pos[0], gripper_pos[1], 0]
       T = transformations.euler_matrix(0, 0, gripper_rz)
@@ -121,20 +122,29 @@ class CloseLoopEnv(PyBulletEnv):
       cam_pos = [gripper_pos[0], gripper_pos[1], 0.29]
       self.sensor.setCamMatrix(cam_pos, cam_up_vector, target_pos)
       heightmap = self.sensor.getHeightmap(self.heightmap_size)
-      depth = -heightmap + gripper_pos[2]
+      if self.view_type == 'camera_center_xyr':
+        depth = -heightmap + gripper_pos[2]
+      else:
+        depth = heightmap
       return depth
-    elif self.view_type == 'camera_center_xy':
+    elif self.view_type in ['camera_center_xy', 'camera_center_xy_height']:
       # xy centered
       target_pos = [gripper_pos[0], gripper_pos[1], 0]
       cam_up_vector = [-1, 0, 0]
       cam_pos = [gripper_pos[0], gripper_pos[1], 0.29]
       self.sensor.setCamMatrix(cam_pos, cam_up_vector, target_pos)
       heightmap = self.sensor.getHeightmap(self.heightmap_size)
-      depth = -heightmap + gripper_pos[2]
+      if self.view_type == 'camera_center_xy':
+        depth = -heightmap + gripper_pos[2]
+      else:
+        depth = heightmap
       return depth
-    elif self.view_type == 'camera_fix':
+    elif self.view_type in ['camera_fix', 'camera_fix_height']:
       heightmap = self.sensor.getHeightmap(self.heightmap_size)
-      depth = -heightmap + gripper_pos[2]
+      if self.view_type == 'camera_fix':
+        depth = -heightmap + gripper_pos[2]
+      else:
+        depth = heightmap
       return depth
     else:
       raise NotImplementedError
