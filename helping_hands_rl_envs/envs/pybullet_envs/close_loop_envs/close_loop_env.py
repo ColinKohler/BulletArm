@@ -13,6 +13,8 @@ import helping_hands_rl_envs.envs.pybullet_envs.constants as py_constants
 class CloseLoopEnv(PyBulletEnv):
   def __init__(self, config):
     super().__init__(config)
+    if 'view_type' not in config:
+      config['view_type'] = 'camera_center_xyzr'
     self.view_type = config['view_type']
     assert self.view_type in ['render_center', 'render_fix', 'camera_center_xyzr', 'camera_center_xyr', 'camera_center_xy', 'camera_fix',
                               'camera_center_xyr_height', 'camera_center_xy_height', 'camera_fix_height']

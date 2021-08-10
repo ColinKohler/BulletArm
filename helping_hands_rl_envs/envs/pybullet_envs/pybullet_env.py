@@ -430,7 +430,8 @@ class PyBulletEnv(BaseEnv):
     if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK,
                       constants.RANDOM_HOUSEHOLD, constants.BOTTLE, constants.TEST_TUBE, constants.SWAB):
       padding = self.max_block_size * 2.4
-    elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON, constants.BOX):
+    elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON, constants.BOX,
+                        constants.FLAT_BLOCK):
       padding = self.max_block_size * 3.4
     elif shape_type == constants.BOWL:
       padding = 0.17
@@ -444,7 +445,8 @@ class PyBulletEnv(BaseEnv):
     if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK,
                       constants.BOTTLE, constants.TEST_TUBE, constants.SWAB):
       min_distance = self.max_block_size * 2.4
-    elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON, constants.BOX):
+    elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON, constants.BOX,
+                        constants.FLAT_BLOCK):
       min_distance = self.max_block_size * 3.4
     elif shape_type in [constants.RANDOM_HOUSEHOLD]:
       min_distance = self.max_block_size * 4
@@ -532,6 +534,8 @@ class PyBulletEnv(BaseEnv):
         handle = pb_obj_generation.generateTestTube(position, orientation, scale, model_id=None)
       elif shape_type == constants.SWAB:
         handle = pb_obj_generation.generateSwab(position, orientation, scale, model_id=None)
+      elif shape_type == constants.FLAT_BLOCK:
+        handle = pb_obj_generation.generateFlatBlock(position, orientation, scale)
 
       else:
         raise NotImplementedError

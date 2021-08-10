@@ -26,6 +26,7 @@ BOX = 17
 PALLET = 18
 TEST_TUBE = 19
 SWAB = 20
+FLAT_BLOCK = 21
 
 # Motion primatives
 NUM_PRIMATIVES = 2

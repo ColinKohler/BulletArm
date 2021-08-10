@@ -61,6 +61,7 @@ from helping_hands_rl_envs.envs.pybullet_envs.medical_envs.covid_test_env import
 from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_block_picking import createCloseLoopBlockPickingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_block_reaching import createCloseLoopBlockReachingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_block_stacking import createCloseLoopBlockStackingEnv
+from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_block_pulling import createCloseLoopBlockPullingEnv
 
 CREATE_NUMPY_ENV_FNS = {
   'block_picking' : createBlockPickingEnv,
@@ -139,4 +140,5 @@ CREATE_PYBULLET_ENV_FNS = {
   'close_loop_block_picking': createCloseLoopBlockPickingEnv,
   'close_loop_block_reaching': createCloseLoopBlockReachingEnv,
   'close_loop_block_stacking': createCloseLoopBlockStackingEnv,
+  'close_loop_block_pulling': createCloseLoopBlockPullingEnv,
 }
