@@ -15,7 +15,10 @@ class CloseLoopEnv(PyBulletEnv):
     super().__init__(config)
     if 'view_type' not in config:
       config['view_type'] = 'camera_center_xyzr'
+    if 'obs_type' not in config:
+      config['obs_type'] = 'pixel'
     self.view_type = config['view_type']
+    self.obs_type = config['obs_type']
     assert self.view_type in ['render_center', 'render_fix', 'camera_center_xyzr', 'camera_center_xyr', 'camera_center_xy', 'camera_fix',
                               'camera_center_xyr_height', 'camera_center_xy_height', 'camera_fix_height']
 
@@ -92,11 +95,71 @@ class CloseLoopEnv(PyBulletEnv):
         self.robot.holding_obj = obj
         break
 
+  def _scaleX(self, x):
+    scaled = 2 * (x - self.workspace[0, 0]) / (self.workspace[0, 1] - self.workspace[0, 0]) - 1
+    return np.clip(scaled, -1, 1)
+
+  def _scaleY(self, y):
+    scaled = 2 * (y - self.workspace[1, 0]) / (self.workspace[1, 1] - self.workspace[1, 0]) - 1
+    return np.clip(scaled, -1, 1)
+
+  def _scaleZ(self, z):
+    scaled = 2 * (z - self.workspace[2, 0]) / (self.workspace[2, 1] - self.workspace[2, 0]) - 1
+    return np.clip(scaled, -1, 1)
+
+  def _scaleRz(self, rz):
+    while rz < np.pi:
+      rz += 2*np.pi
+    while rz > np.pi:
+      rz -= 2*np.pi
+    scaled = 2 * (rz - -np.pi) / (2*np.pi) - 1
+    return np.clip(scaled, -1, 1)
+
+  def _scalePos(self, pos):
+    return np.array([self._scaleX(pos[0]), self._scaleY(pos[1]), self._scaleZ(pos[2])])
+
+  def getObjectPoses(self, objects=None):
+    if objects is None: objects = self.objects
+
+    obj_poses = list()
+    for obj in objects:
+      pos, rot = obj.getPose()
+      rot = self.convertQuaternionToEuler(rot)
+
+      obj_poses.append(pos + rot)
+    return np.array(obj_poses)
+
+  def _getVecObservation(self):
+    '''
+    get the observation in vector form. The observation has a size of (1+4+4*n), where the first value is the gripper
+    state, the following 4-vector is the gripper's (x, y, z, rz), and the n 4-vectors afterwards are the (x, y, z, rz)s
+    of the objects in the scene
+    :return: the observation vector in np.array
+    '''
+    gripper_pos = self.robot._getEndEffectorPosition()
+    scaled_gripper_pos = self._scalePos(gripper_pos)
+    gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
+    scaled_gripper_rz = self._scaleRz(gripper_rz)
+    obj_poses = self.getObjectPoses()
+    obj_poses = np.stack((obj_poses[:, 0], obj_poses[:, 1], obj_poses[:, 2], obj_poses[:, 5]), 1)
+    scaled_obj_poses = []
+    for i in range(obj_poses.shape[0]):
+      scaled_obj_poses.append(
+        np.concatenate([self._scalePos(obj_poses[i, :3]), np.array([self._scaleRz(obj_poses[i, 3])])]))
+    scaled_obj_poses = np.concatenate(scaled_obj_poses)
+    gripper_state = 1 if self._isHolding() else -1
+    obs = np.concatenate(
+      [np.array([gripper_state]), scaled_gripper_pos, np.array([scaled_gripper_rz]), scaled_obj_poses])
+    return obs
+
   def _getObservation(self, action=None):
     ''''''
-    self.heightmap = self._getHeightmap()
-    return self._isHolding(), None, self.heightmap.reshape([1, self.heightmap_size, self.heightmap_size])
-
+    if self.obs_type is 'pixel':
+      self.heightmap = self._getHeightmap()
+      return self._isHolding(), None, self.heightmap.reshape([1, self.heightmap_size, self.heightmap_size])
+    else:
+      obs = self._getVecObservation()
+      return self._isHolding(), None, obs
 
   def _getHeightmap(self):
     gripper_pos = self.robot._getEndEffectorPosition()
