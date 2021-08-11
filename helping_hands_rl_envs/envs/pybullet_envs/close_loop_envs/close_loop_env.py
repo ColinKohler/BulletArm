@@ -44,7 +44,7 @@ class CloseLoopEnv(PyBulletEnv):
     return orientation
 
   def step(self, action):
-    motion_primative, x, y, z, rot = self._decodeAction(action)
+    p, x, y, z, rot = self._decodeAction(action)
     current_pos = self.robot._getEndEffectorPosition()
     current_rot = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())
 
@@ -62,13 +62,8 @@ class CloseLoopEnv(PyBulletEnv):
     pos[1] = np.clip(pos[1], self.workspace[1, 0], self.workspace[1, 1])
     pos[2] = np.clip(pos[2], self.workspace[2, 0], self.workspace[2, 1])
     self.robot.moveTo(pos, rot_q, dynamic=True)
-    if motion_primative == constants.PICK_PRIMATIVE and not self.robot.gripper_closed:
-      self.robot.closeGripper()
-      self.wait(100)
-      self.robot.adjustGripperCommand()
-    elif motion_primative == constants.PLACE_PRIMATIVE and self.robot.gripper_closed:
-      self.robot.openGripper()
-      self.wait(100)
+    self.robot.controlGripper(p)
+    self.robot.adjustGripperCommand()
     self.setRobotHoldingObj()
     obs = self._getObservation(action)
     done = self._checkTermination()

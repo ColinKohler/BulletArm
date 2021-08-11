@@ -80,6 +80,20 @@ class Kuka(RobotBase):
     self.moveToJ(self.home_positions_joint)
     self.openGripper()
 
+  def controlGripper(self, open_ratio, max_it=100):
+    p1, p2 = self._getGripperJointPosition()
+    target = open_ratio * (self.gripper_joint_limit[1] - self.gripper_joint_limit[0]) + self.gripper_joint_limit[0]
+    self._sendGripperCommand(target, target)
+    it = 0
+    while abs(target - p1) + abs(target - p2) > 0.001:
+      pb.stepSimulation()
+      it += 1
+      p1_, p2_ = self._getGripperJointPosition()
+      if it > max_it or (abs(p1 - p1_) < 0.0001 and abs(p2 - p2_) < 0.0001):
+        return
+      p1 = p1_
+      p2 = p2_
+
   def closeGripper(self, max_it=100, primative=constants.PICK_PRIMATIVE):
     ''''''
     if primative == constants.PULL_PRIMATIVE:

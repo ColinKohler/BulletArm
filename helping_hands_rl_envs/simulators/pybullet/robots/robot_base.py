@@ -224,6 +224,10 @@ class RobotBase:
   def checkGripperClosed(self):
     raise NotImplementedError
 
+  @abstractmethod
+  def controlGripper(self, open_ratio, max_it=100):
+    raise NotImplementedError
+
   def _moveToJointPose(self, target_pose, dynamic=True, max_it=1000):
     if dynamic:
       self._sendPositionCommand(target_pose)
