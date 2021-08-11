@@ -29,6 +29,7 @@ from helping_hands_rl_envs.planners.covid_test_planner import CovidTestPlanner
 from helping_hands_rl_envs.planners.close_loop_block_picking_planner import CloseLoopBlockPickingPlanner
 from helping_hands_rl_envs.planners.close_loop_block_stacking_planner import CloseLoopBlockStackingPlanner
 from helping_hands_rl_envs.planners.close_loop_block_pulling_planner import CloseLoopBlockPullingPlanner
+from helping_hands_rl_envs.planners.close_loop_house_building_1_planner import CloseLoopHouseBuilding1Planner
 
 PLANNERS = {
   'random' : RandomPlanner,
@@ -85,4 +86,5 @@ PLANNERS = {
   'close_loop_block_reaching':CloseLoopBlockPickingPlanner,
   'close_loop_block_stacking':CloseLoopBlockStackingPlanner,
   'close_loop_block_pulling':CloseLoopBlockPullingPlanner,
+  'close_loop_house_building_1':CloseLoopHouseBuilding1Planner,
 }
