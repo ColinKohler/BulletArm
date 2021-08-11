@@ -27,15 +27,6 @@ class CloseLoopBlockPickingEnv(CloseLoopEnv):
     gripper_z = self.robot._getEndEffectorPosition()[-1]
     return self.robot.holding_obj == self.objects[-1] and gripper_z > 0.08
 
-  def step(self, action):
-    motion_primative, x, y, z, rot = self._decodeAction(action)
-    obs, reward, done = super().step(action)
-    reward *= 5
-    if motion_primative == constants.PICK_PRIMATIVE and not self._isHolding():
-      reward -= 0.1
-    reward -= np.abs(np.array([x, y, z, rot[-1]])).sum() * 0.1
-    return obs, reward, done
-
   def setRobotHoldingObj(self):
     self.setRobotHoldingObjWithRotConstraint()
 
