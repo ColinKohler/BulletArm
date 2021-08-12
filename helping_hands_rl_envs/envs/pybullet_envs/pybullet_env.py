@@ -661,6 +661,9 @@ class PyBulletEnv(BaseEnv):
       #TODO: not 100% sure about this
       if not obj.isTouching(objects[i-1]) or obj.isTouching(PybulletObject(-1, self.table_id)):
         return False
+      # the xy positions of the blocks much be close. Otherwise the adjacent blocks will be considered as a stack
+      if not np.allclose(np.array(obj.getXYPosition()), np.array(objects[i-1].getXYPosition()), atol=self.max_block_size/2):
+        return False
     return True
 
   def _checkPerfectGrasp(self, x, y, z, rot, objects):

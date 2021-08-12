@@ -35,11 +35,7 @@ class CloseLoopHouseBuilding1Env(CloseLoopEnv):
   def _checkTermination(self):
     blocks = list(filter(lambda x: self.object_types[x] == constants.CUBE, self.objects))
     triangles = list(filter(lambda x: self.object_types[x] == constants.TRIANGLE, self.objects))
-    return not self._isHolding() and self._checkStack(blocks + triangles) and self._checkObjUpright(triangles[0])
-
-  def isSimValid(self):
-    triangles = list(filter(lambda x: self.object_types[x] == constants.TRIANGLE, self.objects))
-    return self._checkObjUpright(triangles[0]) and super().isSimValid()
+    return not self._isHolding() and self._checkStack(blocks + triangles) and self._checkObjUpright(triangles[0]) and self._isObjOnTop(triangles[0])
 
 def createCloseLoopHouseBuilding1Env(config):
   return CloseLoopHouseBuilding1Env(config)

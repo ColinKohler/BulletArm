@@ -66,11 +66,15 @@ class CloseLoopEnv(PyBulletEnv):
     self.robot.adjustGripperCommand()
     self.setRobotHoldingObj()
     obs = self._getObservation(action)
-    done = self._checkTermination()
-    reward = 1.0 if done else 0.0
-
+    valid = self.isSimValid()
+    if valid:
+      done = self._checkTermination()
+      reward = 1.0 if done else 0.0
+    else:
+      done = True
+      reward = 0
     if not done:
-      done = self.current_episode_steps >= self.max_steps or not self.isSimValid()
+      done = self.current_episode_steps >= self.max_steps
     self.current_episode_steps += 1
 
     return obs, reward, done
@@ -253,6 +257,9 @@ class CloseLoopEnv(PyBulletEnv):
 
     return action
 
+  def isSimValid(self):
+    all_upright = np.all(list(map(lambda o: self._checkObjUpright(o, threshold=np.deg2rad(10)), self.objects)))
+    return all_upright and super().isSimValid()
 
 if __name__ == '__main__':
   import matplotlib.pyplot as plt
