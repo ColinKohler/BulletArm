@@ -27,9 +27,6 @@ class CloseLoopBlockPickingEnv(CloseLoopEnv):
     gripper_z = self.robot._getEndEffectorPosition()[-1]
     return self.robot.holding_obj == self.objects[-1] and gripper_z > 0.08
 
-  def setRobotHoldingObj(self):
-    self.setRobotHoldingObjWithRotConstraint()
-
 def createCloseLoopBlockPickingEnv(config):
   return CloseLoopBlockPickingEnv(config)
 
