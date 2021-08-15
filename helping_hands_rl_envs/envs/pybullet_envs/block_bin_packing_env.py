@@ -51,7 +51,7 @@ class BlockBinPackingEnv(PyBulletEnv):
 
   def initialize(self):
     super().initialize()
-    self.box.initialize(pos=self.box_pos, size=self.box_size)
+    self.box.initialize(pos=self.box_pos, size=self.box_size, thickness=0.002)
 
   def reset(self):
     while True:
