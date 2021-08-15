@@ -569,3 +569,6 @@ class SingleRunner(object):
   def getEnvGitHash():
     repo = git.Repo(helping_hands_rl_envs.__path__[0])
     return repo.head.object.hexsha
+
+  def close(self):
+    return
