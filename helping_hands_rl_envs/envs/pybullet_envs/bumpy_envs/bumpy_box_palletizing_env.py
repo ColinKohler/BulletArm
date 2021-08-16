@@ -32,6 +32,7 @@ class BumpyBoxPalletizingEnv(BoxPalletizingEnv, BumpyBase):
       pb.stepSimulation()
 
   def reset(self):
+    self.place_rz_valid = True
     while True:
       if self.pallet is not None:
         pb.removeBody(self.pallet.object_id)
