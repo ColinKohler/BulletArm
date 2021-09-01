@@ -20,7 +20,10 @@ class BottleTrayEnv(PyBulletEnv):
     pass
 
   def resetBox(self):
-    self.box_rz = np.random.random_sample() * np.pi
+    if not self.random_orientation:
+      self.box_rz = 0
+    else:
+      self.box_rz = np.random.random_sample() * np.pi
     self.box_pos = self._getValidPositions(np.linalg.norm([self.box_size[0]/3, self.box_size[1]/4])*2, 0, [], 1)[0]
     self.box_pos.append(0)
     self.box.reset(self.box_pos, pb.getQuaternionFromEuler((0, 0, self.box_rz)))
