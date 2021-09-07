@@ -26,8 +26,8 @@ class CloseLoopEnv(PyBulletEnv):
     self.robot.home_positions_joint = self.robot.home_positions[:7]
 
     self.ws_size = max(self.workspace[0][1] - self.workspace[0][0], self.workspace[1][1] - self.workspace[1][0])
-    if self.view_type.find('center') > -1:
-      self.ws_size *= 1.5
+    # if self.view_type.find('center') > -1:
+    #   self.ws_size *= 1.5
 
     cam_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0.29]
     target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
