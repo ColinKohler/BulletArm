@@ -19,8 +19,10 @@ class CloseLoopEnv(PyBulletEnv):
       config['obs_type'] = 'pixel'
     self.view_type = config['view_type']
     self.obs_type = config['obs_type']
-    assert self.view_type in ['render_center', 'render_fix', 'camera_center_xyzr', 'camera_center_xyr', 'camera_center_xy', 'camera_fix',
-                              'camera_center_xyr_height', 'camera_center_xy_height', 'camera_fix_height']
+    assert self.view_type in ['render_center', 'render_fix', 'camera_center_xyzr', 'camera_center_xyr',
+                              'camera_center_xyz', 'camera_center_xy', 'camera_fix',
+                              'camera_center_xyr_height', 'camera_center_xyz_height', 'camera_center_xy_height',
+                              'camera_fix_height']
 
     self.robot.home_positions = [-0.4446, 0.0837, -2.6123, 1.8883, -0.0457, -1.1810, 0.0699, 0., 0., 0., 0., 0., 0., 0., 0.]
     self.robot.home_positions_joint = self.robot.home_positions[:7]
@@ -187,6 +189,18 @@ class CloseLoopEnv(PyBulletEnv):
       self.sensor.setCamMatrix(cam_pos, cam_up_vector, target_pos)
       heightmap = self.sensor.getHeightmap(self.heightmap_size)
       if self.view_type == 'camera_center_xyr':
+        depth = -heightmap + gripper_pos[2]
+      else:
+        depth = heightmap
+      return depth
+    elif self.view_type in ['camera_center_xyz', 'camera_center_xyz_height']:
+      # xyz centered, gripper will be visible
+      gripper_pos[2] += 0.12
+      target_pos = [gripper_pos[0], gripper_pos[1], 0]
+      cam_up_vector = [-1, 0, 0]
+      self.sensor.setCamMatrix(gripper_pos, cam_up_vector, target_pos)
+      heightmap = self.sensor.getHeightmap(self.heightmap_size)
+      if self.view_type == 'camera_center_xyz':
         depth = -heightmap + gripper_pos[2]
       else:
         depth = heightmap
