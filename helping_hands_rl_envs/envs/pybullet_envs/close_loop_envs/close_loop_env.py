@@ -271,9 +271,16 @@ class CloseLoopEnv(PyBulletEnv):
 
     return action
 
-  def isSimValid(self):
-    all_upright = np.all(list(map(lambda o: self._checkObjUpright(o, threshold=np.deg2rad(10)), self.objects)))
-    return all_upright and super().isSimValid()
+  # def isSimValid(self):
+  #   all_upright = np.all(list(map(lambda o: self._checkObjUpright(o, threshold=np.deg2rad(10)), self.objects)))
+  #   return all_upright and super().isSimValid()
+
+  def _checkStack(self, objects=None):
+    # 2-step checking
+    if super()._checkStack(objects):
+      self.wait(100)
+      return super()._checkStack(objects)
+    return False
 
 if __name__ == '__main__':
   import matplotlib.pyplot as plt
