@@ -12,9 +12,11 @@ class CloseLoopBlockPickingCornerPlanner(CloseLoopPlanner):
 
   def getNextActionToCurrentTarget(self):
     x, y, z, r = self.getActionByGoalPose(self.current_target[0], self.current_target[1])
-    primitive = constants.PICK_PRIMATIVE if self.current_target[2] is constants.PICK_PRIMATIVE else constants.PLACE_PRIMATIVE
     if np.all(np.abs([x, y, z]) < self.dpos) and np.abs(r) < self.drot:
+      primitive = constants.PICK_PRIMATIVE if self.current_target[2] is constants.PICK_PRIMATIVE else constants.PLACE_PRIMATIVE
       self.current_target = None
+    else:
+      primitive = constants.PICK_PRIMATIVE if self.isHolding() else constants.PLACE_PRIMATIVE
     return self.env._encodeAction(primitive, x, y, z, r)
 
   def setNewTarget(self):
