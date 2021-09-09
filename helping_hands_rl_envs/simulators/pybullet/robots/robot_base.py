@@ -55,7 +55,10 @@ class RobotBase:
     if not objects:
       return None
     for obj in objects:
-      if len(pb.getContactPoints(self.id, obj.object_id)) >= 2:
+      # check the contact force normal to count the horizontal contact points
+      contact_points = pb.getContactPoints(self.id, obj.object_id)
+      horizontal = list(filter(lambda p: abs(p[7][2]) < 0.1, contact_points))
+      if len(horizontal) >= 2:
         return obj
 
     # end_pos = self._getEndEffectorPosition()
