@@ -30,6 +30,7 @@ from helping_hands_rl_envs.planners.close_loop_block_picking_planner import Clos
 from helping_hands_rl_envs.planners.close_loop_block_stacking_planner import CloseLoopBlockStackingPlanner
 from helping_hands_rl_envs.planners.close_loop_block_pulling_planner import CloseLoopBlockPullingPlanner
 from helping_hands_rl_envs.planners.close_loop_house_building_1_planner import CloseLoopHouseBuilding1Planner
+from helping_hands_rl_envs.planners.close_loop_block_picking_corner_planner import CloseLoopBlockPickingCornerPlanner
 
 PLANNERS = {
   'random' : RandomPlanner,
@@ -87,4 +88,5 @@ PLANNERS = {
   'close_loop_block_stacking':CloseLoopBlockStackingPlanner,
   'close_loop_block_pulling':CloseLoopBlockPullingPlanner,
   'close_loop_house_building_1':CloseLoopHouseBuilding1Planner,
+  'close_loop_block_picking_corner':CloseLoopBlockPickingCornerPlanner,
 }
