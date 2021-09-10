@@ -173,6 +173,7 @@ class CloseLoopEnv(PyBulletEnv):
 
     elif self.view_type == 'camera_center_xyzr':
       # xyz centered, alighed
+      gripper_pos[2] += 0.12
       target_pos = [gripper_pos[0], gripper_pos[1], 0]
       T = transformations.euler_matrix(0, 0, gripper_rz)
       cam_up_vector = T.dot(np.array([-1, 0, 0, 1]))[:3]
