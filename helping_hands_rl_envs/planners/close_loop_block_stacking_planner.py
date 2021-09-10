@@ -67,6 +67,9 @@ class CloseLoopBlockStackingPlanner(CloseLoopPlanner):
         self.current_target = (pre_place_pos, object_rot, constants.PLACE_PRIMATIVE)
 
   def getNextAction(self):
+    if self.env.current_episode_steps == 1:
+      self.pick_place_stage = 0
+      self.current_target = None
     if self.current_target is not None:
       return self.getNextActionToCurrentTarget()
     else:
