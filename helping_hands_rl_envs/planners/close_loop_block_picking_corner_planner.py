@@ -20,9 +20,6 @@ class CloseLoopBlockPickingCornerPlanner(CloseLoopPlanner):
     return self.env._encodeAction(primitive, x, y, z, r)
 
   def setNewTarget(self):
-    if self.env.current_episode_steps == 1:
-      self.stage = 0
-
     object_pos = self.env.objects[0].getPosition()
     object_rot = list(transformations.euler_from_quaternion(self.env.objects[0].getRotation()))
     while object_rot[2] > np.pi/2:
@@ -77,10 +74,13 @@ class CloseLoopBlockPickingCornerPlanner(CloseLoopPlanner):
       self.stage = 6
       self.current_target = (object_pos, object_rot, constants.PICK_PRIMATIVE)
     elif self.stage == 6:
-      self.stage = 7
+      self.stage = 0
       self.current_target = (pre_pick_pos, object_rot, constants.PICK_PRIMATIVE)
 
   def getNextAction(self):
+    if self.env.current_episode_steps == 1:
+      self.stage = 0
+      self.current_target = None
     if self.current_target is not None:
       return self.getNextActionToCurrentTarget()
     else:
