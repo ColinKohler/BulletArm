@@ -35,7 +35,12 @@ class CloseLoopBlockStackingPlanner(CloseLoopPlanner):
       if self.target_obj is None:
         self.target_obj = objects[1] if len(objects) > 1 else objects[0]
       object_pos = self.target_obj.getPosition()
-      object_rot = transformations.euler_from_quaternion(self.target_obj.getRotation())
+      object_rot = list(transformations.euler_from_quaternion(self.target_obj.getRotation()))
+      gripper_rz = transformations.euler_from_quaternion(self.env.robot._getEndEffectorRotation())[2]
+      while object_rot[2] - gripper_rz > np.pi / 4:
+        object_rot[2] -= np.pi / 2
+      while object_rot[2] - gripper_rz < -np.pi / 4:
+        object_rot[2] += np.pi / 2
       pre_pick_pos = object_pos[0], object_pos[1], object_pos[2] + 0.1
       if self.pick_place_stage == 0:
         self.pick_place_stage = 1
@@ -52,7 +57,12 @@ class CloseLoopBlockStackingPlanner(CloseLoopPlanner):
       if self.target_obj is None:
         self.target_obj = objects[0]
       object_pos = self.target_obj.getPosition()
-      object_rot = transformations.euler_from_quaternion(self.target_obj.getRotation())
+      object_rot = list(transformations.euler_from_quaternion(self.target_obj.getRotation()))
+      gripper_rz = transformations.euler_from_quaternion(self.env.robot._getEndEffectorRotation())[2]
+      while object_rot[2] - gripper_rz > np.pi / 4:
+        object_rot[2] -= np.pi / 2
+      while object_rot[2] - gripper_rz < -np.pi / 4:
+        object_rot[2] += np.pi / 2
       pre_place_pos = object_pos[0], object_pos[1], object_pos[2] + 0.1
       if self.pick_place_stage == 3:
         self.pick_place_stage = 4

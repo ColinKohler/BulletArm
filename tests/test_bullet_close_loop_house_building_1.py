@@ -28,8 +28,8 @@ class TestBulletBowlStacking(unittest.TestCase):
     s = 0
     step_times = []
     env.reset()
-    pbar = tqdm(total=10)
-    while total < 10:
+    pbar = tqdm(total=500)
+    while total < 500:
       t0 = time.time()
       action = env.getNextAction()
       t_plan = time.time() - t0

@@ -9,12 +9,14 @@ class CloseLoopHouseBuilding1Planner(CloseLoopPlanner):
     super().__init__(env, config)
     self.pick_place_stage = 0
     self.current_target = None
+    self.previous_target = None
     self.target_obj = None
 
   def getNextActionToCurrentTarget(self):
     x, y, z, r = self.getActionByGoalPose(self.current_target[0], self.current_target[1])
     if np.all(np.abs([x, y, z]) < self.dpos) and np.abs(r) < self.drot:
       primitive = constants.PICK_PRIMATIVE if self.current_target[2] is constants.PICK_PRIMATIVE else constants.PLACE_PRIMATIVE
+      self.previous_target = self.current_target
       self.current_target = None
     else:
       primitive = constants.PICK_PRIMATIVE if self.isHolding() else constants.PLACE_PRIMATIVE
@@ -22,6 +24,8 @@ class CloseLoopHouseBuilding1Planner(CloseLoopPlanner):
 
   def setNewTarget(self):
     blocks = np.array(list(filter(lambda x: x.object_type_id is constants.CUBE and not self.isObjectHeld(x) and self.isObjOnTop(x), self.env.objects)))
+    if not blocks:
+      blocks = np.array(list(filter(lambda x: x.object_type_id is constants.CUBE, self.env.objects)))
     block_poses = self.env.getObjectPoses(blocks)
     sorted_inds = np.flip(np.argsort(block_poses[:,2], axis=0))
     blocks = blocks[sorted_inds]
@@ -35,7 +39,18 @@ class CloseLoopHouseBuilding1Planner(CloseLoopPlanner):
       if self.target_obj is None:
         self.target_obj = blocks[1] if len(blocks) > 1 else triangle
       object_pos = self.target_obj.getPosition()
-      object_rot = transformations.euler_from_quaternion(self.target_obj.getRotation())
+      object_rot = list(transformations.euler_from_quaternion(self.target_obj.getRotation()))
+      gripper_rz = transformations.euler_from_quaternion(self.env.robot._getEndEffectorRotation())[2]
+      if self.target_obj.object_type_id == constants.TRIANGLE:
+        while object_rot[2] - gripper_rz > np.pi/2:
+          object_rot[2] -= np.pi
+        while object_rot[2] - gripper_rz < -np.pi/2:
+          object_rot[2] += np.pi
+      else:
+        while object_rot[2] - gripper_rz > np.pi/4:
+          object_rot[2] -= np.pi/2
+        while object_rot[2] - gripper_rz < -np.pi/4:
+          object_rot[2] += np.pi/2
       pre_pick_pos = object_pos[0], object_pos[1], object_pos[2] + 0.1
       if self.pick_place_stage == 0:
         self.pick_place_stage = 1
@@ -52,7 +67,18 @@ class CloseLoopHouseBuilding1Planner(CloseLoopPlanner):
       if self.target_obj is None:
         self.target_obj = blocks[0]
       object_pos = self.target_obj.getPosition()
-      object_rot = transformations.euler_from_quaternion(self.target_obj.getRotation())
+      object_rot = list(transformations.euler_from_quaternion(self.target_obj.getRotation()))
+      gripper_rz = transformations.euler_from_quaternion(self.env.robot._getEndEffectorRotation())[2]
+      if self.target_obj.object_type_id == constants.TRIANGLE:
+        while object_rot[2] - gripper_rz > np.pi/2:
+          object_rot[2] -= np.pi
+        while object_rot[2] - gripper_rz < -np.pi/2:
+          object_rot[2] += np.pi
+      else:
+        while object_rot[2] - gripper_rz > np.pi / 4:
+          object_rot[2] -= np.pi / 2
+        while object_rot[2] - gripper_rz < -np.pi / 4:
+          object_rot[2] += np.pi / 2
       pre_place_pos = object_pos[0], object_pos[1], object_pos[2] + 0.1
       if self.pick_place_stage == 3:
         self.pick_place_stage = 4
@@ -69,6 +95,7 @@ class CloseLoopHouseBuilding1Planner(CloseLoopPlanner):
   def getNextAction(self):
     if self.env.current_episode_steps == 1:
       self.pick_place_stage = 0
+      self.target_obj = None
       self.current_target = None
     if self.current_target is not None:
       return self.getNextActionToCurrentTarget()
