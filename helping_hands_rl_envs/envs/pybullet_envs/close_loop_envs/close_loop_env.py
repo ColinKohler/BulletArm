@@ -50,14 +50,14 @@ class CloseLoopEnv(PyBulletEnv):
     current_pos = self.robot._getEndEffectorPosition()
     current_rot = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())
 
-    bTg = transformations.euler_matrix(0, 0, current_rot[-1])
-    bTg[:3, 3] = current_pos
-    gTt = np.eye(4)
-    gTt[:3, 3] = [x, y, z]
-    bTt = bTg.dot(gTt)
-    pos = bTt[:3, 3]
+    # bTg = transformations.euler_matrix(0, 0, current_rot[-1])
+    # bTg[:3, 3] = current_pos
+    # gTt = np.eye(4)
+    # gTt[:3, 3] = [x, y, z]
+    # bTt = bTg.dot(gTt)
+    # pos = bTt[:3, 3]
 
-    # pos = np.array(current_pos) + np.array([x, y, z])
+    pos = np.array(current_pos) + np.array([x, y, z])
     rot = np.array(current_rot) + np.array(rot)
     rot_q = pb.getQuaternionFromEuler(rot)
     pos[0] = np.clip(pos[0], self.workspace[0, 0], self.workspace[0, 1])
