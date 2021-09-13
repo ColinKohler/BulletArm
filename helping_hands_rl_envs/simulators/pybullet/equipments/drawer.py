@@ -19,9 +19,9 @@ class Drawer:
     self.object_init_link_id = 5
     self.cids = []
 
-  def initialize(self, pos=(0,0,0), rot=(0,0,0,1)):
+  def initialize(self, pos=(0,0,0), rot=(0,0,0,1), scale=0.5):
     drawer_urdf_filepath = os.path.join(self.root_dir, 'simulators/urdf/drawer{}.urdf'.format(self.model_id))
-    self.id = pb.loadURDF(drawer_urdf_filepath, pos, rot, globalScaling=0.5)
+    self.id = pb.loadURDF(drawer_urdf_filepath, pos, rot, globalScaling=scale)
     self.handle = DrawerHandle(self.id)
 
   def remove(self):
@@ -48,6 +48,8 @@ class Drawer:
 
   def reset(self, pos=(0,0,0), rot=(0,0,0,1)):
     pb.resetBasePositionAndOrientation(self.id, pos, rot)
+    pb.resetJointState(self.id, 1, 0)
+    self.handle.reset()
     for i in range(50):
       pb.stepSimulation()
     pb.resetJointState(self.id, 1, 0)

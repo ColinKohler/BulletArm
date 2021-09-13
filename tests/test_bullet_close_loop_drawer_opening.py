@@ -20,10 +20,10 @@ class TestBulletBowlStacking(unittest.TestCase):
   planner_config = {'random_orientation': True, 'dpos': 0.05, 'drot': np.pi/8}
 
   def testPlanner2(self):
-    self.env_config['render'] = True
+    self.env_config['render'] = False
     self.env_config['seed'] = 0
-    num_processes = 1
-    env = env_factory.createEnvs(num_processes, 'pybullet', 'close_loop_block_picking_corner', self.env_config, self.planner_config)
+    num_processes = 10
+    env = env_factory.createEnvs(num_processes, 'pybullet', 'close_loop_drawer_opening', self.env_config, self.planner_config)
     total = 0
     s = 0
     step_times = []
@@ -38,6 +38,8 @@ class TestBulletBowlStacking(unittest.TestCase):
       # plt.show()
       s += rewards.sum()
       total += dones.sum()
+      if dones.sum() and rewards.sum() == 0:
+        print(1)
       t_action = time.time() - t0 - t_plan
       t = time.time() - t0
       step_times.append(t)
