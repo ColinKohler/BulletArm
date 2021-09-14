@@ -65,7 +65,6 @@ def worker(remote, parent_remote, env_fn, planner_fn=None):
         remote.send(env.active_env_id)
       elif cmd == 'get_empty_in_hand':
         remote.send(env.getEmptyInHand())
-      # TODO: Might remove this
       elif cmd == 'get_env_id':
         remote.send(env.active_env_id)
       elif cmd == 'get_next_action':
@@ -135,8 +134,6 @@ class MultiRunner(object):
     for remote in self.worker_remotes:
       remote.close()
 
-    #self.remotes[0].send(('get_spaces', None))
-    #self.obs_shape, self.action_space, self.action_shape = self.remotes[0].recv()
 
   def step(self, actions, auto_reset=False):
     '''
