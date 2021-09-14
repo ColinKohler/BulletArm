@@ -52,8 +52,6 @@ class BaseEnv(object):
     self.obs_shape = self.heightmap_shape
     self.num_primatives = constants.NUM_PRIMATIVES
 
-    # TODO: This is a bit of a hacky way to set this but I'm not sure if there is a better way due to the
-    #       action seqeuence stuff
     self.action_space = [[], []]
     primative_idx, x_idx, y_idx, z_idx, rot_idx = map(lambda a: self.action_sequence.find(a), ['p', 'x', 'y', 'z', 'r'])
     if primative_idx != -1:
@@ -287,12 +285,12 @@ class BaseEnv(object):
     zs = np.array([z+(-size/2+i)*(self.heightmap_resolution) for i in range(size)])
     zs = zs.reshape((1, 1, -1))
     zs = zs.repeat(size, 0).repeat(size, 1)
-    # zs[zs<-(self.heightmap_resolution)] = 100
     c = crop.reshape(size, size, 1).repeat(size, 2)
     ori_occupancy = c > zs
 
     # transform into points
     point = np.argwhere(ori_occupancy)
+
     # center
     ori_point = point - size/2
     R = transformations.euler_matrix(rx, ry, rz)[:3, :3].T
@@ -307,11 +305,6 @@ class BaseEnv(object):
     occupancy = np.ceil(occupancy)
 
     projection = np.stack((occupancy.sum(0), occupancy.sum(1), occupancy.sum(2)))
-    # fig, axs = plt.subplots(1, 3, figsize=(15, 5))
-    # axs[0].imshow(projection[:, :, 0])
-    # axs[1].imshow(projection[:, :, 1])
-    # axs[2].imshow(projection[:, :, 2])
-    # fig.show()
     return projection
 
   def getEmptyInHand(self):
