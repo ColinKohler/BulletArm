@@ -69,6 +69,10 @@ class Corner:
     pos, rot = link_state[0], link_state[1]
     return list(pos), list(rot)
 
+  def getPose(self):
+    pos, rot = pb.getBasePositionAndOrientation(self.id)
+    return list(pos), list(rot)
+
   def remove(self):
     if self.id:
       pb.removeBody(self.id)

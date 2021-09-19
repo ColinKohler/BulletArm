@@ -109,7 +109,7 @@ class CloseLoopEnv(PyBulletEnv):
     return np.clip(scaled, -1, 1)
 
   def _scaleRz(self, rz):
-    while rz < np.pi:
+    while rz < -np.pi:
       rz += 2*np.pi
     while rz > np.pi:
       rz -= 2*np.pi
@@ -148,7 +148,10 @@ class CloseLoopEnv(PyBulletEnv):
       scaled_obj_poses.append(
         np.concatenate([self._scalePos(obj_poses[i, :3]), np.array([self._scaleRz(obj_poses[i, 3])])]))
     scaled_obj_poses = np.concatenate(scaled_obj_poses)
-    gripper_state = 1 if self._isHolding() else -1
+    gripper_state = self.robot.getGripperOpenRatio()
+    gripper_state = gripper_state * 2 - 1
+    gripper_state = np.clip(gripper_state, -1, 1)
+    # gripper_state = 1 if self._isHolding() else -1
     obs = np.concatenate(
       [np.array([gripper_state]), scaled_gripper_pos, np.array([scaled_gripper_rz]), scaled_obj_poses])
     return obs

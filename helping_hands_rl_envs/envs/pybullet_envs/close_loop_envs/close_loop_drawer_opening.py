@@ -36,6 +36,19 @@ class CloseLoopDrawerOpeningEnv(CloseLoopEnv):
   def _checkTermination(self):
     return self.drawer.isDrawerOpen()
 
+  def getObjectPoses(self, objects=None):
+    obj_poses = list()
+
+    drawer_pos, drawer_rot = self.drawer.getPose()
+    drawer_rot = self.convertQuaternionToEuler(drawer_rot)
+    obj_poses.append(drawer_pos + drawer_rot)
+    handle_pos = list(self.drawer.getHandlePosition())
+    handle_rot = list(self.drawer.getHandleRotation())
+    handle_rot = self.convertQuaternionToEuler(handle_rot)
+    obj_poses.append(handle_pos + handle_rot)
+
+    return np.array(obj_poses)
+
 def createCloseLoopDrawerOpeningEnv(config):
   return CloseLoopDrawerOpeningEnv(config)
 

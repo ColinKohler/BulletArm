@@ -94,6 +94,12 @@ class Kuka(RobotBase):
       p1 = p1_
       p2 = p2_
 
+  def getGripperOpenRatio(self):
+    p1, p2 = self._getGripperJointPosition()
+    mean = (p1 + p2)/2
+    ratio = (mean - self.gripper_joint_limit[0]) / (self.gripper_joint_limit[1] - self.gripper_joint_limit[0])
+    return ratio
+
   def closeGripper(self, max_it=100, primative=constants.PICK_PRIMATIVE):
     ''''''
     if primative == constants.PULL_PRIMATIVE:

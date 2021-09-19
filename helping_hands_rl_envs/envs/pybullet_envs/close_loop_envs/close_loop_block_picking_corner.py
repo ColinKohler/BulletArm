@@ -44,6 +44,17 @@ class CloseLoopBlockPickingCornerEnv(CloseLoopEnv):
     gripper_z = self.robot._getEndEffectorPosition()[-1]
     return self.robot.holding_obj == self.objects[-1] and gripper_z > 0.08
 
+  def getObjectPoses(self, objects=None):
+    if objects is None: objects = self.objects + [self.corner]
+
+    obj_poses = list()
+    for obj in objects:
+      pos, rot = obj.getPose()
+      rot = self.convertQuaternionToEuler(rot)
+
+      obj_poses.append(pos + rot)
+    return np.array(obj_poses)
+
 def createCloseLoopBlockPickingCornerEnv(config):
   return CloseLoopBlockPickingCornerEnv(config)
 
