@@ -65,6 +65,7 @@ from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_block_p
 from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_house_building_1 import createCloseLoopHouseBuilding1Env
 from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_block_picking_corner import createCloseLoopBlockPickingCornerEnv
 from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_drawer_opening import createCloseLoopDrawerOpeningEnv
+from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_household_picking import createCloseLoopHouseholdPickingEnv
 
 CREATE_NUMPY_ENV_FNS = {
   'block_picking' : createBlockPickingEnv,
@@ -147,4 +148,5 @@ CREATE_PYBULLET_ENV_FNS = {
   'close_loop_house_building_1': createCloseLoopHouseBuilding1Env,
   'close_loop_block_picking_corner': createCloseLoopBlockPickingCornerEnv,
   'close_loop_drawer_opening': createCloseLoopDrawerOpeningEnv,
+  'close_loop_household_picking': createCloseLoopHouseholdPickingEnv,
 }

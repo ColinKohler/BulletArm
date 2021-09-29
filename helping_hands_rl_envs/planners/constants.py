@@ -91,4 +91,5 @@ PLANNERS = {
   'close_loop_house_building_1':CloseLoopHouseBuilding1Planner,
   'close_loop_block_picking_corner':CloseLoopBlockPickingCornerPlanner,
   'close_loop_drawer_opening':CloseLoopDrawerOpeningPlanner,
+  'close_loop_household_picking':CloseLoopBlockPickingPlanner,
 }
