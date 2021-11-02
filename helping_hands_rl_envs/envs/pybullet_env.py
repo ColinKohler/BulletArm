@@ -21,7 +21,7 @@ from helping_hands_rl_envs.simulators.pybullet.objects.pybullet_object import Py
 import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
-class PyBulletEnv(BaseEnv):
+class PyBulletEnv:
   '''
   PyBullet base class.
   '''
@@ -33,13 +33,13 @@ class PyBulletEnv(BaseEnv):
     npr.seed(self.seed)
 
     # Setup environment
-    self.workspace = workspace
+    self.workspace = config['workspace']
     self.workspace_size = np.linalg.norm(self.workspace[0,1] - self.workspace[0,0])
     self.pos_candidate = config['pos_candidate'].astype(np.int) if config['pos_candidate'] else None
     self.max_steps = config['max_steps']
 
     # Setup heightmap
-    self.heightmap_size = config['heightmap_size']
+    self.heightmap_size = config['obs_size']
     self.in_hand_size = config['in_hand_size']
     self.in_hand_mode = config['in_hand_mode']
     self.heightmap_shape = (self.heightmap_size, self.heightmap_size, 1)
@@ -902,8 +902,8 @@ class PyBulletEnv(BaseEnv):
     Returns: Valid Z coordinate for the action
     '''
     x_pixel, y_pixel = self._getPixelsFromPos(x, y)
-    local_region = self.heightmap[int(max(y_pixel - self.heightmap_size/20, 0)):int(min(y_pixel + self.heightmap_size/20, self.heightmap_size)), \
-                                  int(max(x_pixel - self.heightmap_size/20, 0)):int(min(x_pixel + self.heightmap_size/20, self.heightmap_size))]
+    local_region = self.heightmap[int(max(x_pixel - self.heightmap_size/20, 0)):int(min(x_pixel + self.heightmap_size/20, self.heightmap_size)), \
+                                  int(max(y_pixel - self.heightmap_size/20, 0)):int(min(y_pixel + self.heightmap_size/20, self.heightmap_size))]
     safe_z_pos = np.max(local_region) + self.workspace[2][0]
     safe_z_pos = safe_z_pos - self.offset if motion_primative == constants.PICK_PRIMATIVE else safe_z_pos + self.offset
 

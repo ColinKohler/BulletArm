@@ -1,7 +1,7 @@
 from copy import deepcopy
 import numpy as np
 from itertools import combinations
-from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.pybullet.utils import object_generation
 from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
@@ -23,7 +23,7 @@ class ImproviseHouseBuilding3Env(PyBulletEnv):
   def reset(self):
     ''''''
     while True:
-      self.resetPybulletEnv()
+      self.resetPybulletWorkspace()
       try:
         padding = pybullet_util.getPadding(constants.BRICK, self.max_block_size)
         min_distance = pybullet_util.getMinDistance(constants.BRICK, self.max_block_size)

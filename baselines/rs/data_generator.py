@@ -22,7 +22,7 @@ class DataGenerator(object):
     self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
     env_type, env_config, _ = data_utils.getEnvConfig(self.config.env_type, self.config.use_rot)
-    self.env = env_factory.createEnvs(0, 'pybullet', env_type, env_config)
+    self.env = env_factory.createEnvs(0,  env_type, env_config)
 
     npr.seed(self.seed)
     torch.manual_seed(self.seed)
@@ -133,7 +133,7 @@ class ExpertDataGenerator(object):
 
     env_type, env_config, planner_config = data_utils.getEnvConfig(self.config.expert_env,
                                                                    self.config.use_rot)
-    self.env = env_factory.createEnvs(0, 'pybullet', env_type, env_config, planner_config=planner_config)
+    self.env = env_factory.createEnvs(0,  env_type, env_config, planner_config=planner_config)
 
     self.preprocessDepth = functools.partial(data_utils.preprocessDepth,
                                              min=0.,

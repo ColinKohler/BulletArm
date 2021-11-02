@@ -1,5 +1,5 @@
 from copy import deepcopy
-from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.envs.utils.check_goal import CheckGoal
 from helping_hands_rl_envs.envs.utils.check_goal_custom_labels import CheckGoalCustomLabels

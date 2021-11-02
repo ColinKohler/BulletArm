@@ -13,8 +13,8 @@ from helping_hands_rl_envs.envs.block_structure_envs.improvise_house_building_2_
 from helping_hands_rl_envs.envs.block_structure_envs.improvise_house_building_3_env import createImproviseHouseBuilding3Env
 from helping_hands_rl_envs.envs.block_structure_envs.improvise_house_building_discrete_env import createImproviseHouseBuildingDiscreteEnv
 from helping_hands_rl_envs.envs.block_structure_envs.improvise_house_building_random_env import createImproviseHouseBuildingRandomEnv
-from helping_hands_rl_envs.envs.block_stacking_deconstruct_env import createBlockStackingDeconstructEnv
 
+from helping_hands_rl_envs.envs.deconstruct_envs.block_stacking_deconstruct_env import createBlockStackingDeconstructEnv
 from helping_hands_rl_envs.envs.deconstruct_envs.house_building_1_deconstruct_env import createHouseBuilding1DeconstructEnv
 from helping_hands_rl_envs.envs.deconstruct_envs.house_building_2_deconstruct_env import createHouseBuilding2DeconstructEnv
 from helping_hands_rl_envs.envs.deconstruct_envs.house_building_3_deconstruct_env import createHouseBuilding3DeconstructEnv
@@ -52,6 +52,15 @@ from helping_hands_rl_envs.envs.ramp_envs.ramp_improvise_house_building_3_decons
 
 from helping_hands_rl_envs.envs.bumpy_envs.bumpy_box_palletizing_env import createBumpyBoxPalletizingEnv
 from helping_hands_rl_envs.envs.bumpy_envs.bumpy_house_building_4_env import createBumpyHouseBuilding4Env
+
+from helping_hands_rl_envs.envs.close_loop_envs.close_loop_block_picking import createCloseLoopBlockPickingEnv
+from helping_hands_rl_envs.envs.close_loop_envs.close_loop_block_reaching import createCloseLoopBlockReachingEnv
+from helping_hands_rl_envs.envs.close_loop_envs.close_loop_block_stacking import createCloseLoopBlockStackingEnv
+from helping_hands_rl_envs.envs.close_loop_envs.close_loop_block_pulling import createCloseLoopBlockPullingEnv
+from helping_hands_rl_envs.envs.close_loop_envs.close_loop_house_building_1 import createCloseLoopHouseBuilding1Env
+from helping_hands_rl_envs.envs.close_loop_envs.close_loop_block_picking_corner import createCloseLoopBlockPickingCornerEnv
+from helping_hands_rl_envs.envs.close_loop_envs.close_loop_drawer_opening import createCloseLoopDrawerOpeningEnv
+from helping_hands_rl_envs.envs.close_loop_envs.close_loop_household_picking import createCloseLoopHouseholdPickingEnv
 
 CREATE_ENV_FNS = {
   'block_picking' : createBlockPickingEnv,
@@ -102,5 +111,13 @@ CREATE_ENV_FNS = {
   'box_palletizing': createBoxPalletizingEnv,
   'bumpy_box_palletizing': createBumpyBoxPalletizingEnv,
   'bumpy_house_building_4': createBumpyHouseBuilding4Env,
-  'covid_test': createCovidTestEnv
+  'covid_test': createCovidTestEnv,
+  'close_loop_block_picking': createCloseLoopBlockPickingEnv,
+  'close_loop_block_reaching': createCloseLoopBlockReachingEnv,
+  'close_loop_block_stacking': createCloseLoopBlockStackingEnv,
+  'close_loop_block_pulling': createCloseLoopBlockPullingEnv,
+  'close_loop_house_building_1': createCloseLoopHouseBuilding1Env,
+  'close_loop_block_picking_corner': createCloseLoopBlockPickingCornerEnv,
+  'close_loop_drawer_opening': createCloseLoopDrawerOpeningEnv,
+  'close_loop_household_picking': createCloseLoopHouseholdPickingEnv,
 }

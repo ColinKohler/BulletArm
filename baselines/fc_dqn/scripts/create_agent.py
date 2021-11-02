@@ -1,14 +1,15 @@
-from baselines.agents.agents_2d.dqn_2d_fcn import DQN2DFCN
-from baselines.agents.agents_2d.margin_2d_fcn import Margin2DFCN
-from baselines.agents.agents_3d.dqn_3d_fcn import DQN3DFCN
-from baselines.agents.agents_3d.margin_3d_fcn import Margin3DFCN
-from baselines.agents.agents_3d.dqn_3d_asr import DQN3DASR
-from baselines.agents.agents_3d.margin_3d_asr import Margin3DASR
-from baselines.agents.agents_6d.dqn_6d_asr_5l import DQN6DASR5L
-from baselines.agents.agents_6d.margin_6d_asr_5l import Margin6DASR5L
+from baselines.fc_dqn.agents.agents_2d.dqn_2d_fcn import DQN2DFCN
+from baselines.fc_dqn.agents.agents_2d.margin_2d_fcn import Margin2DFCN
+from baselines.fc_dqn.agents.agents_3d.dqn_3d_fcn import DQN3DFCN
+from baselines.fc_dqn.agents.agents_3d.margin_3d_fcn import Margin3DFCN
+from baselines.fc_dqn.agents.agents_3d.dqn_3d_asr import DQN3DASR
+from baselines.fc_dqn.agents.agents_3d.margin_3d_asr import Margin3DASR
+from baselines.fc_dqn.agents.agents_6d.dqn_6d_asr_5l import DQN6DASR5L
+from baselines.fc_dqn.agents.agents_6d.margin_6d_asr_5l import Margin6DASR5L
 
-from baselines.utils.parameters import *
-from baselines.networks.models import ResUCatShared, CNNShared
+from baselines.fc_dqn.models.models import ResUCatShared, CNNShared
+
+from baselines.fc_dqn.utils.parameters import *
 
 def createAgent():
     if half_rotation:

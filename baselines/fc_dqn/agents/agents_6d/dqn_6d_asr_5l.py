@@ -2,8 +2,9 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 from copy import deepcopy
-from baselines.agents.agents_6d.base_6d import Base6D
-from baselines.utils import torch_utils
+from baselines.fc_dqn.agents.agents_6d.base_6d import Base6D
+from baselines.fc_dqn.utils import torch_utils
+
 
 class DQN6DASR5L(Base6D):
     def __init__(self, workspace, heightmap_size, device, lr=1e-4, gamma=0.9, sl=False, num_primitives=1,

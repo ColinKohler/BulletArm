@@ -11,7 +11,7 @@ class TestBulletHouse2(unittest.TestCase):
 
   def testStepLeft(self):
     self.env_config['render'] = True
-    env = env_factory.createEnvs(1, 'pybullet', 'house_building_2', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(1,  'house_building_2', self.env_config, self.planner_config)
     env.reset()
 
     positions = env.getObjectPositions()[0]

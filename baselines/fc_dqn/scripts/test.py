@@ -12,15 +12,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import AxesGrid
 
-from scripts.create_agent import createAgent
-from scripts.main import addPerlinNoiseToInHand, addPerlinNoiseToObs
-from utils.parameters import *
-from storage.buffer import QLearningBufferExpert, QLearningBuffer
+from baselines.fc_dqn.scripts.create_agent import createAgent
+from baselines.fc_dqn.utils.parameters import *
+from baselines.fc_dqn.storage.buffer import QLearningBufferExpert, QLearningBuffer
 from helping_hands_rl_envs import env_factory
-from utils.logger import Logger
-from utils.schedules import LinearSchedule
-from utils.torch_utils import rand_perlin_2d
-from utils.env_wrapper import EnvWrapper
+from baselines.fc_dqn.utils.logger import Logger
+from baselines.fc_dqn.utils.schedules import LinearSchedule
+from baselines.fc_dqn.utils.torch_utils import rand_perlin_2d
+from baselines.fc_dqn.utils.env_wrapper import EnvWrapper
 
 
 ExpertTransition = collections.namedtuple('ExpertTransition', 'state obs action reward next_state next_obs done step_left expert')
@@ -28,7 +27,7 @@ ExpertTransition = collections.namedtuple('ExpertTransition', 'state obs action 
 
 def test():
     plt.style.use('default')
-    envs = EnvWrapper(num_processes, simulator, env, env_config, planner_config)
+    envs = EnvWrapper(num_processes, env, env_config, planner_config)
     agent = createAgent()
 
     agent.loadModel(load_model_pre)
@@ -42,9 +41,6 @@ def test():
     step_times = []
     pbar = tqdm(total=test_episode)
     while total < 1000:
-        if perlin:
-          addPerlinNoiseToObs(obs, perlin)
-          addPerlinNoiseToInHand(in_hands, perlin)
         q_value_maps, actions_star_idx, actions_star = agent.getEGreedyActions(states, in_hands, obs, 0, 0)
         # plt.imshow(obs[0, 0])
         # plt.show()

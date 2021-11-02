@@ -1,7 +1,7 @@
 from copy import deepcopy
 import numpy as np
 from itertools import combinations
-from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
@@ -21,7 +21,7 @@ class ImproviseHouseBuilding2Env(PyBulletEnv):
   def reset(self):
     ''''''
     while True:
-      self.resetPybulletEnv()
+      self.resetPybulletWorkspace()
       try:
         self._generateShapes(constants.ROOF, 1, random_orientation=self.random_orientation)
         for i in range(self.num_obj-1):

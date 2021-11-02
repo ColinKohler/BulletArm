@@ -1,25 +1,14 @@
-import os
 import sys
 import time
 import copy
-import math
 import collections
 from tqdm import tqdm
 
-import torch
-
-import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.axes_grid1 import AxesGrid
+
 sys.path.append('./')
 sys.path.append('..')
-from baselines.scripts.create_agent import createAgent
-from baselines.utils.parameters import *
-from baselines.storage.buffer import QLearningBufferExpert, QLearningBuffer
-from helping_hands_rl_envs import env_factory
-from baselines.utils.logger import Logger
-from baselines.utils.schedules import LinearSchedule
-from baselines.utils.env_wrapper import EnvWrapper
+from baselines.fc_dqn.utils.env_wrapper import EnvWrapper
 
 ExpertTransition = collections.namedtuple('ExpertTransition', 'state obs action reward next_state next_obs done step_left expert')
 
@@ -47,7 +36,7 @@ def fillDeconstruct(agent, replay_buffer):
         return True
 
     plt.style.use('default')
-    envs = EnvWrapper(num_processes, 'pybullet', env, env_config, planner_config)
+    envs = EnvWrapper(num_processes,  env, env_config, planner_config)
 
     states, in_hands, obs = envs.reset()
     obs = obs.permute(0, 3, 1, 2)

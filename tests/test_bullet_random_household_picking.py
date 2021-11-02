@@ -14,7 +14,7 @@ class TestBulletHouseholdPikcing(unittest.TestCase):
 
   def testPlanner(self):
     self.env_config['render'] = True
-    env = env_factory.createEnvs(1, 'pybullet', 'random_household_picking', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(1,  'random_household_picking', self.env_config, self.planner_config)
     env.reset()
     for i in range(2, -1, -1):
       action = env.getNextAction()
@@ -29,7 +29,7 @@ class TestBulletHouseholdPikcing(unittest.TestCase):
     self.env_config['random_orientation'] = True
     self.env_config['seed'] = 0
     num_processes = 1
-    env = env_factory.createEnvs(num_processes, 'pybullet', 'random_household_picking', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(num_processes,  'random_household_picking', self.env_config, self.planner_config)
     total = 0
     s = 0
     step_times = []

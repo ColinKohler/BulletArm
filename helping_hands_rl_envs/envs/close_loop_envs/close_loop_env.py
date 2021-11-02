@@ -1,13 +1,9 @@
 import pybullet as pb
 import numpy as np
-import skimage.transform as sk_transform
-from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
-from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 from helping_hands_rl_envs.simulators.pybullet.utils.renderer import Renderer
 from helping_hands_rl_envs.simulators.pybullet.utils.ortho_sensor import OrthographicSensor
-from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
-import helping_hands_rl_envs.envs.pybullet_envs.constants as py_constants
 
 
 class CloseLoopEnv(PyBulletEnv):
@@ -17,6 +13,14 @@ class CloseLoopEnv(PyBulletEnv):
       config['view_type'] = 'camera_center_xyzr'
     if 'obs_type' not in config:
       config['obs_type'] = 'pixel'
+
+    if 'workspace_check' not in config:
+      config['workspace_check'] = 'point'
+    if 'random_orientation' not in config:
+      config['random_orientation'] = True
+    if 'workspace' not in config:
+      config['workspace'] = np.array([[0.25, 0.65], [-0.2, 0.2], [0, 0.4]])
+
     self.view_type = config['view_type']
     self.obs_type = config['obs_type']
     assert self.view_type in ['render_center', 'render_fix', 'camera_center_xyzr', 'camera_center_xyr',

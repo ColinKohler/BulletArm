@@ -15,7 +15,7 @@ class TestBulletImproviseHouseDiscreteDeconstruct(unittest.TestCase):
   def testPlanner(self):
     self.env_config['render'] = True
     self.env_config['seed'] = 0
-    env = env_factory.createEnvs(1, 'pybullet', 'improvise_house_building_discrete_deconstruct', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(1,  'improvise_house_building_discrete_deconstruct', self.env_config, self.planner_config)
     env.reset()
     for i in range(7, -1, -1):
       action = env.getNextAction()

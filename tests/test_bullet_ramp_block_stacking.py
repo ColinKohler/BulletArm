@@ -13,7 +13,7 @@ class TestBulletRampBlockStacking(unittest.TestCase):
   def testPlanner(self):
     self.env_config['render'] = True
 
-    env = env_factory.createEnvs(1, 'pybullet', 'ramp_block_stacking', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(1,  'ramp_block_stacking', self.env_config, self.planner_config)
     total = 0
     s = 0
     step_times = []
@@ -43,7 +43,7 @@ class TestBulletRampBlockStacking(unittest.TestCase):
   def testReset(self):
     self.env_config['render'] = True
     num_processes = 1
-    env = env_factory.createEnvs(num_processes, 'pybullet', 'ramp_block_stacking', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(num_processes,  'ramp_block_stacking', self.env_config, self.planner_config)
     while True:
       states, hand_obs, depths = env.reset()
       print(1)

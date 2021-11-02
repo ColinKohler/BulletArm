@@ -16,7 +16,7 @@ class TestBulletBottleTray(unittest.TestCase):
     self.env_config['render'] = False
     self.env_config['seed'] = 0
     num_processes = 20
-    env = env_factory.createEnvs(num_processes, 'pybullet', 'bottle_tray', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(num_processes, 'bottle_tray', self.env_config, self.planner_config)
     total = 0
     s = 0
     step_times = []

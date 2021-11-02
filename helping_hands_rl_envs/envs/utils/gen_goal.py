@@ -237,8 +237,6 @@ class GenGoal:
               )
           except Exception as e:
             continue
-    else:
-      break
 
     self.env.structure_objs = structure_objs
     self.env.num_obj = len(structure_objs)

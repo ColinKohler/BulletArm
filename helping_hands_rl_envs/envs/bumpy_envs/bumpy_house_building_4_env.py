@@ -4,8 +4,8 @@ import numpy as np
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
-from helping_hands_rl_envs.envs.pybullet_envs.house_building_4_env import HouseBuilding4Env
-from helping_hands_rl_envs.envs.pybullet_envs.bumpy_envs.bumpy_base import BumpyBase
+from helping_hands_rl_envs.envs.block_structure_envs.house_building_4_env import HouseBuilding4Env
+from helping_hands_rl_envs.envs.bumpy_envs.bumpy_base import BumpyBase
 from helping_hands_rl_envs.planners.bumpy_house_building_4_planner import BumpyHouseBuilding4Planner
 
 class BumpyHouseBuilding4Env(HouseBuilding4Env, BumpyBase):
@@ -24,7 +24,7 @@ class BumpyHouseBuilding4Env(HouseBuilding4Env, BumpyBase):
   def reset(self):
     ''''''
     while True:
-      self.resetPybulletEnv()
+      self.resetPybulletWorkspace()
       self.platform_pos = self._getValidPositions(self.platform_size*2, 0, [], 1)[0]
       BumpyBase.resetBumps(self)
       BumpyBase.resetPlatform(self, self.platform_pos, np.random.random() * np.pi, [self.platform_size, self.platform_size])

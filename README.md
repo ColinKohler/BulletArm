@@ -47,7 +47,7 @@ based simulator is included for quick prototyping.
     # planner parameters
     planner_config = {'random_orientation': True}
     # create 1 block_stacking environment
-    env = env_factory.createEnvs(1, 'pybullet', 'block_stacking', env_config, planner_config)
+    env = env_factory.createEnvs(1, 'block_stacking', env_config, planner_config)
     env.reset()
     for i in range(5, -1, -1):
         action = env.getNextAction()

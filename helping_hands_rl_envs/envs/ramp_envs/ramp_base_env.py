@@ -1,6 +1,6 @@
 from copy import deepcopy
 import pybullet as pb
-from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
@@ -86,7 +86,7 @@ class RampBaseEnv(PyBulletEnv):
 
   def resetWithRampAndObj(self, obj_dict):
     while True:
-      self.resetPybulletEnv()
+      self.resetPybulletWorkspace()
       self.resetRamp()
       try:
         existing_pos = []

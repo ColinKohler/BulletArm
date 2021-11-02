@@ -6,8 +6,8 @@ from copy import deepcopy
 from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
-from helping_hands_rl_envs.envs.pybullet_envs.deconstruct_env import DeconstructEnv
-from helping_hands_rl_envs.envs.pybullet_envs.ramp_envs.ramp_base_env import RampBaseEnv
+from helping_hands_rl_envs.envs.deconstruct_envs.deconstruct_env import DeconstructEnv
+from helping_hands_rl_envs.envs.ramp_envs.ramp_base_env import RampBaseEnv
 import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
 from helping_hands_rl_envs.simulators import constants
 
@@ -18,12 +18,12 @@ class RampDeconstructEnv(DeconstructEnv, RampBaseEnv):
     self.place_offset = 0.015
 
   def resetRampDeconstructEnv(self):
-    self.resetPybulletEnv()
+    self.resetPybulletWorkspace()
     self.resetRamp()
     self.structure_objs = []
     self.generateStructure()
     while not self.checkStructure():
-      self.resetPybulletEnv()
+      self.resetPybulletWorkspace()
       self.resetRamp()
       self.structure_objs = []
       self.generateStructure()

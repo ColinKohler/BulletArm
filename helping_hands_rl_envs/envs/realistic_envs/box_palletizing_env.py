@@ -1,11 +1,10 @@
 import pybullet as pb
 import numpy as np
 
-from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
-from helping_hands_rl_envs.simulators.pybullet.objects.box import Box
 from helping_hands_rl_envs.simulators.pybullet.objects.pallet import Pallet
 from helping_hands_rl_envs.planners.box_palletizing_planner import BoxPalletizingPlanner
 
@@ -89,7 +88,7 @@ class BoxPalletizingEnv(PyBulletEnv):
     while True:
       if self.pallet is not None:
         pb.removeBody(self.pallet.object_id)
-      self.resetPybulletEnv()
+      self.resetPybulletWorkspace()
       self.resetPallet()
       try:
         self._generateShapes(constants.BOX, 1, random_orientation=self.random_orientation)

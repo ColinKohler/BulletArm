@@ -5,15 +5,15 @@ import copy
 
 from tqdm import tqdm
 
-from scripts.create_agent import createAgent
-from utils.env_wrapper import EnvWrapper
-from utils.parameters import *
-from scripts.create_agent import createAgent
+from baselines.fc_dqn.scripts.create_agent import createAgent
+from baselines.fc_dqn.utils.env_wrapper import EnvWrapper
+from baselines.fc_dqn.utils.parameters import *
+from baselines.fc_dqn.scripts.create_agent import createAgent
 
 def testPlanner():
     # test_episode = 500
     test_episode = 1000
-    envs = EnvWrapper(num_processes, simulator, env, env_config, planner_config)
+    envs = EnvWrapper(num_processes, env, env_config, planner_config)
     agent = createAgent()
     agent.eval()
     states, in_hands, obs = envs.reset()

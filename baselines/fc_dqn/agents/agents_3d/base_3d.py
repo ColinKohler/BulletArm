@@ -1,8 +1,8 @@
 import numpy as np
 import torch
-from baselines.agents.base_agent import BaseAgent
-from baselines.utils.torch_utils import perturb, ExpertTransition
-import matplotlib.pyplot as plt
+from baselines.fc_dqn.agents.base_agent import BaseAgent
+from baselines.fc_dqn.utils.torch_utils import perturb, ExpertTransition
+
 
 class Base3D(BaseAgent):
     def __init__(self, workspace, heightmap_size, device, lr=1e-4, gamma=0.9, sl=False, num_primitives=1,

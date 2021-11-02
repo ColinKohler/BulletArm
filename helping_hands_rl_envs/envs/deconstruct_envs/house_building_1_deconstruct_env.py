@@ -1,4 +1,4 @@
-from helping_hands_rl_envs.envs.pybullet_envs.deconstruct_env import DeconstructEnv
+from helping_hands_rl_envs.envs.deconstruct_envs.deconstruct_env import DeconstructEnv
 from helping_hands_rl_envs.simulators import constants
 
 class HouseBuilding1DeconstructEnv(DeconstructEnv):

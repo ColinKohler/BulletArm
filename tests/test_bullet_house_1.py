@@ -13,7 +13,7 @@ class TestBulletHouse1(unittest.TestCase):
     num_random_o = 0
     self.env_config['num_random_objects'] = num_random_o
     self.env_config['render'] = True
-    env = env_factory.createEnvs(1, 'pybullet', 'house_building_1', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(1,  'house_building_1', self.env_config, self.planner_config)
     env.reset()
 
     position = env.getObjectPositions()[0]
@@ -67,7 +67,7 @@ class TestBulletHouse1(unittest.TestCase):
     self.env_config['num_objects'] = 3
     self.env_config['hard_reset_freq'] = 10
 
-    env = env_factory.createEnvs(1, 'pybullet', 'house_building_1', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(1,  'house_building_1', self.env_config, self.planner_config)
     total = 0
     s = 0
     step_times = []

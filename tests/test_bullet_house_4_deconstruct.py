@@ -12,7 +12,7 @@ class TestBulletHouse4Deconstruct(unittest.TestCase):
 
   def testPlanner(self):
     self.env_config['render'] = False
-    env = env_factory.createEnvs(1, 'pybullet', 'house_building_4_deconstruct', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(1,  'house_building_4_deconstruct', self.env_config, self.planner_config)
     env.reset()
     for i in range(9, -1, -1):
       action = env.getNextAction()

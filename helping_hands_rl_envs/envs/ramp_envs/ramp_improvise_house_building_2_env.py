@@ -1,5 +1,5 @@
 import numpy as np
-from helping_hands_rl_envs.envs.pybullet_envs.ramp_envs.ramp_base_env import RampBaseEnv
+from helping_hands_rl_envs.envs.ramp_envs.ramp_base_env import RampBaseEnv
 from helping_hands_rl_envs.simulators import constants
 
 

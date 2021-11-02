@@ -1,8 +1,7 @@
 import pybullet as pb
 import numpy as np
 
-from helping_hands_rl_envs.simulators import constants
-from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_env import CloseLoopEnv
+from helping_hands_rl_envs.envs.close_loop_envs.close_loop_env import CloseLoopEnv
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 from helping_hands_rl_envs.planners.close_loop_drawer_opening_planner import CloseLoopDrawerOpeningPlanner
 from helping_hands_rl_envs.simulators.pybullet.equipments.drawer import Drawer
@@ -18,7 +17,7 @@ class CloseLoopDrawerOpeningEnv(CloseLoopEnv):
     self.drawer.initialize((self.workspace[0].mean(), self.workspace[1].mean(), 0), pb.getQuaternionFromEuler((0, 0, 0)), 0.3)
 
   def reset(self):
-    self.resetPybulletEnv()
+    self.resetPybulletWorkspace()
     self.robot.moveTo([self.workspace[0].mean(), self.workspace[1].mean(), 0.2], transformations.quaternion_from_euler(0, 0, 0))
     # pos = self._getValidPositions(0.1, 0, [], 1)[0]
     # pos.append(0)

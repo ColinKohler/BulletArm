@@ -14,7 +14,7 @@ class TestBulletBlockStacking(unittest.TestCase):
 
   def testPlanner(self):
     self.env_config['render'] = True
-    env = env_factory.createEnvs(1, 'pybullet', 'block_stacking', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(1, 'block_stacking', self.env_config, self.planner_config)
     env.reset()
     for i in range(5, -1, -1):
       action = env.getNextAction()
@@ -28,7 +28,7 @@ class TestBulletBlockStacking(unittest.TestCase):
     self.env_config['render'] = False
     self.env_config['seed'] = 0
     num_processes = 20
-    env = env_factory.createEnvs(num_processes, 'pybullet', 'block_stacking', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(num_processes,  'block_stacking', self.env_config, self.planner_config)
     total = 0
     s = 0
     step_times = []

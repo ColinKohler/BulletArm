@@ -98,7 +98,7 @@ if __name__ == '__main__':
   task_config = data_utils.getTaskConfig(args.task, 1)
   env_type, env_config, _ = data_utils.getEnvConfig(task_config.env_type, task_config.use_rot, render=False)
   planner_config = data_utils.getPlannerConfig([0., 0.], [0., 0.], 0., 'play')
-  env = env_factory.createEnvs(0, 'pybullet', env_type, env_config, planner_config=planner_config)
+  env = env_factory.createEnvs(0,  env_type, env_config, planner_config=planner_config)
   agent = initAgent(task_config, args.cuda, args.checkpoint)
 
   if args.save_plots:

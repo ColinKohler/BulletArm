@@ -4,7 +4,7 @@ import scipy
 import numpy.random as npr
 from itertools import combinations
 
-from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv, NoValidPositionException
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv, NoValidPositionException
 import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
 from helping_hands_rl_envs.simulators import constants
 
@@ -49,11 +49,11 @@ class DeconstructEnv(PyBulletEnv):
     return self._isHolding(), in_hand_img, self.heightmap.reshape([1, self.heightmap_size, self.heightmap_size])
 
   def resetDeconstructEnv(self):
-    self.resetPybulletEnv()
+    self.resetPybulletWorkspace()
     self.structure_objs = list()
     self.generateStructure()
     while not self.checkStructure():
-      self.resetPybulletEnv()
+      self.resetPybulletWorkspace()
       self.structure_objs = list()
       self.generateStructure()
 

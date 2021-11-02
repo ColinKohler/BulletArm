@@ -16,7 +16,7 @@ class TestBulletBlockBinPacking(unittest.TestCase):
     self.env_config['render'] = True
     self.env_config['seed'] = 0
     num_processes = 1
-    env = env_factory.createEnvs(num_processes, 'pybullet', 'block_bin_packing', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(num_processes, 'block_bin_packing', self.env_config, self.planner_config)
     total = 0
     s = 0
     step_times = []

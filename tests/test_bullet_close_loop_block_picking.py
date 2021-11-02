@@ -23,7 +23,7 @@ class TestBulletBowlStacking(unittest.TestCase):
     self.env_config['render'] = True
     self.env_config['seed'] = 0
     num_processes = 1
-    env = env_factory.createEnvs(num_processes, 'pybullet', 'close_loop_block_picking', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(num_processes,  'close_loop_block_picking', self.env_config, self.planner_config)
     total = 0
     s = 0
     step_times = []

@@ -1,4 +1,4 @@
-from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
@@ -18,7 +18,7 @@ class BrickStackingEnv(PyBulletEnv):
   def reset(self):
     ''''''
     while True:
-      self.resetPybulletEnv()
+      self.resetPybulletWorkspace()
       try:
         self._generateShapes(constants.BRICK, 1, random_orientation=self.random_orientation)
         self._generateShapes(constants.CUBE, self.num_cubes, random_orientation=self.random_orientation)

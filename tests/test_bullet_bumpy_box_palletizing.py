@@ -14,7 +14,7 @@ class TestBulletBumpyBoxPalletizing(unittest.TestCase):
 
   def testPlanner(self):
     self.env_config['render'] = False
-    env = env_factory.createEnvs(1, 'pybullet', 'bumpy_box_palletizing', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(1,  'bumpy_box_palletizing', self.env_config, self.planner_config)
     env.reset()
     for i in range(35, -1, -1):
       action = env.getNextAction()
@@ -28,7 +28,7 @@ class TestBulletBumpyBoxPalletizing(unittest.TestCase):
     self.env_config['render'] = True
     num_processes = 1
     self.env_config['seed'] = 1
-    env = env_factory.createEnvs(num_processes, 'pybullet', 'bumpy_box_palletizing', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(num_processes,  'bumpy_box_palletizing', self.env_config, self.planner_config)
     total = 0
     s = 0
     step_times = []

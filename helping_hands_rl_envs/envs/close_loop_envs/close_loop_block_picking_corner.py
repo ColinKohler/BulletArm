@@ -2,7 +2,7 @@ import pybullet as pb
 import numpy as np
 
 from helping_hands_rl_envs.simulators import constants
-from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_env import CloseLoopEnv
+from helping_hands_rl_envs.envs.close_loop_envs.close_loop_env import CloseLoopEnv
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 from helping_hands_rl_envs.planners.close_loop_block_picking_corner_planner import CloseLoopBlockPickingCornerPlanner
 from helping_hands_rl_envs.simulators.pybullet.equipments.corner import Corner
@@ -25,7 +25,7 @@ class CloseLoopBlockPickingCornerEnv(CloseLoopEnv):
     self.corner.initialize(pos=self.corner_pos)
 
   def reset(self):
-    self.resetPybulletEnv()
+    self.resetPybulletWorkspace()
     self.resetCorner()
     self.robot.moveTo([self.workspace[0].mean(), self.workspace[1].mean(), 0.2], transformations.quaternion_from_euler(0, 0, 0))
     pos, rot_q = self.corner.getObjPose()

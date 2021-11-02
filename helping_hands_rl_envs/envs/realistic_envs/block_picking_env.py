@@ -1,6 +1,6 @@
 from copy import deepcopy
 import numpy as np
-from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 
 class BlockPickingEnv(PyBulletEnv):
@@ -36,7 +36,7 @@ class BlockPickingEnv(PyBulletEnv):
 
   def reset(self):
     ''''''
-    self.resetPybulletEnv()
+    self.resetPybulletWorkspace()
     self._generateShapes(constants.CUBE, self.num_obj, random_orientation=self.random_orientation)
     self.obj_grasped = 0
     return self._getObservation()

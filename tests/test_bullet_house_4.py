@@ -13,7 +13,7 @@ class TestBulletHouse4(unittest.TestCase):
 
   def testStepLeft(self):
     self.env_config['seed'] = 1
-    env = env_factory.createEnvs(1, 'pybullet', 'house_building_4', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(1,  'house_building_4', self.env_config, self.planner_config)
     env.reset()
     for i in range(9, -1, -1):
       action = env.getNextAction()
@@ -25,7 +25,7 @@ class TestBulletHouse4(unittest.TestCase):
     self.env_config['render'] = False
     self.env_config['random_orientation'] = True
 
-    env = env_factory.createEnvs(20, 'pybullet', 'house_building_4', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(20,  'house_building_4', self.env_config, self.planner_config)
     total = 0
     s = 0
     step_times = []

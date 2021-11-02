@@ -14,7 +14,7 @@ class TestBulletRampHouseBuilding3Deconstruct(unittest.TestCase):
   def testPlanner(self):
     self.env_config['render'] = True
     num_processes = 1
-    env = env_factory.createEnvs(num_processes, 'pybullet', 'ramp_house_building_3_deconstruct', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(num_processes,  'ramp_house_building_3_deconstruct', self.env_config, self.planner_config)
     total = 0
     s = 0
     step_times = []

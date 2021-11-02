@@ -1,6 +1,5 @@
-from copy import deepcopy
 import numpy as np
-from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 from helping_hands_rl_envs.simulators.pybullet.equipments.container_box import ContainerBox
@@ -47,7 +46,7 @@ class RandomBlockPickingClutterEnv(PyBulletEnv):
   def reset(self):
     ''''''
     while True:
-      self.resetPybulletEnv()
+      self.resetPybulletWorkspace()
       try:
         for i in range(self.num_obj):
           self._generateShapes(constants.RANDOM_BLOCK, 1, random_orientation=self.random_orientation,

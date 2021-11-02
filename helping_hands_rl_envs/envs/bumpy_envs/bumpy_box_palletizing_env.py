@@ -4,8 +4,8 @@ import numpy as np
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
-from helping_hands_rl_envs.envs.pybullet_envs.box_palletizing_env import BoxPalletizingEnv
-from helping_hands_rl_envs.envs.pybullet_envs.bumpy_envs.bumpy_base import BumpyBase
+from helping_hands_rl_envs.envs.realistic_envs.box_palletizing_env import BoxPalletizingEnv
+from helping_hands_rl_envs.envs.bumpy_envs.bumpy_base import BumpyBase
 from helping_hands_rl_envs.planners.box_palletizing_planner import BoxPalletizingPlanner
 
 class BumpyBoxPalletizingEnv(BoxPalletizingEnv, BumpyBase):
@@ -35,7 +35,7 @@ class BumpyBoxPalletizingEnv(BoxPalletizingEnv, BumpyBase):
     while True:
       if self.pallet is not None:
         pb.removeBody(self.pallet.object_id)
-      self.resetPybulletEnv()
+      self.resetPybulletWorkspace()
       BumpyBase.resetBumps(self)
       self.resetPallet()
       pb.changeDynamics(self.pallet.object_id, -1, linearDamping=0.04, angularDamping=0.04, restitution=0,

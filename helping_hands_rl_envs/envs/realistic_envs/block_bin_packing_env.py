@@ -1,15 +1,10 @@
-import os
 import pybullet as pb
-import copy
 import numpy as np
 import numpy.random as npr
 
-import helping_hands_rl_envs
 from helping_hands_rl_envs.simulators.pybullet.equipments.container_box import ContainerBox
-from helping_hands_rl_envs.simulators.pybullet.objects.plate import PLACE_RY_OFFSET, PLACE_Z_OFFSET
-from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
-from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 from helping_hands_rl_envs.planners.block_bin_packing_planner import BlockBinPackingPlanner
 
@@ -69,7 +64,7 @@ class BlockBinPackingEnv(PyBulletEnv):
 
   def reset(self):
     while True:
-      self.resetPybulletEnv()
+      self.resetPybulletWorkspace()
       self.resetBox()
       try:
         self._generateShapes(constants.RANDOM_BLOCK, self.num_obj, random_orientation=self.random_orientation,

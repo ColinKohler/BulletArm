@@ -13,7 +13,7 @@ class TestBulletBlockPicking(unittest.TestCase):
 
   def testPlanner(self):
     self.env_config['render'] = True
-    env = env_factory.createEnvs(1, 'pybullet', 'block_picking', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(1, 'block_picking', self.env_config, self.planner_config)
     env.reset()
     for i in range(3, -1, -1):
       action = env.getNextAction()

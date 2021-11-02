@@ -1,6 +1,6 @@
 import numpy as np
 
-from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 
 class PyramidStackingEnv(PyBulletEnv):
@@ -17,7 +17,7 @@ class PyramidStackingEnv(PyBulletEnv):
 
   def reset(self):
     ''''''
-    self.resetPybulletEnv()
+    self.resetPybulletWorkspace()
     self._generateShapes(constants.CUBE, self.num_obj, random_orientation=self.random_orientation)
     return self._getObservation()
 

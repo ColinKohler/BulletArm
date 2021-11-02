@@ -2,8 +2,7 @@ import copy
 import numpy as np
 import numpy.random as npr
 
-from helping_hands_rl_envs.envs import constants as env_constants
-from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs import env_fn
 from helping_hands_rl_envs.planners.planner_factory import getPlannerFn
 
 from helping_hands_rl_envs.runner import MultiRunner, SingleRunner
@@ -17,8 +16,8 @@ def getEnvFn(env_type):
 
   Returns:
   '''
-  if env_type in env_constants.CREATE_PYBULLET_ENV_FNS:
-    return env_constants.CREATE_PYBULLET_ENV_FNS[env_type]
+  if env_type in env_fn.CREATE_ENV_FNS:
+    return env_fn.CREATE_ENV_FNS[env_type]
   else:
     raise ValueError('Invalid environment type passed to factory. No env for {}'.format(env_type))
 

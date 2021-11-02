@@ -13,7 +13,7 @@ class TestBulletRampHouse1(unittest.TestCase):
   def testPlanner(self):
     self.env_config['render'] = True
     num_processes = 1
-    env = env_factory.createEnvs(num_processes, 'pybullet', 'ramp_house_building_1', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(num_processes,  'ramp_house_building_1', self.env_config, self.planner_config)
     while True:
       env.reset()
       print(1)

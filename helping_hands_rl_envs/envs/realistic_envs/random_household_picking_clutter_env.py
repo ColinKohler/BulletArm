@@ -1,13 +1,10 @@
-from copy import deepcopy
 import numpy as np
-from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 from helping_hands_rl_envs.simulators.pybullet.equipments.tray import Tray
 from scipy.ndimage.interpolation import rotate
 import pybullet as pb
-import os
-import pybullet_data
 
 class RandomHouseholdPickingClutterEnv(PyBulletEnv):
   '''
@@ -119,7 +116,7 @@ class RandomHouseholdPickingClutterEnv(PyBulletEnv):
   def reset(self):
     ''''''
     while True:
-      self.resetPybulletEnv()
+      self.resetPybulletWorkspace()
       try:
         # self.trayUid = pb.loadURDF(os.path.join(pybullet_data.getDataPath(), "tray/tray.urdf"),
         #                            self.workspace[0].mean(), self.workspace[1].mean(), 0,

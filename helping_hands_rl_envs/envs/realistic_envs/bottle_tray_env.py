@@ -2,9 +2,8 @@ import pybullet as pb
 import numpy as np
 
 from helping_hands_rl_envs.simulators.pybullet.equipments.container_box import ContainerBox
-from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
-from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 from helping_hands_rl_envs.planners.bottle_tray_planner import BottleTrayPlanner
 
@@ -65,7 +64,7 @@ class BottleTrayEnv(PyBulletEnv):
 
   def reset(self):
     while True:
-      self.resetPybulletEnv()
+      self.resetPybulletWorkspace()
       self.resetBox()
       try:
         self._generateShapes(constants.BOTTLE, self.num_obj, random_orientation=self.random_orientation, padding=self.min_boarder_padding, min_distance=self.min_object_distance)

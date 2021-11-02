@@ -17,7 +17,7 @@ class TestBulletBumpyHouseBuilding4(unittest.TestCase):
     self.env_config['render'] = True
     num_processes = 1
     self.env_config['seed'] = 0
-    env = env_factory.createEnvs(num_processes, 'pybullet', 'bumpy_house_building_4', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(num_processes,  'bumpy_house_building_4', self.env_config, self.planner_config)
     total = 0
     s = 0
     step_times = []

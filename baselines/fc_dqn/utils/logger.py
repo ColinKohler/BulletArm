@@ -1,9 +1,7 @@
 import os
 import time
 import datetime
-import math
 import numpy as np
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 from collections import namedtuple
 from more_itertools import windowed
@@ -12,10 +10,6 @@ import json
 from tqdm import tqdm
 
 import torch
-import torch.nn.functional as F
-
-from baselines.utils.torch_utils import rand_perlin_2d, rand_perlin_2d_octaves, getPerlinFade
-from baselines.utils.parameters import *
 
 # Transition object
 ExpertTransition = namedtuple('ExpertTransition', 'state obs action reward next_state next_obs done step_left expert')

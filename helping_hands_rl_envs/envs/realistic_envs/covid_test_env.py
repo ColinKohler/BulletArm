@@ -1,18 +1,11 @@
-import os
 import pybullet as pb
-import copy
 import numpy as np
 import numpy.random as npr
 
-import helping_hands_rl_envs
 from helping_hands_rl_envs.simulators.pybullet.equipments.box_color import BoxColor
-from helping_hands_rl_envs.simulators.pybullet.equipments.rack import Rack
-from helping_hands_rl_envs.simulators.pybullet.objects.plate import PLACE_RY_OFFSET, PLACE_Z_OFFSET
-from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
-from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
-from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 
 class CovidTestEnv(PyBulletEnv):
   def __init__(self, config):
@@ -166,7 +159,7 @@ class CovidTestEnv(PyBulletEnv):
     self.num_tubes_in_used_box = 0
 
     while True:
-      self.resetPybulletEnv()
+      self.resetPybulletWorkspace()
       self.resetBoxs()
       try:
         tube_rot = 1.57 + np.random.uniform(-np.pi/6, np.pi/6) + self.R_angel_after_flip + np.random.randint(2) * np.pi

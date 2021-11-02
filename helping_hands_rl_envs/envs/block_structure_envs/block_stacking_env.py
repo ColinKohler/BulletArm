@@ -1,4 +1,4 @@
-from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
@@ -25,7 +25,7 @@ class BlockStackingEnv(PyBulletEnv):
       raise ValueError('Invalid object type specified. Must be \'cube\' or \'cylinder\'')
 
     while True:
-      self.resetPybulletEnv()
+      self.resetPybulletWorkspace()
       try:
         self._generateShapes(object_type, self.num_obj, random_orientation=self.random_orientation)
       except NoValidPositionException as e:

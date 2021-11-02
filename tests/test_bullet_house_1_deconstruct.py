@@ -14,7 +14,7 @@ class TestBulletHouse1Deconstruct(unittest.TestCase):
 
   def testPlanner(self):
     self.env_config['render'] = False
-    env = env_factory.createEnvs(1, 'pybullet', 'house_building_1_deconstruct', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(1,  'house_building_1_deconstruct', self.env_config, self.planner_config)
     env.reset()
     for i in range(5, -1, -1):
       action = env.getNextAction()
@@ -25,7 +25,7 @@ class TestBulletHouse1Deconstruct(unittest.TestCase):
   def testPlanner2(self):
     self.env_config['render'] = False
     num_processes = 20
-    env = env_factory.createEnvs(num_processes, 'pybullet', 'house_building_1_deconstruct', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(num_processes,  'house_building_1_deconstruct', self.env_config, self.planner_config)
     total = 0
     s = 0
     step_times = []

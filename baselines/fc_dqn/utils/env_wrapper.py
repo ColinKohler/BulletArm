@@ -2,8 +2,8 @@ import torch
 from helping_hands_rl_envs import env_factory
 
 class EnvWrapper:
-    def __init__(self, num_processes, simulator, env, env_config, planner_config):
-        self.envs = env_factory.createEnvs(num_processes, simulator, env, env_config, planner_config)
+    def __init__(self, num_processes, env, env_config, planner_config):
+        self.envs = env_factory.createEnvs(num_processes, env, env_config, planner_config)
 
     def reset(self):
         (states, in_hands, obs) = self.envs.reset()

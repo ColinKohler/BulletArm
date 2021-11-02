@@ -1,6 +1,5 @@
-from copy import deepcopy
 import numpy as np
-from helping_hands_rl_envs.envs.pybullet_envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
@@ -39,7 +38,7 @@ class RandomHouseholdPickingEnv(PyBulletEnv):
   def reset(self):
     ''''''
     while True:
-      self.resetPybulletEnv()
+      self.resetPybulletWorkspace()
       try:
         self._generateShapes(constants.RANDOM_HOUSEHOLD, self.num_obj, random_orientation=self.random_orientation,
                              padding=self.min_boarder_padding, min_distance=self.min_object_distance)

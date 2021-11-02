@@ -2,7 +2,7 @@ import pybullet as pb
 import numpy as np
 
 from helping_hands_rl_envs.simulators import constants
-from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_env import CloseLoopEnv
+from helping_hands_rl_envs.envs.close_loop_envs.close_loop_env import CloseLoopEnv
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 from helping_hands_rl_envs.planners.close_loop_house_building_1_planner import CloseLoopHouseBuilding1Planner
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
@@ -14,7 +14,7 @@ class CloseLoopHouseBuilding1Env(CloseLoopEnv):
 
   def reset(self):
     while True:
-      self.resetPybulletEnv()
+      self.resetPybulletWorkspace()
       self.robot.moveTo([self.workspace[0].mean(), self.workspace[1].mean(), 0.2], transformations.quaternion_from_euler(0, 0, 0))
       try:
         self._generateShapes(constants.TRIANGLE, 1, random_orientation=self.random_orientation)

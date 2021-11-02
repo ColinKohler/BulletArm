@@ -12,7 +12,7 @@ class TestBulletHouse3(unittest.TestCase):
 
   def testPlanner(self):
     # env = createHouseBuilding3Env(PyBulletEnv, self.env_config)()
-    env = env_factory.createEnvs(1, 'pybullet', 'house_building_3', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(1,  'house_building_3', self.env_config, self.planner_config)
     env.reset()
     for i in range(5, -1, -1):
       action = env.getNextAction()
@@ -26,7 +26,7 @@ class TestBulletHouse3(unittest.TestCase):
   #   self.env_config['reward_type'] = 'sparse'
   #   self.env_config['random_orientation'] = True
   #   self.env_config['robot'] = 'ur5_robotiq'
-  #   env = env_factory.createEnvs(10, 'rl', 'pybullet', 'house_building_3', self.env_config, {})
+  #   env = env_factory.createEnvs(10, 'rl',  'house_building_3', self.env_config, {})
   #   total = 0
   #   s = 0
   #   env.reset()
@@ -47,7 +47,7 @@ class TestBulletHouse3(unittest.TestCase):
     self.env_config['seed'] = 0
     self.env_config['random_orientation'] = False
 
-    env = env_factory.createEnvs(1, 'pybullet', 'house_building_3', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(1,  'house_building_3', self.env_config, self.planner_config)
     env.reset()
 
     env.save()
@@ -82,7 +82,7 @@ class TestBulletHouse3(unittest.TestCase):
     self.env_config['seed'] = 0
     self.env_config['random_orientation'] = False
 
-    env = env_factory.createEnvs(1, 'pybullet', 'house_building_3', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(1,  'house_building_3', self.env_config, self.planner_config)
     env.reset()
 
     env.save()
@@ -128,7 +128,7 @@ class TestBulletHouse3(unittest.TestCase):
     self.env_config['random_orientation'] = False
     self.env_config['render'] = True
 
-    env = env_factory.createEnvs(1, 'pybullet', 'house_building_3', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(1,  'house_building_3', self.env_config, self.planner_config)
     env.reset()
 
     env.save()
@@ -173,7 +173,7 @@ class TestBulletHouse3(unittest.TestCase):
     self.env_config['random_orientation'] = False
     self.env_config['render'] = True
 
-    env = env_factory.createEnvs(1, 'pybullet', 'house_building_3', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(1,  'house_building_3', self.env_config, self.planner_config)
     env.reset()
 
     action = env.getNextAction()
@@ -209,7 +209,7 @@ class TestBulletHouse3(unittest.TestCase):
     self.planner_config['random_orientation'] = False
     self.env_config['render'] = True
 
-    env = env_factory.createEnvs(1, 'pybullet', 'house_building_3', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(1,  'house_building_3', self.env_config, self.planner_config)
     env.reset()
 
     action = env.getNextAction()
@@ -263,7 +263,7 @@ class TestBulletHouse3(unittest.TestCase):
     self.env_config['random_orientation'] = False
     self.env_config['render'] = True
 
-    env = env_factory.createEnvs(1, 'pybullet', 'house_building_3', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(1,  'house_building_3', self.env_config, self.planner_config)
     env.reset()
 
     action = env.getNextAction()

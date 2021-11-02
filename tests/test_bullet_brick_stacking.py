@@ -15,7 +15,7 @@ class TestBulletBrickStacking(unittest.TestCase):
   def testPlanner(self):
     self.env_config['render'] = True
     self.env_config['seed'] = 1
-    env = env_factory.createEnvs(1, 'pybullet', 'brick_stacking', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(1,  'brick_stacking', self.env_config, self.planner_config)
     env.reset()
     for i in range(3, -1, -1):
       action = env.getNextAction()
@@ -28,7 +28,7 @@ class TestBulletBrickStacking(unittest.TestCase):
     self.env_config['seed'] = 0
     self.env_config['physics_mode'] = 'fast'
     num_processes = 20
-    env = env_factory.createEnvs(num_processes, 'pybullet', 'brick_stacking', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(num_processes,  'brick_stacking', self.env_config, self.planner_config)
     total = 0
     s = 0
     step_times = []
