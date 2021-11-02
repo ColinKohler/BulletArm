@@ -19,6 +19,12 @@ from helping_hands_rl_envs.planners.bottle_tray_planner import BottleTrayPlanner
 from helping_hands_rl_envs.planners.box_palletizing_planner import BoxPalletizingPlanner
 from helping_hands_rl_envs.planners.bumpy_house_building_4_planner import BumpyHouseBuilding4Planner
 from helping_hands_rl_envs.planners.covid_test_planner import CovidTestPlanner
+from helping_hands_rl_envs.planners.close_loop_block_picking_planner import CloseLoopBlockPickingPlanner
+from helping_hands_rl_envs.planners.close_loop_block_stacking_planner import CloseLoopBlockStackingPlanner
+from helping_hands_rl_envs.planners.close_loop_block_pulling_planner import CloseLoopBlockPullingPlanner
+from helping_hands_rl_envs.planners.close_loop_house_building_1_planner import CloseLoopHouseBuilding1Planner
+from helping_hands_rl_envs.planners.close_loop_block_picking_corner_planner import CloseLoopBlockPickingCornerPlanner
+from helping_hands_rl_envs.planners.close_loop_drawer_opening_planner import CloseLoopDrawerOpeningPlanner
 
 PLANNERS = {
   'random' : RandomPlanner,
@@ -62,5 +68,13 @@ PLANNERS = {
   'box_palletizing': BoxPalletizingPlanner,
   'bumpy_box_palletizing': BoxPalletizingPlanner,
   'bumpy_house_building_4': BumpyHouseBuilding4Planner,
-  'covid_test':CovidTestPlanner
+  'covid_test':CovidTestPlanner,
+  'close_loop_block_picking':CloseLoopBlockPickingPlanner,
+  'close_loop_block_reaching':CloseLoopBlockPickingPlanner,
+  'close_loop_block_stacking':CloseLoopBlockStackingPlanner,
+  'close_loop_block_pulling':CloseLoopBlockPullingPlanner,
+  'close_loop_house_building_1':CloseLoopHouseBuilding1Planner,
+  'close_loop_block_picking_corner':CloseLoopBlockPickingCornerPlanner,
+  'close_loop_drawer_opening':CloseLoopDrawerOpeningPlanner,
+  'close_loop_household_picking':CloseLoopBlockPickingPlanner,
 }

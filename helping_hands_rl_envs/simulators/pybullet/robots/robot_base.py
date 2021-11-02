@@ -55,7 +55,10 @@ class RobotBase:
     if not objects:
       return None
     for obj in objects:
-      if len(pb.getContactPoints(self.id, obj.object_id)) >= 2:
+      # check the contact force normal to count the horizontal contact points
+      contact_points = pb.getContactPoints(self.id, obj.object_id)
+      horizontal = list(filter(lambda p: abs(p[7][2]) < 0.2, contact_points))
+      if len(horizontal) >= 2:
         return obj
 
     # end_pos = self._getEndEffectorPosition()
@@ -224,6 +227,10 @@ class RobotBase:
   def checkGripperClosed(self):
     raise NotImplementedError
 
+  @abstractmethod
+  def controlGripper(self, open_ratio, max_it=100):
+    raise NotImplementedError
+
   def _moveToJointPose(self, target_pose, dynamic=True, max_it=1000):
     if dynamic:
       self._sendPositionCommand(target_pose)
@@ -231,7 +238,7 @@ class RobotBase:
       joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
       joint_pos = list(zip(*joint_state))[0]
       n_it = 0
-      while not np.allclose(joint_pos, target_pose, atol=1e-2) and n_it < max_it:
+      while not np.allclose(joint_pos, target_pose, atol=1e-3) and n_it < max_it:
         pb.stepSimulation()
         n_it += 1
         # Check to see if the arm can't move any close to the desired joint position

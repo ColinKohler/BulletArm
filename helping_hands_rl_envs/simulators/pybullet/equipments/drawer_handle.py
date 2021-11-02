@@ -10,28 +10,37 @@ BOX = 0
 CYLINDER = 1
 
 class DrawerHandle:
-  def __init__(self, drawer_id):
+  def __init__(self, drawer_id, fixed=True):
     self.drawer_id = drawer_id
     self.drawer_fw_id = 6
-    self.grip_type = np.random.choice(2)
-    grip_to_drawer_range = [0.03, 0.05]
-    grip_length_range = [0.1, 0.15]
-    grip_width_range = [0.01, 0.02]
-    self.grip_to_drawer = np.random.random() * (grip_to_drawer_range[1] - grip_to_drawer_range[0]) + grip_to_drawer_range[0]
-    self.grip_length = np.random.random() * (grip_length_range[1] - grip_length_range[0]) + grip_length_range[0]
-    self.grip_width = np.random.random() * (grip_width_range[1] - grip_width_range[0]) + grip_width_range[0]
-    # self.grip_to_drawer = 0.03
-    # self.grip_length = 0.1
-    # self.grip_width = 0.02
+    if fixed:
+      self.grip_type = 1
+      self.grip_to_drawer = 0.05
+      self.grip_length = 0.1
+      self.grip_width = 0.015
+      self.sidebar_type = 1
+      self.sidebar_dist = 0.07
+      self.sidebar_width = 0.01
+    else:
+      self.grip_type = np.random.choice(2)
+      grip_to_drawer_range = [0.03, 0.05]
+      grip_length_range = [0.1, 0.15]
+      grip_width_range = [0.01, 0.02]
+      self.grip_to_drawer = np.random.random() * (grip_to_drawer_range[1] - grip_to_drawer_range[0]) + grip_to_drawer_range[0]
+      self.grip_length = np.random.random() * (grip_length_range[1] - grip_length_range[0]) + grip_length_range[0]
+      self.grip_width = np.random.random() * (grip_width_range[1] - grip_width_range[0]) + grip_width_range[0]
+      # self.grip_to_drawer = 0.03
+      # self.grip_length = 0.1
+      # self.grip_width = 0.02
 
-    sidebar_dist_range = [0.07, self.grip_length]
-    sidebar_width_range = [0.01, 0.02]
+      sidebar_dist_range = [0.07, self.grip_length]
+      sidebar_width_range = [0.01, 0.02]
 
-    self.sidebar_type = np.random.choice(2)
-    self.sidebar_dist = np.random.random() * (sidebar_dist_range[1] - sidebar_dist_range[0]) + sidebar_dist_range[0]
-    self.sidebar_width = np.random.random() * (sidebar_width_range[1] - sidebar_width_range[0]) + sidebar_width_range[0]
-    # self.sidebar_dist = 0.07
-    # self.sidebar_width = 0.02
+      self.sidebar_type = np.random.choice(2)
+      self.sidebar_dist = np.random.random() * (sidebar_dist_range[1] - sidebar_dist_range[0]) + sidebar_dist_range[0]
+      self.sidebar_width = np.random.random() * (sidebar_width_range[1] - sidebar_width_range[0]) + sidebar_width_range[0]
+      # self.sidebar_dist = 0.07
+      # self.sidebar_width = 0.02
 
     self.sidebar_length = self.grip_to_drawer
 
