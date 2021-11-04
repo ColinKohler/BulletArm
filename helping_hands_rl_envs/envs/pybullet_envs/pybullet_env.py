@@ -536,6 +536,8 @@ class PyBulletEnv(BaseEnv):
         handle = pb_obj_generation.generateSwab(position, orientation, scale, model_id=None)
       elif shape_type == constants.FLAT_BLOCK:
         handle = pb_obj_generation.generateFlatBlock(position, orientation, scale)
+      elif shape_type == constants.RANDOM_HOUSEHOLD200:
+        handle = pb_obj_generation.generateRandomHouseHoldObj200(position, orientation, scale, model_id)
 
       else:
         raise NotImplementedError
