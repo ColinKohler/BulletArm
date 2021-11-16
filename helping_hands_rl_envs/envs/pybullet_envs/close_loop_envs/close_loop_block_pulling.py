@@ -16,7 +16,18 @@ class CloseLoopBlockPullingEnv(CloseLoopEnv):
       self.resetPybulletEnv()
       self.robot.moveTo([self.workspace[0].mean(), self.workspace[1].mean(), 0.2], transformations.quaternion_from_euler(0, 0, 0))
       try:
-        self._generateShapes(constants.FLAT_BLOCK, 2, random_orientation=self.random_orientation)
+        if not self.random_orientation:
+          padding = self._getDefaultBoarderPadding(constants.FLAT_BLOCK)
+          min_distance = self._getDefaultMinDistance(constants.FLAT_BLOCK)
+          x = np.random.random() * (self.workspace_size - padding) + self.workspace[0][0] + padding/2
+          while True:
+            y1 = np.random.random() * (self.workspace_size - padding) + self.workspace[1][0] + padding/2
+            y2 = np.random.random() * (self.workspace_size - padding) + self.workspace[1][0] + padding/2
+            if max(y1, y2) - min(y1, y2) > min_distance:
+              break
+          self._generateShapes(constants.FLAT_BLOCK, 2, pos=[[x, y1, self.object_init_z], [x, y2, self.object_init_z]], random_orientation=True)
+        else:
+          self._generateShapes(constants.FLAT_BLOCK, 2, random_orientation=self.random_orientation)
       except NoValidPositionException as e:
         continue
       else:
