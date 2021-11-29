@@ -27,6 +27,12 @@ class CloseLoopHouseholdPickingEnv(CloseLoopEnv):
     gripper_z = self.robot._getEndEffectorPosition()[-1]
     return self.robot.holding_obj == self.objects[-1] and gripper_z > 0.08
 
+  def step(self, action):
+    obs, reward, done = super().step(action)
+    if (pb.getJointState(self.robot.id, 8)[3] >= 2 or pb.getJointState(self.robot.id, 11)[3] <= -2) and not self._isHolding():
+      reward -= 0.1
+    return obs, reward, done
+
 def createCloseLoopHouseholdPickingEnv(config):
   return CloseLoopHouseholdPickingEnv(config)
 
