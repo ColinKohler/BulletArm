@@ -27,6 +27,12 @@ class CloseLoopBlockPickingEnv(CloseLoopEnv):
     gripper_z = self.robot._getEndEffectorPosition()[-1]
     return self.robot.holding_obj == self.objects[-1] and gripper_z > 0.08
 
+  def step(self, action):
+    obs, reward, done = super().step(action)
+    if (pb.getJointState(self.robot.id, 8)[3] >= 2 or pb.getJointState(self.robot.id, 11)[3] <= -2) and not self._isHolding():
+      reward -= 0.1
+    return obs, reward, done
+
 def createCloseLoopBlockPickingEnv(config):
   return CloseLoopBlockPickingEnv(config)
 
@@ -39,7 +45,7 @@ if __name__ == '__main__':
                 'seed': 2, 'action_sequence': 'pxyzr', 'num_objects': 1, 'random_orientation': False,
                 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
                 'object_init_space_check': 'point', 'physics_mode': 'fast', 'object_scale_range': (1, 1), 'hard_reset_freq': 1000}
-  planner_config = {'random_orientation': False}
+  planner_config = {'random_orientation': False, 'dpos': 0.05, 'drot': np.pi/8}
   env_config['seed'] = 1
   env = CloseLoopBlockPickingEnv(env_config)
   planner = CloseLoopBlockPickingPlanner(env, planner_config)

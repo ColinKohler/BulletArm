@@ -20,6 +20,8 @@ class CloseLoopBlockPullingPlanner(CloseLoopPlanner):
     obj1_pos = self.env.objects[0].getPosition()
     obj2_pos = self.env.objects[1].getPosition()
     slope, intercept, r_value, p_value, std_err = scipy.stats.linregress([obj1_pos[0], obj2_pos[0]], [obj1_pos[1], obj2_pos[1]])
+    if np.isnan(slope):
+      slope = np.inf
     d = 0.08
     r = np.arctan(slope)
     g1 = obj1_pos[0] + d * np.cos(r), obj1_pos[1] + d * np.sin(r)
