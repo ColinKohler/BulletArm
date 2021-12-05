@@ -32,6 +32,7 @@ from helping_hands_rl_envs.planners.close_loop_block_pulling_planner import Clos
 from helping_hands_rl_envs.planners.close_loop_house_building_1_planner import CloseLoopHouseBuilding1Planner
 from helping_hands_rl_envs.planners.close_loop_block_picking_corner_planner import CloseLoopBlockPickingCornerPlanner
 from helping_hands_rl_envs.planners.close_loop_drawer_opening_planner import CloseLoopDrawerOpeningPlanner
+from helping_hands_rl_envs.planners.close_loop_household_picking_cluttered_planner import CloseLoopHouseholdPickingClutteredPlanner
 
 PLANNERS = {
   'random' : RandomPlanner,
@@ -92,4 +93,5 @@ PLANNERS = {
   'close_loop_block_picking_corner':CloseLoopBlockPickingCornerPlanner,
   'close_loop_drawer_opening':CloseLoopDrawerOpeningPlanner,
   'close_loop_household_picking':CloseLoopBlockPickingPlanner,
+  'close_loop_clutter_picking':CloseLoopHouseholdPickingClutteredPlanner,
 }

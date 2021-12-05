@@ -105,7 +105,7 @@ class Kuka(RobotBase):
     if primative == constants.PULL_PRIMATIVE:
       force = 20
     else:
-      force = 2
+      force = 10
     p1, p2 = self._getGripperJointPosition()
     target = self.gripper_joint_limit[0]
     self._sendGripperCommand(target, target, force)
