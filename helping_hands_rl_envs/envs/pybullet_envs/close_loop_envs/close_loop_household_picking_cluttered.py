@@ -14,10 +14,14 @@ class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
   def __init__(self, config):
     super().__init__(config)
     self.object_init_z = 0.1
-    self.obj_grasped = 0
     self.tray = Tray()
     self.bin_size = 0.25
+
+    self.max_grasp_attempt = int(self.num_obj * 1.5)
+
+    self.obj_grasped = 0
     self.grasp_done = 0
+    self.grasp_attempted = 0
     self.current_grasp_steps = 1
 
     cam_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0.29]
@@ -57,7 +61,11 @@ class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
       else:
         break
     self.wait(200)
+
     self.obj_grasped = 0
+    self.grasp_done = 0
+    self.grasp_attempted = 0
+    self.current_grasp_steps = 1
 
     return self._getObservation()
 
@@ -68,7 +76,7 @@ class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
     if self.obj_grasped > pre_obj_grasped:
       reward = 1.0
       done = 1
-    elif not self.isSimValid() or self.current_grasp_steps >= self.max_steps or self.current_episode_steps >= 500:
+    elif not self.isSimValid() or self.current_grasp_steps > self.max_steps:
       done = 1
     else:
       done = 0
@@ -79,7 +87,12 @@ class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
 
   def reset(self):
     self.current_grasp_steps = 1
-    if self.obj_grasped == self.num_obj or len(self.objects) == 0 or self.current_episode_steps == 1 or self.current_episode_steps >= 500:
+    self.grasp_attempted += 1
+    if not self.isSimValid() \
+        or self.obj_grasped == self.num_obj \
+        or len(self.objects) == 0 \
+        or self.current_episode_steps == 1 \
+        or self.grasp_attempted >= self.max_grasp_attempt:
       return self.resetEnv()
     else:
       self.robot.reset()
