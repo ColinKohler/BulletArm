@@ -11,7 +11,7 @@ class Tray:
         self.root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
         self.id = None
 
-    def initialize(self, pos=(0, 0, 0), rot=(0, 0, 0, 1), size=(0.2, 0.2, 0.2), color=[0.8, 0.8, 0.8, 1]):
+    def initialize(self, pos=(0, 0, 0), rot=(0, 0, 0, 1), size=(0.2, 0.2, 0.2), color=[0.8, 0.8, 0.8, 1], transparent=False):
         '''
     :param pos:
     :param rot:
@@ -27,6 +27,9 @@ class Tray:
         half_thickness = 0.001
         pos[2] -= botton_half_thick - 2 * half_thickness
         color_inner = [0.9, 0.6, 0.6, 1]
+        if transparent:
+          color[3] = 0
+          color_inner[3] = 0
         size[0] -= tray_shrink
         size[1] -= tray_shrink
         size_inner = size.copy()

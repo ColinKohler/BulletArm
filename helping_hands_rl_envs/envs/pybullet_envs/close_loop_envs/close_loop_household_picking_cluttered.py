@@ -14,6 +14,14 @@ class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
   def __init__(self, config):
     super().__init__(config)
     self.object_init_z = 0.1
+    if 'transparent_bin' not in config:
+      self.trans_bin = False
+    else:
+      self.trans_bin = config['transparent_bin']
+    if 'collision_penalty' not in config:
+      self.coll_pen = True
+    else:
+      self.coll_pen = config['collision_penalty']
     self.tray = Tray()
     self.bin_size = 0.25
 
@@ -34,7 +42,7 @@ class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
   def initialize(self):
     super().initialize()
     self.tray.initialize(pos=[self.workspace[0].mean(), self.workspace[1].mean(), 0],
-                         size=[self.bin_size, self.bin_size, 0.1])
+                         size=[self.bin_size, self.bin_size, 0.1], transparent=self.trans_bin)
 
   def resetEnv(self):
     self.resetPybulletEnv()
@@ -81,7 +89,9 @@ class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
     else:
       done = 0
     self.grasp_done = done
-    if (pb.getJointState(self.robot.id, 8)[3] >= 2 or pb.getJointState(self.robot.id, 11)[3] <= -2) and not self._isHolding():
+    if self.coll_pen \
+        and (pb.getJointState(self.robot.id, 8)[3] >= 2 or pb.getJointState(self.robot.id, 11)[3] <= -2) \
+        and not self._isHolding():
       reward -= 0.1
     return obs, reward, done
 
