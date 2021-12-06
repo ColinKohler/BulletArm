@@ -22,6 +22,10 @@ class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
       self.coll_pen = True
     else:
       self.coll_pen = config['collision_penalty']
+    if 'fix_set' not in config:
+      self.fix_set = False
+    else:
+      self.fix_set = config['fix_set']
     self.tray = Tray()
     self.bin_size = 0.25
 
@@ -61,7 +65,7 @@ class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
           obj = self._generateShapes(constants.RANDOM_HOUSEHOLD200, 1,
                                      random_orientation=self.random_orientation,
                                      pos=[randpos], padding=0.1,
-                                     min_distance=0, model_id=-1)
+                                     min_distance=0, model_id=i+2 if self.fix_set else -1)
           pb.changeDynamics(obj[0].object_id, -1, lateralFriction=0.6)
           self.wait(10)
       except NoValidPositionException:
