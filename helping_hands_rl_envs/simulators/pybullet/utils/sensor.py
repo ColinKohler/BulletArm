@@ -15,6 +15,14 @@ class Sensor(object):
     self.fov = np.degrees(2 * np.arctan((target_size / 2) / self.far))
     self.proj_matrix = pb.computeProjectionMatrixFOV(self.fov, 1, self.near, self.far)
 
+  def setCamMatrix(self, cam_pos, cam_up_vector, target_pos):
+    self.view_matrix = pb.computeViewMatrix(
+      cameraEyePosition=[cam_pos[0], cam_pos[1], cam_pos[2]],
+      cameraUpVector=cam_up_vector,
+      cameraTargetPosition=target_pos,
+    )
+    self.proj_matrix = pb.computeProjectionMatrixFOV(70, 1, 0.001, 0.3)
+
   def getHeightmap(self, size):
     image_arr = pb.getCameraImage(width=size, height=size,
                                   viewMatrix=self.view_matrix,

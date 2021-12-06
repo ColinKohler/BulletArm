@@ -6,6 +6,7 @@ from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 from helping_hands_rl_envs.simulators.pybullet.utils.renderer import Renderer
 from helping_hands_rl_envs.simulators.pybullet.utils.ortho_sensor import OrthographicSensor
+from helping_hands_rl_envs.simulators.pybullet.utils.sensor import Sensor
 from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 import helping_hands_rl_envs.envs.pybullet_envs.constants as py_constants
 
@@ -22,7 +23,8 @@ class CloseLoopEnv(PyBulletEnv):
     assert self.view_type in ['render_center', 'render_fix', 'camera_center_xyzr', 'camera_center_xyr',
                               'camera_center_xyz', 'camera_center_xy', 'camera_fix',
                               'camera_center_xyr_height', 'camera_center_xyz_height', 'camera_center_xy_height',
-                              'camera_fix_height', 'camera_center_z', 'camera_center_z_height']
+                              'camera_fix_height', 'camera_center_z', 'camera_center_z_height',
+                              'pers_center_xyz']
 
     self.robot.home_positions = [-0.4446, 0.0837, -2.6123, 1.8883, -0.0457, -1.1810, 0.0699, 0., 0., 0., 0., 0., 0., 0., 0.]
     self.robot.home_positions_joint = self.robot.home_positions[:7]
@@ -37,6 +39,7 @@ class CloseLoopEnv(PyBulletEnv):
     self.sensor = OrthographicSensor(cam_pos, cam_up_vector, target_pos, self.ws_size, 0.1, 1)
     self.sensor.setCamMatrix(cam_pos, cam_up_vector, target_pos)
     self.renderer = Renderer(self.workspace)
+    self.pers_sensor = Sensor(cam_pos, cam_up_vector, target_pos, self.workspace_size, cam_pos[2] - 1, cam_pos[2])
 
   def _getValidOrientation(self, random_orientation):
     if random_orientation:
@@ -208,6 +211,15 @@ class CloseLoopEnv(PyBulletEnv):
         depth = -heightmap + gripper_pos[2]
       else:
         depth = heightmap
+      return depth
+    elif self.view_type in ['pers_center_xyz']:
+      # xyz centered, gripper will be visible
+      gripper_pos[2] += 0.07
+      target_pos = [gripper_pos[0], gripper_pos[1], 0]
+      cam_up_vector = [-1, 0, 0]
+      self.pers_sensor.setCamMatrix(gripper_pos, cam_up_vector, target_pos)
+      heightmap = self.pers_sensor.getHeightmap(self.heightmap_size)
+      depth = -heightmap + gripper_pos[2]
       return depth
     elif self.view_type in ['camera_center_xy', 'camera_center_xy_height']:
       # xy centered
