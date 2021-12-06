@@ -9,6 +9,7 @@ from helping_hands_rl_envs.simulators.pybullet.utils.ortho_sensor import Orthogr
 from helping_hands_rl_envs.simulators.pybullet.utils.sensor import Sensor
 from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 import helping_hands_rl_envs.envs.pybullet_envs.constants as py_constants
+from scipy.ndimage import rotate
 
 
 class CloseLoopEnv(PyBulletEnv):
@@ -40,6 +41,8 @@ class CloseLoopEnv(PyBulletEnv):
     self.sensor.setCamMatrix(cam_pos, cam_up_vector, target_pos)
     self.renderer = Renderer(self.workspace)
     self.pers_sensor = Sensor(cam_pos, cam_up_vector, target_pos, self.workspace_size, cam_pos[2] - 1, cam_pos[2])
+
+    self.simulate_z_threshold = self.workspace[2][0] + 0.05
 
   def _getValidOrientation(self, random_orientation):
     if random_orientation:
@@ -168,12 +171,48 @@ class CloseLoopEnv(PyBulletEnv):
       obs = self._getVecObservation()
       return self._isHolding(), None, obs
 
+  def simulateTransition(self):
+    pos = list(self.robot._getEndEffectorPosition())
+    gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
+    dx = (np.random.random() * 2 - 1) * 0.05
+    dy = (np.random.random() * 2 - 1) * 0.05
+    dz = (np.random.random() * 2 - 1) * 0.05
+    pos[0] += dx
+    pos[1] += dy
+    pos[2] += dz
+    pos[0] = np.clip(pos[0], self.workspace[0, 0], self.workspace[0, 1])
+    pos[1] = np.clip(pos[1], self.workspace[1, 0], self.workspace[1, 1])
+    pos[2] = np.clip(pos[2], self.simulate_z_threshold, self.workspace[2, 1])
+    dtheta = (np.random.random() * 2 - 1) * np.pi/8
+    p = np.random.random()
+    self.renderer.getNewPointCloud(512)
+    obs = self.renderer.getTopDownDepth(self.workspace_size, self.heightmap_size, pos, 0)
+    obs = obs.reshape([1, self.heightmap_size, self.heightmap_size])
+
+    gripper_img = self.getGripperImg(p, gripper_rz+dtheta)
+    gripper_img = gripper_img.reshape([1, self.heightmap_size, self.heightmap_size])
+
+    obs = np.stack([obs, gripper_img])
+    return self._isHolding(), None, obs
+
+  def getGripperImg(self, gripper_state=None, gripper_rz=None):
+    if gripper_state is None:
+      gripper_state = self.robot.getGripperOpenRatio()
+    if gripper_rz is None:
+      gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
+    im = np.zeros((128, 128))
+    d = int(30 * gripper_state)
+    im[64 - d // 2 - 5:64 - d // 2 + 5, 64 - 5:64 + 5] = 1
+    im[64 + d // 2 - 5:64 + d // 2 + 5, 64 - 5:64 + 5] = 1
+    im = rotate(im, np.rad2deg(gripper_rz), reshape=False, order=0)
+    return im
+
   def _getHeightmap(self):
     gripper_pos = self.robot._getEndEffectorPosition()
     gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
     if self.view_type == 'render_center':
-      self.renderer.getNewPointCloud()
-      return self.renderer.getTopDownDepth(self.workspace_size * 1.5, self.heightmap_size, gripper_pos, gripper_rz)
+      self.renderer.getNewPointCloud(512)
+      return self.renderer.getTopDownDepth(self.workspace_size, self.heightmap_size, gripper_pos, 0)
     elif self.view_type == 'render_fix':
       return self.renderer.getTopDownHeightmap(self.heightmap_size)
 
