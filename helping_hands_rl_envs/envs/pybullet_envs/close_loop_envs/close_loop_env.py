@@ -42,7 +42,7 @@ class CloseLoopEnv(PyBulletEnv):
     self.renderer = Renderer(self.workspace)
     self.pers_sensor = Sensor(cam_pos, cam_up_vector, target_pos, self.workspace_size, cam_pos[2] - 1, cam_pos[2])
 
-    self.simulate_z_threshold = self.workspace[2][0] + 0.05
+    self.simulate_z_threshold = self.workspace[2][0] + 0.1
 
   def _getValidOrientation(self, random_orientation):
     if random_orientation:
@@ -84,7 +84,7 @@ class CloseLoopEnv(PyBulletEnv):
     if not done:
       done = self.current_episode_steps >= self.max_steps
     self.current_episode_steps += 1
-
+    self.renderer.clearPoints()
     return obs, reward, done
 
   def setRobotHoldingObj(self):
@@ -166,34 +166,42 @@ class CloseLoopEnv(PyBulletEnv):
     ''''''
     if self.obs_type is 'pixel':
       self.heightmap = self._getHeightmap()
-      return self._isHolding(), None, self.heightmap.reshape([1, self.heightmap_size, self.heightmap_size])
+      gripper_img = self.getGripperImg()
+      heightmap = self.heightmap.reshape([1, self.heightmap_size, self.heightmap_size])
+      gripper_img = gripper_img.reshape([1, self.heightmap_size, self.heightmap_size])
+      return self._isHolding(), None, np.concatenate([heightmap, gripper_img])
     else:
       obs = self._getVecObservation()
       return self._isHolding(), None, obs
 
-  def simulateTransition(self):
+  def simulate(self, action):
+    p, dx, dy, dz, r = self._decodeAction(action)
+    dtheta = r[2]
     pos = list(self.robot._getEndEffectorPosition())
     gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
-    dx = (np.random.random() * 2 - 1) * 0.05
-    dy = (np.random.random() * 2 - 1) * 0.05
-    dz = (np.random.random() * 2 - 1) * 0.05
+    # dx = (np.random.random() * 2 - 1) * 0.05
+    # dy = (np.random.random() * 2 - 1) * 0.05
+    # dz = (np.random.random() * 2 - 1) * 0.05
+    # dtheta = (np.random.random() * 2 - 1) * np.pi/8
+    # p = np.random.random()
     pos[0] += dx
     pos[1] += dy
     pos[2] += dz
     pos[0] = np.clip(pos[0], self.workspace[0, 0], self.workspace[0, 1])
     pos[1] = np.clip(pos[1], self.workspace[1, 0], self.workspace[1, 1])
     pos[2] = np.clip(pos[2], self.simulate_z_threshold, self.workspace[2, 1])
-    dtheta = (np.random.random() * 2 - 1) * np.pi/8
-    p = np.random.random()
-    self.renderer.getNewPointCloud(512)
     obs = self.renderer.getTopDownDepth(self.workspace_size, self.heightmap_size, pos, 0)
     obs = obs.reshape([1, self.heightmap_size, self.heightmap_size])
 
     gripper_img = self.getGripperImg(p, gripper_rz+dtheta)
     gripper_img = gripper_img.reshape([1, self.heightmap_size, self.heightmap_size])
 
-    obs = np.stack([obs, gripper_img])
+    obs = np.concatenate([obs, gripper_img])
     return self._isHolding(), None, obs
+
+  def canSimulate(self):
+    pos = list(self.robot._getEndEffectorPosition())
+    return pos[2] > self.simulate_z_threshold
 
   def getGripperImg(self, gripper_state=None, gripper_rz=None):
     if gripper_state is None:
@@ -211,7 +219,6 @@ class CloseLoopEnv(PyBulletEnv):
     gripper_pos = self.robot._getEndEffectorPosition()
     gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
     if self.view_type == 'render_center':
-      self.renderer.getNewPointCloud(512)
       return self.renderer.getTopDownDepth(self.workspace_size, self.heightmap_size, gripper_pos, 0)
     elif self.view_type == 'render_fix':
       return self.renderer.getTopDownHeightmap(self.heightmap_size)

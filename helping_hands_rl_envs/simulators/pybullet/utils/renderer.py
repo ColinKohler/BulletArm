@@ -46,6 +46,8 @@ class Renderer(object):
     # pyrender.Viewer(scene)
 
   def getTopDownDepth(self, target_size, img_size, gripper_pos, gripper_rz):
+    if self.points.shape[0] == 0:
+      self.getNewPointCloud(512)
     self.points = self.points[self.points[:, 2] <= gripper_pos[2]]
     # self.points = self.points[(self.workspace[0, 0] <= self.points[:, 0]) * (self.points[:, 0] <= self.workspace[0, 1])]
     # self.points = self.points[(self.workspace[1, 0] <= self.points[:, 1]) * (self.points[:, 1] <= self.workspace[1, 1])]
