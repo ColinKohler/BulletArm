@@ -31,8 +31,8 @@ class CloseLoopEnv(PyBulletEnv):
     self.robot.home_positions_joint = self.robot.home_positions[:7]
 
     self.ws_size = max(self.workspace[0][1] - self.workspace[0][0], self.workspace[1][1] - self.workspace[1][0])
-    if self.view_type.find('center') > -1:
-      self.ws_size *= 1.5
+    # if self.view_type.find('center') > -1:
+    #   self.ws_size *= 1.5
 
     cam_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0.29]
     target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
@@ -167,9 +167,11 @@ class CloseLoopEnv(PyBulletEnv):
     if self.obs_type is 'pixel':
       self.heightmap = self._getHeightmap()
       gripper_img = self.getGripperImg()
-      heightmap = self.heightmap.reshape([1, self.heightmap_size, self.heightmap_size])
-      gripper_img = gripper_img.reshape([1, self.heightmap_size, self.heightmap_size])
-      return self._isHolding(), None, np.concatenate([heightmap, gripper_img])
+      heightmap = self.heightmap
+      heightmap[gripper_img == 1] = 0
+      heightmap = heightmap.reshape([1, self.heightmap_size, self.heightmap_size])
+      # gripper_img = gripper_img.reshape([1, self.heightmap_size, self.heightmap_size])
+      return self._isHolding(), None, heightmap
     else:
       obs = self._getVecObservation()
       return self._isHolding(), None, obs
@@ -191,12 +193,12 @@ class CloseLoopEnv(PyBulletEnv):
     pos[1] = np.clip(pos[1], self.workspace[1, 0], self.workspace[1, 1])
     pos[2] = np.clip(pos[2], self.simulate_z_threshold, self.workspace[2, 1])
     obs = self.renderer.getTopDownDepth(self.workspace_size, self.heightmap_size, pos, 0)
-    obs = obs.reshape([1, self.heightmap_size, self.heightmap_size])
 
     gripper_img = self.getGripperImg(p, gripper_rz+dtheta)
-    gripper_img = gripper_img.reshape([1, self.heightmap_size, self.heightmap_size])
+    # gripper_img = gripper_img.reshape([1, self.heightmap_size, self.heightmap_size])
+    obs[gripper_img==1] = 0
+    obs = obs.reshape([1, self.heightmap_size, self.heightmap_size])
 
-    obs = np.concatenate([obs, gripper_img])
     return self._isHolding(), None, obs
 
   def canSimulate(self):
@@ -209,7 +211,7 @@ class CloseLoopEnv(PyBulletEnv):
     if gripper_rz is None:
       gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
     im = np.zeros((128, 128))
-    d = int(30 * gripper_state)
+    d = int(45 * gripper_state)
     im[64 - d // 2 - 5:64 - d // 2 + 5, 64 - 5:64 + 5] = 1
     im[64 + d // 2 - 5:64 + d // 2 + 5, 64 - 5:64 + 5] = 1
     im = rotate(im, np.rad2deg(gripper_rz), reshape=False, order=0)
