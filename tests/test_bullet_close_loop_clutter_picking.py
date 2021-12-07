@@ -33,6 +33,11 @@ class TestBulletBowlStacking(unittest.TestCase):
       t0 = time.time()
       action = env.getNextAction()
       t_plan = time.time() - t0
+      fig, axs = plt.subplots(1, 2, figsize=(10, 5))
+      axs[0].imshow(obs[0, 0])
+      axs[1].imshow(obs[0, 1])
+      fig.show()
+
       # plt.imshow(obs[0, 0], vmin=-0.1, vmax=0.35)
       # plt.colorbar()
       # plt.show()
