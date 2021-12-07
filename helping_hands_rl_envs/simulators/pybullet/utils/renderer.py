@@ -2,6 +2,7 @@ import time
 import pybullet as pb
 import numpy as np
 import cupy as cp
+import scipy
 import matplotlib.pyplot as plt
 from sklearn.impute import SimpleImputer
 from helping_hands_rl_envs.simulators.pybullet.utils.sensor import Sensor
@@ -48,7 +49,7 @@ class Renderer(object):
   def getTopDownDepth(self, target_size, img_size, gripper_pos, gripper_rz):
     if self.points.shape[0] == 0:
       self.getNewPointCloud(512)
-    self.points = self.points[self.points[:, 2] <= gripper_pos[2]]
+      self.points = self.points[self.points[:, 2] <= gripper_pos[2]]
     # self.points = self.points[(self.workspace[0, 0] <= self.points[:, 0]) * (self.points[:, 0] <= self.workspace[0, 1])]
     # self.points = self.points[(self.workspace[1, 0] <= self.points[:, 1]) * (self.points[:, 1] <= self.workspace[1, 1])]
 
@@ -81,6 +82,24 @@ class Renderer(object):
 
   def clearPoints(self):
     self.points = cp.empty((0, 3))
+
+  def interpolate(self, depth):
+    # a boolean array of (width, height) which False where there are missing values and True where there are valid (non-missing) values
+    mask = np.logical_not(np.isnan(depth))
+    # array of (number of points, 2) containing the x,y coordinates of the valid values only
+    xx, yy = np.meshgrid(np.arange(depth.shape[1]), np.arange(depth.shape[0]))
+    xym = np.vstack((np.ravel(xx[mask]), np.ravel(yy[mask]))).T
+
+    # the valid values in the first, second, third color channel,  as 1D arrays (in the same order as their coordinates in xym)
+    data0 = np.ravel(depth[:, :][mask])
+
+    # three separate interpolators for the separate color channels
+    interp0 = scipy.interpolate.NearestNDInterpolator(xym, data0)
+
+    # interpolate the whole image, one color channel at a time
+    result0 = interp0(np.ravel(xx), np.ravel(yy)).reshape(xx.shape)
+
+    return result0
 
   def projectDepth(self, size, cam_pos, cam_up_vector, target_pos, target_size):
     view_matrix = pb.computeViewMatrix(
@@ -136,12 +155,17 @@ class Renderer(object):
     depth[cumsum == 0] = cp.nan
     depth = depth.reshape(size, size)
     depth = cp.asnumpy(depth)
+
+    depth = self.interpolate(depth)
+
     # mask = np.isnan(depth)
     # depth[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), depth[~mask])
-    imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    depth = imputer.fit_transform(depth)
-    if depth.shape != (size, size):
-      depth = sk_transform.resize(depth, (size, size), mode='constant', anti_aliasing=0)
+
+    # imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+    # depth = imputer.fit_transform(depth)
+    # if depth.shape != (size, size):
+    #   depth = sk_transform.resize(depth, (size, size), mode='constant', anti_aliasing=0)
+
     return depth
 
   def projectHeightmap(self, size, cam_pos, cam_up_vector, target_pos, target_size):
