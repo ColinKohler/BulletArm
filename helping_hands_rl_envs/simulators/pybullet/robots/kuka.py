@@ -73,13 +73,13 @@ class Kuka(RobotBase):
         self.arm_joint_names.append(str(joint_info[1]))
         self.arm_joint_indices.append(i)
 
-    pb.changeVisualShape(self.id, 13, rgbaColor=[0, 0, 0, 0])
-    pb.changeVisualShape(self.id, 12, rgbaColor=[0, 0, 0, 0])
-    pb.changeVisualShape(self.id, 11, rgbaColor=[0, 0, 0, 0])
-
-    pb.changeVisualShape(self.id, 10, rgbaColor=[0, 0, 0, 0])
-    pb.changeVisualShape(self.id, 9, rgbaColor=[0, 0, 0, 0])
-    pb.changeVisualShape(self.id, 8, rgbaColor=[0, 0, 0, 0])
+    # pb.changeVisualShape(self.id, 13, rgbaColor=[0, 0, 0, 0])
+    # pb.changeVisualShape(self.id, 12, rgbaColor=[0, 0, 0, 0])
+    # pb.changeVisualShape(self.id, 11, rgbaColor=[0, 0, 0, 0])
+    #
+    # pb.changeVisualShape(self.id, 10, rgbaColor=[0, 0, 0, 0])
+    # pb.changeVisualShape(self.id, 9, rgbaColor=[0, 0, 0, 0])
+    # pb.changeVisualShape(self.id, 8, rgbaColor=[0, 0, 0, 0])
 
   def reset(self):
     self.gripper_closed = False
