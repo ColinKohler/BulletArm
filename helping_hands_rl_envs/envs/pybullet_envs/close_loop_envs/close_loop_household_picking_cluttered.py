@@ -107,12 +107,16 @@ class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
         or len(self.objects) == 0 \
         or self.current_episode_steps == 1 \
         or self.grasp_attempted >= self.max_grasp_attempt:
-      return self.resetEnv()
+      ret = self.resetEnv()
     else:
       self.robot.reset()
       self.robot.moveTo([self.workspace[0].mean(), self.workspace[1].mean(), 0.2],
                         transformations.quaternion_from_euler(0, 0, 0))
-      return self._getObservation()
+      ret = self._getObservation()
+    # TODO: set for other envs
+    self.simulate_pos = self.robot._getEndEffectorPosition()
+    self.simulate_rot = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())
+    return ret
 
   def _getValidOrientation(self, random_orientation):
     if random_orientation:
