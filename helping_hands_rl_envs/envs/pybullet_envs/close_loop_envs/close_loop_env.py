@@ -219,10 +219,11 @@ class CloseLoopEnv(PyBulletEnv):
       gripper_state = self.robot.getGripperOpenRatio()
     if gripper_rz is None:
       gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
-    im = np.zeros((128, 128))
-    d = int(45 * gripper_state)
-    im[64 - d // 2 - 5:64 - d // 2 + 5, 64 - 5:64 + 5] = 1
-    im[64 + d // 2 - 5:64 + d // 2 + 5, 64 - 5:64 + 5] = 1
+    im = np.zeros((self.heightmap_size, self.heightmap_size))
+    d = int(45/128*self.heightmap_size * gripper_state)
+    anchor = self.heightmap_size//2
+    im[anchor - d // 2 - 5:anchor - d // 2 + 5, anchor - 5:anchor + 5] = 1
+    im[anchor + d // 2 - 5:anchor + d // 2 + 5, anchor - 5:anchor + 5] = 1
     im = rotate(im, np.rad2deg(gripper_rz), reshape=False, order=0)
     return im
 
