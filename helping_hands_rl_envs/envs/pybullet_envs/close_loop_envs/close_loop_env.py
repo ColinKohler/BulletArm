@@ -76,6 +76,7 @@ class CloseLoopEnv(PyBulletEnv):
     self.robot.controlGripper(p)
     self.robot.adjustGripperCommand()
     self.setRobotHoldingObj()
+    self.renderer.clearPoints()
     obs = self._getObservation(action)
     valid = self.isSimValid()
     if valid:
@@ -88,7 +89,6 @@ class CloseLoopEnv(PyBulletEnv):
       done = self.current_episode_steps >= self.max_steps
     self.current_episode_steps += 1
 
-    self.renderer.clearPoints()
     self.simulate_pos = pos
     self.simulate_rot = rot
     return obs, reward, done

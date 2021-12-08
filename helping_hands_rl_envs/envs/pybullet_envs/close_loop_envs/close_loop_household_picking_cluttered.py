@@ -102,6 +102,7 @@ class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
   def reset(self):
     self.current_grasp_steps = 1
     self.grasp_attempted += 1
+    self.renderer.clearPoints()
     if not self.isSimValid() \
         or self.obj_grasped == self.num_obj \
         or len(self.objects) == 0 \
