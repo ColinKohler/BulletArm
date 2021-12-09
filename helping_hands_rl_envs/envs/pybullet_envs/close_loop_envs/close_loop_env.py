@@ -213,7 +213,7 @@ class CloseLoopEnv(PyBulletEnv):
 
   def canSimulate(self):
     # pos = list(self.robot._getEndEffectorPosition())
-    return self.simulate_pos[2] > self.simulate_z_threshold
+    return not self._isHolding() and self.simulate_pos[2] > self.simulate_z_threshold
 
   def getGripperImg(self, gripper_state=None, gripper_rz=None):
     if gripper_state is None:
