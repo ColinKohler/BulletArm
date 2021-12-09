@@ -17,75 +17,58 @@ from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 from helping_hands_rl_envs.simulators.pybullet.utils import object_generation
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 
-class Kuka(RobotBase):
+class Panda(RobotBase):
   '''
 
   '''
   def __init__(self):
     super().__init__()
-    self.max_velocity = .35
-    self.max_force = 200.
-    self.end_effector_index = 14
-    self.gripper_index = 7
+    self.home_positions = [-0.60, -0.14, 0.59, -2.40, 0.11, 2.28, -1, 0.0, 0, 0, 0, 0, 0]
+    self.home_positions_joint = self.home_positions[:8]
+    self.gripper_joint_limit = [0, 0.04]
+    self.max_force = 240
 
-    # lower limits for null space
-    self.ll = [-.967, -2, -2.96, 0.19, -2.96, -2.09, -3.05]
-    # upper limits for null space
-    self.ul = [.967, 2, 2.96, 2.29, 2.96, 2.09, 3.05]
-    # joint ranges for null space
-    self.jr = [5.8, 4, 5.8, 4, 5.8, 4, 6]
-    # restposes for null space
-    self.rp = [0, 0, 0, 0.5 * math.pi, 0, -math.pi * 0.5 * 0.66, 0]
-    # joint damping coefficents
-    self.jd = [
-      0.00001, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001,
-      0.00001, 0.00001, 0.00001, 0.00001
-    ]
-
-    self.home_positions = [0.3926, 0., -2.137, 1.432, 0, -1.591, 0.071, 0., 0., 0., 0., 0., 0., 0., 0.]
-    self.home_positions_joint = self.home_positions[:7]
-    # self.home_positions = [
-    #     0.006418, 0.413184, -0.011401, -1.589317, 0.005379, 1.137684, -0.006539, 0.000048,
-    #     -0.299912, 0.000000, -0.000043, 0.299960, 0.000000, -0.000200
-    # ]
-
-    self.gripper_joint_limit = [0, 0.2]
-    self.adjust_gripper_offset = 0.01
+    self.end_effector_index = 11
 
   def initialize(self):
     ''''''
-    ur5_urdf_filepath = os.path.join(self.root_dir, 'simulators/urdf/kuka/kuka_with_gripper2.sdf')
-    self.id = pb.loadSDF(ur5_urdf_filepath)[0]
-    pb.resetBasePositionAndOrientation(self.id, [-0.2,0,0], [0,0,0,1])
+    urdf_filepath = os.path.join(self.root_dir, 'simulators/urdf/franka_panda/panda.urdf')
+    self.id = pb.loadURDF(urdf_filepath, useFixedBase=True)
+    pb.resetBasePositionAndOrientation(self.id, [0,0,0], [0,0,0,1])
 
-    # self.is_holding = False
     self.gripper_closed = False
     self.holding_obj = None
     self.num_joints = pb.getNumJoints(self.id)
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
+
+    c = pb.createConstraint(self.id,
+                            9,
+                            self.id,
+                            10,
+                            jointType=pb.JOINT_GEAR,
+                            jointAxis=[1, 0, 0],
+                            parentFramePosition=[0, 0, 0],
+                            childFramePosition=[0, 0, 0])
+    pb.changeConstraint(c, gearRatio=-1, erp=0.1, maxForce=50)
+
+    for j in range(pb.getNumJoints(self.id)):
+      pb.changeDynamics(self.id, j, linearDamping=0, angularDamping=0)
+
     self.openGripper()
 
     self.arm_joint_names = list()
     self.arm_joint_indices = list()
     for i in range (self.num_joints):
       joint_info = pb.getJointInfo(self.id, i)
-      if i in range(7):
+      if i in range(8):
         self.arm_joint_names.append(str(joint_info[1]))
         self.arm_joint_indices.append(i)
-
-    # pb.changeVisualShape(self.id, 13, rgbaColor=[0, 0, 0, 0])
-    # pb.changeVisualShape(self.id, 12, rgbaColor=[0, 0, 0, 0])
-    # pb.changeVisualShape(self.id, 11, rgbaColor=[0, 0, 0, 0])
-    #
-    # pb.changeVisualShape(self.id, 10, rgbaColor=[0, 0, 0, 0])
-    # pb.changeVisualShape(self.id, 9, rgbaColor=[0, 0, 0, 0])
-    # pb.changeVisualShape(self.id, 8, rgbaColor=[0, 0, 0, 0])
 
   def reset(self):
     self.gripper_closed = False
     self.holding_obj = None
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
-    self.moveToJ(self.home_positions_joint)
+    self.moveToJ(self.home_positions_joint[:8])
     self.openGripper()
 
   def controlGripper(self, open_ratio, max_it=100):
@@ -132,9 +115,7 @@ class Kuka(RobotBase):
     return True
 
   def adjustGripperCommand(self):
-    p1, p2 = self._getGripperJointPosition()
-    mean = (p1 + p2) / 2 - self.adjust_gripper_offset
-    self._sendGripperCommand(mean, mean)
+    pass
 
   def checkGripperClosed(self):
     limit = self.gripper_joint_limit[1]
@@ -169,14 +150,14 @@ class Kuka(RobotBase):
     return True
 
   def gripperHasForce(self):
-    return pb.getJointState(self.id, 8)[3] >= 2 or pb.getJointState(self.id, 11)[3] <= -2
+    return pb.getJointState(self.id, 9)[3] <= -5 or pb.getJointState(self.id, 10)[3] <= -5
 
   def _calculateIK(self, pos, rot):
-    return pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot, jointDamping=self.jd)[:7]
+    return pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)[:8]
 
   def _getGripperJointPosition(self):
-    p1 = -pb.getJointState(self.id, 8)[0]
-    p2 = pb.getJointState(self.id, 11)[0]
+    p1 = pb.getJointState(self.id, 9)[0]
+    p2 = pb.getJointState(self.id, 10)[0]
     return p1, p2
 
   def _sendPositionCommand(self, commands):
@@ -188,9 +169,9 @@ class Kuka(RobotBase):
                                  positionGains=[self.position_gain]*num_motors,
                                  velocityGains=[1.0]*num_motors)
 
-  def _sendGripperCommand(self, target_pos1, target_pos2, force=2):
+  def _sendGripperCommand(self, target_pos1, target_pos2, force=10):
     pb.setJointMotorControlArray(self.id,
-                                 [8, 11, 10, 13],
+                                 [9, 10],
                                  pb.POSITION_CONTROL,
-                                 [-target_pos1, target_pos2, 0, 0],
-                                 forces=[force, force,  force, force])
+                                 [target_pos1, target_pos2],
+                                 forces=[force, force])

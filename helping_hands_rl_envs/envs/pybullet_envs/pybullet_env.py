@@ -13,6 +13,7 @@ import helping_hands_rl_envs.envs.pybullet_envs.constants as py_constants
 from helping_hands_rl_envs.simulators.pybullet.robots.ur5_simple import UR5_Simple
 from helping_hands_rl_envs.simulators.pybullet.robots.ur5_robotiq import UR5_Robotiq
 from helping_hands_rl_envs.simulators.pybullet.robots.kuka import Kuka
+from helping_hands_rl_envs.simulators.pybullet.robots.panda import Panda
 from helping_hands_rl_envs.simulators.pybullet.utils.sensor import Sensor
 from helping_hands_rl_envs.simulators.pybullet.objects.pybullet_object import PybulletObject
 import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
@@ -61,6 +62,8 @@ class PyBulletEnv(BaseEnv):
       self.robot = UR5_Robotiq()
     elif config['robot'] == 'kuka':
       self.robot = Kuka()
+    elif config['robot'] == 'panda':
+      self.robot = Panda()
     else:
       raise NotImplementedError
 

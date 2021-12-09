@@ -26,9 +26,10 @@ class CloseLoopEnv(PyBulletEnv):
                               'camera_center_xyr_height', 'camera_center_xyz_height', 'camera_center_xy_height',
                               'camera_fix_height', 'camera_center_z', 'camera_center_z_height',
                               'pers_center_xyz']
-
-    self.robot.home_positions = [-0.4446, 0.0837, -2.6123, 1.8883, -0.0457, -1.1810, 0.0699, 0., 0., 0., 0., 0., 0., 0., 0.]
-    self.robot.home_positions_joint = self.robot.home_positions[:7]
+    self.robot_type = config['robot']
+    if config['robot'] == 'kuka':
+      self.robot.home_positions = [-0.4446, 0.0837, -2.6123, 1.8883, -0.0457, -1.1810, 0.0699, 0., 0., 0., 0., 0., 0., 0., 0.]
+      self.robot.home_positions_joint = self.robot.home_positions[:7]
 
     self.ws_size = max(self.workspace[0][1] - self.workspace[0][0], self.workspace[1][1] - self.workspace[1][0])
     # if self.view_type.find('center') > -1:
@@ -220,7 +221,12 @@ class CloseLoopEnv(PyBulletEnv):
     if gripper_rz is None:
       gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
     im = np.zeros((self.heightmap_size, self.heightmap_size))
-    d = int(45/128*self.heightmap_size * gripper_state)
+    if self.robot_type == 'panda':
+      d = int(42/128*self.heightmap_size * gripper_state)
+    elif self.robot_type == 'kuka':
+      d = int(45/128*self.heightmap_size * gripper_state)
+    else:
+      raise NotImplementedError
     anchor = self.heightmap_size//2
     im[anchor - d // 2 - 5:anchor - d // 2 + 5, anchor - 5:anchor + 5] = 1
     im[anchor + d // 2 - 5:anchor + d // 2 + 5, anchor - 5:anchor + 5] = 1

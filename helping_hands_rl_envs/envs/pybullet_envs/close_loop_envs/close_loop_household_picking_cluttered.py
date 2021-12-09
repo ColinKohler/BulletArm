@@ -94,7 +94,7 @@ class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
       done = 0
     self.grasp_done = done
     if self.coll_pen \
-        and (pb.getJointState(self.robot.id, 8)[3] >= 2 or pb.getJointState(self.robot.id, 11)[3] <= -2) \
+        and self.robot.gripperHasForce() \
         and not self._isHolding():
       reward -= 0.1
     return obs, reward, done
