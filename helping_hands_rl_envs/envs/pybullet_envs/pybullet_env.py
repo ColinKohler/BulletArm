@@ -168,6 +168,8 @@ class PyBulletEnv(BaseEnv):
 
     # Step simulation
     pb.stepSimulation()
+    # import time
+    # pb.startStateLogging(pb.STATE_LOGGING_VIDEO_MP4, '/home/dian/Videos/{}.mp4'.format(time.time()))
 
   def resetPybulletEnv(self):
     # soft reset has bug in older pybullet versions. 2.7,1 works good
