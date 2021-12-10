@@ -24,17 +24,21 @@ class Panda(RobotBase):
   def __init__(self):
     super().__init__()
     self.home_positions = [-0.60, -0.14, 0.59, -2.40, 0.11, 2.28, -1, 0.0, 0, 0, 0, 0, 0]
-    self.home_positions_joint = self.home_positions[:8]
+    self.home_positions_joint = self.home_positions[:7]
     self.gripper_joint_limit = [0, 0.04]
     self.max_force = 240
-
     self.end_effector_index = 11
+
+    self.num_dofs = 7
+    self.ll = [-7]*self.num_dofs
+    self.ul = [7]*self.num_dofs
+    self.jr = [7]*self.num_dofs
 
   def initialize(self):
     ''''''
     urdf_filepath = os.path.join(self.root_dir, 'simulators/urdf/franka_panda/panda.urdf')
     self.id = pb.loadURDF(urdf_filepath, useFixedBase=True)
-    pb.resetBasePositionAndOrientation(self.id, [0,0,0], [0,0,0,1])
+    pb.resetBasePositionAndOrientation(self.id, [-0.1,0,0], [0,0,0,1])
 
     self.gripper_closed = False
     self.holding_obj = None
@@ -61,7 +65,7 @@ class Panda(RobotBase):
     self.arm_joint_indices = list()
     for i in range (self.num_joints):
       joint_info = pb.getJointInfo(self.id, i)
-      if i in range(8):
+      if i in range(self.num_dofs):
         self.arm_joint_names.append(str(joint_info[1]))
         self.arm_joint_indices.append(i)
 
@@ -69,7 +73,7 @@ class Panda(RobotBase):
     self.gripper_closed = False
     self.holding_obj = None
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
-    self.moveToJ(self.home_positions_joint[:8])
+    self.moveToJ(self.home_positions_joint[:self.num_dofs])
     self.openGripper()
 
   def controlGripper(self, open_ratio, max_it=100):
@@ -155,7 +159,7 @@ class Panda(RobotBase):
     return pb.getJointState(self.id, 8)[2][2] > 100
 
   def _calculateIK(self, pos, rot):
-    return pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)[:8]
+    return pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot, self.ll, self.ul, self.jr)[:self.num_dofs]
 
   def _getGripperJointPosition(self):
     p1 = pb.getJointState(self.id, 9)[0]
