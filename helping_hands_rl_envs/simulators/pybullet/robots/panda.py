@@ -158,6 +158,16 @@ class Panda(RobotBase):
     # return pb.getJointState(self.id, 9)[3] <= -5 or pb.getJointState(self.id, 10)[3] <= -5
     return pb.getJointState(self.id, 8)[2][2] > 100
 
+  def getPickedObj(self, objects):
+    if not objects:
+      return None
+    for obj in objects:
+      # check the contact force normal to count the horizontal contact points
+      contact_points = pb.getContactPoints(self.id, obj.object_id, 9) + pb.getContactPoints(self.id, obj.object_id, 10)
+      horizontal = list(filter(lambda p: abs(p[7][2]) < 0.2, contact_points))
+      if len(horizontal) >= 2:
+        return obj
+
   def _calculateIK(self, pos, rot):
     return pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot, self.ll, self.ul, self.jr)[:self.num_dofs]
 
