@@ -40,7 +40,8 @@ class Panda(RobotBase):
     self.holding_obj = None
     self.num_joints = pb.getNumJoints(self.id)
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
-
+    pb.enableJointForceTorqueSensor(self.id, 8)
+    # pb.enableJointForceTorqueSensor(self.id, 7)
     c = pb.createConstraint(self.id,
                             9,
                             self.id,
@@ -150,7 +151,8 @@ class Panda(RobotBase):
     return True
 
   def gripperHasForce(self):
-    return pb.getJointState(self.id, 9)[3] <= -5 or pb.getJointState(self.id, 10)[3] <= -5
+    # return pb.getJointState(self.id, 9)[3] <= -5 or pb.getJointState(self.id, 10)[3] <= -5
+    return pb.getJointState(self.id, 8)[2][2] > 100
 
   def _calculateIK(self, pos, rot):
     return pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)[:8]
