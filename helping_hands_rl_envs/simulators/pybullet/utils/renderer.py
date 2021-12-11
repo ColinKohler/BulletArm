@@ -135,6 +135,8 @@ class Renderer(object):
     pts[1] = np.round_(pts[1])
     mask = (pts[0] >= 0) * (pts[0] < size) * (pts[1] > 0) * (pts[1] < size)
     pts = pts[:, mask]
+    if pts.shape[1] == 0:
+      return np.zeros([size, size])
     # dense pixel index
     mix_xy = (pts[1].astype(int) * size + pts[0].astype(int))
     # lexsort point cloud first on dense pixel index, then on z value
