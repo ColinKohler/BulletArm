@@ -26,6 +26,10 @@ class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
       self.fix_set = False
     else:
       self.fix_set = config['fix_set']
+    if 'collision_terminate' not in config:
+      self.collision_terminate = False
+    else:
+      self.collision_terminate = config['collision_terminate']
     self.tray = Tray()
     self.bin_size = 0.25
 
@@ -89,6 +93,8 @@ class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
       reward = 1.0
       done = 1
     elif not self.isSimValid() or self.current_grasp_steps > self.max_steps:
+      done = 1
+    elif self.collision_terminate and self.robot.gripperHasForce() and not self._isHolding():
       done = 1
     else:
       done = 0
