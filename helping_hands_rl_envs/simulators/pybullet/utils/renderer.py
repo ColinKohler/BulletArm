@@ -50,6 +50,8 @@ class Renderer(object):
     if self.points.shape[0] == 0:
       self.getNewPointCloud(512)
       self.points = self.points[self.points[:, 2] <= max(gripper_pos[2]-0.01, 0.05)]
+    points = np.copy(self.points)
+    points = points[points[:, 2] <= max(gripper_pos[2]-0.01, 0.05)]
     # self.points = self.points[(self.workspace[0, 0] <= self.points[:, 0]) * (self.points[:, 0] <= self.workspace[0, 1])]
     # self.points = self.points[(self.workspace[1, 0] <= self.points[:, 1]) * (self.points[:, 1] <= self.workspace[1, 1])]
 
@@ -61,8 +63,8 @@ class Renderer(object):
 
     render_cam_pos1 = [gripper_pos[0], gripper_pos[1], gripper_pos[2]]
     # t0 = time.time()
-    depth = self.projectDepth(img_size, render_cam_pos1, render_cam_up_vector,
-                               render_cam_target_pos, target_size)
+    depth = self.projectDepth(points, img_size, render_cam_pos1, render_cam_up_vector,
+                              render_cam_target_pos, target_size)
     # depth = sk_transform.rotate(depth, np.rad2deg(gripper_rz))
     return depth
 
@@ -101,7 +103,7 @@ class Renderer(object):
 
     return result0
 
-  def projectDepth(self, size, cam_pos, cam_up_vector, target_pos, target_size):
+  def projectDepth(self, points, size, cam_pos, cam_up_vector, target_pos, target_size):
     view_matrix = pb.computeViewMatrix(
       cameraEyePosition=cam_pos,
       cameraUpVector=cam_up_vector,
@@ -109,9 +111,9 @@ class Renderer(object):
     )
     view_matrix = np.asarray(view_matrix).reshape([4, 4], order='F')
 
-    augment = np.ones((1, self.points.shape[0]))
-    # pts = np.concatenate((np.asarray(self.points).T, augment), axis=0)
-    pts = np.concatenate((self.points.T, augment), axis=0)
+    augment = np.ones((1, points.shape[0]))
+    # pts = np.concatenate((np.asarray(points).T, augment), axis=0)
+    pts = np.concatenate((points.T, augment), axis=0)
     projection_matrix = np.array([
       [1 / (target_size / 2), 0, 0, 0],
       [0, 1 / (target_size / 2), 0, 0],
@@ -171,7 +173,7 @@ class Renderer(object):
     return depth
 
   def projectHeightmap(self, size, cam_pos, cam_up_vector, target_pos, target_size):
-    depth = self.projectDepth(size, cam_pos, cam_up_vector, target_pos, target_size)
+    depth = self.projectDepth(self.points, size, cam_pos, cam_up_vector, target_pos, target_size)
     return np.abs(depth - np.max(depth))
 
 
