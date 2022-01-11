@@ -63,7 +63,10 @@ class CloseLoopEnv(PyBulletEnv):
   def step(self, action):
     p, x, y, z, rot = self._decodeAction(action)
     current_pos = self.robot._getEndEffectorPosition()
-    current_rot = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())
+    current_rot = list(transformations.euler_from_quaternion(self.robot._getEndEffectorRotation()))
+    if self.action_sequence.count('r') == 1:
+      current_rot[0] = 0
+      current_rot[1] = 0
 
     # bTg = transformations.euler_matrix(0, 0, current_rot[-1])
     # bTg[:3, 3] = current_pos
