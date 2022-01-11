@@ -21,7 +21,7 @@ class CloseLoopEnv(PyBulletEnv):
       config['obs_type'] = 'pixel'
     self.view_type = config['view_type']
     self.obs_type = config['obs_type']
-    assert self.view_type in ['render_center', 'render_fix', 'camera_center_xyzr', 'camera_center_xyr',
+    assert self.view_type in ['render_center', 'render_center_height', 'render_fix', 'camera_center_xyzr', 'camera_center_xyr',
                               'camera_center_xyz', 'camera_center_xy', 'camera_fix',
                               'camera_center_xyr_height', 'camera_center_xyz_height', 'camera_center_xy_height',
                               'camera_fix_height', 'camera_center_z', 'camera_center_z_height',
@@ -175,7 +175,11 @@ class CloseLoopEnv(PyBulletEnv):
       self.heightmap = self._getHeightmap()
       gripper_img = self.getGripperImg()
       heightmap = self.heightmap
-      heightmap[gripper_img == 1] = 0
+      if self.view_type.find('height') > -1:
+        gripper_pos = self.robot._getEndEffectorPosition()
+        heightmap[gripper_img == 1] = gripper_pos[2]
+      else:
+        heightmap[gripper_img == 1] = 0
       heightmap = heightmap.reshape([1, self.heightmap_size, self.heightmap_size])
       # gripper_img = gripper_img.reshape([1, self.heightmap_size, self.heightmap_size])
       return self._isHolding(), None, heightmap
@@ -238,6 +242,10 @@ class CloseLoopEnv(PyBulletEnv):
     gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
     if self.view_type == 'render_center':
       return self.renderer.getTopDownDepth(self.workspace_size, self.heightmap_size, gripper_pos, 0)
+    elif self.view_type == 'render_center_height':
+      depth = self.renderer.getTopDownDepth(self.workspace_size, self.heightmap_size, gripper_pos, 0)
+      heightmap = gripper_pos[2] - depth
+      return heightmap
     elif self.view_type == 'render_fix':
       return self.renderer.getTopDownHeightmap(self.heightmap_size)
 
