@@ -40,12 +40,8 @@ class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
     self.grasp_attempted = 0
     self.current_grasp_steps = 1
 
-    cam_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0.29]
-    target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
-    cam_up_vector = [-1, 0, 0]
-    self.ws_size = max(self.workspace[0][1] - self.workspace[0][0], self.workspace[1][1] - self.workspace[1][0])
-    self.sensor = OrthographicSensor(cam_pos, cam_up_vector, target_pos, self.ws_size, 0.1, 1)
-    self.sensor.setCamMatrix(cam_pos, cam_up_vector, target_pos)
+    self.obs_size_m = self.workspace_size
+    self.initSensor()
 
   def initialize(self):
     super().initialize()

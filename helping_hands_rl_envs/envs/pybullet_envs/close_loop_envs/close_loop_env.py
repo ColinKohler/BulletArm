@@ -31,22 +31,27 @@ class CloseLoopEnv(PyBulletEnv):
       self.robot.home_positions = [-0.4446, 0.0837, -2.6123, 1.8883, -0.0457, -1.1810, 0.0699, 0., 0., 0., 0., 0., 0., 0., 0.]
       self.robot.home_positions_joint = self.robot.home_positions[:7]
 
-    self.ws_size = max(self.workspace[0][1] - self.workspace[0][0], self.workspace[1][1] - self.workspace[1][0])
     # if self.view_type.find('center') > -1:
     #   self.ws_size *= 1.5
 
-    cam_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0.29]
-    target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
-    cam_up_vector = [-1, 0, 0]
-    self.sensor = OrthographicSensor(cam_pos, cam_up_vector, target_pos, self.ws_size, 0.1, 1)
-    self.sensor.setCamMatrix(cam_pos, cam_up_vector, target_pos)
-    self.renderer = Renderer(self.workspace)
-    self.pers_sensor = Sensor(cam_pos, cam_up_vector, target_pos, self.workspace_size, cam_pos[2] - 1, cam_pos[2])
+    self.renderer = None
+    self.pers_sensor = None
+    self.obs_size_m = self.workspace_size
+    self.initSensor()
 
     self.simulate_z_threshold = self.workspace[2][0] + 0.07
 
     self.simulate_pos = None
     self.simulate_rot = None
+
+  def initSensor(self):
+    cam_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0.29]
+    target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
+    cam_up_vector = [-1, 0, 0]
+    self.sensor = OrthographicSensor(cam_pos, cam_up_vector, target_pos, self.obs_size_m, 0.1, 1)
+    self.sensor.setCamMatrix(cam_pos, cam_up_vector, target_pos)
+    self.renderer = Renderer(self.workspace)
+    self.pers_sensor = Sensor(cam_pos, cam_up_vector, target_pos, self.obs_size_m, cam_pos[2] - 1, cam_pos[2])
 
   def _getValidOrientation(self, random_orientation):
     if random_orientation:
@@ -202,7 +207,7 @@ class CloseLoopEnv(PyBulletEnv):
     pos[2] = np.clip(pos[2], self.simulate_z_threshold, self.workspace[2, 1])
     self.simulate_pos = pos
     self.simulate_rot = [0, 0, gripper_rz]
-    obs = self.renderer.getTopDownDepth(self.workspace_size, self.heightmap_size, pos, 0)
+    obs = self.renderer.getTopDownDepth(self.obs_size_m, self.heightmap_size, pos, 0)
 
     gripper_img = self.getGripperImg(p, gripper_rz+dtheta)
     # gripper_img = gripper_img.reshape([1, self.heightmap_size, self.heightmap_size])
@@ -225,15 +230,17 @@ class CloseLoopEnv(PyBulletEnv):
     if gripper_rz is None:
       gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
     im = np.zeros((self.heightmap_size, self.heightmap_size))
+    gripper_half_size = round(5 * self.workspace_size / self.obs_size_m)
     if self.robot_type == 'panda':
-      d = int(42/128*self.heightmap_size * gripper_state)
+      gripper_max_open = 42 * self.workspace_size / self.obs_size_m
     elif self.robot_type == 'kuka':
-      d = int(45/128*self.heightmap_size * gripper_state)
+      gripper_max_open = 45 * self.workspace_size / self.obs_size_m
     else:
       raise NotImplementedError
+    d = int(gripper_max_open/128*self.heightmap_size * gripper_state)
     anchor = self.heightmap_size//2
-    im[anchor - d // 2 - 5:anchor - d // 2 + 5, anchor - 5:anchor + 5] = 1
-    im[anchor + d // 2 - 5:anchor + d // 2 + 5, anchor - 5:anchor + 5] = 1
+    im[anchor - d // 2 - gripper_half_size:anchor - d // 2 + gripper_half_size, anchor - gripper_half_size:anchor + gripper_half_size] = 1
+    im[anchor + d // 2 - gripper_half_size:anchor + d // 2 + gripper_half_size, anchor - gripper_half_size:anchor + gripper_half_size] = 1
     im = rotate(im, np.rad2deg(gripper_rz), reshape=False, order=0)
     return im
 
@@ -241,9 +248,9 @@ class CloseLoopEnv(PyBulletEnv):
     gripper_pos = self.robot._getEndEffectorPosition()
     gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
     if self.view_type == 'render_center':
-      return self.renderer.getTopDownDepth(self.workspace_size, self.heightmap_size, gripper_pos, 0)
+      return self.renderer.getTopDownDepth(self.obs_size_m, self.heightmap_size, gripper_pos, 0)
     elif self.view_type == 'render_center_height':
-      depth = self.renderer.getTopDownDepth(self.workspace_size, self.heightmap_size, gripper_pos, 0)
+      depth = self.renderer.getTopDownDepth(self.obs_size_m, self.heightmap_size, gripper_pos, 0)
       heightmap = gripper_pos[2] - depth
       return heightmap
     elif self.view_type == 'render_fix':
