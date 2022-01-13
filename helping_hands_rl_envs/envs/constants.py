@@ -69,6 +69,7 @@ from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_househo
 from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_household_picking_cluttered import createCloseLoopHouseholdPickingClutteredEnv
 from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_household_pushing import createCloseLoopHouseholdPushingEnv
 from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_block_pushing import createCloseLoopBlockPushingEnv
+from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_block_in_bowl import createCloseLoopBlockInBowlEnv
 
 CREATE_NUMPY_ENV_FNS = {
   'block_picking' : createBlockPickingEnv,
@@ -155,4 +156,5 @@ CREATE_PYBULLET_ENV_FNS = {
   'close_loop_clutter_picking': createCloseLoopHouseholdPickingClutteredEnv,
   'close_loop_household_pushing': createCloseLoopHouseholdPushingEnv,
   'close_loop_block_pushing': createCloseLoopBlockPushingEnv,
+  'close_loop_block_in_bowl': createCloseLoopBlockInBowlEnv,
 }

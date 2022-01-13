@@ -23,7 +23,7 @@ class TestBulletBowlStacking(unittest.TestCase):
     self.env_config['render'] = True
     self.env_config['seed'] = 0
     num_processes = 1
-    env = env_factory.createEnvs(num_processes, 'pybullet', 'close_loop_block_pushing', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(num_processes, 'pybullet', 'close_loop_block_in_bowl', self.env_config, self.planner_config)
     total = 0
     s = 0
     step_times = []
@@ -36,8 +36,6 @@ class TestBulletBowlStacking(unittest.TestCase):
       plt.imshow(obs[0, 0])
       plt.show()
       (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=True)
-      if dones and not rewards:
-        print(1)
       obs = obs_
       s += rewards.sum()
       total += dones.sum()
