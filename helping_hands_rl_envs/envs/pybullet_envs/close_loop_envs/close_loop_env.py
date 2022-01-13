@@ -60,6 +60,10 @@ class CloseLoopEnv(PyBulletEnv):
       orientation = pb.getQuaternionFromEuler([0., 0., 0.])
     return orientation
 
+  def resetPybulletEnv(self):
+    self.renderer.clearPoints()
+    super().resetPybulletEnv()
+
   def step(self, action):
     p, x, y, z, rot = self._decodeAction(action)
     current_pos = self.robot._getEndEffectorPosition()
