@@ -12,6 +12,8 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
     self.goal_pos = self.workspace.mean(1)[:2]
     self.goal_size = 0.08
     self.goal_id = None
+    self.obs_size_m = self.workspace_size * 2
+    self.initSensor()
 
   def reset(self):
     self.resetPybulletEnv()
