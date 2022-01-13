@@ -10,10 +10,18 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
   def __init__(self, config):
     super().__init__(config)
     self.goal_pos = self.workspace.mean(1)[:2]
-    self.goal_size = 0.08
     self.goal_id = None
     self.obs_size_m = self.workspace_size * 2
+    self.heightmap_resolution = self.obs_size_m / self.heightmap_size
     self.initSensor()
+    self.goal_grid_size_half = 10
+    self.goal_size = self.goal_grid_size_half*2 * self.heightmap_resolution
+
+  def getGoalPixel(self):
+    gripper_pos = self.robot._getEndEffectorPosition()
+    goal_pixel_x = (self.goal_pos[0] - gripper_pos[0]) / self.heightmap_resolution + self.heightmap_size // 2
+    goal_pixel_y = (self.goal_pos[1] - gripper_pos[1]) / self.heightmap_resolution + self.heightmap_size // 2
+    return round(goal_pixel_x), round(goal_pixel_y)
 
   def reset(self):
     self.resetPybulletEnv()
@@ -24,13 +32,27 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
 
     if self.goal_id is not None:
       pb.removeBody(self.goal_id)
-    goal_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[self.goal_size/2, self.goal_size/2, 0.04], rgbaColor=[0, 0, 1, 1])
+    goal_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[self.goal_size/2, self.goal_size/2, 0.001], rgbaColor=[0, 0, 1, 1])
     self.goal_id = pb.createMultiBody(baseMass=0,
                                       baseVisualShapeIndex=goal_visual,
                                       basePosition=[*self.goal_pos, 0],
                                       baseOrientation=transformations.quaternion_from_euler(0, 0, 0), )
 
     return self._getObservation()
+
+  def _getHeightmap(self):
+    heightmap = super()._getHeightmap()
+    goal_x, goal_y = self.getGoalPixel()
+    # heightmap[max(goal_x-self.goal_grid_size, 0):min(goal_x+self.goal_grid_size, self.heightmap_size-1), max(goal_y-self.goal_grid_size, 0):min(goal_y+self.goal_grid_size, self.heightmap_size-1)] += 0.025
+    test_x = np.arange(goal_x - self.goal_grid_size_half, goal_x + self.goal_grid_size_half, 1)
+    test_x = test_x[(0 <= test_x) & (test_x < 128)]
+    test_y = np.arange(goal_y - self.goal_grid_size_half, goal_y + self.goal_grid_size_half, 1)
+    test_y = test_y[(0 <= test_y) & (test_y < 128)]
+    # heightmap[test_x, test_y] += 0.025
+    X2D, Y2D = np.meshgrid(test_x, test_y)
+    out = np.column_stack((X2D.ravel(), Y2D.ravel()))
+    heightmap[out[:, 0].reshape(-1), out[:, 1].reshape(-1)] += 0.02
+    return heightmap
 
   def _checkTermination(self):
     obj_pos = self.objects[0].getPosition()[:2]
