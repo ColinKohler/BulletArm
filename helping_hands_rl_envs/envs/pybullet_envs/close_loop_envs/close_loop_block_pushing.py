@@ -62,7 +62,7 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
     test_y = test_y[(0 <= test_y) & (test_y < 128)]
     # heightmap[test_x, test_y] += 0.025
     X2D, Y2D = np.meshgrid(test_x, test_y)
-    out = np.column_stack((X2D.ravel(), Y2D.ravel()))
+    out = np.column_stack((X2D.ravel(), Y2D.ravel())).astype(int)
     heightmap[out[:, 0].reshape(-1), out[:, 1].reshape(-1)] += 0.02
     return heightmap
 
