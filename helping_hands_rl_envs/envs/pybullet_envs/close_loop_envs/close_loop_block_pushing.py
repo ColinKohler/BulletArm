@@ -11,11 +11,13 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
     super().__init__(config)
     self.goal_pos = self.workspace.mean(1)[:2]
     self.goal_id = None
-    self.obs_size_m = self.workspace_size * 2
+    self.obs_size_m = self.workspace_size * 1.5
     self.heightmap_resolution = self.obs_size_m / self.heightmap_size
     self.initSensor()
-    self.goal_grid_size_half = 10
-    self.goal_size = self.goal_grid_size_half*2 * self.heightmap_resolution
+    # self.goal_grid_size_half = 10
+    # self.goal_size = self.goal_grid_size_half*2 * self.heightmap_resolution
+    self.goal_size = 0.09
+    self.goal_grid_size_half = round(self.goal_size / self.heightmap_resolution / 2)
 
   def getGoalPixel(self):
     gripper_pos = self.robot._getEndEffectorPosition()
@@ -25,14 +27,14 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
 
   def reset(self):
     self.resetPybulletEnv()
-    self.robot.moveTo([self.workspace[0].mean(), self.workspace[1].mean(), 0.2], transformations.quaternion_from_euler(0, 0, 0))
-    self._generateShapes(constants.CUBE, 1, random_orientation=self.random_orientation)
+    self._generateShapes(constants.CUBE, 1, random_orientation=self.random_orientation, scale=1)
+    pb.changeDynamics(self.objects[0].object_id, -1, lateralFriction=0.1)
     goal_pos = self._getValidPositions(0.08, 0.09, self.getObjectPositions()[:, :2].tolist(), 1)[0]
     self.goal_pos = goal_pos
 
     if self.goal_id is not None:
       pb.removeBody(self.goal_id)
-    goal_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[self.goal_size/2, self.goal_size/2, 0.001], rgbaColor=[0, 0, 1, 1])
+    goal_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[self.goal_size/2, self.goal_size/2, 0.0005], rgbaColor=[0, 0, 1, 1])
     self.goal_id = pb.createMultiBody(baseMass=0,
                                       baseVisualShapeIndex=goal_visual,
                                       basePosition=[*self.goal_pos, 0],
@@ -56,7 +58,19 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
 
   def _checkTermination(self):
     obj_pos = self.objects[0].getPosition()[:2]
-    return np.linalg.norm(np.array(self.goal_pos) - np.array(obj_pos)) < 0.03
+    return np.linalg.norm(np.array(self.goal_pos) - np.array(obj_pos)) < 0.05
+
+  def _isPointInWorkspace(self, p):
+    '''
+    Checks if the given point is within the workspace
+
+    Args:
+      - p: [x, y, z] point
+
+    Returns: True in point is within workspace, False otherwise
+    '''
+    return self.workspace[0][0] < p[0] < self.workspace[0][1] and \
+           self.workspace[1][0] < p[1] < self.workspace[1][1]
 
 def createCloseLoopBlockPushingEnv(config):
   return CloseLoopBlockPushingEnv(config)

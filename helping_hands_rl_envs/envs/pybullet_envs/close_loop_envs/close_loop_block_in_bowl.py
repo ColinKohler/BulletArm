@@ -10,13 +10,13 @@ from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 class CloseLoopBlockInBowlEnv(CloseLoopEnv):
   def __init__(self, config):
     super().__init__(config)
-    self.obs_size_m = self.workspace_size * 2
+    self.obs_size_m = self.workspace_size * 1.5
+    self.heightmap_resolution = self.obs_size_m / self.heightmap_size
     self.initSensor()
 
   def reset(self):
     while True:
       self.resetPybulletEnv()
-      self.robot.moveTo([self.workspace[0].mean(), self.workspace[1].mean(), 0.2], transformations.quaternion_from_euler(0, 0, 0))
       try:
         self._generateShapes(constants.CUBE, 1, random_orientation=self.random_orientation)
         self._generateShapes(constants.BOWL, 1, scale=0.76, random_orientation=self.random_orientation)
