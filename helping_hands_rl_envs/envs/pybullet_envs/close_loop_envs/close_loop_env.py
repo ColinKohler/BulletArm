@@ -249,8 +249,8 @@ class CloseLoopEnv(PyBulletEnv):
       raise NotImplementedError
     d = int(gripper_max_open/128*self.heightmap_size * gripper_state)
     anchor = self.heightmap_size//2
-    im[anchor - d // 2 - gripper_half_size:anchor - d // 2 + gripper_half_size, anchor - gripper_half_size:anchor + gripper_half_size] = 1
-    im[anchor + d // 2 - gripper_half_size:anchor + d // 2 + gripper_half_size, anchor - gripper_half_size:anchor + gripper_half_size] = 1
+    im[int(anchor - d // 2 - gripper_half_size):int(anchor - d // 2 + gripper_half_size), int(anchor - gripper_half_size):int(anchor + gripper_half_size)] = 1
+    im[int(anchor + d // 2 - gripper_half_size):int(anchor + d // 2 + gripper_half_size), int(anchor - gripper_half_size):int(anchor + gripper_half_size)] = 1
     im = rotate(im, np.rad2deg(gripper_rz), reshape=False, order=0)
     return im
 
