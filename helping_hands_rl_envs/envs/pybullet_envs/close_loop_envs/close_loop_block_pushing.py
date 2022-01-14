@@ -5,6 +5,7 @@ from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_env import CloseLoopEnv
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 from helping_hands_rl_envs.planners.close_loop_block_pushing_planner import CloseLoopBlockPushingPlanner
+from helping_hands_rl_envs.simulators.pybullet.equipments.tray import Tray
 
 class CloseLoopBlockPushingEnv(CloseLoopEnv):
   def __init__(self, config):
@@ -19,6 +20,15 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
     self.goal_size = 0.09
     self.goal_grid_size_half = round(self.goal_size / self.heightmap_resolution / 2)
 
+    self.bin_size = 0.25
+    self.tray = Tray()
+
+  def initialize(self):
+    super().initialize()
+    self.tray.initialize(pos=[self.workspace[0].mean(), self.workspace[1].mean(), 0],
+                         size=[self.bin_size, self.bin_size, 0.1])
+
+
   def getGoalPixel(self):
     gripper_pos = self.robot._getEndEffectorPosition()
     goal_pixel_x = (self.goal_pos[0] - gripper_pos[0]) / self.heightmap_resolution + self.heightmap_size // 2
@@ -27,14 +37,14 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
 
   def reset(self):
     self.resetPybulletEnv()
-    self._generateShapes(constants.CUBE, 1, random_orientation=self.random_orientation, scale=1)
-    pb.changeDynamics(self.objects[0].object_id, -1, lateralFriction=0.1)
-    goal_pos = self._getValidPositions(0.08, 0.09, self.getObjectPositions()[:, :2].tolist(), 1)[0]
+    self._generateShapes(constants.CUBE, 1, random_orientation=self.random_orientation)
+    # pb.changeDynamics(self.objects[0].object_id, -1, lateralFriction=0.1)
+    goal_pos = self._getValidPositions(0.08+0.05, 0.09, self.getObjectPositions()[:, :2].tolist(), 1)[0]
     self.goal_pos = goal_pos
 
     if self.goal_id is not None:
       pb.removeBody(self.goal_id)
-    goal_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[self.goal_size/2, self.goal_size/2, 0.0005], rgbaColor=[0, 0, 1, 1])
+    goal_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[self.goal_size/2, self.goal_size/2, 0.0025], rgbaColor=[0, 0, 1, 1])
     self.goal_id = pb.createMultiBody(baseMass=0,
                                       baseVisualShapeIndex=goal_visual,
                                       basePosition=[*self.goal_pos, 0],
@@ -60,17 +70,16 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
     obj_pos = self.objects[0].getPosition()[:2]
     return np.linalg.norm(np.array(self.goal_pos) - np.array(obj_pos)) < 0.05
 
-  def _isPointInWorkspace(self, p):
-    '''
-    Checks if the given point is within the workspace
-
-    Args:
-      - p: [x, y, z] point
-
-    Returns: True in point is within workspace, False otherwise
-    '''
-    return self.workspace[0][0] < p[0] < self.workspace[0][1] and \
-           self.workspace[1][0] < p[1] < self.workspace[1][1]
+  def isSimValid(self):
+    for obj in self.objects:
+      p = obj.getPosition()
+      if self._isObjectHeld(obj):
+        continue
+      if not self.workspace[0][0]-0.05 < p[0] < self.workspace[0][1]+0.05 and \
+          self.workspace[1][0]-0.05 < p[1] < self.workspace[1][1]+0.05 and \
+          self.workspace[2][0] < p[2] < self.workspace[2][1]:
+        return False
+    return True
 
 def createCloseLoopBlockPushingEnv(config):
   return CloseLoopBlockPushingEnv(config)

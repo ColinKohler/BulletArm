@@ -6,6 +6,7 @@ from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_env imp
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 from helping_hands_rl_envs.planners.close_loop_block_in_bowl_planner import CloseLoopBlockInBowlPlanner
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
+from helping_hands_rl_envs.simulators.pybullet.equipments.tray import Tray
 
 class CloseLoopBlockInBowlEnv(CloseLoopEnv):
   def __init__(self, config):
@@ -13,6 +14,14 @@ class CloseLoopBlockInBowlEnv(CloseLoopEnv):
     self.obs_size_m = self.workspace_size * 1.5
     self.heightmap_resolution = self.obs_size_m / self.heightmap_size
     self.initSensor()
+
+    self.bin_size = 0.25
+    self.tray = Tray()
+
+  def initialize(self):
+    super().initialize()
+    self.tray.initialize(pos=[self.workspace[0].mean(), self.workspace[1].mean(), 0],
+                         size=[self.bin_size, self.bin_size, 0.1])
 
   def reset(self):
     while True:
@@ -36,6 +45,17 @@ class CloseLoopBlockInBowlEnv(CloseLoopEnv):
     block_pos = self.objects[0].getPosition()[:2]
     bowl_pos = self.objects[1].getPosition()[:2]
     return np.linalg.norm(np.array(block_pos) - np.array(bowl_pos)) < 0.03
+
+  def isSimValid(self):
+    for obj in self.objects:
+      p = obj.getPosition()
+      if self._isObjectHeld(obj):
+        continue
+      if not self.workspace[0][0]-0.05 < p[0] < self.workspace[0][1]+0.05 and \
+          self.workspace[1][0]-0.05 < p[1] < self.workspace[1][1]+0.05 and \
+          self.workspace[2][0] < p[2] < self.workspace[2][1]:
+        return False
+    return True
 
 def createCloseLoopBlockInBowlEnv(config):
   return CloseLoopBlockInBowlEnv(config)
