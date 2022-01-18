@@ -20,6 +20,11 @@ HelpingHandsEnvs API Env Runner
 .. automodule:: helping_hands_rl_envs.runner
    :members:
 
+Baselines API
+============================================
+.. automodule:: baselines.rs
+  :members:
+
 Indices and tables
 ==================
 
