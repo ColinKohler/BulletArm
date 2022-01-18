@@ -29,8 +29,9 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
                          size=[self.bin_size, self.bin_size, 0.1])
 
 
-  def getGoalPixel(self):
-    gripper_pos = self.robot._getEndEffectorPosition()
+  def getGoalPixel(self, gripper_pos=None):
+    if gripper_pos is None:
+      gripper_pos = self.robot._getEndEffectorPosition()
     goal_pixel_x = (self.goal_pos[0] - gripper_pos[0]) / self.heightmap_resolution + self.heightmap_size // 2
     goal_pixel_y = (self.goal_pos[1] - gripper_pos[1]) / self.heightmap_resolution + self.heightmap_size // 2
     return round(goal_pixel_x), round(goal_pixel_y)
@@ -52,9 +53,9 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
 
     return self._getObservation()
 
-  def _getHeightmap(self):
-    heightmap = super()._getHeightmap()
-    goal_x, goal_y = self.getGoalPixel()
+  def _getHeightmap(self, gripper_pos=None, gripper_rz=None):
+    heightmap = super()._getHeightmap(gripper_pos, gripper_rz)
+    goal_x, goal_y = self.getGoalPixel(gripper_pos)
     # heightmap[max(goal_x-self.goal_grid_size, 0):min(goal_x+self.goal_grid_size, self.heightmap_size-1), max(goal_y-self.goal_grid_size, 0):min(goal_y+self.goal_grid_size, self.heightmap_size-1)] += 0.025
     test_x = np.arange(goal_x - self.goal_grid_size_half, goal_x + self.goal_grid_size_half, 1)
     test_x = test_x[(0 <= test_x) & (test_x < 128)]

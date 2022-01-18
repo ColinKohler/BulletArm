@@ -217,11 +217,15 @@ class CloseLoopEnv(PyBulletEnv):
     pos[2] = np.clip(pos[2], self.simulate_z_threshold, self.workspace[2, 1])
     self.simulate_pos = pos
     self.simulate_rot = [0, 0, gripper_rz]
-    obs = self.renderer.getTopDownDepth(self.obs_size_m, self.heightmap_size, pos, 0)
-
+    # obs = self.renderer.getTopDownDepth(self.obs_size_m, self.heightmap_size, pos, 0)
+    obs = self._getHeightmap(gripper_pos=self.simulate_pos, gripper_rz=gripper_rz)
     gripper_img = self.getGripperImg(p, gripper_rz+dtheta)
+    if self.view_type.find('height') > -1:
+      obs[gripper_img == 1] = self.simulate_pos[2]
+    else:
+      obs[gripper_img == 1] = 0
     # gripper_img = gripper_img.reshape([1, self.heightmap_size, self.heightmap_size])
-    obs[gripper_img==1] = 0
+    # obs[gripper_img==1] = 0
     obs = obs.reshape([1, self.heightmap_size, self.heightmap_size])
 
     return self._isHolding(), None, obs
@@ -254,9 +258,11 @@ class CloseLoopEnv(PyBulletEnv):
     im = rotate(im, np.rad2deg(gripper_rz), reshape=False, order=0)
     return im
 
-  def _getHeightmap(self):
-    gripper_pos = self.robot._getEndEffectorPosition()
-    gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
+  def _getHeightmap(self, gripper_pos=None, gripper_rz=None):
+    if gripper_pos is None:
+      gripper_pos = self.robot._getEndEffectorPosition()
+    if gripper_rz is None:
+      gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
     if self.view_type == 'render_center':
       return self.renderer.getTopDownDepth(self.obs_size_m, self.heightmap_size, gripper_pos, 0)
     elif self.view_type == 'render_center_height':

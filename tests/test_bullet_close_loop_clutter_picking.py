@@ -17,11 +17,11 @@ class TestBulletBowlStacking(unittest.TestCase):
                 'workspace_check': 'point', 'physics_mode': 'fast', 'hard_reset_freq': 1000, 'object_scale_range': (0.8, 1),
                 'view_type': 'render_center_height', 'transparent_bin': False, 'collision_penalty': False}
 
-  planner_config = {'random_orientation': True, 'dpos': 0.05, 'drot': np.pi/8}
+  planner_config = {'random_orientation': True, 'dpos': 0.05, 'drot': np.pi/4}
 
   def testPlanner2(self):
     self.env_config['render'] = True
-    self.env_config['seed'] = 0
+    self.env_config['seed'] = 5
     num_processes = 1
     env = env_factory.createEnvs(num_processes, 'pybullet', 'close_loop_clutter_picking', self.env_config, self.planner_config)
     total = 0
@@ -43,8 +43,14 @@ class TestBulletBowlStacking(unittest.TestCase):
       plt.show()
       t0 = time.time()
       (states_, in_hands_, obs_), rewards, dones = env.simulate(action)
+      plt.imshow(obs_[0, 0], vmin=0, vmax=0.25)
+      plt.show()
 
-      (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=True)
+      (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
+      plt.imshow(obs_[0, 0], vmin=0, vmax=0.25)
+      plt.show()
+      if rewards:
+        print(1)
       obs = obs_
       s += rewards.sum()
       total += dones.sum()
