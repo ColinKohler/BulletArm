@@ -12,6 +12,11 @@ attrdict = "*"
 gitpython = "*"
 pyqt5 = "*"
 matplotlib = "*"
+pybullet = "*"
+sphinx = "*"
+rinohtype = "*"
+cupy-cuda115 = "*"
+scikit-learn = "*"
 
 [requires]
 python_version = "3.7"

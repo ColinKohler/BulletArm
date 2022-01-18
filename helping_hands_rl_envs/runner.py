@@ -1,3 +1,9 @@
+''' Env Factory API
+
+.. moduleauthor: Colin Kohler <github.com/ColinKohler>
+
+'''
+
 import numpy as np
 from multiprocessing import Process, Pipe
 import os
@@ -12,6 +18,7 @@ def worker(remote, parent_remote, env_fn, planner_fn=None):
     - remote: Worker remote connection
     - parent_remote: MultiRunner remote connection
     - env_fn: Function which creates a deictic environment
+    - planner_fn: Function which creates the planner for the environment
   '''
   parent_remote.close()
 
@@ -114,9 +121,11 @@ def worker(remote, parent_remote, env_fn, planner_fn=None):
 class MultiRunner(object):
   '''
   Runner which runs mulitple environemnts in parallel in subprocesses
-  and communicates with them via pipe
+  and communicates with them via pipe.
 
   Args:
+    - env_fns: Env creation function wrapped so it can be created within subprocess
+    - planner_fns: Planner creation function wrapped so it can be created within subprocess
   '''
   def __init__(self, env_fns, planner_fns):
     self.waiting = False
@@ -134,13 +143,18 @@ class MultiRunner(object):
     for remote in self.worker_remotes:
       remote.close()
 
-
   def step(self, actions, auto_reset=False):
     '''
     Step the environments synchronously.
 
     Args:
       - actions: Numpy variable of environment actions
+      - auto_reset: Should the environment reset automatically after an episode completes
+
+    Returns: (obs, rewards, dones)
+      - obs: Numpy vector of observations
+      - rewards: Numpy vector of rewards
+      - dones: Numpy vector of 0/1 flags indicating if episode is done
     '''
     self.stepAsync(actions, auto_reset)
     return self.stepWait()
@@ -151,6 +165,7 @@ class MultiRunner(object):
 
     Args:
       - actions: Numpy variable of environment actions
+      - auto_reset: Should the environment reset automatically after an episode completes
     '''
     for remote, action in zip(self.remotes, actions):
       if auto_reset:
@@ -211,6 +226,15 @@ class MultiRunner(object):
     return (states, hand_obs, obs)
 
   def reset_envs(self, env_nums):
+    '''
+    Resets the specified environments
+
+    Args:
+      - env_nums: The ids of the environments to be reset
+
+    Returns: Numpy vector of observations
+    '''
+
     for env_num in env_nums:
       self.remotes[env_num].send(('reset', None))
 
@@ -224,10 +248,14 @@ class MultiRunner(object):
     return (states, hand_obs, obs)
 
   def getActiveEnvId(self):
+    '''
+
+    '''
     for remote in self.remotes:
       remote.send(('get_active_env_id', None))
     active_env_id = [remote.recv() for remote in self.remotes]
     active_env_id = np.stack(active_env_id)
+
     return active_env_id
 
   def close(self):
@@ -242,21 +270,24 @@ class MultiRunner(object):
 
   def save(self):
     '''
-
+    Saves the current state of the environments to file
     '''
     for remote in self.remotes:
       remote.send(('save', None))
 
   def restore(self):
     '''
-
+    Restores the saved stated of the environments
     '''
     for remote in self.remotes:
       remote.send(('restore', None))
 
   def saveToFile(self, path):
     '''
+    Saves the current state of the environments to file
 
+    Args:
+      - path: String denoting the path to save the enviornment states to
     '''
     for i, remote in enumerate(self.remotes):
       p = os.path.join(path, str(i))
@@ -266,7 +297,12 @@ class MultiRunner(object):
 
   def loadFromFile(self, path):
     '''
+    Loads the state of the environments from a file
 
+    Args:
+      - path: String denoting the path to the environment states to load
+
+    Returns:
     '''
     for i, remote in enumerate(self.remotes):
       remote.send(('load_from_file', os.path.join(path, str(i))))
@@ -294,7 +330,9 @@ class MultiRunner(object):
 
   def getNextAction(self):
     '''
+    Get the next action from the planner for each environment
 
+    Returns: Numpy vector of the actions
     '''
     for remote in self.remotes:
       remote.send(('get_next_action', None))
@@ -304,7 +342,9 @@ class MultiRunner(object):
 
   def getRandomAction(self):
     '''
+    Get a random action for each environment
 
+    Returns: Numpy vector of the actions
     '''
     for remote in self.remotes:
       remote.send(('get_random_action', None))

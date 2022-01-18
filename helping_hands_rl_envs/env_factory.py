@@ -1,3 +1,9 @@
+''' Env Factory API
+
+.. moduleauthor: Colin Kohler <github.com/ColinKohler>
+
+'''
+
 import copy
 import numpy as np
 import numpy.random as npr
@@ -12,7 +18,7 @@ def getEnvFn(env_type):
   Get the env creation function of the given type.
 
   Args:
-    -
+    - env_type: String indicating the type of environment to create
 
   Returns:
   '''
@@ -25,6 +31,12 @@ def createEnvs(num_processes, env_type, env_config, planner_config={}):
   '''
   Wrapper function to create either a single env the the main process or some
   number of envs each in their own seperate process.
+
+  Args:
+    - num_processes: Number of envs to create
+    - env_type: String indicating the type of environment to create
+    - env_config: Dict containing intialization arguments for the env
+    - planner_config: Dict containing intialization arguments for the planner
   '''
   if num_processes == 0:
     return createSingleProcessEnv(env_type, env_config, planner_config)
