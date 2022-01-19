@@ -5,10 +5,18 @@ from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_env import CloseLoopEnv
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 from helping_hands_rl_envs.planners.close_loop_block_picking_planner import CloseLoopBlockPickingPlanner
+from helping_hands_rl_envs.simulators.pybullet.equipments.tray import Tray
 
 class CloseLoopBlockPickingEnv(CloseLoopEnv):
   def __init__(self, config):
     super().__init__(config)
+    self.bin_size = 0.25
+    self.tray = Tray()
+
+  def initialize(self):
+    super().initialize()
+    self.tray.initialize(pos=[self.workspace[0].mean(), self.workspace[1].mean(), 0],
+                         size=[self.bin_size, self.bin_size, 0.1])
 
   def reset(self):
     self.resetPybulletEnv()
@@ -25,13 +33,7 @@ class CloseLoopBlockPickingEnv(CloseLoopEnv):
 
   def _checkTermination(self):
     gripper_z = self.robot._getEndEffectorPosition()[-1]
-    return self.robot.holding_obj == self.objects[-1] and gripper_z > 0.08
-
-  def step(self, action):
-    obs, reward, done = super().step(action)
-    if (pb.getJointState(self.robot.id, 8)[3] >= 2 or pb.getJointState(self.robot.id, 11)[3] <= -2) and not self._isHolding():
-      reward -= 0.1
-    return obs, reward, done
+    return self.robot.holding_obj == self.objects[-1] and gripper_z > 0.15
 
 def createCloseLoopBlockPickingEnv(config):
   return CloseLoopBlockPickingEnv(config)
