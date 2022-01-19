@@ -215,11 +215,12 @@ class CloseLoopEnv(PyBulletEnv):
     pos[0] = np.clip(pos[0], self.workspace[0, 0], self.workspace[0, 1])
     pos[1] = np.clip(pos[1], self.workspace[1, 0], self.workspace[1, 1])
     pos[2] = np.clip(pos[2], self.simulate_z_threshold, self.workspace[2, 1])
+    gripper_rz += dtheta
     self.simulate_pos = pos
     self.simulate_rot = [0, 0, gripper_rz]
     # obs = self.renderer.getTopDownDepth(self.obs_size_m, self.heightmap_size, pos, 0)
     obs = self._getHeightmap(gripper_pos=self.simulate_pos, gripper_rz=gripper_rz)
-    gripper_img = self.getGripperImg(p, gripper_rz+dtheta)
+    gripper_img = self.getGripperImg(p, gripper_rz)
     if self.view_type.find('height') > -1:
       obs[gripper_img == 1] = self.simulate_pos[2]
     else:

@@ -38,7 +38,7 @@ class TestBulletBowlStacking(unittest.TestCase):
       # axs[1].imshow(obs[0, 1])
       # fig.show()
 
-      plt.imshow(obs[0, 0], vmin=-0.1, vmax=0.35)
+      plt.imshow(obs[0, 0], vmin=0, vmax=0.25)
       plt.colorbar()
       plt.show()
       t0 = time.time()
