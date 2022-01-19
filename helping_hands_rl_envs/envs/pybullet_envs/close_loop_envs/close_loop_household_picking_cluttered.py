@@ -40,9 +40,6 @@ class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
     self.grasp_attempted = 0
     self.current_grasp_steps = 1
 
-    self.obs_size_m = self.workspace_size
-    self.initSensor()
-
   def initialize(self):
     super().initialize()
     self.tray.initialize(pos=[self.workspace[0].mean(), self.workspace[1].mean(), 0],

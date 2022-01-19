@@ -11,10 +11,6 @@ from helping_hands_rl_envs.simulators.pybullet.equipments.tray import Tray
 class CloseLoopBlockInBowlEnv(CloseLoopEnv):
   def __init__(self, config):
     super().__init__(config)
-    self.obs_size_m = self.workspace_size * 1.5
-    self.heightmap_resolution = self.obs_size_m / self.heightmap_size
-    self.initSensor()
-
     self.bin_size = 0.25
     self.tray = Tray()
 

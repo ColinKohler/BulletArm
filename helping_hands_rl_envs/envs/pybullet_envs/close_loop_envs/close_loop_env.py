@@ -19,6 +19,8 @@ class CloseLoopEnv(PyBulletEnv):
       config['view_type'] = 'camera_center_xyzr'
     if 'obs_type' not in config:
       config['obs_type'] = 'pixel'
+    if 'view_scale' not in config:
+      config['view_scale'] = 1
     self.view_type = config['view_type']
     self.obs_type = config['obs_type']
     assert self.view_type in ['render_center', 'render_center_height', 'render_fix', 'camera_center_xyzr', 'camera_center_xyr',
@@ -26,6 +28,7 @@ class CloseLoopEnv(PyBulletEnv):
                               'camera_center_xyr_height', 'camera_center_xyz_height', 'camera_center_xy_height',
                               'camera_fix_height', 'camera_center_z', 'camera_center_z_height',
                               'pers_center_xyz']
+    self.view_scale = config['view_scale']
     self.robot_type = config['robot']
     if config['robot'] == 'kuka':
       self.robot.home_positions = [-0.4446, 0.0837, -2.6123, 1.8883, -0.0457, -1.1810, 0.0699, 0., 0., 0., 0., 0., 0., 0., 0.]
@@ -36,7 +39,7 @@ class CloseLoopEnv(PyBulletEnv):
 
     self.renderer = None
     self.pers_sensor = None
-    self.obs_size_m = self.workspace_size
+    self.obs_size_m = self.workspace_size * self.view_scale
     self.initSensor()
 
     self.simulate_z_threshold = self.workspace[2][0] + 0.07

@@ -12,9 +12,6 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
     super().__init__(config)
     self.goal_pos = self.workspace.mean(1)[:2]
     self.goal_id = None
-    self.obs_size_m = self.workspace_size * 1.5
-    self.heightmap_resolution = self.obs_size_m / self.heightmap_size
-    self.initSensor()
     # self.goal_grid_size_half = 10
     # self.goal_size = self.goal_grid_size_half*2 * self.heightmap_resolution
     self.goal_size = 0.09
