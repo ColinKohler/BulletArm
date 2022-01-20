@@ -5,19 +5,28 @@
 
 HelpingHands RL Envs
 ============================================
-
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+
+This package contains various simulated robotics environments used for research in the 
+Helping Hands lab. The majority of these environments entail a robotic arm armed with a
+paralel jaw gripper executing a series of manipulation based tasks. For a full list of 
+the tasks currently implemented see below. The physics simulator used is PyBullet.
 
 Env Factory
 ============================================
 .. automodule:: helping_hands_rl_envs.env_factory
    :members:
 
-Env Runner
+Single Env Runner
 ============================================
-.. automodule:: helping_hands_rl_envs.runner
+.. autoclass:: helping_hands_rl_envs.runner.SingleRunner
+   :members:
+
+Multi Env Runner
+============================================
+.. autoclass:: helping_hands_rl_envs.runner.MultiRunner
    :members:
 
 Base Env

@@ -41,6 +41,10 @@
 <h1>HelpingHands RL Envs<a class="headerlink" href="#helpinghands-rl-envs" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
+<p>This package contains various simulated robotics environments used for research in the
+Helping Hands lab. The majority of these environments entail a robotic arm armed with a
+paralel jaw gripper executing a series of manipulation based tasks. For a full list of
+the tasks currently implemented see below. The physics simulator used is PyBullet.</p>
 </section>
 <section id="module-helping_hands_rl_envs.env_factory">
 <span id="env-factory"></span><h1>Env Factory<a class="headerlink" href="#module-helping_hands_rl_envs.env_factory" title="Permalink to this headline">¶</a></h1>
@@ -128,209 +132,20 @@ number of envs each in their own seperate process.</p>
 </dd></dl>
 
 </section>
-<section id="module-helping_hands_rl_envs.runner">
-<span id="env-runner"></span><h1>Env Runner<a class="headerlink" href="#module-helping_hands_rl_envs.runner" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helping_hands_rl_envs.runner.</span></span><span class="sig-name descname"><span class="pre">MultiRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_fns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planner_fns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner" title="Permalink to this definition">¶</a></dt>
-<dd><p>Runner which runs mulitple environemnts in parallel in subprocesses and communicates with them via pipe.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>env_fns</strong> (<em>list</em><em>[</em><em>function</em><em>]</em>) – Env creation functions</p></li>
-<li><p><strong>planner_fns</strong> (<em>list</em><em>[</em><em>function</em><em>]</em>) – Planner creation functions</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.areObjectsInWorkspace">
-<span class="sig-name descname"><span class="pre">areObjectsInWorkspace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.areObjectsInWorkspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.areObjectsInWorkspace" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.close">
-<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.close" title="Permalink to this definition">¶</a></dt>
-<dd><p>Close all worker processes</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.didBlockFall">
-<span class="sig-name descname"><span class="pre">didBlockFall</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.didBlockFall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.didBlockFall" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getActiveEnvId">
-<span class="sig-name descname"><span class="pre">getActiveEnvId</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getActiveEnvId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getActiveEnvId" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getEmptyInHand">
-<span class="sig-name descname"><span class="pre">getEmptyInHand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getEmptyInHand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getEmptyInHand" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getEnvGitHash">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">getEnvGitHash</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getEnvGitHash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getEnvGitHash" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getNextAction">
-<span class="sig-name descname"><span class="pre">getNextAction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getNextAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getNextAction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the next action from the planner for each environment</p>
-<p>Returns: Numpy vector of the actions</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getObjectPoses">
-<span class="sig-name descname"><span class="pre">getObjectPoses</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getObjectPoses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getObjectPoses" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getObjectPositions">
-<span class="sig-name descname"><span class="pre">getObjectPositions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getObjectPositions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getObjectPositions" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getObs">
-<span class="sig-name descname"><span class="pre">getObs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getObs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getObs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getRandomAction">
-<span class="sig-name descname"><span class="pre">getRandomAction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getRandomAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getRandomAction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a random action for each environment</p>
-<p>Returns: Numpy vector of the actions</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getStepsLeft">
-<span class="sig-name descname"><span class="pre">getStepsLeft</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getStepsLeft"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getStepsLeft" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getValue">
-<span class="sig-name descname"><span class="pre">getValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getValue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getValue" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.isSimValid">
-<span class="sig-name descname"><span class="pre">isSimValid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.isSimValid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.isSimValid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.loadFromFile">
-<span class="sig-name descname"><span class="pre">loadFromFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.loadFromFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.loadFromFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads the state of the environments from a file</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> (<em>-</em>) – String denoting the path to the environment states to load</p>
-</dd>
-</dl>
-<p>Returns:</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.reset">
-<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.reset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reset each environment</p>
-<p>Returns: Numpy vector of observations</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.reset_envs">
-<span class="sig-name descname"><span class="pre">reset_envs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_nums</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.reset_envs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.reset_envs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Resets the specified environments</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>env_nums</strong> (<em>-</em>) – The ids of the environments to be reset</p>
-</dd>
-</dl>
-<p>Returns: Numpy vector of observations</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.restore">
-<span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.restore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.restore" title="Permalink to this definition">¶</a></dt>
-<dd><p>Restores the saved stated of the environments</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Saves the current state of the environments to file</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.saveToFile">
-<span class="sig-name descname"><span class="pre">saveToFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.saveToFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.saveToFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Saves the current state of the environments to file</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> (<em>-</em>) – String denoting the path to save the enviornment states to</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.setPosCandidate">
-<span class="sig-name descname"><span class="pre">setPosCandidate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_candidate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.setPosCandidate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.setPosCandidate" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.step">
-<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.step" title="Permalink to this definition">¶</a></dt>
-<dd><p>Step the environments synchronously.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>actions</strong> (<em>numpy.array</em>) – Actions to take in each environment</p></li>
-<li><p><strong>auto_reset</strong> (<em>bool</em>) – Reset environments automatically after an episode ends</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>(observations, rewards, done flags)</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(numpy.array, numpy.array, numpy.array)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.stepAsync">
-<span class="sig-name descname"><span class="pre">stepAsync</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.stepAsync"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.stepAsync" title="Permalink to this definition">¶</a></dt>
-<dd><p>Step each environment in a async fashion</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>actions</strong> (<em>-</em>) – Numpy variable of environment actions</p></li>
-<li><p><strong>auto_reset</strong> (<em>-</em>) – Should the environment reset automatically after an episode completes</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.stepWait">
-<span class="sig-name descname"><span class="pre">stepWait</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.stepWait"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.stepWait" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wait until each environment has completed its next step</p>
-<dl class="simple">
-<dt>Returns: (obs, rewards, dones)</dt><dd><ul class="simple">
-<li><p>obs: Numpy vector of observations</p></li>
-<li><p>rewards: Numpy vector of rewards</p></li>
-<li><p>dones: Numpy vector of 0/1 flags indicating if episode is done</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<section id="single-env-runner">
+<h1>Single Env Runner<a class="headerlink" href="#single-env-runner" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helping_hands_rl_envs.runner.</span></span><span class="sig-name descname"><span class="pre">SingleRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner" title="Permalink to this definition">¶</a></dt>
-<dd><p>RL environment runner which runs a single environment</p>
-<p>Args:</p>
+<dd><p>RL environment runner which runs a single environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env</strong> (<a class="reference internal" href="#helping_hands_rl_envs.envs.base_env.BaseEnv" title="helping_hands_rl_envs.envs.base_env.BaseEnv"><em>BaseEnv</em></a>) – Environment</p></li>
+<li><p><strong>planner</strong> (<a class="reference internal" href="helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner" title="helping_hands_rl_envs.planners.base_planner.BasePlanner"><em>BasePlanner</em></a>) – Planner</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.areObjectsInWorkspace">
 <span class="sig-name descname"><span class="pre">areObjectsInWorkspace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.areObjectsInWorkspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.areObjectsInWorkspace" title="Permalink to this definition">¶</a></dt>
@@ -394,29 +209,56 @@ number of envs each in their own seperate process.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.loadFromFile">
 <span class="sig-name descname"><span class="pre">loadFromFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.loadFromFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.loadFromFile" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Loads the state of the environment from a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – The path to the environment state to load</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Flag indicating if the loading succeeded</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.reset">
 <span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.reset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reset the environment</p>
-<p>Returns: Numpy vector of observations</p>
+<dd><p>Reset the environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Observation</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.array</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.restore">
 <span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.restore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.restore" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Restores the locally saved state of the environment.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.save">
 <span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.save" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Locally saves the current state of the environment.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.saveToFile">
 <span class="sig-name descname"><span class="pre">saveToFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.saveToFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.saveToFile" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Saves the current state of the environment to file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – The path to save the enviornment state to</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.setPosCandidate">
@@ -426,31 +268,262 @@ number of envs each in their own seperate process.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.step">
 <span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.step" title="Permalink to this definition">¶</a></dt>
-<dd><p>Step the environment</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>action</strong> (<em>-</em>) – Numpy variable of environment action</p>
-</dd>
-</dl>
-<p>Returns:</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.worker">
-<span class="sig-prename descclassname"><span class="pre">helping_hands_rl_envs.runner.</span></span><span class="sig-name descname"><span class="pre">worker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_remote</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planner_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#worker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.worker" title="Permalink to this definition">¶</a></dt>
-<dd><p>Worker function which interacts with the environment over the remove connection</p>
+<dd><p>Step the environment.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>remote</strong> (<em>multiprocessing.Connection</em>) – Worker remote connection</p></li>
-<li><p><strong>parent_remote</strong> (<em>multiprocessing.Connection</em>) – MultiRunner remote connection</p></li>
-<li><p><strong>env_fn</strong> (<em>function</em>) – Creates a environment</p></li>
-<li><p><strong>planner_fn</strong> (<em>function</em>) – Creates the planner for the environment</p></li>
+<li><p><strong>action</strong> (<em>numpy.array</em>) – Action to take in the environment</p></li>
+<li><p><strong>auto_reset</strong> (<em>bool</em>) – Reset the environment after an episode ends</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(observations, rewards, done flags)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(numpy.array, numpy.array, numpy.array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="multi-env-runner">
+<h1>Multi Env Runner<a class="headerlink" href="#multi-env-runner" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helping_hands_rl_envs.runner.</span></span><span class="sig-name descname"><span class="pre">MultiRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_fns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planner_fns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runner which runs mulitple environemnts in parallel in subprocesses and communicates with them via pipe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env_fns</strong> (<em>list</em><em>[</em><em>function</em><em>]</em>) – Env creation functions</p></li>
+<li><p><strong>planner_fns</strong> (<em>list</em><em>[</em><em>function</em><em>]</em>) – Planner creation functions</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.areObjectsInWorkspace">
+<span class="sig-name descname"><span class="pre">areObjectsInWorkspace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.areObjectsInWorkspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.areObjectsInWorkspace" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close all worker processes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.didBlockFall">
+<span class="sig-name descname"><span class="pre">didBlockFall</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.didBlockFall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.didBlockFall" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getActiveEnvId">
+<span class="sig-name descname"><span class="pre">getActiveEnvId</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getActiveEnvId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getActiveEnvId" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getEmptyInHand">
+<span class="sig-name descname"><span class="pre">getEmptyInHand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getEmptyInHand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getEmptyInHand" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getEnvGitHash">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">getEnvGitHash</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getEnvGitHash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getEnvGitHash" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getNextAction">
+<span class="sig-name descname"><span class="pre">getNextAction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getNextAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getNextAction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the next action from the planner for each environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Actions</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getObjectPoses">
+<span class="sig-name descname"><span class="pre">getObjectPoses</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getObjectPoses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getObjectPoses" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getObjectPositions">
+<span class="sig-name descname"><span class="pre">getObjectPositions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getObjectPositions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getObjectPositions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getObs">
+<span class="sig-name descname"><span class="pre">getObs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getObs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getObs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current observation for the environments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>(hand state, in-hand observation, workspace observation)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>(numpy.array, numpy.array, numpy.array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getRandomAction">
+<span class="sig-name descname"><span class="pre">getRandomAction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getRandomAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getRandomAction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a random action for each environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Actions</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getStepsLeft">
+<span class="sig-name descname"><span class="pre">getStepsLeft</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getStepsLeft"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getStepsLeft" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getValue">
+<span class="sig-name descname"><span class="pre">getValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getValue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getValue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.isSimValid">
+<span class="sig-name descname"><span class="pre">isSimValid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.isSimValid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.isSimValid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.loadFromFile">
+<span class="sig-name descname"><span class="pre">loadFromFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.loadFromFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.loadFromFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads the state of the environments from a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – The path to the environment states to load</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Flag indicating if the loading succeeded for all environments</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset each environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Observations</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.reset_envs">
+<span class="sig-name descname"><span class="pre">reset_envs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_nums</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.reset_envs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.reset_envs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets the specified environments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>env_nums</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – The environments to be reset</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Observations</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.restore">
+<span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.restore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.restore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restores the locally saved state of the environments.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Locally saves the current state of the environments.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.saveToFile">
+<span class="sig-name descname"><span class="pre">saveToFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.saveToFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.saveToFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the current state of the environments to file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – The path to save the enviornment states to</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.setPosCandidate">
+<span class="sig-name descname"><span class="pre">setPosCandidate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_candidate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.setPosCandidate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.setPosCandidate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Step the environments synchronously.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>actions</strong> (<em>numpy.array</em>) – Actions to take in each environment</p></li>
+<li><p><strong>auto_reset</strong> (<em>bool</em>) – Reset environments automatically after an episode ends</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(observations, rewards, done flags)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(numpy.array, numpy.array, numpy.array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.stepAsync">
+<span class="sig-name descname"><span class="pre">stepAsync</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.stepAsync"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.stepAsync" title="Permalink to this definition">¶</a></dt>
+<dd><p>Step each environment in a async fashion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>actions</strong> (<em>numpy.array</em>) – Actions to take in each environment</p></li>
+<li><p><strong>auto_reset</strong> (<em>bool</em>) – Reset environments automatically after an episode ends</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.stepWait">
+<span class="sig-name descname"><span class="pre">stepWait</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.stepWait"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.stepWait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait until each environment has completed its next step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>(observations, rewards, done flags)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>(numpy.array, numpy.array, numpy.array)</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -530,7 +603,8 @@ number of envs each in their own seperate process.</p>
     <ul>
 <li><a class="reference internal" href="#">HelpingHands RL Envs</a></li>
 <li><a class="reference internal" href="#module-helping_hands_rl_envs.env_factory">Env Factory</a></li>
-<li><a class="reference internal" href="#module-helping_hands_rl_envs.runner">Env Runner</a></li>
+<li><a class="reference internal" href="#single-env-runner">Single Env Runner</a></li>
+<li><a class="reference internal" href="#multi-env-runner">Multi Env Runner</a></li>
 <li><a class="reference internal" href="#module-helping_hands_rl_envs.envs.base_env">Base Env</a></li>
 <li><a class="reference internal" href="#module-baselines.rs">Baselines API</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>

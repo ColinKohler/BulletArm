@@ -43,10 +43,7 @@ def worker(remote, parent_remote, env_fn, planner_fn=None):
         obs = env.reset()
         remote.send(obs)
       elif cmd == 'get_obs':
-        action = data
-        if action is None:
-          action = env.last_action
-        obs = env._getObservation(action)
+        obs = env._getObservation(env.last_action)
         remote.send(obs)
       elif cmd == 'get_spaces':
         remote.send((env.obs_shape, env.action_space, env.action_shape))
@@ -156,11 +153,11 @@ class MultiRunner(object):
 
   def stepAsync(self, actions, auto_reset=False):
     '''
-    Step each environment in a async fashion
+    Step each environment in a async fashion.
 
     Args:
-      - actions: Numpy variable of environment actions
-      - auto_reset: Should the environment reset automatically after an episode completes
+      actions (numpy.array): Actions to take in each environment
+      auto_reset (bool): Reset environments automatically after an episode ends
     '''
     for remote, action in zip(self.remotes, actions):
       if auto_reset:
@@ -171,12 +168,10 @@ class MultiRunner(object):
 
   def stepWait(self):
     '''
-    Wait until each environment has completed its next step
+    Wait until each environment has completed its next step.
 
-    Returns: (obs, rewards, dones)
-      - obs: Numpy vector of observations
-      - rewards: Numpy vector of rewards
-      - dones: Numpy vector of 0/1 flags indicating if episode is done
+    Returns:
+      (numpy.array, numpy.array, numpy.array): (observations, rewards, done flags)
     '''
     results = [remote.recv() for remote in self.remotes]
     self.waiting = False
@@ -204,9 +199,10 @@ class MultiRunner(object):
 
   def reset(self):
     '''
-    Reset each environment
+    Reset each environment.
 
-    Returns: Numpy vector of observations
+    Returns:
+      numpy.array: Observations
     '''
     for remote in self.remotes:
       remote.send(('reset', None))
@@ -222,12 +218,13 @@ class MultiRunner(object):
 
   def reset_envs(self, env_nums):
     '''
-    Resets the specified environments
+    Resets the specified environments.
 
     Args:
-      - env_nums: The ids of the environments to be reset
+      env_nums (list[int]): The environments to be reset
 
-    Returns: Numpy vector of observations
+    Returns:
+      numpy.array: Observations
     '''
 
     for env_num in env_nums:
@@ -244,7 +241,6 @@ class MultiRunner(object):
 
   def getActiveEnvId(self):
     '''
-
     '''
     for remote in self.remotes:
       remote.send(('get_active_env_id', None))
@@ -255,7 +251,7 @@ class MultiRunner(object):
 
   def close(self):
     '''
-    Close all worker processes
+    Close all worker processes.
     '''
     self.closed = True
     if self.waiting:
@@ -265,24 +261,24 @@ class MultiRunner(object):
 
   def save(self):
     '''
-    Saves the current state of the environments to file
+    Locally saves the current state of the environments.
     '''
     for remote in self.remotes:
       remote.send(('save', None))
 
   def restore(self):
     '''
-    Restores the saved stated of the environments
+    Restores the locally saved state of the environments.
     '''
     for remote in self.remotes:
       remote.send(('restore', None))
 
   def saveToFile(self, path):
     '''
-    Saves the current state of the environments to file
+    Saves the current state of the environments to file.
 
     Args:
-      - path: String denoting the path to save the enviornment states to
+      path (str): The path to save the enviornment states to
     '''
     for i, remote in enumerate(self.remotes):
       p = os.path.join(path, str(i))
@@ -292,12 +288,13 @@ class MultiRunner(object):
 
   def loadFromFile(self, path):
     '''
-    Loads the state of the environments from a file
+    Loads the state of the environments from a file.
 
     Args:
-      - path: String denoting the path to the environment states to load
+      path (str): The path to the environment states to load
 
     Returns:
+      bool: Flag indicating if the loading succeeded for all environments
     '''
     for i, remote in enumerate(self.remotes):
       remote.send(('load_from_file', os.path.join(path, str(i))))
@@ -325,9 +322,10 @@ class MultiRunner(object):
 
   def getNextAction(self):
     '''
-    Get the next action from the planner for each environment
+    Get the next action from the planner for each environment.
 
-    Returns: Numpy vector of the actions
+    Returns:
+      numpy.array: Actions
     '''
     for remote in self.remotes:
       remote.send(('get_next_action', None))
@@ -337,9 +335,10 @@ class MultiRunner(object):
 
   def getRandomAction(self):
     '''
-    Get a random action for each environment
+    Get a random action for each environment.
 
-    Returns: Numpy vector of the actions
+    Returns:
+      numpy.array: Actions
     '''
     for remote in self.remotes:
       remote.send(('get_random_action', None))
@@ -367,12 +366,15 @@ class MultiRunner(object):
     values = np.stack(values)
     return values
 
-  def getObs(self, action=None):
+  def getObs(self):
     '''
+    Get the current observation for the environments.
 
+    Returns:
+      (numpy.array, numpy.array, numpy.array): (hand state, in-hand observation, workspace observation)
     '''
     for remote in self.remotes:
-      remote.send(('get_obs', action))
+      remote.send(('get_obs'))
 
     obs = [remote.recv() for remote in self.remotes]
     states, hand_obs, obs = zip(*obs)
@@ -440,9 +442,11 @@ class MultiRunner(object):
 
 class SingleRunner(object):
   '''
-  RL environment runner which runs a single environment
+  RL environment runner which runs a single environment.
 
   Args:
+    env (BaseEnv): Environment
+    planner (BasePlanner): Planner
   '''
   def __init__(self, env, planner=None):
     self.env = env
@@ -450,12 +454,14 @@ class SingleRunner(object):
 
   def step(self, action, auto_reset=True):
     '''
-    Step the environment
+    Step the environment.
 
     Args:
-      - action: Numpy variable of environment action
+      action (numpy.array): Action to take in the environment
+      auto_reset (bool): Reset the environment after an episode ends
 
     Returns:
+      (numpy.array, numpy.array, numpy.array): (observations, rewards, done flags)
     '''
     results = self.env.step(action)
 
@@ -473,33 +479,43 @@ class SingleRunner(object):
 
   def reset(self):
     '''
-    Reset the environment
+    Reset the environment.
 
-    Returns: Numpy vector of observations
+    Returns:
+      numpy.array: Observation
     '''
     return self.env.reset()
 
   def save(self):
     '''
-
+    Locally saves the current state of the environment.
     '''
     self.env.save()
 
   def restore(self):
     '''
-
+    Restores the locally saved state of the environment.
     '''
     self.env.restore()
 
   def saveToFile(self, path):
     '''
+    Saves the current state of the environment to file.
 
+    Args:
+      path (str): The path to save the enviornment state to
     '''
     self.env.saveToFile(path)
 
   def loadFromFile(self, path):
     '''
+    Loads the state of the environment from a file.
 
+    Args:
+      path (str): The path to the environment state to load
+
+    Returns:
+      bool: Flag indicating if the loading succeeded
     '''
     return self.env.loadFromFile(path)
 

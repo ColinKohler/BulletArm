@@ -83,10 +83,7 @@
         <span class="n">obs</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
         <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
       <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;get_obs&#39;</span><span class="p">:</span>
-        <span class="n">action</span> <span class="o">=</span> <span class="n">data</span>
-        <span class="k">if</span> <span class="n">action</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-          <span class="n">action</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">last_action</span>
-        <span class="n">obs</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">_getObservation</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+        <span class="n">obs</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">_getObservation</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">last_action</span><span class="p">)</span>
         <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
       <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;get_spaces&#39;</span><span class="p">:</span>
         <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="n">env</span><span class="o">.</span><span class="n">obs_shape</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">action_shape</span><span class="p">))</span>
@@ -196,11 +193,11 @@
 
 <div class="viewcode-block" id="MultiRunner.stepAsync"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.MultiRunner.stepAsync">[docs]</a>  <span class="k">def</span> <span class="nf">stepAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">auto_reset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Step each environment in a async fashion</span>
+<span class="sd">    Step each environment in a async fashion.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">      - actions: Numpy variable of environment actions</span>
-<span class="sd">      - auto_reset: Should the environment reset automatically after an episode completes</span>
+<span class="sd">      actions (numpy.array): Actions to take in each environment</span>
+<span class="sd">      auto_reset (bool): Reset environments automatically after an episode ends</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">for</span> <span class="n">remote</span><span class="p">,</span> <span class="n">action</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
       <span class="k">if</span> <span class="n">auto_reset</span><span class="p">:</span>
@@ -211,12 +208,10 @@
 
 <div class="viewcode-block" id="MultiRunner.stepWait"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.MultiRunner.stepWait">[docs]</a>  <span class="k">def</span> <span class="nf">stepWait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Wait until each environment has completed its next step</span>
+<span class="sd">    Wait until each environment has completed its next step.</span>
 
-<span class="sd">    Returns: (obs, rewards, dones)</span>
-<span class="sd">      - obs: Numpy vector of observations</span>
-<span class="sd">      - rewards: Numpy vector of rewards</span>
-<span class="sd">      - dones: Numpy vector of 0/1 flags indicating if episode is done</span>
+<span class="sd">    Returns:</span>
+<span class="sd">      (numpy.array, numpy.array, numpy.array): (observations, rewards, done flags)</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">waiting</span> <span class="o">=</span> <span class="kc">False</span>
@@ -244,9 +239,10 @@
 
 <div class="viewcode-block" id="MultiRunner.reset"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.MultiRunner.reset">[docs]</a>  <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Reset each environment</span>
+<span class="sd">    Reset each environment.</span>
 
-<span class="sd">    Returns: Numpy vector of observations</span>
+<span class="sd">    Returns:</span>
+<span class="sd">      numpy.array: Observations</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
       <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;reset&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
@@ -262,12 +258,13 @@
 
 <div class="viewcode-block" id="MultiRunner.reset_envs"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.MultiRunner.reset_envs">[docs]</a>  <span class="k">def</span> <span class="nf">reset_envs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env_nums</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Resets the specified environments</span>
+<span class="sd">    Resets the specified environments.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">      - env_nums: The ids of the environments to be reset</span>
+<span class="sd">      env_nums (list[int]): The environments to be reset</span>
 
-<span class="sd">    Returns: Numpy vector of observations</span>
+<span class="sd">    Returns:</span>
+<span class="sd">      numpy.array: Observations</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
     <span class="k">for</span> <span class="n">env_num</span> <span class="ow">in</span> <span class="n">env_nums</span><span class="p">:</span>
@@ -284,7 +281,6 @@
 
 <div class="viewcode-block" id="MultiRunner.getActiveEnvId"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.MultiRunner.getActiveEnvId">[docs]</a>  <span class="k">def</span> <span class="nf">getActiveEnvId</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
       <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;get_active_env_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
@@ -295,7 +291,7 @@
 
 <div class="viewcode-block" id="MultiRunner.close"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.MultiRunner.close">[docs]</a>  <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Close all worker processes</span>
+<span class="sd">    Close all worker processes.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">closed</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">waiting</span><span class="p">:</span>
@@ -305,24 +301,24 @@
 
 <div class="viewcode-block" id="MultiRunner.save"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.MultiRunner.save">[docs]</a>  <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Saves the current state of the environments to file</span>
+<span class="sd">    Locally saves the current state of the environments.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
       <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;save&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="MultiRunner.restore"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.MultiRunner.restore">[docs]</a>  <span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Restores the saved stated of the environments</span>
+<span class="sd">    Restores the locally saved state of the environments.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
       <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;restore&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="MultiRunner.saveToFile"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.MultiRunner.saveToFile">[docs]</a>  <span class="k">def</span> <span class="nf">saveToFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Saves the current state of the environments to file</span>
+<span class="sd">    Saves the current state of the environments to file.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">      - path: String denoting the path to save the enviornment states to</span>
+<span class="sd">      path (str): The path to save the enviornment states to</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">remote</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">):</span>
       <span class="n">p</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
@@ -332,12 +328,13 @@
 
 <div class="viewcode-block" id="MultiRunner.loadFromFile"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.MultiRunner.loadFromFile">[docs]</a>  <span class="k">def</span> <span class="nf">loadFromFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Loads the state of the environments from a file</span>
+<span class="sd">    Loads the state of the environments from a file.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">      - path: String denoting the path to the environment states to load</span>
+<span class="sd">      path (str): The path to the environment states to load</span>
 
 <span class="sd">    Returns:</span>
+<span class="sd">      bool: Flag indicating if the loading succeeded for all environments</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">remote</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">):</span>
       <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;load_from_file&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))))</span>
@@ -365,9 +362,10 @@
 
 <div class="viewcode-block" id="MultiRunner.getNextAction"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.MultiRunner.getNextAction">[docs]</a>  <span class="k">def</span> <span class="nf">getNextAction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Get the next action from the planner for each environment</span>
+<span class="sd">    Get the next action from the planner for each environment.</span>
 
-<span class="sd">    Returns: Numpy vector of the actions</span>
+<span class="sd">    Returns:</span>
+<span class="sd">      numpy.array: Actions</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
       <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;get_next_action&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
@@ -377,9 +375,10 @@
 
 <div class="viewcode-block" id="MultiRunner.getRandomAction"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.MultiRunner.getRandomAction">[docs]</a>  <span class="k">def</span> <span class="nf">getRandomAction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Get a random action for each environment</span>
+<span class="sd">    Get a random action for each environment.</span>
 
-<span class="sd">    Returns: Numpy vector of the actions</span>
+<span class="sd">    Returns:</span>
+<span class="sd">      numpy.array: Actions</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
       <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;get_random_action&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
@@ -407,12 +406,15 @@
     <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">values</span></div>
 
-<div class="viewcode-block" id="MultiRunner.getObs"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.MultiRunner.getObs">[docs]</a>  <span class="k">def</span> <span class="nf">getObs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="MultiRunner.getObs"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.MultiRunner.getObs">[docs]</a>  <span class="k">def</span> <span class="nf">getObs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get the current observation for the environments.</span>
 
+<span class="sd">    Returns:</span>
+<span class="sd">      (numpy.array, numpy.array, numpy.array): (hand state, in-hand observation, workspace observation)</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
-      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;get_obs&#39;</span><span class="p">,</span> <span class="n">action</span><span class="p">))</span>
+      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;get_obs&#39;</span><span class="p">))</span>
 
     <span class="n">obs</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">]</span>
     <span class="n">states</span><span class="p">,</span> <span class="n">hand_obs</span><span class="p">,</span> <span class="n">obs</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">obs</span><span class="p">)</span>
@@ -480,9 +482,11 @@
 
 <div class="viewcode-block" id="SingleRunner"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.SingleRunner">[docs]</a><span class="k">class</span> <span class="nc">SingleRunner</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
   <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">  RL environment runner which runs a single environment</span>
+<span class="sd">  RL environment runner which runs a single environment.</span>
 
 <span class="sd">  Args:</span>
+<span class="sd">    env (BaseEnv): Environment</span>
+<span class="sd">    planner (BasePlanner): Planner</span>
 <span class="sd">  &#39;&#39;&#39;</span>
   <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">planner</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">env</span> <span class="o">=</span> <span class="n">env</span>
@@ -490,12 +494,14 @@
 
 <div class="viewcode-block" id="SingleRunner.step"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.SingleRunner.step">[docs]</a>  <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">auto_reset</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Step the environment</span>
+<span class="sd">    Step the environment.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">      - action: Numpy variable of environment action</span>
+<span class="sd">      action (numpy.array): Action to take in the environment</span>
+<span class="sd">      auto_reset (bool): Reset the environment after an episode ends</span>
 
 <span class="sd">    Returns:</span>
+<span class="sd">      (numpy.array, numpy.array, numpy.array): (observations, rewards, done flags)</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
 
@@ -513,33 +519,43 @@
 
 <div class="viewcode-block" id="SingleRunner.reset"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.SingleRunner.reset">[docs]</a>  <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Reset the environment</span>
+<span class="sd">    Reset the environment.</span>
 
-<span class="sd">    Returns: Numpy vector of observations</span>
+<span class="sd">    Returns:</span>
+<span class="sd">      numpy.array: Observation</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SingleRunner.save"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.SingleRunner.save">[docs]</a>  <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-
+<span class="sd">    Locally saves the current state of the environment.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SingleRunner.restore"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.SingleRunner.restore">[docs]</a>  <span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-
+<span class="sd">    Restores the locally saved state of the environment.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">restore</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SingleRunner.saveToFile"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.SingleRunner.saveToFile">[docs]</a>  <span class="k">def</span> <span class="nf">saveToFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Saves the current state of the environment to file.</span>
 
+<span class="sd">    Args:</span>
+<span class="sd">      path (str): The path to save the enviornment state to</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">saveToFile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SingleRunner.loadFromFile"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.SingleRunner.loadFromFile">[docs]</a>  <span class="k">def</span> <span class="nf">loadFromFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Loads the state of the environment from a file.</span>
 
+<span class="sd">    Args:</span>
+<span class="sd">      path (str): The path to the environment state to load</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      bool: Flag indicating if the loading succeeded</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">loadFromFile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
 
