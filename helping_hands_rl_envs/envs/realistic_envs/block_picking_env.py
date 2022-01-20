@@ -1,9 +1,9 @@
 from copy import deepcopy
 import numpy as np
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.base_env import BaseEnv
 from helping_hands_rl_envs.simulators import constants
 
-class BlockPickingEnv(PyBulletEnv):
+class BlockPickingEnv(BaseEnv):
   '''
   '''
   def __init__(self, config):

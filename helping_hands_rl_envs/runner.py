@@ -1,7 +1,5 @@
-''' Env Factory API
-
+'''
 .. moduleauthor: Colin Kohler <github.com/ColinKohler>
-
 '''
 
 import numpy as np
@@ -12,13 +10,13 @@ import helping_hands_rl_envs
 
 def worker(remote, parent_remote, env_fn, planner_fn=None):
   '''
-  Worker function which interacts with the environment over remote
+  Worker function which interacts with the environment over the remove connection
 
   Args:
-    - remote: Worker remote connection
-    - parent_remote: MultiRunner remote connection
-    - env_fn: Function which creates a deictic environment
-    - planner_fn: Function which creates the planner for the environment
+    remote (multiprocessing.Connection): Worker remote connection
+    parent_remote (multiprocessing.Connection): MultiRunner remote connection
+    env_fn (function): Creates a environment
+    planner_fn (function): Creates the planner for the environment
   '''
   parent_remote.close()
 
@@ -120,12 +118,11 @@ def worker(remote, parent_remote, env_fn, planner_fn=None):
 
 class MultiRunner(object):
   '''
-  Runner which runs mulitple environemnts in parallel in subprocesses
-  and communicates with them via pipe.
+  Runner which runs mulitple environemnts in parallel in subprocesses and communicates with them via pipe.
 
   Args:
-    - env_fns: Env creation function wrapped so it can be created within subprocess
-    - planner_fns: Planner creation function wrapped so it can be created within subprocess
+    env_fns (list[function]): Env creation functions
+    planner_fns (list[function]): Planner creation functions
   '''
   def __init__(self, env_fns, planner_fns):
     self.waiting = False
@@ -148,13 +145,11 @@ class MultiRunner(object):
     Step the environments synchronously.
 
     Args:
-      - actions: Numpy variable of environment actions
-      - auto_reset: Should the environment reset automatically after an episode completes
+      actions (numpy.array): Actions to take in each environment
+      auto_reset (bool): Reset environments automatically after an episode ends
 
-    Returns: (obs, rewards, dones)
-      - obs: Numpy vector of observations
-      - rewards: Numpy vector of rewards
-      - dones: Numpy vector of 0/1 flags indicating if episode is done
+    Returns:
+      (numpy.array, numpy.array, numpy.array): (observations, rewards, done flags)
     '''
     self.stepAsync(actions, auto_reset)
     return self.stepWait()

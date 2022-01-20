@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>helping_hands_rl_envs.planners.close_loop_house_building_1_planner &#8212; HelpingHandsEnvs 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for helping_hands_rl_envs.planners.close_loop_house_building_1_planner</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.simulators</span> <span class="kn">import</span> <span class="n">constants</span>
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.planners.close_loop_planner</span> <span class="kn">import</span> <span class="n">CloseLoopPlanner</span>
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.simulators.pybullet.utils</span> <span class="kn">import</span> <span class="n">transformations</span>
+
+<div class="viewcode-block" id="CloseLoopHouseBuilding1Planner"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.close_loop_house_building_1_planner.CloseLoopHouseBuilding1Planner">[docs]</a><span class="k">class</span> <span class="nc">CloseLoopHouseBuilding1Planner</span><span class="p">(</span><span class="n">CloseLoopPlanner</span><span class="p">):</span>
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">pick_place_stage</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">current_target</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">previous_target</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">target_obj</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="CloseLoopHouseBuilding1Planner.getNextActionToCurrentTarget"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.close_loop_house_building_1_planner.CloseLoopHouseBuilding1Planner.getNextActionToCurrentTarget">[docs]</a>  <span class="k">def</span> <span class="nf">getNextActionToCurrentTarget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getActionByGoalPose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_target</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_target</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">dpos</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">drot</span><span class="p">:</span>
+      <span class="n">primitive</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">PICK_PRIMATIVE</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_target</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">is</span> <span class="n">constants</span><span class="o">.</span><span class="n">PICK_PRIMATIVE</span> <span class="k">else</span> <span class="n">constants</span><span class="o">.</span><span class="n">PLACE_PRIMATIVE</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">previous_target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_target</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">current_target</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">primitive</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">PICK_PRIMATIVE</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isHolding</span><span class="p">()</span> <span class="k">else</span> <span class="n">constants</span><span class="o">.</span><span class="n">PLACE_PRIMATIVE</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">_encodeAction</span><span class="p">(</span><span class="n">primitive</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CloseLoopHouseBuilding1Planner.setNewTarget"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.close_loop_house_building_1_planner.CloseLoopHouseBuilding1Planner.setNewTarget">[docs]</a>  <span class="k">def</span> <span class="nf">setNewTarget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">blocks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">object_type_id</span> <span class="ow">is</span> <span class="n">constants</span><span class="o">.</span><span class="n">CUBE</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isObjectHeld</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">isObjOnTop</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">objects</span><span class="p">)))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">blocks</span><span class="p">:</span>
+      <span class="n">blocks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">object_type_id</span> <span class="ow">is</span> <span class="n">constants</span><span class="o">.</span><span class="n">CUBE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">objects</span><span class="p">)))</span>
+    <span class="n">block_poses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">getObjectPoses</span><span class="p">(</span><span class="n">blocks</span><span class="p">)</span>
+    <span class="n">sorted_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">block_poses</span><span class="p">[:,</span><span class="mi">2</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+    <span class="n">blocks</span> <span class="o">=</span> <span class="n">blocks</span><span class="p">[</span><span class="n">sorted_inds</span><span class="p">]</span>
+
+    <span class="n">triangle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">objects</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">current_episode_steps</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">pick_place_stage</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_place_stage</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
+      <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_obj</span> <span class="o">=</span> <span class="n">blocks</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">blocks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">triangle</span>
+      <span class="n">object_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_obj</span><span class="o">.</span><span class="n">getPosition</span><span class="p">()</span>
+      <span class="n">object_rot</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">transformations</span><span class="o">.</span><span class="n">euler_from_quaternion</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_obj</span><span class="o">.</span><span class="n">getRotation</span><span class="p">()))</span>
+      <span class="n">gripper_rz</span> <span class="o">=</span> <span class="n">transformations</span><span class="o">.</span><span class="n">euler_from_quaternion</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">_getEndEffectorRotation</span><span class="p">())[</span><span class="mi">2</span><span class="p">]</span>
+      <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_obj</span><span class="o">.</span><span class="n">object_type_id</span> <span class="o">==</span> <span class="n">constants</span><span class="o">.</span><span class="n">TRIANGLE</span><span class="p">:</span>
+        <span class="k">while</span> <span class="n">object_rot</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">gripper_rz</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">:</span>
+          <span class="n">object_rot</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+        <span class="k">while</span> <span class="n">object_rot</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">gripper_rz</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">:</span>
+          <span class="n">object_rot</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+      <span class="k">else</span><span class="p">:</span>
+        <span class="k">while</span> <span class="n">object_rot</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">gripper_rz</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">:</span>
+          <span class="n">object_rot</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span>
+        <span class="k">while</span> <span class="n">object_rot</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">gripper_rz</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">:</span>
+          <span class="n">object_rot</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span>
+      <span class="n">pre_pick_pos</span> <span class="o">=</span> <span class="n">object_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">object_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">object_pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.1</span>
+      <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_place_stage</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pick_place_stage</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_target</span> <span class="o">=</span> <span class="p">(</span><span class="n">pre_pick_pos</span><span class="p">,</span> <span class="n">object_rot</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">PLACE_PRIMATIVE</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_place_stage</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pick_place_stage</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_target</span> <span class="o">=</span> <span class="p">(</span><span class="n">object_pos</span><span class="p">,</span> <span class="n">object_rot</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">PICK_PRIMATIVE</span><span class="p">)</span>
+      <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pick_place_stage</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_obj</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_target</span> <span class="o">=</span> <span class="p">(</span><span class="n">pre_pick_pos</span><span class="p">,</span> <span class="n">object_rot</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">PICK_PRIMATIVE</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_obj</span> <span class="o">=</span> <span class="n">blocks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+      <span class="n">object_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_obj</span><span class="o">.</span><span class="n">getPosition</span><span class="p">()</span>
+      <span class="n">object_rot</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">transformations</span><span class="o">.</span><span class="n">euler_from_quaternion</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_obj</span><span class="o">.</span><span class="n">getRotation</span><span class="p">()))</span>
+      <span class="n">gripper_rz</span> <span class="o">=</span> <span class="n">transformations</span><span class="o">.</span><span class="n">euler_from_quaternion</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">_getEndEffectorRotation</span><span class="p">())[</span><span class="mi">2</span><span class="p">]</span>
+      <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_obj</span><span class="o">.</span><span class="n">object_type_id</span> <span class="o">==</span> <span class="n">constants</span><span class="o">.</span><span class="n">TRIANGLE</span><span class="p">:</span>
+        <span class="k">while</span> <span class="n">object_rot</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">gripper_rz</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">:</span>
+          <span class="n">object_rot</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+        <span class="k">while</span> <span class="n">object_rot</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">gripper_rz</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">:</span>
+          <span class="n">object_rot</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+      <span class="k">else</span><span class="p">:</span>
+        <span class="k">while</span> <span class="n">object_rot</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">gripper_rz</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">4</span><span class="p">:</span>
+          <span class="n">object_rot</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="k">while</span> <span class="n">object_rot</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">gripper_rz</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">4</span><span class="p">:</span>
+          <span class="n">object_rot</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span>
+      <span class="n">pre_place_pos</span> <span class="o">=</span> <span class="n">object_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">object_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">object_pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.1</span>
+      <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_place_stage</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pick_place_stage</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_target</span> <span class="o">=</span> <span class="p">(</span><span class="n">pre_place_pos</span><span class="p">,</span> <span class="n">object_rot</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">PICK_PRIMATIVE</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_place_stage</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pick_place_stage</span> <span class="o">=</span> <span class="mi">5</span>
+        <span class="n">place_pos</span> <span class="o">=</span> <span class="n">object_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">object_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">object_pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMaxBlockSize</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1.2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_target</span> <span class="o">=</span> <span class="p">(</span><span class="n">place_pos</span><span class="p">,</span> <span class="n">object_rot</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">PLACE_PRIMATIVE</span><span class="p">)</span>
+      <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pick_place_stage</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_obj</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_target</span> <span class="o">=</span> <span class="p">(</span><span class="n">pre_place_pos</span><span class="p">,</span> <span class="n">object_rot</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">PLACE_PRIMATIVE</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CloseLoopHouseBuilding1Planner.getNextAction"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.close_loop_house_building_1_planner.CloseLoopHouseBuilding1Planner.getNextAction">[docs]</a>  <span class="k">def</span> <span class="nf">getNextAction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">current_episode_steps</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">pick_place_stage</span> <span class="o">=</span> <span class="mi">0</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">target_obj</span> <span class="o">=</span> <span class="kc">None</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">current_target</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+      <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getNextActionToCurrentTarget</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">setNewTarget</span><span class="p">()</span>
+      <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getNextActionToCurrentTarget</span><span class="p">()</span></div>
+
+
+    <span class="c1"># if not self.env._isHolding():</span>
+    <span class="c1">#   self.pre_pose_reached = False</span>
+    <span class="c1">#   block_pos = self.env.objects[0].getPosition()</span>
+    <span class="c1">#   block_rot = transformations.euler_from_quaternion(self.env.objects[0].getRotation())</span>
+    <span class="c1">#</span>
+    <span class="c1">#   x, y, z, r = self.getActionByGoalPose(block_pos, block_rot)</span>
+    <span class="c1">#</span>
+    <span class="c1">#   if np.all(np.abs([x, y, z]) &lt; self.dpos) and np.abs(r) &lt; self.drot:</span>
+    <span class="c1">#     primitive = constants.PICK_PRIMATIVE</span>
+    <span class="c1">#   else:</span>
+    <span class="c1">#     primitive = constants.PLACE_PRIMATIVE</span>
+    <span class="c1">#</span>
+    <span class="c1"># else:</span>
+    <span class="c1">#   block_pos = self.env.objects[1].getPosition()</span>
+    <span class="c1">#   block_rot = transformations.euler_from_quaternion(self.env.objects[1].getRotation())</span>
+    <span class="c1">#</span>
+    <span class="c1">#   pre_place_pos = block_pos[0], block_pos[1], 0.1</span>
+    <span class="c1">#   x, y, z, r = self.getActionByGoalPose(pre_place_pos, block_rot)</span>
+    <span class="c1">#   primitive = constants.PICK_PRIMATIVE</span>
+    <span class="c1">#   if np.all(np.abs([x, y, z]) &lt; 0.005) and np.abs(r) &lt; np.pi/12:</span>
+    <span class="c1">#     self.pre_pose_reached = True</span>
+    <span class="c1">#</span>
+    <span class="c1">#   if self.pre_pose_reached:</span>
+    <span class="c1">#     place_pos = block_pos[0], block_pos[1], block_pos[2] + self.getMaxBlockSize()</span>
+    <span class="c1">#     x, y, z, r = self.getActionByGoalPose(place_pos, block_rot)</span>
+    <span class="c1">#     if np.all(np.abs([x, y, z]) &lt; 0.005) and np.abs(r) &lt; np.pi / 12:</span>
+    <span class="c1">#       primitive = constants.PLACE_PRIMATIVE</span>
+    <span class="c1">#</span>
+    <span class="c1">#</span>
+    <span class="c1">#   # if np.all(np.abs([x, y, z]) &lt; 0.005) and np.abs(r) &lt; np.pi/12:</span>
+    <span class="c1">#   #   self.pre_pose_reached = True</span>
+    <span class="c1">#   #   place_pos = block_pos[0], block_pos[1], block_pos[2] + self.getMaxBlockSize()/2</span>
+    <span class="c1">#   #   x, y, z, r = self.getActionByGoalPose(place_pos, block_rot)</span>
+    <span class="c1">#   #   if np.all(np.abs([x, y, z]) &lt; 0.005) and np.abs(r) &lt; np.pi/12:</span>
+    <span class="c1">#   #     primitive = constants.PLACE_PRIMATIVE</span>
+    <span class="c1"># return self.env._encodeAction(primitive, x, y, z, r)</span>
+
+<div class="viewcode-block" id="CloseLoopHouseBuilding1Planner.getStepsLeft"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.close_loop_house_building_1_planner.CloseLoopHouseBuilding1Planner.getStepsLeft">[docs]</a>  <span class="k">def</span> <span class="nf">getStepsLeft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">100</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">HelpingHandsEnvs</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Colin Kohler, Dian Wang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,377 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>helping_hands_rl_envs.envs.utils package &#8212; HelpingHandsEnvs 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HelpingHandsEnvs 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">helping_hands_rl_envs.envs.utils package</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="helping-hands-rl-envs-envs-utils-package">
+<h1>helping_hands_rl_envs.envs.utils package<a class="headerlink" href="#helping-hands-rl-envs-envs-utils-package" title="Permalink to this headline">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-helping_hands_rl_envs.envs.utils.check_goal">
+<span id="helping-hands-rl-envs-envs-utils-check-goal-module"></span><h2>helping_hands_rl_envs.envs.utils.check_goal module<a class="headerlink" href="#module-helping_hands_rl_envs.envs.utils.check_goal" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal.CheckGoal">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helping_hands_rl_envs.envs.utils.check_goal.</span></span><span class="sig-name descname"><span class="pre">CheckGoal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">goal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/check_goal.html#CheckGoal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal.CheckGoal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.BRICK">
+<span class="sig-name descname"><span class="pre">BRICK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'1l'</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.BRICK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.CHARS">
+<span class="sig-name descname"><span class="pre">CHARS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['1b',</span> <span class="pre">'2b',</span> <span class="pre">'1l',</span> <span class="pre">'1r',</span> <span class="pre">'2r']</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.CHARS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.Level">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">below_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/check_goal.html#CheckGoal.Level"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.Level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.Level.eliminate_top_down">
+<span class="sig-name descname"><span class="pre">eliminate_top_down</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/check_goal.html#CheckGoal.Level.eliminate_top_down"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.Level.eliminate_top_down" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.Level.find_candidates">
+<span class="sig-name descname"><span class="pre">find_candidates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/check_goal.html#CheckGoal.Level.find_candidates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.Level.find_candidates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.Level.next_to">
+<span class="sig-name descname"><span class="pre">next_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cube1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cube2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/check_goal.html#CheckGoal.Level.next_to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.Level.next_to" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.ONE_BLOCK">
+<span class="sig-name descname"><span class="pre">ONE_BLOCK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'1b'</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.ONE_BLOCK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.ROOF">
+<span class="sig-name descname"><span class="pre">ROOF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'2r'</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.ROOF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.Stack">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Stack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">levels</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/check_goal.html#CheckGoal.Stack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.Stack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.Stack.check">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/check_goal.html#CheckGoal.Stack.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.Stack.check" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.TRIANGLE">
+<span class="sig-name descname"><span class="pre">TRIANGLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'1r'</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.TRIANGLE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.TWO_BLOCKS">
+<span class="sig-name descname"><span class="pre">TWO_BLOCKS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'2b'</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.TWO_BLOCKS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.check">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/check_goal.html#CheckGoal.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.check" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.check_counts_">
+<span class="sig-name descname"><span class="pre">check_counts_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bricks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">triangles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roofs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/check_goal.html#CheckGoal.check_counts_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.check_counts_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.get_objects_">
+<span class="sig-name descname"><span class="pre">get_objects_</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/check_goal.html#CheckGoal.get_objects_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.get_objects_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.parse_goal_">
+<span class="sig-name descname"><span class="pre">parse_goal_</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/check_goal.html#CheckGoal.parse_goal_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal.CheckGoal.parse_goal_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-helping_hands_rl_envs.envs.utils.check_goal_custom_labels">
+<span id="helping-hands-rl-envs-envs-utils-check-goal-custom-labels-module"></span><h2>helping_hands_rl_envs.envs.utils.check_goal_custom_labels module<a class="headerlink" href="#module-helping_hands_rl_envs.envs.utils.check_goal_custom_labels" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helping_hands_rl_envs.envs.utils.check_goal_custom_labels.</span></span><span class="sig-name descname"><span class="pre">CheckGoalCustomLabels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">goal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/check_goal_custom_labels.html#CheckGoalCustomLabels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#helping_hands_rl_envs.envs.utils.check_goal.CheckGoal" title="helping_hands_rl_envs.envs.utils.check_goal.CheckGoal"><code class="xref py py-class docutils literal notranslate"><span class="pre">helping_hands_rl_envs.envs.utils.check_goal.CheckGoal</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.LABEL_PICK_BRICK">
+<span class="sig-name descname"><span class="pre">LABEL_PICK_BRICK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.LABEL_PICK_BRICK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.LABEL_PICK_CUBE">
+<span class="sig-name descname"><span class="pre">LABEL_PICK_CUBE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.LABEL_PICK_CUBE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.LABEL_PICK_FAIL">
+<span class="sig-name descname"><span class="pre">LABEL_PICK_FAIL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.LABEL_PICK_FAIL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.LABEL_PICK_ROOF">
+<span class="sig-name descname"><span class="pre">LABEL_PICK_ROOF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.LABEL_PICK_ROOF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.LABEL_PICK_TRIANGLE">
+<span class="sig-name descname"><span class="pre">LABEL_PICK_TRIANGLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.LABEL_PICK_TRIANGLE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.LABEL_PLACE_BLOCK_ON_BLOCK">
+<span class="sig-name descname"><span class="pre">LABEL_PLACE_BLOCK_ON_BLOCK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.LABEL_PLACE_BLOCK_ON_BLOCK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.LABEL_PLACE_OTHER">
+<span class="sig-name descname"><span class="pre">LABEL_PLACE_OTHER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.LABEL_PLACE_OTHER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.LABEL_PLACE_ROOF_ON_STACK_OF_TWO_BLOCKS">
+<span class="sig-name descname"><span class="pre">LABEL_PLACE_ROOF_ON_STACK_OF_TWO_BLOCKS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.LABEL_PLACE_ROOF_ON_STACK_OF_TWO_BLOCKS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.LABEL_PLACE_ROOF_ON_TWO_BLOCKS">
+<span class="sig-name descname"><span class="pre">LABEL_PLACE_ROOF_ON_TWO_BLOCKS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.LABEL_PLACE_ROOF_ON_TWO_BLOCKS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.LABEL_PLACE_TWO_BLOCKS_GROUND">
+<span class="sig-name descname"><span class="pre">LABEL_PLACE_TWO_BLOCKS_GROUND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.LABEL_PLACE_TWO_BLOCKS_GROUND" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.get_label_pick">
+<span class="sig-name descname"><span class="pre">get_label_pick</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/check_goal_custom_labels.html#CheckGoalCustomLabels.get_label_pick"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.get_label_pick" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.get_label_place">
+<span class="sig-name descname"><span class="pre">get_label_place</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">previous_candidates</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/check_goal_custom_labels.html#CheckGoalCustomLabels.get_label_place"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.get_label_place" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.get_place_candidate_dict">
+<span class="sig-name descname"><span class="pre">get_place_candidate_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/check_goal_custom_labels.html#CheckGoalCustomLabels.get_place_candidate_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.get_place_candidate_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.parse_new_goal_and_add_candidates">
+<span class="sig-name descname"><span class="pre">parse_new_goal_and_add_candidates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">goal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidate_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/check_goal_custom_labels.html#CheckGoalCustomLabels.parse_new_goal_and_add_candidates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.check_goal_custom_labels.CheckGoalCustomLabels.parse_new_goal_and_add_candidates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-helping_hands_rl_envs.envs.utils.gen_goal">
+<span id="helping-hands-rl-envs-envs-utils-gen-goal-module"></span><h2>helping_hands_rl_envs.envs.utils.gen_goal module<a class="headerlink" href="#module-helping_hands_rl_envs.envs.utils.gen_goal" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.gen_goal.GenGoal">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helping_hands_rl_envs.envs.utils.gen_goal.</span></span><span class="sig-name descname"><span class="pre">GenGoal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">goal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_blocks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_bricks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_triangles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_roofs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/gen_goal.html#GenGoal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.gen_goal.GenGoal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.BRICK">
+<span class="sig-name descname"><span class="pre">BRICK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'1l'</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.BRICK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.CHARS">
+<span class="sig-name descname"><span class="pre">CHARS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['1b',</span> <span class="pre">'2b',</span> <span class="pre">'1l',</span> <span class="pre">'1r',</span> <span class="pre">'2r']</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.CHARS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.Level">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">below_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/gen_goal.html#GenGoal.Level"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.Level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.Level.MAX_BLOCK_SIZE">
+<span class="sig-name descname"><span class="pre">MAX_BLOCK_SIZE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.03</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.Level.MAX_BLOCK_SIZE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.Level.ZERO_ROT">
+<span class="sig-name descname"><span class="pre">ZERO_ROT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0,</span> <span class="pre">1.0)</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.Level.ZERO_ROT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.Level.gen">
+<span class="sig-name descname"><span class="pre">gen</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/gen_goal.html#GenGoal.Level.gen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.Level.gen" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.Level.gen_above_">
+<span class="sig-name descname"><span class="pre">gen_above_</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/gen_goal.html#GenGoal.Level.gen_above_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.Level.gen_above_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.Level.gen_bottom_">
+<span class="sig-name descname"><span class="pre">gen_bottom_</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/gen_goal.html#GenGoal.Level.gen_bottom_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.Level.gen_bottom_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.ONE_BLOCK">
+<span class="sig-name descname"><span class="pre">ONE_BLOCK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'1b'</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.ONE_BLOCK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.ROOF">
+<span class="sig-name descname"><span class="pre">ROOF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'2r'</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.ROOF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.Stack">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Stack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">levels</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/gen_goal.html#GenGoal.Stack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.Stack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.Stack.gen">
+<span class="sig-name descname"><span class="pre">gen</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/gen_goal.html#GenGoal.Stack.gen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.Stack.gen" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.TRIANGLE">
+<span class="sig-name descname"><span class="pre">TRIANGLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'1r'</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.TRIANGLE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.TWO_BLOCKS">
+<span class="sig-name descname"><span class="pre">TWO_BLOCKS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'2b'</span></em><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.TWO_BLOCKS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.gen">
+<span class="sig-name descname"><span class="pre">gen</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/gen_goal.html#GenGoal.gen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.gen" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.parse_goal_">
+<span class="sig-name descname"><span class="pre">parse_goal_</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/gen_goal.html#GenGoal.parse_goal_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.gen_goal.GenGoal.parse_goal_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.utils.gen_goal.NoValidPositionException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helping_hands_rl_envs.envs.utils.gen_goal.</span></span><span class="sig-name descname"><span class="pre">NoValidPositionException</span></span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/utils/gen_goal.html#NoValidPositionException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.utils.gen_goal.NoValidPositionException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+</section>
+<section id="module-helping_hands_rl_envs.envs.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-helping_hands_rl_envs.envs.utils" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">helping_hands_rl_envs.envs.utils package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-helping_hands_rl_envs.envs.utils.check_goal">helping_hands_rl_envs.envs.utils.check_goal module</a></li>
+<li><a class="reference internal" href="#module-helping_hands_rl_envs.envs.utils.check_goal_custom_labels">helping_hands_rl_envs.envs.utils.check_goal_custom_labels module</a></li>
+<li><a class="reference internal" href="#module-helping_hands_rl_envs.envs.utils.gen_goal">helping_hands_rl_envs.envs.utils.gen_goal module</a></li>
+<li><a class="reference internal" href="#module-helping_hands_rl_envs.envs.utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/helping_hands_rl_envs.envs.utils.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HelpingHandsEnvs 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">helping_hands_rl_envs.envs.utils package</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Colin Kohler, Dian Wang.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

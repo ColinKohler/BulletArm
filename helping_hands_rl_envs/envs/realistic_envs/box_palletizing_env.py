@@ -1,14 +1,14 @@
 import pybullet as pb
 import numpy as np
 
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.base_env import BaseEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 from helping_hands_rl_envs.simulators.pybullet.objects.pallet import Pallet
 from helping_hands_rl_envs.planners.box_palletizing_planner import BoxPalletizingPlanner
 
-class BoxPalletizingEnv(PyBulletEnv):
+class BoxPalletizingEnv(BaseEnv):
   def __init__(self, config):
     # env specific parameters
     if 'object_scale_range' not in config:

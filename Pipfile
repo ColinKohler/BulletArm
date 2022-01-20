@@ -17,6 +17,7 @@ sphinx = "*"
 rinohtype = "*"
 cupy-cuda115 = "*"
 scikit-learn = "*"
+sphinxcontrib-napoleon = "*"
 
 [requires]
 python_version = "3.7"

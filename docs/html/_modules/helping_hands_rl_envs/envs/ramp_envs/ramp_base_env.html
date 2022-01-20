@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>helping_hands_rl_envs.envs.ramp_envs.ramp_base_env &#8212; HelpingHandsEnvs 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for helping_hands_rl_envs.envs.ramp_envs.ramp_base_env</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">pybullet</span> <span class="k">as</span> <span class="nn">pb</span>
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.envs.base_env</span> <span class="kn">import</span> <span class="n">BaseEnv</span>
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.simulators.constants</span> <span class="kn">import</span> <span class="n">NoValidPositionException</span>
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.simulators</span> <span class="kn">import</span> <span class="n">constants</span>
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.simulators.pybullet.utils</span> <span class="kn">import</span> <span class="n">pybullet_util</span>
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.simulators.pybullet.utils</span> <span class="kn">import</span> <span class="n">transformations</span>
+<span class="kn">import</span> <span class="nn">numpy.random</span> <span class="k">as</span> <span class="nn">npr</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">helping_hands_rl_envs</span>
+
+
+<div class="viewcode-block" id="RampBaseEnv"><a class="viewcode-back" href="../../../../helping_hands_rl_envs.envs.ramp_envs.html#helping_hands_rl_envs.envs.ramp_envs.ramp_base_env.RampBaseEnv">[docs]</a><span class="k">class</span> <span class="nc">RampBaseEnv</span><span class="p">(</span><span class="n">BaseEnv</span><span class="p">):</span>
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">rx_range</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ramp1_angle</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ramp2_angle</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ramp1_id</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ramp2_id</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ramp1_dist_to_center</span> <span class="o">=</span> <span class="mf">0.035</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ramp2_dist_to_center</span> <span class="o">=</span> <span class="mf">0.035</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ramp1_height</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ramp2_height</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">min_ramp_dist</span> <span class="o">=</span> <span class="mf">0.03</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">max_ramp_dist</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">ramp_rz</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="RampBaseEnv.initialize"><a class="viewcode-back" href="../../../../helping_hands_rl_envs.envs.ramp_envs.html#helping_hands_rl_envs.envs.ramp_envs.ramp_base_env.RampBaseEnv.initialize">[docs]</a>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ramp1_id</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ramp2_id</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span></div>
+
+<div class="viewcode-block" id="RampBaseEnv.resetRamp"><a class="viewcode-back" href="../../../../helping_hands_rl_envs.envs.ramp_envs.html#helping_hands_rl_envs.envs.ramp_envs.ramp_base_env.RampBaseEnv.resetRamp">[docs]</a>  <span class="k">def</span> <span class="nf">resetRamp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ramp_rz</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_sample</span><span class="p">()</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ramp1_dist_to_center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_ramp_dist</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_ramp_dist</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_ramp_dist</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ramp2_dist_to_center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_ramp_dist</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_ramp_dist</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_ramp_dist</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ramp1_height</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.01</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ramp2_height</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.01</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp1_id</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+      <span class="n">pb</span><span class="o">.</span><span class="n">removeBody</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp1_id</span><span class="p">)</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp2_id</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+      <span class="n">pb</span><span class="o">.</span><span class="n">removeBody</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp2_id</span><span class="p">)</span>
+    <span class="n">root_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">helping_hands_rl_envs</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span>
+    <span class="n">urdf_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">URDF_PATH</span><span class="p">,</span> <span class="s1">&#39;tilt.urdf&#39;</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">ramp1_angle</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rx_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">rx_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_sample</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">rx_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ramp1_id</span> <span class="o">=</span> <span class="n">pb</span><span class="o">.</span><span class="n">loadURDF</span><span class="p">(</span><span class="n">urdf_filepath</span><span class="p">,</span>
+                                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp1_dist_to_center</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp_rz</span><span class="p">),</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">ramp1_dist_to_center</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp_rz</span><span class="p">),</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">ramp1_height</span><span class="p">],</span>
+                                <span class="n">pb</span><span class="o">.</span><span class="n">getQuaternionFromEuler</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp1_angle</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp_rz</span><span class="p">]),</span>
+                                <span class="n">globalScaling</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ramp2_angle</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rx_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">rx_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_sample</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">rx_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ramp2_id</span> <span class="o">=</span> <span class="n">pb</span><span class="o">.</span><span class="n">loadURDF</span><span class="p">(</span><span class="n">urdf_filepath</span><span class="p">,</span>
+                                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp2_dist_to_center</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp_rz</span><span class="p">),</span>
+                                 <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp2_dist_to_center</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp_rz</span><span class="p">),</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">ramp2_height</span><span class="p">],</span>
+                                <span class="n">pb</span><span class="o">.</span><span class="n">getQuaternionFromEuler</span><span class="p">([</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp2_angle</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp_rz</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">]),</span>
+                                <span class="n">globalScaling</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RampBaseEnv.getY1Y2fromX"><a class="viewcode-back" href="../../../../helping_hands_rl_envs.envs.ramp_envs.html#helping_hands_rl_envs.envs.ramp_envs.ramp_base_env.RampBaseEnv.getY1Y2fromX">[docs]</a>  <span class="k">def</span> <span class="nf">getY1Y2fromX</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="n">y1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp_rz</span><span class="p">)</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp_rz</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp1_dist_to_center</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp_rz</span><span class="p">))</span>
+    <span class="n">y2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp_rz</span><span class="p">)</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp_rz</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp2_dist_to_center</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp_rz</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">y1</span><span class="p">,</span> <span class="n">y2</span></div>
+
+<div class="viewcode-block" id="RampBaseEnv.isPosOffRamp"><a class="viewcode-back" href="../../../../helping_hands_rl_envs.envs.ramp_envs.html#helping_hands_rl_envs.envs.ramp_envs.ramp_base_env.RampBaseEnv.isPosOffRamp">[docs]</a>  <span class="k">def</span> <span class="nf">isPosOffRamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">min_dist</span><span class="o">=</span><span class="mf">0.02</span><span class="p">):</span>
+    <span class="n">y1</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getY1Y2fromX</span><span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">y2</span> <span class="o">+</span> <span class="n">min_dist</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp_rz</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">y1</span> <span class="o">-</span> <span class="n">min_dist</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp_rz</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RampBaseEnv.isPosDistToRampValid"><a class="viewcode-back" href="../../../../helping_hands_rl_envs.envs.ramp_envs.html#helping_hands_rl_envs.envs.ramp_envs.ramp_base_env.RampBaseEnv.isPosDistToRampValid">[docs]</a>  <span class="k">def</span> <span class="nf">isPosDistToRampValid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">obj_type</span><span class="p">):</span>
+    <span class="n">y1</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getY1Y2fromX</span><span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">d1</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp_rz</span><span class="p">))</span>
+    <span class="n">d2</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">y2</span> <span class="o">-</span> <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp_rz</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">obj_type</span> <span class="ow">in</span> <span class="p">(</span><span class="n">constants</span><span class="o">.</span><span class="n">BRICK</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">ROOF</span><span class="p">):</span>
+      <span class="n">d_threshold</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_block_size</span> <span class="o">*</span> <span class="mf">1.6</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">d_threshold</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_block_size</span> <span class="o">*</span> <span class="mf">0.7</span>
+    <span class="k">return</span> <span class="n">d1</span> <span class="o">&gt;</span> <span class="n">d_threshold</span> <span class="ow">and</span> <span class="n">d2</span> <span class="o">&gt;</span> <span class="n">d_threshold</span></div>
+
+<div class="viewcode-block" id="RampBaseEnv.resetWithRampAndObj"><a class="viewcode-back" href="../../../../helping_hands_rl_envs.envs.ramp_envs.html#helping_hands_rl_envs.envs.ramp_envs.ramp_base_env.RampBaseEnv.resetWithRampAndObj">[docs]</a>  <span class="k">def</span> <span class="nf">resetWithRampAndObj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_dict</span><span class="p">):</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">resetPybulletWorkspace</span><span class="p">()</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">resetRamp</span><span class="p">()</span>
+      <span class="k">try</span><span class="p">:</span>
+        <span class="n">existing_pos</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">obj_dict</span><span class="p">:</span>
+          <span class="n">padding</span> <span class="o">=</span> <span class="n">pybullet_util</span><span class="o">.</span><span class="n">getPadding</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_block_size</span><span class="p">)</span>
+          <span class="n">min_distance</span> <span class="o">=</span> <span class="n">pybullet_util</span><span class="o">.</span><span class="n">getMinDistance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_block_size</span><span class="p">)</span>
+          <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+            <span class="c1"># put at least one cube or random shape on the ground</span>
+            <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="n">constants</span><span class="o">.</span><span class="n">CUBE</span> <span class="ow">or</span> <span class="n">t</span> <span class="o">==</span> <span class="n">constants</span><span class="o">.</span><span class="n">RANDOM</span><span class="p">:</span>
+              <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+                <span class="n">off_tilt_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getValidPositions</span><span class="p">(</span><span class="n">padding</span><span class="p">,</span> <span class="n">min_distance</span><span class="p">,</span> <span class="n">existing_pos</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isPosOffRamp</span><span class="p">(</span><span class="n">off_tilt_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                  <span class="k">break</span>
+              <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">100</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">NoValidPositionException</span>
+              <span class="n">positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getValidPositions</span><span class="p">(</span><span class="n">padding</span><span class="p">,</span> <span class="n">min_distance</span><span class="p">,</span> <span class="n">existing_pos</span><span class="o">+</span><span class="n">off_tilt_pos</span><span class="p">,</span> <span class="n">obj_dict</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+              <span class="n">positions</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">off_tilt_pos</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+              <span class="n">positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getValidPositions</span><span class="p">(</span><span class="n">padding</span><span class="p">,</span> <span class="n">min_distance</span><span class="p">,</span> <span class="n">existing_pos</span><span class="p">,</span> <span class="n">obj_dict</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">isPosDistToRampValid</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="p">),</span> <span class="n">positions</span><span class="p">)):</span>
+              <span class="k">break</span>
+
+          <span class="n">existing_pos</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">positions</span><span class="p">))</span>
+          <span class="n">orientations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculateOrientations</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span>
+          <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="n">constants</span><span class="o">.</span><span class="n">RANDOM</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generateRandomShape</span><span class="p">(</span><span class="n">obj_dict</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">positions</span><span class="p">,</span> <span class="n">orientations</span><span class="p">)</span>
+          <span class="k">elif</span> <span class="n">t</span> <span class="o">==</span> <span class="n">constants</span><span class="o">.</span><span class="n">BRICK</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generateBrickShape</span><span class="p">(</span><span class="n">obj_dict</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">positions</span><span class="p">,</span> <span class="n">orientations</span><span class="p">)</span>
+          <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_generateShapes</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">obj_dict</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">random_orientation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">positions</span><span class="p">,</span> <span class="n">rot</span><span class="o">=</span><span class="n">orientations</span><span class="p">)</span>
+      <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">continue</span>
+      <span class="k">else</span><span class="p">:</span>
+        <span class="k">break</span></div>
+
+<div class="viewcode-block" id="RampBaseEnv.generateRandomShape"><a class="viewcode-back" href="../../../../helping_hands_rl_envs.envs.ramp_envs.html#helping_hands_rl_envs.envs.ramp_envs.ramp_base_env.RampBaseEnv.generateRandomShape">[docs]</a>  <span class="k">def</span> <span class="nf">generateRandomShape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">poss</span><span class="p">,</span> <span class="n">rots</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_generateShapes</span><span class="p">(</span><span class="n">constants</span><span class="o">.</span><span class="n">RANDOM</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">random_orientation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">poss</span><span class="p">,</span> <span class="n">rot</span><span class="o">=</span><span class="n">rots</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RampBaseEnv.generateBrickShape"><a class="viewcode-back" href="../../../../helping_hands_rl_envs.envs.ramp_envs.html#helping_hands_rl_envs.envs.ramp_envs.ramp_base_env.RampBaseEnv.generateBrickShape">[docs]</a>  <span class="k">def</span> <span class="nf">generateBrickShape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">poss</span><span class="p">,</span> <span class="n">rots</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_generateShapes</span><span class="p">(</span><span class="n">constants</span><span class="o">.</span><span class="n">BRICK</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">random_orientation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">poss</span><span class="p">,</span> <span class="n">rot</span><span class="o">=</span><span class="n">rots</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RampBaseEnv.calculateOrientations"><a class="viewcode-back" href="../../../../helping_hands_rl_envs.envs.ramp_envs.html#helping_hands_rl_envs.envs.ramp_envs.ramp_base_env.RampBaseEnv.calculateOrientations">[docs]</a>  <span class="k">def</span> <span class="nf">calculateOrientations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positions</span><span class="p">):</span>
+    <span class="n">orientations</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">position</span> <span class="ow">in</span> <span class="n">positions</span><span class="p">:</span>
+      <span class="n">y1</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getY1Y2fromX</span><span class="p">(</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+      <span class="k">if</span> <span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">y1</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp_rz</span><span class="p">)</span>
+        <span class="n">position</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp1_height</span> <span class="o">+</span> <span class="mf">0.02</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp1_angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">d</span><span class="p">)</span>
+        <span class="n">rx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp1_angle</span>
+        <span class="n">rz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp_rz</span>
+        <span class="c1"># orientations.append(pb.getQuaternionFromEuler([self.tilt_plain_rx, 0, self.tilt_rz]))</span>
+      <span class="k">elif</span> <span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">y2</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="n">y2</span> <span class="o">-</span> <span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp_rz</span><span class="p">)</span>
+        <span class="n">position</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp2_height</span> <span class="o">+</span> <span class="mf">0.02</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp2_angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">d</span><span class="p">)</span>
+        <span class="n">rx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp2_angle</span>
+        <span class="n">rz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp_rz</span>
+        <span class="c1"># orientations.append(pb.getQuaternionFromEuler([self.tilt_plain2_rx, 0, self.tilt_rz]))</span>
+      <span class="k">else</span><span class="p">:</span>
+        <span class="n">position</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.02</span><span class="p">)</span>
+        <span class="c1"># orientations.append(pb.getQuaternionFromEuler([0, 0, np.random.random()*np.pi*2]))</span>
+        <span class="n">rx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">rz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">2</span>
+      <span class="n">T</span> <span class="o">=</span> <span class="n">transformations</span><span class="o">.</span><span class="n">euler_matrix</span><span class="p">(</span><span class="n">rz</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">rx</span><span class="p">)</span>
+      <span class="n">T_random</span> <span class="o">=</span> <span class="n">transformations</span><span class="o">.</span><span class="n">euler_matrix</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+      <span class="n">T</span> <span class="o">=</span> <span class="n">T_random</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+      <span class="n">rz</span><span class="p">,</span> <span class="n">ry</span><span class="p">,</span> <span class="n">rx</span> <span class="o">=</span> <span class="n">transformations</span><span class="o">.</span><span class="n">euler_from_matrix</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+      <span class="n">orientations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pb</span><span class="o">.</span><span class="n">getQuaternionFromEuler</span><span class="p">([</span><span class="n">rx</span><span class="p">,</span> <span class="n">ry</span><span class="p">,</span> <span class="n">rz</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">orientations</span></div></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">HelpingHandsEnvs</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Colin Kohler, Dian Wang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

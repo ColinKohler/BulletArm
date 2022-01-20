@@ -3,11 +3,11 @@ from copy import deepcopy
 import numpy.random as npr
 import numpy as np
 from itertools import combinations
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.base_env import BaseEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
-class ImproviseHouseBuildingRandomEnv(PyBulletEnv):
+class ImproviseHouseBuildingRandomEnv(BaseEnv):
   ''''''
   def __init__(self, config):
     # env specific parameters

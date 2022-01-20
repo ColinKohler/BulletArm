@@ -1,6 +1,6 @@
 from copy import deepcopy
 import pybullet as pb
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.base_env import BaseEnv
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
@@ -12,7 +12,7 @@ import os
 import helping_hands_rl_envs
 
 
-class RampBaseEnv(PyBulletEnv):
+class RampBaseEnv(BaseEnv):
   def __init__(self, config):
     super().__init__(config)
 
@@ -64,12 +64,12 @@ class RampBaseEnv(PyBulletEnv):
                                  self.ramp2_height],
                                 pb.getQuaternionFromEuler([-self.ramp2_angle, 0, self.ramp_rz + np.pi]),
                                 globalScaling=1)
-  
+
   def getY1Y2fromX(self, x):
     y1 = np.tan(self.ramp_rz) * x - np.tan(self.ramp_rz) * (self.workspace[0].mean() - self.ramp1_dist_to_center / np.sin(self.ramp_rz))
     y2 = np.tan(self.ramp_rz) * x - np.tan(self.ramp_rz) * (self.workspace[0].mean() + self.ramp2_dist_to_center / np.sin(self.ramp_rz))
-    return y1, y2    
-  
+    return y1, y2
+
   def isPosOffRamp(self, pos, min_dist=0.02):
     y1, y2 = self.getY1Y2fromX(pos[0])
     return y2 + min_dist / np.cos(self.ramp_rz) < pos[1] < y1 - min_dist / np.cos(self.ramp_rz)

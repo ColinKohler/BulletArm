@@ -1,13 +1,13 @@
 from copy import deepcopy
 import numpy as np
 from itertools import combinations
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.base_env import BaseEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.pybullet.utils import object_generation
 from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
-class ImproviseHouseBuilding3Env(PyBulletEnv):
+class ImproviseHouseBuilding3Env(BaseEnv):
   ''''''
   def __init__(self, config):
     # env specific parameters

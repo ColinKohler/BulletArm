@@ -1,3 +1,7 @@
+'''
+.. moduleauthor: Colin Kohler <github.com/ColinKohler>
+'''
+
 import os
 import pickle
 import copy
@@ -21,9 +25,12 @@ from helping_hands_rl_envs.simulators.pybullet.objects.pybullet_object import Py
 import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
-class PyBulletEnv:
+class BaseEnv:
   '''
-  PyBullet base class.
+  Base Env Class.
+
+  Args:
+    - config: Config used to specify various environment details
   '''
   def __init__(self, config):
     # Load the default config and replace any duplicate values with the config
@@ -182,7 +189,9 @@ class PyBulletEnv:
     self.pb_state = None
 
   def initialize(self):
-    ''''''
+    '''
+    Initialize the pybullet world.
+    '''
     pb.resetSimulation()
     pb.setPhysicsEngineParameter(numSubSteps=0,
                                  numSolverIterations=self.num_solver_iterations,
@@ -210,6 +219,9 @@ class PyBulletEnv:
     pb.stepSimulation()
 
   def resetPybulletWorkspace(self):
+    '''
+    Reset the PyBullet world to just contain the robot.
+    '''
     # soft reset has bug in older pybullet versions. 2.7,1 works good
     self.episode_count += 1
     if self.episode_count % self.hard_reset_freq == 0:
@@ -239,10 +251,26 @@ class PyBulletEnv:
     pb.stepSimulation()
 
   def reset(self):
+    '''
+    Reset the environment.
+
+    Returns: Numpy vector of the observation
+    '''
     self.resetPybulletWorkspace()
     return self._getObservation()
 
   def step(self, action):
+    '''
+    Take an action in the enviornment.
+
+    Args:
+      - action: Int indicating the action to take
+
+    Returns: (obs, reward, done)
+      - obs: Numpy vector of the observation
+      - reward: Double of the reward given
+      - done: Bool flag indicating if the episode is done
+    '''
     self.takeAction(action)
     self.wait(100)
     obs = self._getObservation(action)

@@ -1,7 +1,5 @@
-''' Env Factory API
-
+'''
 .. moduleauthor: Colin Kohler <github.com/ColinKohler>
-
 '''
 
 import copy
@@ -18,9 +16,10 @@ def getEnvFn(env_type):
   Get the env creation function of the given type.
 
   Args:
-    - env_type: String indicating the type of environment to create
+    env_type (str): The type of environment to create
 
   Returns:
+    function: A function which creates the env when run
   '''
   if env_type in env_fn.CREATE_ENV_FNS:
     return env_fn.CREATE_ENV_FNS[env_type]
@@ -33,10 +32,13 @@ def createEnvs(num_processes, env_type, env_config, planner_config={}):
   number of envs each in their own seperate process.
 
   Args:
-    - num_processes: Number of envs to create
-    - env_type: String indicating the type of environment to create
-    - env_config: Dict containing intialization arguments for the env
-    - planner_config: Dict containing intialization arguments for the planner
+    num_processes (int): Number of envs to create
+    env_type (str): The type of environment to create
+    env_config (dict): Intialization arguments for the env
+    planner_config (dict): Intialization arguments for the planner
+
+  Returns:
+    EnvRunner: SingleRunner or MultiRunner containing the environment
   '''
   if num_processes == 0:
     return createSingleProcessEnv(env_type, env_config, planner_config)
@@ -48,11 +50,12 @@ def createSingleProcessEnv(env_type, env_config, planner_config={}):
   Create a single environment
 
   Args:
-    - env_type: String indicating the type of environment to create
-    - env_config: Dict containing intialization arguments for the env
-    - planner_config: Dict containing intialization arguments for the planner
+    env_type (str): The type of environment to create
+    env_config (dict): Intialization arguments for the env
+    planner_config (dict): Intialization arguments for the planner
 
-  Returns: SingleRunner containing the environment
+  Returns:
+    SingleRunner: SingleRunner containing the environment
   '''
   # Check to make sure a seed is given and generate a random one if it is not
   if env_type == 'multi_task':
@@ -77,12 +80,13 @@ def createMultiprocessEnvs(num_processes, env_type, env_config, planner_config={
   Create a number of environments on different processes to run in parralel
 
   Args:
-    - num_processes: Number of envs to create
-    - env_type: String indicating the type of environment to create
-    - env_config: Dict containing intialization arguments for the env
-    - planner_config: Dict containing intialization arguments for the planner
+    num_processes (int): Number of envs to create
+    env_type (str): The type of environment to create
+    env_config (dict): Intialization arguments for the env
+    planner_config (dict): Intialization arguments for the planner
 
-  Returns: MultiRunner containing all environments
+  Returns:
+    MultiRunner: MultiRunner containing all environments
   '''
   # Clone env config and set seeds for the different processes
   env_configs = [copy.deepcopy(env_config) for _ in range(num_processes)]

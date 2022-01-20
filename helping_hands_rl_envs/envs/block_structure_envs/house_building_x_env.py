@@ -1,11 +1,11 @@
 from copy import deepcopy
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.base_env import BaseEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.envs.utils.check_goal import CheckGoal
 from helping_hands_rl_envs.envs.utils.check_goal_custom_labels import CheckGoalCustomLabels
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
-class HouseBuildingXEnv(PyBulletEnv):
+class HouseBuildingXEnv(BaseEnv):
   ''''''
   def __init__(self, config):
     super(HouseBuildingXEnv, self).__init__(config)

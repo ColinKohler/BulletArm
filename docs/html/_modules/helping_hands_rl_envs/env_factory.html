@@ -31,10 +31,8 @@
           <div class="body" role="main">
             
   <h1>Source code for helping_hands_rl_envs.env_factory</h1><div class="highlight"><pre>
-<span></span><span class="sd">&#39;&#39;&#39; Env Factory API</span>
-
+<span></span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">.. moduleauthor: Colin Kohler &lt;github.com/ColinKohler&gt;</span>
-
 <span class="sd">&#39;&#39;&#39;</span>
 
 <span class="kn">import</span> <span class="nn">copy</span>
@@ -51,9 +49,10 @@
 <span class="sd">  Get the env creation function of the given type.</span>
 
 <span class="sd">  Args:</span>
-<span class="sd">    - env_type: String indicating the type of environment to create</span>
+<span class="sd">    env_type (str): The type of environment to create</span>
 
 <span class="sd">  Returns:</span>
+<span class="sd">    function: A function which creates the env when run</span>
 <span class="sd">  &#39;&#39;&#39;</span>
   <span class="k">if</span> <span class="n">env_type</span> <span class="ow">in</span> <span class="n">env_fn</span><span class="o">.</span><span class="n">CREATE_ENV_FNS</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">env_fn</span><span class="o">.</span><span class="n">CREATE_ENV_FNS</span><span class="p">[</span><span class="n">env_type</span><span class="p">]</span>
@@ -66,10 +65,13 @@
 <span class="sd">  number of envs each in their own seperate process.</span>
 
 <span class="sd">  Args:</span>
-<span class="sd">    - num_processes: Number of envs to create</span>
-<span class="sd">    - env_type: String indicating the type of environment to create</span>
-<span class="sd">    - env_config: Dict containing intialization arguments for the env</span>
-<span class="sd">    - planner_config: Dict containing intialization arguments for the planner</span>
+<span class="sd">    num_processes (int): Number of envs to create</span>
+<span class="sd">    env_type (str): The type of environment to create</span>
+<span class="sd">    env_config (dict): Intialization arguments for the env</span>
+<span class="sd">    planner_config (dict): Intialization arguments for the planner</span>
+
+<span class="sd">  Returns:</span>
+<span class="sd">    EnvRunner: SingleRunner or MultiRunner containing the environment</span>
 <span class="sd">  &#39;&#39;&#39;</span>
   <span class="k">if</span> <span class="n">num_processes</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">createSingleProcessEnv</span><span class="p">(</span><span class="n">env_type</span><span class="p">,</span> <span class="n">env_config</span><span class="p">,</span> <span class="n">planner_config</span><span class="p">)</span>
@@ -81,11 +83,12 @@
 <span class="sd">  Create a single environment</span>
 
 <span class="sd">  Args:</span>
-<span class="sd">    - env_type: String indicating the type of environment to create</span>
-<span class="sd">    - env_config: Dict containing intialization arguments for the env</span>
-<span class="sd">    - planner_config: Dict containing intialization arguments for the planner</span>
+<span class="sd">    env_type (str): The type of environment to create</span>
+<span class="sd">    env_config (dict): Intialization arguments for the env</span>
+<span class="sd">    planner_config (dict): Intialization arguments for the planner</span>
 
-<span class="sd">  Returns: SingleRunner containing the environment</span>
+<span class="sd">  Returns:</span>
+<span class="sd">    SingleRunner: SingleRunner containing the environment</span>
 <span class="sd">  &#39;&#39;&#39;</span>
   <span class="c1"># Check to make sure a seed is given and generate a random one if it is not</span>
   <span class="k">if</span> <span class="n">env_type</span> <span class="o">==</span> <span class="s1">&#39;multi_task&#39;</span><span class="p">:</span>
@@ -110,12 +113,13 @@
 <span class="sd">  Create a number of environments on different processes to run in parralel</span>
 
 <span class="sd">  Args:</span>
-<span class="sd">    - num_processes: Number of envs to create</span>
-<span class="sd">    - env_type: String indicating the type of environment to create</span>
-<span class="sd">    - env_config: Dict containing intialization arguments for the env</span>
-<span class="sd">    - planner_config: Dict containing intialization arguments for the planner</span>
+<span class="sd">    num_processes (int): Number of envs to create</span>
+<span class="sd">    env_type (str): The type of environment to create</span>
+<span class="sd">    env_config (dict): Intialization arguments for the env</span>
+<span class="sd">    planner_config (dict): Intialization arguments for the planner</span>
 
-<span class="sd">  Returns: MultiRunner containing all environments</span>
+<span class="sd">  Returns:</span>
+<span class="sd">    MultiRunner: MultiRunner containing all environments</span>
 <span class="sd">  &#39;&#39;&#39;</span>
   <span class="c1"># Clone env config and set seeds for the different processes</span>
   <span class="n">env_configs</span> <span class="o">=</span> <span class="p">[</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">env_config</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_processes</span><span class="p">)]</span>

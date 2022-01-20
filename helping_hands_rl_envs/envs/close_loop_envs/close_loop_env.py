@@ -1,12 +1,11 @@
 import pybullet as pb
 import numpy as np
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.base_env import BaseEnv
 from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 from helping_hands_rl_envs.simulators.pybullet.utils.renderer import Renderer
 from helping_hands_rl_envs.simulators.pybullet.utils.ortho_sensor import OrthographicSensor
 
-
-class CloseLoopEnv(PyBulletEnv):
+class CloseLoopEnv(BaseEnv):
   def __init__(self, config):
     super().__init__(config)
     if 'view_type' not in config:

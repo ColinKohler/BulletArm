@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>helping_hands_rl_envs.envs.ramp_envs.ramp_deconstruct_env &#8212; HelpingHandsEnvs 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for helping_hands_rl_envs.envs.ramp_envs.ramp_deconstruct_env</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pybullet</span> <span class="k">as</span> <span class="nn">pb</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy</span>
+<span class="kn">import</span> <span class="nn">numpy.random</span> <span class="k">as</span> <span class="nn">npr</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.simulators.pybullet.utils</span> <span class="kn">import</span> <span class="n">pybullet_util</span>
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.simulators.constants</span> <span class="kn">import</span> <span class="n">NoValidPositionException</span>
+
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.envs.deconstruct_envs.deconstruct_env</span> <span class="kn">import</span> <span class="n">DeconstructEnv</span>
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.envs.ramp_envs.ramp_base_env</span> <span class="kn">import</span> <span class="n">RampBaseEnv</span>
+<span class="kn">import</span> <span class="nn">helping_hands_rl_envs.simulators.pybullet.utils.object_generation</span> <span class="k">as</span> <span class="nn">pb_obj_generation</span>
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.simulators</span> <span class="kn">import</span> <span class="n">constants</span>
+
+<div class="viewcode-block" id="RampDeconstructEnv"><a class="viewcode-back" href="../../../../helping_hands_rl_envs.envs.ramp_envs.html#helping_hands_rl_envs.envs.ramp_envs.ramp_deconstruct_env.RampDeconstructEnv">[docs]</a><span class="k">class</span> <span class="nc">RampDeconstructEnv</span><span class="p">(</span><span class="n">DeconstructEnv</span><span class="p">,</span> <span class="n">RampBaseEnv</span><span class="p">):</span>
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">(</span><span class="n">RampDeconstructEnv</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">pick_offset</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">place_offset</span> <span class="o">=</span> <span class="mf">0.015</span>
+
+<div class="viewcode-block" id="RampDeconstructEnv.resetRampDeconstructEnv"><a class="viewcode-back" href="../../../../helping_hands_rl_envs.envs.ramp_envs.html#helping_hands_rl_envs.envs.ramp_envs.ramp_deconstruct_env.RampDeconstructEnv.resetRampDeconstructEnv">[docs]</a>  <span class="k">def</span> <span class="nf">resetRampDeconstructEnv</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">resetPybulletWorkspace</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">resetRamp</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">structure_objs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">generateStructure</span><span class="p">()</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">checkStructure</span><span class="p">():</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">resetPybulletWorkspace</span><span class="p">()</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">resetRamp</span><span class="p">()</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">structure_objs</span> <span class="o">=</span> <span class="p">[]</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">generateStructure</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RampDeconstructEnv.reset"><a class="viewcode-back" href="../../../../helping_hands_rl_envs.envs.ramp_envs.html#helping_hands_rl_envs.envs.ramp_envs.ramp_deconstruct_env.RampDeconstructEnv.reset">[docs]</a>  <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">resetRampDeconstructEnv</span><span class="p">()</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getObservation</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RampDeconstructEnv.get1BaseXY"><a class="viewcode-back" href="../../../../helping_hands_rl_envs.envs.ramp_envs.html#helping_hands_rl_envs.envs.ramp_envs.ramp_deconstruct_env.RampDeconstructEnv.get1BaseXY">[docs]</a>  <span class="k">def</span> <span class="nf">get1BaseXY</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">padding</span><span class="p">):</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+      <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getValidPositions</span><span class="p">(</span><span class="n">padding</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[],</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+      <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isPosOffRamp</span><span class="p">(</span><span class="n">pos</span><span class="p">):</span>
+        <span class="k">break</span>
+    <span class="k">return</span> <span class="n">pos</span></div>
+
+<div class="viewcode-block" id="RampDeconstructEnv.get2BaseXY"><a class="viewcode-back" href="../../../../helping_hands_rl_envs.envs.ramp_envs.html#helping_hands_rl_envs.envs.ramp_envs.ramp_deconstruct_env.RampDeconstructEnv.get2BaseXY">[docs]</a>  <span class="k">def</span> <span class="nf">get2BaseXY</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">padding</span><span class="p">,</span> <span class="n">min_dist</span><span class="p">,</span> <span class="n">max_dist</span><span class="p">):</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+      <span class="n">pos1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getValidPositions</span><span class="p">(</span><span class="n">padding</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[],</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+      <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isPosOffRamp</span><span class="p">(</span><span class="n">pos1</span><span class="p">):</span>
+        <span class="k">break</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_orientation</span><span class="p">:</span>
+      <span class="n">sample_range</span> <span class="o">=</span> <span class="p">[[</span><span class="n">pos1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">max_dist</span><span class="p">,</span> <span class="n">pos1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">max_dist</span><span class="p">],</span>
+                      <span class="p">[</span><span class="n">pos1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">max_dist</span><span class="p">,</span> <span class="n">pos1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">max_dist</span><span class="p">]]</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">sample_range</span> <span class="o">=</span> <span class="p">[[</span><span class="n">pos1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.005</span><span class="p">,</span> <span class="n">pos1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.005</span><span class="p">],</span>
+                      <span class="p">[</span><span class="n">pos1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">max_dist</span><span class="p">,</span> <span class="n">pos1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">max_dist</span><span class="p">]]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+      <span class="k">try</span><span class="p">:</span>
+        <span class="n">pos2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getValidPositions</span><span class="p">(</span><span class="n">padding</span><span class="p">,</span> <span class="n">min_dist</span><span class="p">,</span> <span class="p">[</span><span class="n">pos1</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sample_range</span><span class="o">=</span><span class="n">sample_range</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+      <span class="k">except</span> <span class="n">NoValidPositionException</span><span class="p">:</span>
+        <span class="k">continue</span>
+      <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pos1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pos2</span><span class="p">))</span>
+      <span class="k">if</span> <span class="n">min_dist</span> <span class="o">&lt;</span> <span class="n">dist</span> <span class="o">&lt;</span> <span class="n">max_dist</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">isPosOffRamp</span><span class="p">(</span><span class="n">pos2</span><span class="p">):</span>
+        <span class="k">break</span>
+    <span class="k">return</span> <span class="n">pos1</span><span class="p">,</span> <span class="n">pos2</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">HelpingHandsEnvs</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Colin Kohler, Dian Wang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

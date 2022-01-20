@@ -1,0 +1,254 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>helping_hands_rl_envs.planners.base_planner &#8212; HelpingHandsEnvs 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for helping_hands_rl_envs.planners.base_planner</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.random</span> <span class="k">as</span> <span class="nn">npr</span>
+
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.simulators</span> <span class="kn">import</span> <span class="n">constants</span>
+
+<div class="viewcode-block" id="BasePlanner"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner">[docs]</a><span class="k">class</span> <span class="nc">BasePlanner</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">env</span> <span class="o">=</span> <span class="n">env</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">rand_pick_prob</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;rand_pick_prob&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;rand_pick_prob&#39;</span> <span class="ow">in</span> <span class="n">config</span> <span class="k">else</span> <span class="mf">0.0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">rand_place_prob</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;rand_place_prob&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;rand_place_prob&#39;</span> <span class="ow">in</span> <span class="n">config</span> <span class="k">else</span> <span class="mf">0.0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">pick_noise</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;pick_noise&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;pick_noise&#39;</span> <span class="ow">in</span> <span class="n">config</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">place_noise</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;place_noise&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;place_noise&#39;</span> <span class="ow">in</span> <span class="n">config</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">planner_res</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;planner_res&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;planner_res&#39;</span> <span class="ow">in</span> <span class="n">config</span> <span class="k">else</span> <span class="mi">10</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">rot_noise</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;rot_noise&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;rot_noise&#39;</span> <span class="ow">in</span> <span class="n">config</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">pos_noise</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;pos_noise&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;rot_noise&#39;</span> <span class="ow">in</span> <span class="n">config</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;gamma&#39;</span><span class="p">]</span>  <span class="k">if</span> <span class="s1">&#39;gamma&#39;</span> <span class="ow">in</span> <span class="n">config</span> <span class="k">else</span> <span class="mf">0.9</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">random_orientation</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;random_orientation&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;random_orientation&#39;</span> <span class="ow">in</span> <span class="n">config</span> <span class="k">else</span> <span class="kc">True</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">half_rotation</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;half_rotation&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;half_rotation&#39;</span> <span class="ow">in</span> <span class="n">config</span> <span class="k">else</span> <span class="kc">False</span>
+
+    <span class="n">npr</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BasePlanner.getNextAction"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.getNextAction">[docs]</a>  <span class="k">def</span> <span class="nf">getNextAction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="bp">NotImplemented</span><span class="p">(</span><span class="s1">&#39;Planners must implement this function&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BasePlanner.getStepsLeft"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.getStepsLeft">[docs]</a>  <span class="k">def</span> <span class="nf">getStepsLeft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="bp">NotImplemented</span><span class="p">(</span><span class="s1">&#39;Planners must implement this function&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BasePlanner.getValue"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.getValue">[docs]</a>  <span class="k">def</span> <span class="nf">getValue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">getStepsLeft</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="BasePlanner.addNoiseToPos"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.addNoiseToPos">[docs]</a>  <span class="k">def</span> <span class="nf">addNoiseToPos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">primative</span><span class="p">):</span>
+    <span class="n">signs</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">primative</span> <span class="o">==</span> <span class="n">constants</span><span class="o">.</span><span class="n">PICK_PRIMATIVE</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_noise</span><span class="p">:</span>
+      <span class="n">x_noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">npr</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">signs</span><span class="p">)</span> <span class="o">*</span> <span class="n">npr</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pick_noise</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_noise</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner_res</span><span class="p">)</span>
+      <span class="n">y_noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">npr</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">signs</span><span class="p">)</span> <span class="o">*</span> <span class="n">npr</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pick_noise</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_noise</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner_res</span><span class="p">)</span>
+
+      <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">x_noise</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+      <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="n">y_noise</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">primative</span> <span class="o">==</span> <span class="n">constants</span><span class="o">.</span><span class="n">PLACE_PRIMATIVE</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">place_noise</span><span class="p">:</span>
+      <span class="n">x_noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">npr</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">signs</span><span class="p">)</span> <span class="o">*</span> <span class="n">npr</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">place_noise</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">place_noise</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner_res</span><span class="p">)</span>
+      <span class="n">y_noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">npr</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">signs</span><span class="p">)</span> <span class="o">*</span> <span class="n">npr</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">place_noise</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">place_noise</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner_res</span><span class="p">)</span>
+
+      <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">x_noise</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+      <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="n">y_noise</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span></div>
+
+<div class="viewcode-block" id="BasePlanner.addNoiseToRot"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.addNoiseToRot">[docs]</a>  <span class="k">def</span> <span class="nf">addNoiseToRot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rot</span><span class="p">):</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rot_noise</span><span class="p">:</span>
+      <span class="n">rot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">rot</span> <span class="o">+</span> <span class="n">npr</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">rot_noise</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rot_noise</span><span class="p">),</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rot</span></div>
+
+<div class="viewcode-block" id="BasePlanner.getRandomAction"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.getRandomAction">[docs]</a>  <span class="k">def</span> <span class="nf">getRandomAction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isHolding</span><span class="p">():</span>
+      <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRandomPlacingAction</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRandomPickingAction</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="BasePlanner.getRandomPickingAction"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.getRandomPickingAction">[docs]</a>  <span class="k">def</span> <span class="nf">getRandomPickingAction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">npr</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.025</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.025</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">npr</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.025</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.025</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="mf">0.</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">npr</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">encodeAction</span><span class="p">(</span><span class="n">constants</span><span class="o">.</span><span class="n">PICK_PRIMATIVE</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BasePlanner.getRandomPlacingAction"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.getRandomPlacingAction">[docs]</a>  <span class="k">def</span> <span class="nf">getRandomPlacingAction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">npr</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.025</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.025</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">npr</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.025</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.025</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="mf">0.</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">npr</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">encodeAction</span><span class="p">(</span><span class="n">constants</span><span class="o">.</span><span class="n">PLACE_PRIMATIVE</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BasePlanner.encodeAction"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.encodeAction">[docs]</a>  <span class="k">def</span> <span class="nf">encodeAction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">primitive</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner_res</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner_res</span><span class="p">)</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">addNoiseToPos</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">primitive</span><span class="p">)</span>
+    <span class="c1"># TODO: addNoiseToRot with 3 rots</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rot_noise</span><span class="p">:</span> <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">addNoiseToRot</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">half_rotation</span><span class="p">:</span>
+      <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="s1">&#39;__len__&#39;</span><span class="p">):</span>
+        <span class="k">while</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+          <span class="n">r</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+        <span class="k">while</span> <span class="n">r</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">:</span>
+          <span class="n">r</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+      <span class="k">else</span><span class="p">:</span>
+        <span class="n">rz</span><span class="p">,</span> <span class="n">ry</span><span class="p">,</span> <span class="n">rx</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="k">while</span> <span class="n">rz</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+          <span class="n">rz</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+          <span class="n">rx</span> <span class="o">=</span> <span class="o">-</span><span class="n">rx</span>
+          <span class="n">ry</span> <span class="o">=</span> <span class="o">-</span><span class="n">ry</span>
+        <span class="k">while</span> <span class="n">rz</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">:</span>
+          <span class="n">rz</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+          <span class="n">rx</span> <span class="o">=</span> <span class="o">-</span><span class="n">rx</span>
+          <span class="n">ry</span> <span class="o">=</span> <span class="o">-</span><span class="n">ry</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">rz</span><span class="p">,</span> <span class="n">ry</span><span class="p">,</span> <span class="n">rx</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">_encodeAction</span><span class="p">(</span><span class="n">primitive</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BasePlanner.getObjects"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.getObjects">[docs]</a>  <span class="k">def</span> <span class="nf">getObjects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">obj_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+      <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">object_types</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">==</span> <span class="n">obj_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">objects</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isObjectHeld</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">objects</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="BasePlanner.getObjectsOnTopOf"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.getObjectsOnTopOf">[docs]</a>  <span class="k">def</span> <span class="nf">getObjectsOnTopOf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bottom_obj</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">checkOnTopOf</span><span class="p">(</span><span class="n">bottom_obj</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">getObjects</span><span class="p">()))</span></div>
+
+  <span class="c1"># wrapper functions for accessing env</span>
+
+<div class="viewcode-block" id="BasePlanner.areObjectsInWorkspace"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.areObjectsInWorkspace">[docs]</a>  <span class="k">def</span> <span class="nf">areObjectsInWorkspace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">areObjectsInWorkspace</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="BasePlanner.getMaxBlockSize"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.getMaxBlockSize">[docs]</a>  <span class="k">def</span> <span class="nf">getMaxBlockSize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">max_block_size</span></div>
+
+<div class="viewcode-block" id="BasePlanner.getDistance"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.getDistance">[docs]</a>  <span class="k">def</span> <span class="nf">getDistance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj1</span><span class="p">,</span> <span class="n">obj2</span><span class="p">):</span>
+    <span class="n">position1</span> <span class="o">=</span> <span class="n">obj1</span><span class="o">.</span><span class="n">getPosition</span><span class="p">()</span>
+    <span class="n">position2</span> <span class="o">=</span> <span class="n">obj2</span><span class="o">.</span><span class="n">getPosition</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">position1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">position2</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="BasePlanner.getValidPositions"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.getValidPositions">[docs]</a>  <span class="k">def</span> <span class="nf">getValidPositions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">padding</span><span class="p">,</span> <span class="n">min_distance</span><span class="p">,</span> <span class="n">existing_positions</span><span class="p">,</span> <span class="n">num_shapes</span><span class="p">,</span> <span class="n">sample_range</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">_getValidPositions</span><span class="p">(</span><span class="n">padding</span><span class="p">,</span> <span class="n">min_distance</span><span class="p">,</span> <span class="n">existing_positions</span><span class="p">,</span> <span class="n">num_shapes</span><span class="p">,</span> <span class="n">sample_range</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BasePlanner.getNumTopBlock"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.getNumTopBlock">[docs]</a>  <span class="k">def</span> <span class="nf">getNumTopBlock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">_getNumTopBlock</span><span class="p">(</span><span class="n">objects</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BasePlanner.checkOnTopOf"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.checkOnTopOf">[docs]</a>  <span class="k">def</span> <span class="nf">checkOnTopOf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bottom_obj</span><span class="p">,</span> <span class="n">top_obj</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">_checkOnTop</span><span class="p">(</span><span class="n">bottom_obj</span><span class="p">,</span> <span class="n">top_obj</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BasePlanner.checkInBetween"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.checkInBetween">[docs]</a>  <span class="k">def</span> <span class="nf">checkInBetween</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">middle_obj</span><span class="p">,</span> <span class="n">side_obj1</span><span class="p">,</span> <span class="n">side_obj2</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">_checkInBetween</span><span class="p">(</span><span class="n">middle_obj</span><span class="p">,</span> <span class="n">side_obj1</span><span class="p">,</span> <span class="n">side_obj2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BasePlanner.checkStack"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.checkStack">[docs]</a>  <span class="k">def</span> <span class="nf">checkStack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objects</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">_checkStack</span><span class="p">(</span><span class="n">objects</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BasePlanner.checkTermination"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.checkTermination">[docs]</a>  <span class="k">def</span> <span class="nf">checkTermination</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">_checkTermination</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="BasePlanner.isObjectHeld"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.isObjectHeld">[docs]</a>  <span class="k">def</span> <span class="nf">isObjectHeld</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">_isObjectHeld</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BasePlanner.isObjOnTop"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.isObjOnTop">[docs]</a>  <span class="k">def</span> <span class="nf">isObjOnTop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">_isObjOnTop</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BasePlanner.isHolding"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.isHolding">[docs]</a>  <span class="k">def</span> <span class="nf">isHolding</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">_isHolding</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="BasePlanner.isSimValid"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.isSimValid">[docs]</a>  <span class="k">def</span> <span class="nf">isSimValid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">isSimValid</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="BasePlanner.isObjOnGround"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.isObjOnGround">[docs]</a>  <span class="k">def</span> <span class="nf">isObjOnGround</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">_isObjOnGround</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BasePlanner.getHoldingObj"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.getHoldingObj">[docs]</a>  <span class="k">def</span> <span class="nf">getHoldingObj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">_getHoldingObj</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="BasePlanner.getHoldingObjType"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner.getHoldingObjType">[docs]</a>  <span class="k">def</span> <span class="nf">getHoldingObjType</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">_getHoldingObjType</span><span class="p">()</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">HelpingHandsEnvs</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Colin Kohler, Dian Wang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

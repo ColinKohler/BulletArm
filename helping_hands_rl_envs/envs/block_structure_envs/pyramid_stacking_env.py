@@ -1,9 +1,9 @@
 import numpy as np
 
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.base_env import BaseEnv
 from helping_hands_rl_envs.simulators import constants
 
-class PyramidStackingEnv(PyBulletEnv):
+class PyramidStackingEnv(BaseEnv):
   ''''''
   def __init__(self, config):
     # env specific parameters

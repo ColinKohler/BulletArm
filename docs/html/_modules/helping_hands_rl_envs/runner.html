@@ -7,34 +7,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>helping_hands_rl_envs.runner &#8212; HelpingHandsEnvs 0.0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css" />
+    
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
+    
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-   
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">HelpingHandsEnvs 0.0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">helping_hands_rl_envs.runner</a></li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          
-
           <div class="body" role="main">
             
   <h1>Source code for helping_hands_rl_envs.runner</h1><div class="highlight"><pre>
-<span></span><span class="sd">&#39;&#39;&#39; Env Factory API</span>
-
+<span></span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">.. moduleauthor: Colin Kohler &lt;github.com/ColinKohler&gt;</span>
-
 <span class="sd">&#39;&#39;&#39;</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -45,13 +50,13 @@
 
 <div class="viewcode-block" id="worker"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.worker">[docs]</a><span class="k">def</span> <span class="nf">worker</span><span class="p">(</span><span class="n">remote</span><span class="p">,</span> <span class="n">parent_remote</span><span class="p">,</span> <span class="n">env_fn</span><span class="p">,</span> <span class="n">planner_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
   <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">  Worker function which interacts with the environment over remote</span>
+<span class="sd">  Worker function which interacts with the environment over the remove connection</span>
 
 <span class="sd">  Args:</span>
-<span class="sd">    - remote: Worker remote connection</span>
-<span class="sd">    - parent_remote: MultiRunner remote connection</span>
-<span class="sd">    - env_fn: Function which creates a deictic environment</span>
-<span class="sd">    - planner_fn: Function which creates the planner for the environment</span>
+<span class="sd">    remote (multiprocessing.Connection): Worker remote connection</span>
+<span class="sd">    parent_remote (multiprocessing.Connection): MultiRunner remote connection</span>
+<span class="sd">    env_fn (function): Creates a environment</span>
+<span class="sd">    planner_fn (function): Creates the planner for the environment</span>
 <span class="sd">  &#39;&#39;&#39;</span>
   <span class="n">parent_remote</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
@@ -153,12 +158,11 @@
 
 <div class="viewcode-block" id="MultiRunner"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.MultiRunner">[docs]</a><span class="k">class</span> <span class="nc">MultiRunner</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
   <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">  Runner which runs mulitple environemnts in parallel in subprocesses</span>
-<span class="sd">  and communicates with them via pipe.</span>
+<span class="sd">  Runner which runs mulitple environemnts in parallel in subprocesses and communicates with them via pipe.</span>
 
 <span class="sd">  Args:</span>
-<span class="sd">    - env_fns: Env creation function wrapped so it can be created within subprocess</span>
-<span class="sd">    - planner_fns: Planner creation function wrapped so it can be created within subprocess</span>
+<span class="sd">    env_fns (list[function]): Env creation functions</span>
+<span class="sd">    planner_fns (list[function]): Planner creation functions</span>
 <span class="sd">  &#39;&#39;&#39;</span>
   <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env_fns</span><span class="p">,</span> <span class="n">planner_fns</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">waiting</span> <span class="o">=</span> <span class="kc">False</span>
@@ -181,13 +185,11 @@
 <span class="sd">    Step the environments synchronously.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">      - actions: Numpy variable of environment actions</span>
-<span class="sd">      - auto_reset: Should the environment reset automatically after an episode completes</span>
+<span class="sd">      actions (numpy.array): Actions to take in each environment</span>
+<span class="sd">      auto_reset (bool): Reset environments automatically after an episode ends</span>
 
-<span class="sd">    Returns: (obs, rewards, dones)</span>
-<span class="sd">      - obs: Numpy vector of observations</span>
-<span class="sd">      - rewards: Numpy vector of rewards</span>
-<span class="sd">      - dones: Numpy vector of 0/1 flags indicating if episode is done</span>
+<span class="sd">    Returns:</span>
+<span class="sd">      (numpy.array, numpy.array, numpy.array): (observations, rewards, done flags)</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">stepAsync</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="n">auto_reset</span><span class="p">)</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepWait</span><span class="p">()</span></div>
@@ -635,41 +637,21 @@
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">getEmptyInHand</span><span class="p">()</span></div>
 
-  <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="SingleRunner.getEnvGitHash"><a class="viewcode-back" href="../../helping_hands_rl_envs.html#helping_hands_rl_envs.runner.SingleRunner.getEnvGitHash">[docs]</a>  <span class="nd">@staticmethod</span>
   <span class="k">def</span> <span class="nf">getEnvGitHash</span><span class="p">():</span>
     <span class="n">repo</span> <span class="o">=</span> <span class="n">git</span><span class="o">.</span><span class="n">Repo</span><span class="p">(</span><span class="n">helping_hands_rl_envs</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">repo</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">hexsha</span>
+    <span class="k">return</span> <span class="n">repo</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">hexsha</span></div>
 
-  <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="k">return</span></div>
+<div class="viewcode-block" id="SingleRunner.close"><a class="viewcode-back" href="../../helping_hands_rl_envs.html#helping_hands_rl_envs.runner.SingleRunner.close">[docs]</a>  <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
-          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../index.html">HelpingHandsEnvs</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
@@ -680,29 +662,27 @@
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2022, Colin Kohler, Dian Wang.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">HelpingHandsEnvs 0.0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">helping_hands_rl_envs.runner</a></li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Colin Kohler, Dian Wang.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
   </body>
 </html>

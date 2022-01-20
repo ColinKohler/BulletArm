@@ -3,11 +3,11 @@ import numpy as np
 import numpy.random as npr
 
 from helping_hands_rl_envs.simulators.pybullet.equipments.box_color import BoxColor
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.base_env import BaseEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
-class CovidTestEnv(PyBulletEnv):
+class CovidTestEnv(BaseEnv):
   def __init__(self, config):
     # env specific parameters
     if 'object_scale_range' not in config:

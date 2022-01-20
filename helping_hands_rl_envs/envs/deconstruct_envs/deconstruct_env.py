@@ -4,11 +4,11 @@ import scipy
 import numpy.random as npr
 from itertools import combinations
 
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv, NoValidPositionException
+from helping_hands_rl_envs.envs.base_env import BaseEnv, NoValidPositionException
 import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
 from helping_hands_rl_envs.simulators import constants
 
-class DeconstructEnv(PyBulletEnv):
+class DeconstructEnv(BaseEnv):
   '''
 
   '''
@@ -22,7 +22,7 @@ class DeconstructEnv(PyBulletEnv):
   def takeAction(self, action):
     # keep track of the current positions of all objects
     self.prev_obj_pos = self.getObjectPositions(omit_hold=False)
-    PyBulletEnv.takeAction(self, action)
+    self.takeAction(self, action)
 
   def isSimValid(self):
     if self.prev_obj_pos is None:
@@ -31,7 +31,7 @@ class DeconstructEnv(PyBulletEnv):
       # Compare the object positions with the previous step. Only allow one object to move at each action step
       curr_obj_pos = self.getObjectPositions(omit_hold=False)
       dist = np.linalg.norm(curr_obj_pos - self.prev_obj_pos, axis=1)
-      return (dist > 0.005).sum() == 1 and PyBulletEnv.isSimValid(self)
+      return (dist > 0.005).sum() == 1 and self.isSimValid(self)
 
   def _getObservation(self, action=None):
     '''

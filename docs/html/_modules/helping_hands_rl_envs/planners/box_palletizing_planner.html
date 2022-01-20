@@ -1,0 +1,147 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>helping_hands_rl_envs.planners.box_palletizing_planner &#8212; HelpingHandsEnvs 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for helping_hands_rl_envs.planners.box_palletizing_planner</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.planners.block_structure_base_planner</span> <span class="kn">import</span> <span class="n">BlockStructureBasePlanner</span>
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.simulators</span> <span class="kn">import</span> <span class="n">constants</span>
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.simulators.pybullet.utils</span> <span class="kn">import</span> <span class="n">transformations</span>
+
+<div class="viewcode-block" id="BoxPalletizingPlanner"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.box_palletizing_planner.BoxPalletizingPlanner">[docs]</a><span class="k">class</span> <span class="nc">BoxPalletizingPlanner</span><span class="p">(</span><span class="n">BlockStructureBasePlanner</span><span class="p">):</span>
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">(</span><span class="n">BoxPalletizingPlanner</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BoxPalletizingPlanner.pickLargestObjOnTop"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.box_palletizing_planner.BoxPalletizingPlanner.pickLargestObjOnTop">[docs]</a>  <span class="k">def</span> <span class="nf">pickLargestObjOnTop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">objects</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">objects</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">objects</span>
+    <span class="n">objects</span><span class="p">,</span> <span class="n">object_poses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSizeSortedObjPoses</span><span class="p">(</span><span class="n">objects</span><span class="o">=</span><span class="n">objects</span><span class="p">)</span>
+
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">rx</span><span class="p">,</span> <span class="n">ry</span><span class="p">,</span> <span class="n">rz</span> <span class="o">=</span> <span class="n">object_poses</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">object_poses</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">object_poses</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">object_poses</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span> <span class="n">object_poses</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">],</span> <span class="n">object_poses</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">obj</span><span class="p">,</span> <span class="n">pose</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">objects</span><span class="p">,</span> <span class="n">object_poses</span><span class="p">):</span>
+      <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isObjOnTop</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">rx</span><span class="p">,</span> <span class="n">ry</span><span class="p">,</span> <span class="n">rz</span> <span class="o">=</span> <span class="n">pose</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pose</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pose</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">pose</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">pose</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">pose</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+        <span class="k">break</span>
+
+    <span class="n">T</span> <span class="o">=</span> <span class="n">transformations</span><span class="o">.</span><span class="n">euler_matrix</span><span class="p">(</span><span class="n">rx</span><span class="p">,</span> <span class="n">ry</span><span class="p">,</span> <span class="n">rz</span><span class="p">)</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span> <span class="o">+</span> <span class="n">T</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">block_scale_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.01</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">encodeAction</span><span class="p">(</span><span class="n">constants</span><span class="o">.</span><span class="n">PICK_PRIMATIVE</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="p">(</span><span class="n">rz</span><span class="p">,</span> <span class="n">ry</span><span class="p">,</span> <span class="n">rx</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="BoxPalletizingPlanner.getPickingAction"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.box_palletizing_planner.BoxPalletizingPlanner.getPickingAction">[docs]</a>  <span class="k">def</span> <span class="nf">getPickingAction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">obj_on_ground</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">_isObjOnGround</span><span class="p">(</span><span class="n">o</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">objects</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">obj_on_ground</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+      <span class="n">obj_on_ground</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">objects</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pickLargestObjOnTop</span><span class="p">(</span><span class="n">obj_on_ground</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BoxPalletizingPlanner.getPlacingAction"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.box_palletizing_planner.BoxPalletizingPlanner.getPlacingAction">[docs]</a>  <span class="k">def</span> <span class="nf">getPlacingAction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">n_level1</span><span class="p">,</span> <span class="n">n_level2</span><span class="p">,</span> <span class="n">n_level3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">getNEachLevel</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">n_level1</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="p">:</span>
+      <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">odd_place_pos_candidate</span><span class="p">[</span><span class="n">n_level1</span><span class="p">]</span>
+      <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">place_offset</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">box_height</span> <span class="o">*</span> <span class="mf">0.8</span>
+      <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">pallet_rz</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="k">elif</span> <span class="n">n_level2</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="p">:</span>
+      <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">even_place_pos_candidate</span><span class="p">[</span><span class="n">n_level2</span><span class="p">]</span>
+      <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">place_offset</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">box_height</span> <span class="o">*</span> <span class="mf">1.8</span>
+      <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">pallet_rz</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">odd_place_pos_candidate</span><span class="p">[</span><span class="n">n_level3</span><span class="p">]</span>
+      <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">place_offset</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">box_height</span> <span class="o">*</span> <span class="mf">2.8</span>
+      <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">pallet_rz</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">encodeAction</span><span class="p">(</span><span class="n">constants</span><span class="o">.</span><span class="n">PLACE_PRIMATIVE</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BoxPalletizingPlanner.getStepsLeft"><a class="viewcode-back" href="../../../helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.box_palletizing_planner.BoxPalletizingPlanner.getStepsLeft">[docs]</a>  <span class="k">def</span> <span class="nf">getStepsLeft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">n_level1</span><span class="p">,</span> <span class="n">n_level2</span><span class="p">,</span> <span class="n">n_level3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">getNEachLevel</span><span class="p">()</span>
+    <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">num_obj</span> <span class="o">-</span> <span class="n">n_level1</span> <span class="o">-</span> <span class="n">n_level2</span> <span class="o">-</span> <span class="n">n_level3</span><span class="p">)</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">isHolding</span><span class="p">())</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">HelpingHandsEnvs</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Colin Kohler, Dian Wang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

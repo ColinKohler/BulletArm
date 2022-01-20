@@ -2,11 +2,11 @@ import time
 from copy import deepcopy
 import numpy.random as npr
 from itertools import combinations
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.base_env import BaseEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
-class ImproviseHouseBuildingDiscreteEnv(PyBulletEnv):
+class ImproviseHouseBuildingDiscreteEnv(BaseEnv):
   ''''''
   def __init__(self, config):
     # env specific parameters

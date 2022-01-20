@@ -1,9 +1,9 @@
 from copy import deepcopy
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.base_env import BaseEnv
 from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.simulators.constants import NoValidPositionException
 
-class HouseBuilding2Env(PyBulletEnv):
+class HouseBuilding2Env(BaseEnv):
   ''''''
   def __init__(self, config):
     # env specific parameters

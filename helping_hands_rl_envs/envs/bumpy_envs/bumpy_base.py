@@ -1,5 +1,5 @@
 import pybullet as pb
-from helping_hands_rl_envs.envs.pybullet_env import PyBulletEnv
+from helping_hands_rl_envs.envs.base_env import BaseEnv
 import numpy as np
 import os
 import helping_hands_rl_envs

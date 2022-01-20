@@ -3,22 +3,27 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to HelpingHandsEnvs's documentation!
+HelpingHands RL Envs
 ============================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-HelpingHandsEnvs API Env Factory
+Env Factory
 ============================================
 .. automodule:: helping_hands_rl_envs.env_factory
    :members:
 
-HelpingHandsEnvs API Env Runner
+Env Runner
 ============================================
 .. automodule:: helping_hands_rl_envs.runner
    :members:
+
+Base Env
+============================================
+.. automodule:: helping_hands_rl_envs.envs.base_env
+  :members:
 
 Baselines API
 ============================================

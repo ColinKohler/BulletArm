@@ -1,0 +1,168 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>helping_hands_rl_envs.envs.close_loop_envs.close_loop_block_reaching &#8212; HelpingHandsEnvs 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for helping_hands_rl_envs.envs.close_loop_envs.close_loop_block_reaching</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pybullet</span> <span class="k">as</span> <span class="nn">pb</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.simulators</span> <span class="kn">import</span> <span class="n">constants</span>
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.envs.close_loop_envs.close_loop_env</span> <span class="kn">import</span> <span class="n">CloseLoopEnv</span>
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.simulators.pybullet.utils</span> <span class="kn">import</span> <span class="n">transformations</span>
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.planners.close_loop_block_picking_planner</span> <span class="kn">import</span> <span class="n">CloseLoopBlockPickingPlanner</span>
+
+<div class="viewcode-block" id="CloseLoopBlockReachingEnv"><a class="viewcode-back" href="../../../../helping_hands_rl_envs.envs.close_loop_envs.html#helping_hands_rl_envs.envs.close_loop_envs.close_loop_block_reaching.CloseLoopBlockReachingEnv">[docs]</a><span class="k">class</span> <span class="nc">CloseLoopBlockReachingEnv</span><span class="p">(</span><span class="n">CloseLoopEnv</span><span class="p">):</span>
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CloseLoopBlockReachingEnv.reset"><a class="viewcode-back" href="../../../../helping_hands_rl_envs.envs.close_loop_envs.html#helping_hands_rl_envs.envs.close_loop_envs.close_loop_block_reaching.CloseLoopBlockReachingEnv.reset">[docs]</a>  <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">resetPybulletWorkspace</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">moveTo</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="mf">0.2</span><span class="p">],</span> <span class="n">transformations</span><span class="o">.</span><span class="n">quaternion_from_euler</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_generateShapes</span><span class="p">(</span><span class="n">constants</span><span class="o">.</span><span class="n">CUBE</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">random_orientation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_orientation</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getObservation</span><span class="p">()</span></div>
+
+  <span class="k">def</span> <span class="nf">_checkTermination</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">gripper_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">_getEndEffectorPosition</span><span class="p">()</span>
+    <span class="n">obj_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">getPosition</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">gripper_pos</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">obj_pos</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">0.03</span></div>
+
+<div class="viewcode-block" id="createCloseLoopBlockReachingEnv"><a class="viewcode-back" href="../../../../helping_hands_rl_envs.envs.close_loop_envs.html#helping_hands_rl_envs.envs.close_loop_envs.close_loop_block_reaching.createCloseLoopBlockReachingEnv">[docs]</a><span class="k">def</span> <span class="nf">createCloseLoopBlockReachingEnv</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+  <span class="k">return</span> <span class="n">CloseLoopBlockReachingEnv</span><span class="p">(</span><span class="n">config</span><span class="p">)</span></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+  <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+  <span class="n">workspace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span>
+                          <span class="p">[</span><span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>
+                          <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">]])</span>
+  <span class="n">env_config</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;workspace&#39;</span><span class="p">:</span> <span class="n">workspace</span><span class="p">,</span> <span class="s1">&#39;max_steps&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="s1">&#39;obs_size&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;render&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;fast_mode&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s1">&#39;seed&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;action_sequence&#39;</span><span class="p">:</span> <span class="s1">&#39;pxyzr&#39;</span><span class="p">,</span> <span class="s1">&#39;num_objects&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;random_orientation&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s1">&#39;reward_type&#39;</span><span class="p">:</span> <span class="s1">&#39;step_left&#39;</span><span class="p">,</span> <span class="s1">&#39;simulate_grasp&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;perfect_grasp&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;robot&#39;</span><span class="p">:</span> <span class="s1">&#39;kuka&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;object_init_space_check&#39;</span><span class="p">:</span> <span class="s1">&#39;point&#39;</span><span class="p">,</span> <span class="s1">&#39;physics_mode&#39;</span><span class="p">:</span> <span class="s1">&#39;fast&#39;</span><span class="p">,</span> <span class="s1">&#39;object_scale_range&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;hard_reset_freq&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">}</span>
+  <span class="n">planner_config</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;random_orientation&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+  <span class="n">env_config</span><span class="p">[</span><span class="s1">&#39;seed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+  <span class="n">env</span> <span class="o">=</span> <span class="n">CloseLoopBlockReachingEnv</span><span class="p">(</span><span class="n">env_config</span><span class="p">)</span>
+  <span class="n">planner</span> <span class="o">=</span> <span class="n">CloseLoopBlockPickingPlanner</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">planner_config</span><span class="p">)</span>
+  <span class="n">s</span><span class="p">,</span> <span class="n">in_hand</span><span class="p">,</span> <span class="n">obs</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+  <span class="c1"># while True:</span>
+  <span class="c1">#   current_pos = env.robot._getEndEffectorPosition()</span>
+  <span class="c1">#   current_rot = transformations.euler_from_quaternion(env.robot._getEndEffectorRotation())</span>
+  <span class="c1">#</span>
+  <span class="c1">#   block_pos = env.objects[0].getPosition()</span>
+  <span class="c1">#   block_rot = transformations.euler_from_quaternion(env.objects[0].getRotation())</span>
+  <span class="c1">#</span>
+  <span class="c1">#   pos_diff = block_pos - current_pos</span>
+  <span class="c1">#   rot_diff = np.array(block_rot) - current_rot</span>
+  <span class="c1">#   pos_diff[pos_diff // 0.01 &gt; 1] = 0.01</span>
+  <span class="c1">#   pos_diff[pos_diff // -0.01 &gt; 1] = -0.01</span>
+  <span class="c1">#</span>
+  <span class="c1">#   rot_diff[rot_diff // (np.pi/32) &gt; 1] = np.pi/32</span>
+  <span class="c1">#   rot_diff[rot_diff // (-np.pi/32) &gt; 1] = -np.pi/32</span>
+  <span class="c1">#</span>
+  <span class="c1">#   action = [1, pos_diff[0], pos_diff[1], pos_diff[2], rot_diff[2]]</span>
+  <span class="c1">#   obs, reward, done = env.step(action)</span>
+
+  <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="n">action</span> <span class="o">=</span> <span class="n">planner</span><span class="o">.</span><span class="n">getNextAction</span><span class="p">()</span>
+    <span class="n">obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">reward</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+      <span class="nb">print</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+  <span class="c1"># fig, axs = plt.subplots(8, 5, figsize=(25, 40))</span>
+  <span class="c1"># for i in range(40):</span>
+  <span class="c1">#   action = planner.getNextAction()</span>
+  <span class="c1">#   obs, reward, done = env.step(action)</span>
+  <span class="c1">#   axs[i//5, i%5].imshow(obs[2][0], vmax=0.3)</span>
+  <span class="c1"># env.reset()</span>
+  <span class="c1"># fig.show()</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">HelpingHandsEnvs</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Colin Kohler, Dian Wang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
