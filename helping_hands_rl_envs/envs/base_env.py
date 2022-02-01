@@ -13,17 +13,17 @@ import skimage.transform as sk_transform
 import pybullet as pb
 import pybullet_data
 
-import helping_hands_rl_envs.simulators.constants as constants
-from helping_hands_rl_envs.simulators.pybullet.utils import transformations
+import helping_hands_rl_envs.utils.constants as constants
+from helping_hands_rl_envs.pybullet.utils import transformations
 import helping_hands_rl_envs.envs.configs as env_configs
 
-from helping_hands_rl_envs.simulators.pybullet.robots.ur5_simple import UR5_Simple
-from helping_hands_rl_envs.simulators.pybullet.robots.ur5_robotiq import UR5_Robotiq
-from helping_hands_rl_envs.simulators.pybullet.robots.kuka import Kuka
-from helping_hands_rl_envs.simulators.pybullet.utils.sensor import Sensor
-from helping_hands_rl_envs.simulators.pybullet.objects.pybullet_object import PybulletObject
-import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
-from helping_hands_rl_envs.simulators.constants import NoValidPositionException
+from helping_hands_rl_envs.pybullet.robots.ur5_simple import UR5_Simple
+from helping_hands_rl_envs.pybullet.robots.ur5_robotiq import UR5_Robotiq
+from helping_hands_rl_envs.pybullet.robots.kuka import Kuka
+from helping_hands_rl_envs.pybullet.utils.sensor import Sensor
+from helping_hands_rl_envs.pybullet.objects.pybullet_object import PybulletObject
+import helping_hands_rl_envs.pybullet.utils.object_generation as pb_obj_generation
+from helping_hands_rl_envs.utils.constants import NoValidPositionException
 
 class BaseEnv:
   '''

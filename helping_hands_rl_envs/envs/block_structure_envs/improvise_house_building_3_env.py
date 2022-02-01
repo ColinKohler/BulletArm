@@ -2,10 +2,10 @@ from copy import deepcopy
 import numpy as np
 from itertools import combinations
 from helping_hands_rl_envs.envs.base_env import BaseEnv
-from helping_hands_rl_envs.simulators import constants
-from helping_hands_rl_envs.simulators.pybullet.utils import object_generation
-from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
-from helping_hands_rl_envs.simulators.constants import NoValidPositionException
+from helping_hands_rl_envs.pybullet.utils import constants
+from helping_hands_rl_envs.pybullet.utils import object_generation
+from helping_hands_rl_envs.pybullet.utils import pybullet_util
+from helping_hands_rl_envs.pybullet.utils.constants import NoValidPositionException
 
 class ImproviseHouseBuilding3Env(BaseEnv):
   ''''''

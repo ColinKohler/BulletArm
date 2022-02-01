@@ -1,8 +1,8 @@
 import scipy
 
 from helping_hands_rl_envs.planners.house_building_4_planner import HouseBuilding4Planner
-from helping_hands_rl_envs.simulators import constants
-from helping_hands_rl_envs.simulators.constants import NoValidPositionException
+from helping_hands_rl_envs.pybullet.utils import constants
+from helping_hands_rl_envs.pybullet.utils.constants import NoValidPositionException
 
 from itertools import permutations
 

@@ -6,10 +6,10 @@ from itertools import combinations
 from helping_hands_rl_envs.planners.block_stacking_planner import BlockStackingPlanner
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
 from helping_hands_rl_envs.planners.block_structure_base_planner import BlockStructureBasePlanner
-from helping_hands_rl_envs.simulators import constants
-from helping_hands_rl_envs.simulators.constants import NoValidPositionException
-from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
-from helping_hands_rl_envs.simulators.pybullet.utils import transformations
+from helping_hands_rl_envs.pybullet.utils import constants
+from helping_hands_rl_envs.pybullet.utils.constants import NoValidPositionException
+from helping_hands_rl_envs.pybullet.utils import pybullet_util
+from helping_hands_rl_envs.pybullet.utils import transformations
 
 class RampDeconstructPlanner(BlockStructureBasePlanner):
   def __init__(self, env, config):

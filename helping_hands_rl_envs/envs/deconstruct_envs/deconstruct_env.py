@@ -5,8 +5,8 @@ import numpy.random as npr
 from itertools import combinations
 
 from helping_hands_rl_envs.envs.base_env import BaseEnv, NoValidPositionException
-import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
-from helping_hands_rl_envs.simulators import constants
+import helping_hands_rl_envs.pybullet.utils.object_generation as pb_obj_generation
+from helping_hands_rl_envs.pybullet.utils import constants
 
 class DeconstructEnv(BaseEnv):
   '''

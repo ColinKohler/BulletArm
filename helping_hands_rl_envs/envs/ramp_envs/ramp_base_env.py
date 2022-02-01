@@ -1,10 +1,10 @@
 from copy import deepcopy
 import pybullet as pb
 from helping_hands_rl_envs.envs.base_env import BaseEnv
-from helping_hands_rl_envs.simulators.constants import NoValidPositionException
-from helping_hands_rl_envs.simulators import constants
-from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
-from helping_hands_rl_envs.simulators.pybullet.utils import transformations
+from helping_hands_rl_envs.pybullet.utils.constants import NoValidPositionException
+from helping_hands_rl_envs.pybullet.utils import constants
+from helping_hands_rl_envs.pybullet.utils import pybullet_util
+from helping_hands_rl_envs.pybullet.utils import transformations
 import numpy.random as npr
 import numpy as np
 import sys
@@ -48,7 +48,7 @@ class RampBaseEnv(BaseEnv):
     if self.ramp2_id > -1:
       pb.removeBody(self.ramp2_id)
     root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
-    urdf_filepath = os.path.join(root_dir, constants.URDF_PATH, 'tilt.urdf')
+    urdf_filepath = os.path.join(root_dir, constants.OBJECTS_PATH, 'tilt.urdf')
 
     self.ramp1_angle = (self.rx_range[1] - self.rx_range[0]) * np.random.random_sample() + self.rx_range[0]
     self.ramp1_id = pb.loadURDF(urdf_filepath,

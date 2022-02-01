@@ -1,6 +1,6 @@
 import copy as cp
-from .check_goal import CheckGoal
-from ...simulators import constants
+from helping_hands_rl_envs.envs.utils.check_goal import CheckGoal
+from helping_hands_rl_envs.pybullet.utils import constants
 
 class CheckGoalCustomLabels(CheckGoal):
   LABEL_PICK_FAIL = 0

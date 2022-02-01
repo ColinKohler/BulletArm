@@ -1,5 +1,5 @@
 import itertools
-from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.pybullet.utils import constants
 
 class CheckGoal:
   ONE_BLOCK = "1b"

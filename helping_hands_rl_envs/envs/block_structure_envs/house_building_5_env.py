@@ -1,7 +1,7 @@
 from copy import deepcopy
 from helping_hands_rl_envs.envs.base_env import BaseEnv
-from helping_hands_rl_envs.simulators import constants
-from helping_hands_rl_envs.simulators.constants import NoValidPositionException
+from helping_hands_rl_envs.pybullet.utils import constants
+from helping_hands_rl_envs.pybullet.utils.constants import NoValidPositionException
 
 class HouseBuilding5Env(BaseEnv):
   ''''''

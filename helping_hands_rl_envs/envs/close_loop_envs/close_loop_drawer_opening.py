@@ -2,9 +2,9 @@ import pybullet as pb
 import numpy as np
 
 from helping_hands_rl_envs.envs.close_loop_envs.close_loop_env import CloseLoopEnv
-from helping_hands_rl_envs.simulators.pybullet.utils import transformations
+from helping_hands_rl_envs.pybullet.utils import transformations
 from helping_hands_rl_envs.planners.close_loop_drawer_opening_planner import CloseLoopDrawerOpeningPlanner
-from helping_hands_rl_envs.simulators.pybullet.equipments.drawer import Drawer
+from helping_hands_rl_envs.pybullet.equipments.drawer import Drawer
 
 class CloseLoopDrawerOpeningEnv(CloseLoopEnv):
   def __init__(self, config):

@@ -3,6 +3,7 @@ from helping_hands_rl_envs.envs.base_env import BaseEnv
 import numpy as np
 import os
 import helping_hands_rl_envs
+from helping_hands_rl_envs.pybullet.utils import constants
 
 
 class BumpyBase:
@@ -41,8 +42,7 @@ class BumpyBase:
     bump_poses = R.dot(bump_poses.T).T
     bump_poses += self.workspace[:2].mean(1)
 
-    root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
-    obj_pattern = os.path.join(root_dir, 'simulators/urdf/', 'pyramid/pyramid.obj')
+    obj_pattern = os.path.join(constants.URDF_PATH, 'pyramid/pyramid.obj')
     for i in range(9):
       bump_visual_shape = pb.createVisualShape(shapeType=pb.GEOM_MESH, fileName=obj_pattern, meshScale=[self.bump_ext, self.bump_ext, np.tan(self.bump_rs[i])*self.bump_ext*0.5])
       bump_collision_shape = pb.createCollisionShape(shapeType=pb.GEOM_MESH, fileName=obj_pattern, meshScale=[self.bump_ext, self.bump_ext, np.tan(self.bump_rs[i])*self.bump_ext*0.5])

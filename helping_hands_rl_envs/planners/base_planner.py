@@ -1,7 +1,7 @@
 import numpy as np
 import numpy.random as npr
 
-from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.pybullet.utils import constants
 
 class BasePlanner(object):
   def __init__(self, env, config):

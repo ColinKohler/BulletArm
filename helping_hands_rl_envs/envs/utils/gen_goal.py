@@ -1,7 +1,7 @@
 import copy as cp
 import random
 import numpy as np
-from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.pybullet.utils import constants
 import pybullet as pb
 
 class NoValidPositionException(Exception):

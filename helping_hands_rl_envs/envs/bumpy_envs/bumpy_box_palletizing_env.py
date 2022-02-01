@@ -1,8 +1,8 @@
 import pybullet as pb
 import numpy as np
 
-from helping_hands_rl_envs.simulators import constants
-from helping_hands_rl_envs.simulators.constants import NoValidPositionException
+from helping_hands_rl_envs.pybullet.utils import constants
+from helping_hands_rl_envs.pybullet.utils.constants import NoValidPositionException
 
 from helping_hands_rl_envs.envs.realistic_envs.box_palletizing_env import BoxPalletizingEnv
 from helping_hands_rl_envs.envs.bumpy_envs.bumpy_base import BumpyBase

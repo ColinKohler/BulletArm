@@ -2,10 +2,10 @@ import pybullet as pb
 import numpy as np
 import numpy.random as npr
 
-from helping_hands_rl_envs.simulators.pybullet.equipments.box_color import BoxColor
+from helping_hands_rl_envs.pybullet.equipments.box_color import BoxColor
 from helping_hands_rl_envs.envs.base_env import BaseEnv
-from helping_hands_rl_envs.simulators import constants
-from helping_hands_rl_envs.simulators.constants import NoValidPositionException
+from helping_hands_rl_envs.pybullet.utils import constants
+from helping_hands_rl_envs.pybullet.utils.constants import NoValidPositionException
 
 class CovidTestEnv(BaseEnv):
   def __init__(self, config):

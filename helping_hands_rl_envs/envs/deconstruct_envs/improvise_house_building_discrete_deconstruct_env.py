@@ -5,7 +5,7 @@ import numpy as np
 import pybullet as pb
 from itertools import combinations
 from helping_hands_rl_envs.envs.deconstruct_envs.deconstruct_env import DeconstructEnv
-from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.pybullet.utils import constants
 
 class ImproviseHouseBuildingDiscreteEnv(DeconstructEnv):
   ''''''

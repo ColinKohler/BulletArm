@@ -1,8 +1,8 @@
 import numpy as np
 
-from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.pybullet.utils import constants
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
-from helping_hands_rl_envs.simulators.pybullet.utils import transformations
+from helping_hands_rl_envs.pybullet.utils import transformations
 
 class CloseLoopPlanner(BasePlanner):
   def __init__(self, env, config):

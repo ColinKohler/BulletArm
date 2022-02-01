@@ -3,8 +3,8 @@ import numpy.random as npr
 import scipy
 
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
-from helping_hands_rl_envs.simulators import constants
-from helping_hands_rl_envs.simulators.constants import NoValidPositionException
+from helping_hands_rl_envs.pybullet.utils import constants
+from helping_hands_rl_envs.pybullet.utils.constants import NoValidPositionException
 
 import pybullet as pb
 

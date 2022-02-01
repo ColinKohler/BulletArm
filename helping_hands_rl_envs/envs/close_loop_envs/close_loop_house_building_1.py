@@ -1,11 +1,11 @@
 import pybullet as pb
 import numpy as np
 
-from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.pybullet.utils import constants
 from helping_hands_rl_envs.envs.close_loop_envs.close_loop_env import CloseLoopEnv
-from helping_hands_rl_envs.simulators.pybullet.utils import transformations
+from helping_hands_rl_envs.pybullet.utils import transformations
 from helping_hands_rl_envs.planners.close_loop_house_building_1_planner import CloseLoopHouseBuilding1Planner
-from helping_hands_rl_envs.simulators.constants import NoValidPositionException
+from helping_hands_rl_envs.pybullet.utils.constants import NoValidPositionException
 
 class CloseLoopHouseBuilding1Env(CloseLoopEnv):
   def __init__(self, config):

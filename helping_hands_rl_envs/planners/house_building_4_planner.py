@@ -1,5 +1,5 @@
 from helping_hands_rl_envs.planners.block_structure_base_planner import BlockStructureBasePlanner
-from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.pybullet.utils import constants
 
 from itertools import permutations
 
@@ -16,7 +16,7 @@ class HouseBuilding4Planner(BlockStructureBasePlanner):
     roofs = list(filter(lambda x: self.env.object_types[x] == constants.ROOF, self.env.objects))
 
     level1_blocks = list()
-    
+
     perm = permutations(blocks, 2)
     for b1, b2 in perm:
       if not self.isObjOnGround(b1) or not self.isObjOnGround(b2):
@@ -24,7 +24,7 @@ class HouseBuilding4Planner(BlockStructureBasePlanner):
       if self.getDistance(b1, b2) < 2.3 * self.getMaxBlockSize():
         level1_blocks = [b1, b2]
         break
-      
+
     level2_blocks = list(set(blocks) - set(level1_blocks))
 
     return level1_blocks, level2_blocks, bricks, roofs
@@ -67,7 +67,7 @@ class HouseBuilding4Planner(BlockStructureBasePlanner):
       return self.pickSecondTallestObjOnTop(objects=level2_blocks)
     else:
       return self.pickSecondTallestObjOnTop(objects=roofs)
-    
+
   def getPlacingAction(self):
     level1_blocks, level2_blocks, bricks, roofs = self.getObjs()
     blocks = level1_blocks + level2_blocks

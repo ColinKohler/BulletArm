@@ -34,10 +34,21 @@ Base Env
 .. automodule:: helping_hands_rl_envs.envs.base_env
   :members:
 
-Baselines API
+Baselines 
 ============================================
-.. automodule:: baselines.rs
-  :members:
+We include a number of baselines to allow for easier testing and benchmarking of new 
+algorithms. Additional baselines will be added over time but pull requests are encouraged
+and apperciated.
+
+There are both model-free and model-based methods available, see below for a complete list.
+
+Model-Free
+--------------------------------------------
+* FC_DQN: Fully convolutional DQN 
+
+Model-Based
+--------------------------------------------
+* RS: Random sampling
 
 Indices and tables
 ==================

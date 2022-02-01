@@ -3,13 +3,13 @@ import numpy as np
 import scipy
 import numpy.random as npr
 from copy import deepcopy
-from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
-from helping_hands_rl_envs.simulators.constants import NoValidPositionException
+from helping_hands_rl_envs.pybullet.utils import pybullet_util
+from helping_hands_rl_envs.pybullet.utils.constants import NoValidPositionException
 
 from helping_hands_rl_envs.envs.deconstruct_envs.deconstruct_env import DeconstructEnv
 from helping_hands_rl_envs.envs.ramp_envs.ramp_base_env import RampBaseEnv
-import helping_hands_rl_envs.simulators.pybullet.utils.object_generation as pb_obj_generation
-from helping_hands_rl_envs.simulators import constants
+import helping_hands_rl_envs.pybullet.utils.object_generation as pb_obj_generation
+from helping_hands_rl_envs.pybullet.utils import constants
 
 class RampDeconstructEnv(DeconstructEnv, RampBaseEnv):
   def __init__(self, config):

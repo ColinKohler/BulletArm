@@ -3,7 +3,7 @@ import numpy.random as npr
 
 from helping_hands_rl_envs.planners.base_planner import BasePlanner
 from helping_hands_rl_envs.planners.block_structure_base_planner import BlockStructureBasePlanner
-from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.pybullet.utils import constants
 
 class BlockStackingPlanner(BlockStructureBasePlanner):
   def __init__(self, env, config):

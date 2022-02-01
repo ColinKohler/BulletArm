@@ -4,7 +4,7 @@ import numpy.random as npr
 import numpy as np
 from itertools import combinations
 from helping_hands_rl_envs.envs.deconstruct_envs.deconstruct_env import DeconstructEnv
-from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.pybullet.utils import constants
 from helping_hands_rl_envs.envs.utils.check_goal import CheckGoal
 from helping_hands_rl_envs.envs.utils.gen_goal import GenGoal
 

@@ -1,6 +1,6 @@
 import numpy as np
 from helping_hands_rl_envs.envs.ramp_envs.ramp_base_env import RampBaseEnv
-from helping_hands_rl_envs.simulators import constants
+from helping_hands_rl_envs.pybullet.utils import constants
 
 
 class RampImproviseHouseBuilding2Env(RampBaseEnv):
