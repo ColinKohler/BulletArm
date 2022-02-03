@@ -60,25 +60,74 @@ be loaded into any enviornment.
 
 Robots
 --------------------------------------------
+The currently avaliable robots are:
+
 * Kuka
-* UR5
-* ...
+* Floating Kuka Gripper
+* UR5 w/Prismatic Gripper
+* UR5 w/Robotiq 85-2f Gripper
+
+Additional robots can be added by sub-classing the Robot Base class detailed below. Note:
+Robot base contains a number of abstract functions which are specific to the robot being used
+and therefor must be implemetned on any new robots.
+
+Robot Base
+--------------------------------------------
+.. automodule:: helping_hands_rl_envs.pybullet.robots.robot_base
+  :members:
 
 Objects
 --------------------------------------------
+The currently avaliable objects are:
+
 * Bottle
 * Bowl
 * Box
 * Brick
-* ..
+* Cube
+* Cup
+* Cylinder
+* Flat Block
+* Pallet
+* Plate
+* Roof
+* Spoon
+* Swab
+* Teapot Base
+* Teapot Lid
+* Test Tube
+* Triangle
+
+Additional objects can be added by sub-classing the object base class detailed below. The urdf
+for the new object must be added to the urdf directory as well.
+
+Object Base
+--------------------------------------------
+.. automodule:: helping_hands_rl_envs.pybullet.objects.pybullet_object
+  :members:
 
 Equipment
 --------------------------------------------
+The currently avaliable equipment is:
+
 * Blanket
 * Cabinet
+* Container Box
+* Corner
 * Drawer
+* Drawer Handle
+* Drawer w/Rack
 * Rack
-* ..
+* Shelf
+* Tray
+
+Additional equipment can be added by sub-classing the equipment base class detailed below. The urdf
+for the new equipment must be added to the urdf directory as well.
+
+Equipment Base
+--------------------------------------------
+.. automodule:: helping_hands_rl_envs.pybullet.objects.pybullet_equipment
+  :members:
 
 Baselines 
 ============================================

@@ -1,0 +1,597 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>helping_hands_rl_envs.pybullet.robots.robot_base &#8212; HelpingHandsEnvs 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/classic.css" />
+    
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">HelpingHandsEnvs 0.0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">helping_hands_rl_envs.pybullet.robots.robot_base</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for helping_hands_rl_envs.pybullet.robots.robot_base</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">.. moduleauthor: Colin Kohler &lt;github.com/ColinKohler&gt;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.random</span> <span class="k">as</span> <span class="nn">npr</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+
+<span class="kn">import</span> <span class="nn">pybullet</span> <span class="k">as</span> <span class="nn">pb</span>
+<span class="kn">import</span> <span class="nn">pybullet_data</span>
+
+<span class="kn">import</span> <span class="nn">helping_hands_rl_envs</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.pybullet.utils</span> <span class="kn">import</span> <span class="n">pybullet_util</span>
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.pybullet.utils</span> <span class="kn">import</span> <span class="n">constants</span>
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.pybullet.utils</span> <span class="kn">import</span> <span class="n">object_generation</span>
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.pybullet.utils</span> <span class="kn">import</span> <span class="n">transformations</span>
+
+<div class="viewcode-block" id="RobotBase"><a class="viewcode-back" href="../../../../index.html#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase">[docs]</a><span class="k">class</span> <span class="nc">RobotBase</span><span class="p">:</span>
+  <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">  Base Robot Class.</span>
+<span class="sd">  &#39;&#39;&#39;</span>
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">num_joints</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">arm_joint_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">arm_joint_indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">home_positions</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">home_positions_joint</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">end_effector_index</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">holding_obj</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">gripper_closed</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="s1">&#39;holding_obj&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">holding_obj</span><span class="p">,</span>
+      <span class="s1">&#39;gripper_closed&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">gripper_closed</span>
+    <span class="p">}</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">position_gain</span> <span class="o">=</span> <span class="mf">0.02</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">adjust_gripper_after_lift</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="RobotBase.saveState"><a class="viewcode-back" href="../../../../index.html#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.saveState">[docs]</a>  <span class="k">def</span> <span class="nf">saveState</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Set the robot state. The state consists of the object that is being held and</span>
+<span class="sd">    if the gripper is closed.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="s1">&#39;holding_obj&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">holding_obj</span><span class="p">,</span>
+      <span class="s1">&#39;gripper_closed&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">gripper_closed</span>
+    <span class="p">}</span></div>
+
+<div class="viewcode-block" id="RobotBase.restoreState"><a class="viewcode-back" href="../../../../index.html#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.restoreState">[docs]</a>  <span class="k">def</span> <span class="nf">restoreState</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Restores the robot to the previously saved state.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">holding_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;holding_obj&#39;</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">gripper_closed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;gripper_closed&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gripper_closed</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">closeGripper</span><span class="p">(</span><span class="n">max_it</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">openGripper</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RobotBase.getPickedObj"><a class="viewcode-back" href="../../../../index.html#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.getPickedObj">[docs]</a>  <span class="k">def</span> <span class="nf">getPickedObj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objects</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get the object which is currently being held by the gripper.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      objects (numpy.array): Objects to check if are being held.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      (pybullet.objects.PybulletObject): Object being held.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">objects</span><span class="p">:</span>
+      <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objects</span><span class="p">:</span>
+      <span class="c1"># check the contact force normal to count the horizontal contact points</span>
+      <span class="n">contact_points</span> <span class="o">=</span> <span class="n">pb</span><span class="o">.</span><span class="n">getContactPoints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">object_id</span><span class="p">)</span>
+      <span class="n">horizontal</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="nb">abs</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">7</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">contact_points</span><span class="p">))</span>
+      <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">horizontal</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">obj</span>
+
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="RobotBase.pick"><a class="viewcode-back" href="../../../../index.html#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.pick">[docs]</a>  <span class="k">def</span> <span class="nf">pick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">dynamic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">simulate_grasp</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">top_down_approach</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Execute a pick action at the given pose.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      pos (numpy.array): Desired end effector position.</span>
+<span class="sd">      rot (numpy.array): Desired end effector orientation.</span>
+<span class="sd">      offset (float): Grasp offset along the approach axis of the grasp.</span>
+<span class="sd">      dynamic (bool): Simualte arm dynamics when moving the arm. Defaults to True.</span>
+<span class="sd">      objects (numpy.array): List of objects which can be picked up. Defaults to None.</span>
+<span class="sd">      simulate_grasp (bool): Simulate the grasping action. Defaults to True. If set to False, object</span>
+<span class="sd">        will be grasped if it is within a small distance from the gripper.</span>
+<span class="sd">      top_down_approach (bool): Force a top-down grasp action. Defaults to False. If set to True,</span>
+<span class="sd">        approach vector will be set to top-down.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">openGripper</span><span class="p">()</span>
+
+    <span class="c1"># Setup pre-grasp pose</span>
+    <span class="n">pre_pos</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+    <span class="n">pre_rot</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">rot</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">top_down_approach</span><span class="p">:</span>
+      <span class="n">pre_pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">offset</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pb</span><span class="o">.</span><span class="n">getMatrixFromQuaternion</span><span class="p">(</span><span class="n">rot</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+      <span class="n">pre_pos</span> <span class="o">+=</span> <span class="n">m</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">offset</span>
+
+    <span class="c1"># Move to pre-grasp pose and then grasp pose</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">moveTo</span><span class="p">(</span><span class="n">pre_pos</span><span class="p">,</span> <span class="n">pre_rot</span><span class="p">,</span> <span class="n">dynamic</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">simulate_grasp</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">moveTo</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">pos_th</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">rot_th</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+
+      <span class="c1"># Close gripper, if fully closed (nothing grasped), open gripper</span>
+      <span class="n">gripper_fully_closed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">closeGripper</span><span class="p">()</span>
+      <span class="k">if</span> <span class="n">gripper_fully_closed</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">openGripper</span><span class="p">()</span>
+
+      <span class="c1"># Adjust gripper command after moving to pre-grasp pose. Useful in cluttered domains.</span>
+      <span class="c1"># This will increase grasp chance but gripper will shift while lifting object.</span>
+      <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjust_gripper_after_lift</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">moveTo</span><span class="p">(</span><span class="n">pre_pos</span><span class="p">,</span> <span class="n">pre_rot</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adjustGripperCommand</span><span class="p">()</span>
+      <span class="c1"># Adjust gripper command before moving to pre-grasp pose.</span>
+      <span class="c1"># This will increase gripper stabilization but will reduce grasp chance.</span>
+      <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adjustGripperCommand</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">moveTo</span><span class="p">(</span><span class="n">pre_pos</span><span class="p">,</span> <span class="n">pre_rot</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+      <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">pb</span><span class="o">.</span><span class="n">stepSimulation</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">moveTo</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="n">dynamic</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">holding_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPickedObj</span><span class="p">(</span><span class="n">objects</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">moveToJ</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">home_positions_joint</span><span class="p">,</span> <span class="n">dynamic</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">checkGripperClosed</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RobotBase.place"><a class="viewcode-back" href="../../../../index.html#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.place">[docs]</a>  <span class="k">def</span> <span class="nf">place</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">dynamic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">simulate_place</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">top_down_approach</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Execute a place action at the given pose.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      pos (numpy.array): Desired end effector position.</span>
+<span class="sd">      rot (numpy.array): Desired end effector orientation.</span>
+<span class="sd">      offset (float): Place offset along the approach axis of the grasp.</span>
+<span class="sd">      dynamic (bool): Simualte arm dynamics when moving the arm. Defaults to True.</span>
+<span class="sd">      simulate_place (bool): Simulate the placing action. Defaults to True. If set to False, object</span>
+<span class="sd">        will be grasped if it is within a small distance from the gripper.</span>
+<span class="sd">      top_down_approach (bool): Force a top-down grasp action. Defaults to False. If set to True,</span>
+<span class="sd">        approach vector will be set to top-down.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Setup pre-place pose</span>
+    <span class="n">pre_pos</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+    <span class="n">pre_rot</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">rot</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">top_down_approach</span><span class="p">:</span>
+      <span class="n">pre_pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">offset</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pb</span><span class="o">.</span><span class="n">getMatrixFromQuaternion</span><span class="p">(</span><span class="n">rot</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+      <span class="n">pre_pos</span> <span class="o">+=</span> <span class="n">m</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">offset</span>
+
+    <span class="c1"># Move to pre-place pose and then place pose</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">moveTo</span><span class="p">(</span><span class="n">pre_pos</span><span class="p">,</span> <span class="n">pre_rot</span><span class="p">,</span> <span class="n">dynamic</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">simulate_place</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">moveTo</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">pos_th</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">rot_th</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">moveTo</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="n">dynamic</span><span class="p">,</span> <span class="n">pos_th</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">rot_th</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+
+    <span class="c1"># Place object and lift up to pre pose</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">openGripper</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">holding_obj</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">moveTo</span><span class="p">(</span><span class="n">pre_pos</span><span class="p">,</span> <span class="n">pre_rot</span><span class="p">,</span> <span class="n">dynamic</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">moveToJ</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">home_positions_joint</span><span class="p">,</span> <span class="n">dynamic</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RobotBase.push"><a class="viewcode-back" href="../../../../index.html#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.push">[docs]</a>  <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">dynamic</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Execute a push action at the given pose.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      pos (numpy.array): Desired end effector position.</span>
+<span class="sd">      rot (numpy.array): Desired end effector orientation.</span>
+<span class="sd">      offset (float): Push offset along the approach axis of the push.</span>
+<span class="sd">      dynamic (bool): Simualte arm dynamics when moving the arm. Defaults to True.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">goal_pos</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pb</span><span class="o">.</span><span class="n">getMatrixFromQuaternion</span><span class="p">(</span><span class="n">rot</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">goal_pos</span> <span class="o">+=</span> <span class="n">m</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">offset</span>
+
+    <span class="n">pre_pos</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pb</span><span class="o">.</span><span class="n">getMatrixFromQuaternion</span><span class="p">(</span><span class="n">rot</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">pre_pos</span> <span class="o">-=</span> <span class="n">m</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.1</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">closeGripper</span><span class="p">(</span><span class="n">primative</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">PULL_PRIMATIVE</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">moveTo</span><span class="p">(</span><span class="n">pre_pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="n">dynamic</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">moveTo</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">moveTo</span><span class="p">(</span><span class="n">goal_pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">openGripper</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">moveToJ</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">home_positions_joint</span><span class="p">,</span> <span class="n">dynamic</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RobotBase.pull"><a class="viewcode-back" href="../../../../index.html#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.pull">[docs]</a>  <span class="k">def</span> <span class="nf">pull</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">dynamic</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Execute a pull action at the given pose.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      pos (numpy.array): Desired end effector position.</span>
+<span class="sd">      rot (numpy.array): Desired end effector orientation.</span>
+<span class="sd">      offset (float): Pull offset along the approach axis of the pull.</span>
+<span class="sd">      dynamic (bool): Simualte arm dynamics when moving the arm. Defaults to True.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">pre_pos</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pb</span><span class="o">.</span><span class="n">getMatrixFromQuaternion</span><span class="p">(</span><span class="n">rot</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">pre_pos</span> <span class="o">+=</span> <span class="n">m</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">offset</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">moveTo</span><span class="p">(</span><span class="n">pre_pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="n">dynamic</span><span class="p">)</span>
+    <span class="c1"># for mid in np.arange(0, offset, 0.05)[1:]:</span>
+    <span class="c1">#   self.moveTo(pre_pos - m[:, 2] * mid, rot, True)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">moveTo</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">closeGripper</span><span class="p">(</span><span class="n">primative</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">PULL_PRIMATIVE</span><span class="p">)</span>
+    <span class="c1"># for mid in np.arange(0, offset, 0.05)[1:]:</span>
+    <span class="c1">#   self.moveTo(pos + m[:, 2] * mid, rot, True)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">moveTo</span><span class="p">(</span><span class="n">pre_pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">openGripper</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">moveToJ</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">home_positions_joint</span><span class="p">,</span> <span class="n">dynamic</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RobotBase.roundPull"><a class="viewcode-back" href="../../../../index.html#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.roundPull">[docs]</a>  <span class="k">def</span> <span class="nf">roundPull</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dynamic</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Execute a pull action at the given pose. In a circular motion.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      pos (numpy.array): Desired end effector position.</span>
+<span class="sd">      rot (numpy.array): Desired end effector orientation.</span>
+<span class="sd">      offset (float): Pull offset along the approach axis of the pull.</span>
+<span class="sd">      radius (float): Radius for the circle in the circular pulling motion.</span>
+<span class="sd">      left (bool): Rotate round pull action from the left. Defaults to True.</span>
+<span class="sd">      dynamic (bool): Simualte arm dynamics when moving the arm. Defaults to True.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">pre_pos</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">m</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pb</span><span class="o">.</span><span class="n">getMatrixFromQuaternion</span><span class="p">(</span><span class="n">rot</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">pre_pos</span> <span class="o">+=</span> <span class="n">m</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">offset</span>
+    <span class="n">waypoint_theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="n">waypoint_pos</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">waypoint_rot</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">theta</span> <span class="ow">in</span> <span class="n">waypoint_theta</span><span class="p">:</span>
+      <span class="n">dx</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">radius</span>
+      <span class="k">if</span> <span class="n">left</span><span class="p">:</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span> <span class="o">*</span> <span class="n">radius</span>
+      <span class="k">else</span><span class="p">:</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span> <span class="o">*</span> <span class="n">radius</span>
+      <span class="n">waypoint_pos</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">dx</span><span class="p">,</span> <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">dy</span><span class="p">,</span> <span class="n">pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+      <span class="k">if</span> <span class="n">left</span><span class="p">:</span>
+        <span class="n">m_prime</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">transformations</span><span class="o">.</span><span class="n">euler_matrix</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="c1"># m_prime = m.dot(transformations.euler_matrix(0, 0, 0))</span>
+      <span class="k">else</span><span class="p">:</span>
+        <span class="n">m_prime</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">transformations</span><span class="o">.</span><span class="n">euler_matrix</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">theta</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+      <span class="n">waypoint_rot</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transformations</span><span class="o">.</span><span class="n">quaternion_from_matrix</span><span class="p">(</span><span class="n">m_prime</span><span class="p">))</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">moveTo</span><span class="p">(</span><span class="n">pre_pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="n">dynamic</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">moveTo</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">closeGripper</span><span class="p">(</span><span class="n">primative</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">PULL_PRIMATIVE</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">waypoint_theta</span><span class="p">)):</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">moveTo</span><span class="p">(</span><span class="n">waypoint_pos</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">waypoint_rot</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">openGripper</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">moveToJ</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">home_positions_joint</span><span class="p">,</span> <span class="n">dynamic</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RobotBase.moveTo"><a class="viewcode-back" href="../../../../index.html#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.moveTo">[docs]</a>  <span class="k">def</span> <span class="nf">moveTo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="n">dynamic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pos_th</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">rot_th</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Move the end-effector to the given pose.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      pos (numpy.array): Desired end-effector position.</span>
+<span class="sd">      rot (numpy.array): Desired end-effector orientation.</span>
+<span class="sd">      dynamic (bool): Simualte arm dynamics when moving the arm. Defaults to True.</span>
+<span class="sd">      pos_th (float): Positional threshold for ending the movement. Defaults to 1e-3.</span>
+<span class="sd">      rot_th (float): Rotational threshold for ending the movement. Defaults to 1e-3.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">dynamic</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">holding_obj</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">_moveToCartesianPose</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="n">dynamic</span><span class="p">,</span> <span class="n">pos_th</span><span class="p">,</span> <span class="n">rot_th</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">_teleportArmWithObj</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RobotBase.moveToJ"><a class="viewcode-back" href="../../../../index.html#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.moveToJ">[docs]</a>  <span class="k">def</span> <span class="nf">moveToJ</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">joint_pose</span><span class="p">,</span> <span class="n">dynamic</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Move the desired joint positions</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      joint_pose (numpy.array): Joint positions for each joint in the manipulator.</span>
+<span class="sd">      dynamic (bool): Simualte arm dynamics when moving the arm. Defaults to True.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">dynamic</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">holding_obj</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">_moveToJointPose</span><span class="p">(</span><span class="n">pose</span><span class="p">,</span> <span class="n">dynamic</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">_teleportArmWithObjJointPose</span><span class="p">(</span><span class="n">pose</span><span class="p">)</span></div>
+
+  <span class="k">def</span> <span class="nf">_moveToJointPose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_pose</span><span class="p">,</span> <span class="n">dynamic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_it</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Move the desired joint positions</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      joint_pose (numpy.array): Joint positions for each joint in the manipulator.</span>
+<span class="sd">      dynamic (bool): Simualte arm dynamics when moving the arm. Defaults to True.</span>
+<span class="sd">      max_it (int): Maximum number of iterations the movement can take. Defaults to 10000.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">dynamic</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">_sendPositionCommand</span><span class="p">(</span><span class="n">target_pose</span><span class="p">)</span>
+      <span class="n">past_joint_pos</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+      <span class="n">joint_state</span> <span class="o">=</span> <span class="n">pb</span><span class="o">.</span><span class="n">getJointStates</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">arm_joint_indices</span><span class="p">)</span>
+      <span class="n">joint_pos</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">joint_state</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+      <span class="n">n_it</span> <span class="o">=</span> <span class="mi">0</span>
+      <span class="k">while</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">joint_pos</span><span class="p">,</span> <span class="n">target_pose</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span> <span class="ow">and</span> <span class="n">n_it</span> <span class="o">&lt;</span> <span class="n">max_it</span><span class="p">:</span>
+        <span class="n">pb</span><span class="o">.</span><span class="n">stepSimulation</span><span class="p">()</span>
+        <span class="n">n_it</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c1"># Check to see if the arm can&#39;t move any close to the desired joint position</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">past_joint_pos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">5</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">past_joint_pos</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">past_joint_pos</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">):</span>
+          <span class="k">break</span>
+        <span class="n">past_joint_pos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">joint_pos</span><span class="p">)</span>
+        <span class="n">joint_state</span> <span class="o">=</span> <span class="n">pb</span><span class="o">.</span><span class="n">getJointStates</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">arm_joint_indices</span><span class="p">)</span>
+        <span class="n">joint_pos</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">joint_state</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">else</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">_setJointPoses</span><span class="p">(</span><span class="n">target_pose</span><span class="p">)</span>
+
+  <span class="k">def</span> <span class="nf">_moveToCartesianPose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="n">dynamic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pos_th</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">rot_th</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Move the end effector to the desired cartesian pose.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      pos (numpy.array): Desired end-effector position.</span>
+<span class="sd">      rot (numpy.array): Desired end-effector orientation.</span>
+<span class="sd">      dynamic (bool): Simualte arm dynamics when moving the arm. Defaults to True.</span>
+<span class="sd">      pos_th (float): Positional threshold for ending the movement. Defaults to 1e-3.</span>
+<span class="sd">      rot_th (float): Rotational threshold for ending the movement. Defaults to 1e-3.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">close_enough</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">outer_it</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">max_outer_it</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">max_inner_it</span> <span class="o">=</span> <span class="mi">100</span>
+
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">close_enough</span> <span class="ow">and</span> <span class="n">outer_it</span> <span class="o">&lt;</span> <span class="n">max_outer_it</span><span class="p">:</span>
+      <span class="n">ik_solve</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculateIK</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">)</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">_moveToJointPose</span><span class="p">(</span><span class="n">ik_solve</span><span class="p">,</span> <span class="n">dynamic</span><span class="p">,</span> <span class="n">max_inner_it</span><span class="p">)</span>
+
+      <span class="n">ls</span> <span class="o">=</span> <span class="n">pb</span><span class="o">.</span><span class="n">getLinkState</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_effector_index</span><span class="p">)</span>
+      <span class="n">new_pos</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ls</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+      <span class="n">new_rot</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ls</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+      <span class="n">close_enough</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">new_pos</span><span class="p">),</span> <span class="n">pos</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">pos_th</span><span class="p">)</span> <span class="ow">and</span> \
+                     <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">new_rot</span><span class="p">),</span> <span class="n">rot</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">rot_th</span><span class="p">)</span>
+      <span class="n">outer_it</span> <span class="o">+=</span> <span class="mi">1</span>
+
+  <span class="k">def</span> <span class="nf">_teleportArmWithObj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Teleport the arm to the given pose along with the object that is being grasped.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      pos (numpy.array): Desired end-effector position.</span>
+<span class="sd">      rot (numpy.array): Desired end-effector orientation.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">holding_obj</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">_moveToCartesianPose</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+      <span class="k">return</span>
+
+    <span class="n">end_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getEndEffectorPosition</span><span class="p">()</span>
+    <span class="n">end_rot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getEndEffectorRotation</span><span class="p">()</span>
+    <span class="n">obj_pos</span><span class="p">,</span> <span class="n">obj_rot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">holding_obj</span><span class="o">.</span><span class="n">getPose</span><span class="p">()</span>
+    <span class="n">oTend</span> <span class="o">=</span> <span class="n">pybullet_util</span><span class="o">.</span><span class="n">getMatrix</span><span class="p">(</span><span class="n">end_pos</span><span class="p">,</span> <span class="n">end_rot</span><span class="p">)</span>
+    <span class="n">oTobj</span> <span class="o">=</span> <span class="n">pybullet_util</span><span class="o">.</span><span class="n">getMatrix</span><span class="p">(</span><span class="n">obj_pos</span><span class="p">,</span> <span class="n">obj_rot</span><span class="p">)</span>
+    <span class="n">endTobj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">oTend</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">oTobj</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_moveToCartesianPose</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">end_pos_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getEndEffectorPosition</span><span class="p">()</span>
+    <span class="n">end_rot_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getEndEffectorRotation</span><span class="p">()</span>
+    <span class="n">oTend_</span> <span class="o">=</span> <span class="n">pybullet_util</span><span class="o">.</span><span class="n">getMatrix</span><span class="p">(</span><span class="n">end_pos_</span><span class="p">,</span> <span class="n">end_rot_</span><span class="p">)</span>
+    <span class="n">oTobj_</span> <span class="o">=</span> <span class="n">oTend_</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">endTobj</span><span class="p">)</span>
+    <span class="n">obj_pos_</span> <span class="o">=</span> <span class="n">oTobj_</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">obj_rot_</span> <span class="o">=</span> <span class="n">transformations</span><span class="o">.</span><span class="n">quaternion_from_matrix</span><span class="p">(</span><span class="n">oTobj_</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">holding_obj</span><span class="o">.</span><span class="n">resetPose</span><span class="p">(</span><span class="n">obj_pos_</span><span class="p">,</span> <span class="n">obj_rot_</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RobotBase.getEndToHoldingObj"><a class="viewcode-back" href="../../../../index.html#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.getEndToHoldingObj">[docs]</a>  <span class="k">def</span> <span class="nf">getEndToHoldingObj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get the transfomration from the end effector to the object currently beinging held.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      numpy.array: Transformation matrix</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">holding_obj</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+    <span class="n">end_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getEndEffectorPosition</span><span class="p">()</span>
+    <span class="n">end_rot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getEndEffectorRotation</span><span class="p">()</span>
+    <span class="n">obj_pos</span><span class="p">,</span> <span class="n">obj_rot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">holding_obj</span><span class="o">.</span><span class="n">getPose</span><span class="p">()</span>
+    <span class="n">oTend</span> <span class="o">=</span> <span class="n">pybullet_util</span><span class="o">.</span><span class="n">getMatrix</span><span class="p">(</span><span class="n">end_pos</span><span class="p">,</span> <span class="n">end_rot</span><span class="p">)</span>
+    <span class="n">oTobj</span> <span class="o">=</span> <span class="n">pybullet_util</span><span class="o">.</span><span class="n">getMatrix</span><span class="p">(</span><span class="n">obj_pos</span><span class="p">,</span> <span class="n">obj_rot</span><span class="p">)</span>
+    <span class="n">endTobj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">oTend</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">oTobj</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">endTobj</span></div>
+
+  <span class="k">def</span> <span class="nf">_teleportArmWithObjJointPose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">joint_pose</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Directly set the arm to the given joint positions. Moves the object being held.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      joint_pose (numpy.array): The joint positions for the manipulators</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">holding_obj</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">_moveToJointPose</span><span class="p">(</span><span class="n">joint_pose</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+      <span class="k">return</span>
+
+    <span class="n">endTobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getEndToHoldingObj</span><span class="p">()</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_moveToJointPose</span><span class="p">(</span><span class="n">joint_pose</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">end_pos_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getEndEffectorPosition</span><span class="p">()</span>
+    <span class="n">end_rot_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getEndEffectorRotation</span><span class="p">()</span>
+    <span class="n">oTend_</span> <span class="o">=</span> <span class="n">pybullet_util</span><span class="o">.</span><span class="n">getMatrix</span><span class="p">(</span><span class="n">end_pos_</span><span class="p">,</span> <span class="n">end_rot_</span><span class="p">)</span>
+    <span class="n">oTobj_</span> <span class="o">=</span> <span class="n">oTend_</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">endTobj</span><span class="p">)</span>
+    <span class="n">obj_pos_</span> <span class="o">=</span> <span class="n">oTobj_</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">obj_rot_</span> <span class="o">=</span> <span class="n">transformations</span><span class="o">.</span><span class="n">quaternion_from_matrix</span><span class="p">(</span><span class="n">oTobj_</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">holding_obj</span><span class="o">.</span><span class="n">resetPose</span><span class="p">(</span><span class="n">obj_pos_</span><span class="p">,</span> <span class="n">obj_rot_</span><span class="p">)</span>
+
+  <span class="k">def</span> <span class="nf">_getEndEffectorPosition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get the current end effector position.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      (numpy.array): The end effector position.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="n">pb</span><span class="o">.</span><span class="n">getLinkState</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_effector_index</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+
+  <span class="k">def</span> <span class="nf">_getEndEffectorRotation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get the current end effector orientation.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      (numpy.array): The end effector orientation.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="n">pb</span><span class="o">.</span><span class="n">getLinkState</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_effector_index</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+
+  <span class="k">def</span> <span class="nf">_setJointPoses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q_poses</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Set the joints to the given positions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      q_poses (numpy.array): The joint positions.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">q_poses</span><span class="p">)):</span>
+      <span class="n">motor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arm_joint_indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+      <span class="n">pb</span><span class="o">.</span><span class="n">resetJointState</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">motor</span><span class="p">,</span> <span class="n">q_poses</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_sendPositionCommand</span><span class="p">(</span><span class="n">q_poses</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RobotBase.plotEndEffectorFrame"><a class="viewcode-back" href="../../../../index.html#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.plotEndEffectorFrame">[docs]</a>  <span class="k">def</span> <span class="nf">plotEndEffectorFrame</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Plot the end effector&#39;s frame in the PyBullet GUI.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      () :</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">line_id1</span> <span class="o">=</span> <span class="n">pb</span><span class="o">.</span><span class="n">addUserDebugLine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_getEndEffectorPosition</span><span class="p">(),</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">_getEndEffectorPosition</span><span class="p">()</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">transformations</span><span class="o">.</span><span class="n">quaternion_matrix</span><span class="p">(</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">_getEndEffectorRotation</span><span class="p">())[:</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">line_id2</span> <span class="o">=</span> <span class="n">pb</span><span class="o">.</span><span class="n">addUserDebugLine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_getEndEffectorPosition</span><span class="p">(),</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">_getEndEffectorPosition</span><span class="p">()</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">transformations</span><span class="o">.</span><span class="n">quaternion_matrix</span><span class="p">(</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">_getEndEffectorRotation</span><span class="p">())[:</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">line_id3</span> <span class="o">=</span> <span class="n">pb</span><span class="o">.</span><span class="n">addUserDebugLine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_getEndEffectorPosition</span><span class="p">(),</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">_getEndEffectorPosition</span><span class="p">()</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">transformations</span><span class="o">.</span><span class="n">quaternion_matrix</span><span class="p">(</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">_getEndEffectorRotation</span><span class="p">())[:</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">line_id1</span><span class="p">,</span> <span class="n">line_id2</span><span class="p">,</span> <span class="n">line_id3</span></div>
+
+  <span class="c1">#===========================================================================#</span>
+  <span class="c1">#           Abstract functions sub-class robots must implement              #</span>
+  <span class="c1">#===========================================================================#</span>
+  <span class="nd">@abstractmethod</span>
+  <span class="k">def</span> <span class="nf">_calculateIK</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">rot</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+  <span class="nd">@abstractmethod</span>
+  <span class="k">def</span> <span class="nf">openGripper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+  <span class="nd">@abstractmethod</span>
+  <span class="k">def</span> <span class="nf">closeGripper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_it</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">primative</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">PICK_PRIMATIVE</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+  <span class="nd">@abstractmethod</span>
+  <span class="k">def</span> <span class="nf">checkGripperClosed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+  <span class="nd">@abstractmethod</span>
+  <span class="k">def</span> <span class="nf">controlGripper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">open_ratio</span><span class="p">,</span> <span class="n">max_it</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+  <span class="nd">@abstractmethod</span>
+  <span class="k">def</span> <span class="nf">_getGripperJointPosition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+  <span class="nd">@abstractmethod</span>
+  <span class="k">def</span> <span class="nf">_sendPositionCommand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commands</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+  <span class="nd">@abstractmethod</span>
+  <span class="k">def</span> <span class="nf">adjustGripperCommand</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">HelpingHandsEnvs 0.0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">helping_hands_rl_envs.pybullet.robots.robot_base</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Colin Kohler, Dian Wang.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

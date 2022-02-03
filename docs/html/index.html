@@ -554,7 +554,7 @@ environment to the list of avaliable environments in the env_fn file.</p>
 <dd><p>Base Env Class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>config</strong> (<em>-</em>) – Config used to specify various environment details</p>
+<dd class="field-odd"><p><strong>config</strong> – Config used to specify various environment details</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -606,31 +606,513 @@ manipulators for use. There are also numerous objects and environment details wh
 be loaded into any enviornment.</p>
 <section id="robots">
 <h2>Robots<a class="headerlink" href="#robots" title="Permalink to this headline">¶</a></h2>
+<p>The currently avaliable robots are:</p>
 <ul class="simple">
 <li><p>Kuka</p></li>
-<li><p>UR5</p></li>
-<li><p>…</p></li>
+<li><p>Floating Kuka Gripper</p></li>
+<li><p>UR5 w/Prismatic Gripper</p></li>
+<li><p>UR5 w/Robotiq 85-2f Gripper</p></li>
 </ul>
+<p>Additional robots can be added by sub-classing the Robot Base class detailed below. Note:
+Robot base contains a number of abstract functions which are specific to the robot being used
+and therefor must be implemetned on any new robots.</p>
+</section>
+<section id="module-helping_hands_rl_envs.pybullet.robots.robot_base">
+<span id="robot-base"></span><h2>Robot Base<a class="headerlink" href="#module-helping_hands_rl_envs.pybullet.robots.robot_base" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helping_hands_rl_envs.pybullet.robots.robot_base.</span></span><span class="sig-name descname"><span class="pre">RobotBase</span></span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base Robot Class.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.getEndToHoldingObj">
+<span class="sig-name descname"><span class="pre">getEndToHoldingObj</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.getEndToHoldingObj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.getEndToHoldingObj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the transfomration from the end effector to the object currently beinging held.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Transformation matrix</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.getPickedObj">
+<span class="sig-name descname"><span class="pre">getPickedObj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">objects</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.getPickedObj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.getPickedObj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the object which is currently being held by the gripper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>objects</strong> (<em>numpy.array</em>) – Objects to check if are being held.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Object being held.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(pybullet.objects.PybulletObject)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.moveTo">
+<span class="sig-name descname"><span class="pre">moveTo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_th</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rot_th</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.moveTo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.moveTo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move the end-effector to the given pose.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> (<em>numpy.array</em>) – Desired end-effector position.</p></li>
+<li><p><strong>rot</strong> (<em>numpy.array</em>) – Desired end-effector orientation.</p></li>
+<li><p><strong>dynamic</strong> (<em>bool</em>) – Simualte arm dynamics when moving the arm. Defaults to True.</p></li>
+<li><p><strong>pos_th</strong> (<em>float</em>) – Positional threshold for ending the movement. Defaults to 1e-3.</p></li>
+<li><p><strong>rot_th</strong> (<em>float</em>) – Rotational threshold for ending the movement. Defaults to 1e-3.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.moveToJ">
+<span class="sig-name descname"><span class="pre">moveToJ</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">joint_pose</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.moveToJ"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.moveToJ" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move the desired joint positions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>joint_pose</strong> (<em>numpy.array</em>) – Joint positions for each joint in the manipulator.</p></li>
+<li><p><strong>dynamic</strong> (<em>bool</em>) – Simualte arm dynamics when moving the arm. Defaults to True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.pick">
+<span class="sig-name descname"><span class="pre">pick</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulate_grasp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_down_approach</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.pick"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.pick" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute a pick action at the given pose.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> (<em>numpy.array</em>) – Desired end effector position.</p></li>
+<li><p><strong>rot</strong> (<em>numpy.array</em>) – Desired end effector orientation.</p></li>
+<li><p><strong>offset</strong> (<em>float</em>) – Grasp offset along the approach axis of the grasp.</p></li>
+<li><p><strong>dynamic</strong> (<em>bool</em>) – Simualte arm dynamics when moving the arm. Defaults to True.</p></li>
+<li><p><strong>objects</strong> (<em>numpy.array</em>) – List of objects which can be picked up. Defaults to None.</p></li>
+<li><p><strong>simulate_grasp</strong> (<em>bool</em>) – Simulate the grasping action. Defaults to True. If set to False, object
+will be grasped if it is within a small distance from the gripper.</p></li>
+<li><p><strong>top_down_approach</strong> (<em>bool</em>) – Force a top-down grasp action. Defaults to False. If set to True,
+approach vector will be set to top-down.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.place">
+<span class="sig-name descname"><span class="pre">place</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulate_place</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_down_approach</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.place"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.place" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute a place action at the given pose.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> (<em>numpy.array</em>) – Desired end effector position.</p></li>
+<li><p><strong>rot</strong> (<em>numpy.array</em>) – Desired end effector orientation.</p></li>
+<li><p><strong>offset</strong> (<em>float</em>) – Place offset along the approach axis of the grasp.</p></li>
+<li><p><strong>dynamic</strong> (<em>bool</em>) – Simualte arm dynamics when moving the arm. Defaults to True.</p></li>
+<li><p><strong>simulate_place</strong> (<em>bool</em>) – Simulate the placing action. Defaults to True. If set to False, object
+will be grasped if it is within a small distance from the gripper.</p></li>
+<li><p><strong>top_down_approach</strong> (<em>bool</em>) – Force a top-down grasp action. Defaults to False. If set to True,
+approach vector will be set to top-down.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.plotEndEffectorFrame">
+<span class="sig-name descname"><span class="pre">plotEndEffectorFrame</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.plotEndEffectorFrame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.plotEndEffectorFrame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the end effector’s frame in the PyBullet GUI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.pull">
+<span class="sig-name descname"><span class="pre">pull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.pull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.pull" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute a pull action at the given pose.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> (<em>numpy.array</em>) – Desired end effector position.</p></li>
+<li><p><strong>rot</strong> (<em>numpy.array</em>) – Desired end effector orientation.</p></li>
+<li><p><strong>offset</strong> (<em>float</em>) – Pull offset along the approach axis of the pull.</p></li>
+<li><p><strong>dynamic</strong> (<em>bool</em>) – Simualte arm dynamics when moving the arm. Defaults to True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.push">
+<span class="sig-name descname"><span class="pre">push</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.push"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.push" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute a push action at the given pose.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> (<em>numpy.array</em>) – Desired end effector position.</p></li>
+<li><p><strong>rot</strong> (<em>numpy.array</em>) – Desired end effector orientation.</p></li>
+<li><p><strong>offset</strong> (<em>float</em>) – Push offset along the approach axis of the push.</p></li>
+<li><p><strong>dynamic</strong> (<em>bool</em>) – Simualte arm dynamics when moving the arm. Defaults to True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.restoreState">
+<span class="sig-name descname"><span class="pre">restoreState</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.restoreState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.restoreState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restores the robot to the previously saved state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.roundPull">
+<span class="sig-name descname"><span class="pre">roundPull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.roundPull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.roundPull" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute a pull action at the given pose. In a circular motion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> (<em>numpy.array</em>) – Desired end effector position.</p></li>
+<li><p><strong>rot</strong> (<em>numpy.array</em>) – Desired end effector orientation.</p></li>
+<li><p><strong>offset</strong> (<em>float</em>) – Pull offset along the approach axis of the pull.</p></li>
+<li><p><strong>radius</strong> (<em>float</em>) – Radius for the circle in the circular pulling motion.</p></li>
+<li><p><strong>left</strong> (<em>bool</em>) – Rotate round pull action from the left. Defaults to True.</p></li>
+<li><p><strong>dynamic</strong> (<em>bool</em>) – Simualte arm dynamics when moving the arm. Defaults to True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.saveState">
+<span class="sig-name descname"><span class="pre">saveState</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.saveState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.saveState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the robot state. The state consists of the object that is being held and
+if the gripper is closed.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="objects">
 <h2>Objects<a class="headerlink" href="#objects" title="Permalink to this headline">¶</a></h2>
+<p>The currently avaliable objects are:</p>
 <ul class="simple">
 <li><p>Bottle</p></li>
 <li><p>Bowl</p></li>
 <li><p>Box</p></li>
 <li><p>Brick</p></li>
-<li></li>
+<li><p>Cube</p></li>
+<li><p>Cup</p></li>
+<li><p>Cylinder</p></li>
+<li><p>Flat Block</p></li>
+<li><p>Pallet</p></li>
+<li><p>Plate</p></li>
+<li><p>Roof</p></li>
+<li><p>Spoon</p></li>
+<li><p>Swab</p></li>
+<li><p>Teapot Base</p></li>
+<li><p>Teapot Lid</p></li>
+<li><p>Test Tube</p></li>
+<li><p>Triangle</p></li>
 </ul>
+<p>Additional objects can be added by sub-classing the object base class detailed below. The urdf
+for the new object must be added to the urdf directory as well.</p>
+</section>
+<section id="module-helping_hands_rl_envs.pybullet.objects.pybullet_object">
+<span id="object-base"></span><h2>Object Base<a class="headerlink" href="#module-helping_hands_rl_envs.pybullet.objects.pybullet_object" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helping_hands_rl_envs.pybullet.objects.pybullet_object.</span></span><span class="sig-name descname"><span class="pre">PybulletObject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_type_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base obejct class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>object_type_id</strong> (<em>int</em>) – The id for the object type being loaded. See cosntants.py.</p></li>
+<li><p><strong>object_id</strong> (<em>int</em>) – The object id.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getBoundingBox">
+<span class="sig-name descname"><span class="pre">getBoundingBox</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getBoundingBox"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getBoundingBox" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the bounding box for the object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The AABB bounding box</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getContactPoints">
+<span class="sig-name descname"><span class="pre">getContactPoints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getContactPoints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getContactPoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current points of contact on the obejct.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The points of contact</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getGraspPose">
+<span class="sig-name descname"><span class="pre">getGraspPose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getGraspPose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getGraspPose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the canonical grasp pose for the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The grasp pose</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getGraspPosition">
+<span class="sig-name descname"><span class="pre">getGraspPosition</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getGraspPosition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getGraspPosition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the canonical grasp position for the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The grasp position</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getGraspRotation">
+<span class="sig-name descname"><span class="pre">getGraspRotation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getGraspRotation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getGraspRotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the canonical grasp orientation for the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The grasp orientation</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getPose">
+<span class="sig-name descname"><span class="pre">getPose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getPose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getPose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current pose of the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>(position, orientation)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>(list[float], list[float])</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getPosition">
+<span class="sig-name descname"><span class="pre">getPosition</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getPosition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getPosition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current xyz position of the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The xyz position of the object.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getRotation">
+<span class="sig-name descname"><span class="pre">getRotation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getRotation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getRotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current rpy orientation of the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The rpy orientation of the object.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list[float](numpy.array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getVelocity">
+<span class="sig-name descname"><span class="pre">getVelocity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getVelocity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getVelocity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the velocity for the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>(linear_velocity, angular velocity)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>(list[float], list[float])</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getXPosition">
+<span class="sig-name descname"><span class="pre">getXPosition</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getXPosition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getXPosition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current x position of the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The x position of the object.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getXYPosition">
+<span class="sig-name descname"><span class="pre">getXYPosition</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getXYPosition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getXYPosition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current xy position of the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The xy position of the object.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getYPosition">
+<span class="sig-name descname"><span class="pre">getYPosition</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getYPosition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getYPosition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current y position of the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The y position of the object.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getZPosition">
+<span class="sig-name descname"><span class="pre">getZPosition</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getZPosition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getZPosition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current z position of the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The z position of the object.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.isTouching">
+<span class="sig-name descname"><span class="pre">isTouching</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.isTouching"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.isTouching" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks to see if two objects are touching.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obj</strong> (<a class="reference internal" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject" title="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject"><em>PybulletObject</em></a>) – Other object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if objects are touching, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.isTouchingId">
+<span class="sig-name descname"><span class="pre">isTouchingId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.isTouchingId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.isTouchingId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks to see if two objects are touching.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obj_id</strong> (<em>int</em>) – ID of the other object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if objects are touching, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.resetPose">
+<span class="sig-name descname"><span class="pre">resetPose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rot</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.resetPose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.resetPose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the object to the given pose.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> (<em>numpy.array</em>) – Position</p></li>
+<li><p><strong>rot</strong> (<em>numpy.array</em>) – Orientation</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.setVelocity">
+<span class="sig-name descname"><span class="pre">setVelocity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">linear_velocity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angular_velocity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.setVelocity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.setVelocity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the velocity for the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>linear_velocity</strong> (<em>numpy.array</em>) – Linear velocity for the object.</p></li>
+<li><p><strong>angular_velocity</strong> (<em>numpy.array</em>) – Angular velocity for the object.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="equipment">
 <h2>Equipment<a class="headerlink" href="#equipment" title="Permalink to this headline">¶</a></h2>
+<p>The currently avaliable equipment is:</p>
 <ul class="simple">
 <li><p>Blanket</p></li>
 <li><p>Cabinet</p></li>
+<li><p>Container Box</p></li>
+<li><p>Corner</p></li>
 <li><p>Drawer</p></li>
+<li><p>Drawer Handle</p></li>
+<li><p>Drawer w/Rack</p></li>
 <li><p>Rack</p></li>
-<li></li>
+<li><p>Shelf</p></li>
+<li><p>Tray</p></li>
 </ul>
+<p>Additional equipment can be added by sub-classing the equipment base class detailed below. The urdf
+for the new equipment must be added to the urdf directory as well.</p>
+</section>
+<section id="equipment-base">
+<h2>Equipment Base<a class="headerlink" href="#equipment-base" title="Permalink to this headline">¶</a></h2>
 </section>
 </section>
 <section id="baselines">
@@ -685,8 +1167,11 @@ and apperciated.</p>
 </li>
 <li><a class="reference internal" href="#pybullet-simulator">PyBullet Simulator</a><ul>
 <li><a class="reference internal" href="#robots">Robots</a></li>
+<li><a class="reference internal" href="#module-helping_hands_rl_envs.pybullet.robots.robot_base">Robot Base</a></li>
 <li><a class="reference internal" href="#objects">Objects</a></li>
+<li><a class="reference internal" href="#module-helping_hands_rl_envs.pybullet.objects.pybullet_object">Object Base</a></li>
 <li><a class="reference internal" href="#equipment">Equipment</a></li>
+<li><a class="reference internal" href="#equipment-base">Equipment Base</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#baselines">Baselines</a><ul>

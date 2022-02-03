@@ -30,7 +30,7 @@ class BaseEnv:
   Base Env Class.
 
   Args:
-    - config: Config used to specify various environment details
+    config: Config used to specify various environment details
   '''
   def __init__(self, config):
     # Load the default config and replace any duplicate values with the config
