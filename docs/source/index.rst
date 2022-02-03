@@ -14,25 +14,71 @@ Helping Hands lab. The majority of these environments entail a robotic arm armed
 paralel jaw gripper executing a series of manipulation based tasks. For a full list of 
 the tasks currently implemented see below. The physics simulator used is PyBullet.
 
-Env Factory
+Initialization and Running
 ============================================
+Creating a environment instance is done through the use of the env_factory. Depending
+on the number of environments you wish to run in parallel, either a SingleRunner or a 
+MultiRunner will be returned which you can interact with.
+
+Env Factory
+--------------------------------------------
 .. automodule:: helping_hands_rl_envs.env_factory
    :members:
 
 Single Env Runner
-============================================
+--------------------------------------------
 .. autoclass:: helping_hands_rl_envs.runner.SingleRunner
    :members:
 
 Multi Env Runner
-============================================
+--------------------------------------------
 .. autoclass:: helping_hands_rl_envs.runner.MultiRunner
    :members:
 
-Base Env
+Environments
 ============================================
+A number of different environments are aleady implemented and can found in the list
+below. To create your own environment, subclass the base environment and add the new
+environment to the list of avaliable environments in the env_fn file.
+
+Envs
+--------------------------------------------
+* Env 1
+* Env 2
+* ...
+
+Base Env
+--------------------------------------------
 .. automodule:: helping_hands_rl_envs.envs.base_env
   :members:
+
+PyBullet Simulator
+============================================
+The physics simulator used for our domains is PyBullet. We include a number of robotic 
+manipulators for use. There are also numerous objects and environment details which can 
+be loaded into any enviornment.
+
+Robots
+--------------------------------------------
+* Kuka
+* UR5
+* ...
+
+Objects
+--------------------------------------------
+* Bottle
+* Bowl
+* Box
+* Brick
+* ..
+
+Equipment
+--------------------------------------------
+* Blanket
+* Cabinet
+* Drawer
+* Rack
+* ..
 
 Baselines 
 ============================================

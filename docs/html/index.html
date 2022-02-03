@@ -46,8 +46,13 @@ Helping Hands lab. The majority of these environments entail a robotic arm armed
 paralel jaw gripper executing a series of manipulation based tasks. For a full list of
 the tasks currently implemented see below. The physics simulator used is PyBullet.</p>
 </section>
+<section id="initialization-and-running">
+<h1>Initialization and Running<a class="headerlink" href="#initialization-and-running" title="Permalink to this headline">¶</a></h1>
+<p>Creating a environment instance is done through the use of the env_factory. Depending
+on the number of environments you wish to run in parallel, either a SingleRunner or a
+MultiRunner will be returned which you can interact with.</p>
 <section id="module-helping_hands_rl_envs.env_factory">
-<span id="env-factory"></span><h1>Env Factory<a class="headerlink" href="#module-helping_hands_rl_envs.env_factory" title="Permalink to this headline">¶</a></h1>
+<span id="env-factory"></span><h2>Env Factory<a class="headerlink" href="#module-helping_hands_rl_envs.env_factory" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="helping_hands_rl_envs.env_factory.createEnvs">
 <span class="sig-prename descclassname"><span class="pre">helping_hands_rl_envs.env_factory.</span></span><span class="sig-name descname"><span class="pre">createEnvs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_processes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planner_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/env_factory.html#createEnvs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.env_factory.createEnvs" title="Permalink to this definition">¶</a></dt>
@@ -133,7 +138,7 @@ number of envs each in their own seperate process.</p>
 
 </section>
 <section id="single-env-runner">
-<h1>Single Env Runner<a class="headerlink" href="#single-env-runner" title="Permalink to this headline">¶</a></h1>
+<h2>Single Env Runner<a class="headerlink" href="#single-env-runner" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helping_hands_rl_envs.runner.</span></span><span class="sig-name descname"><span class="pre">SingleRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner" title="Permalink to this definition">¶</a></dt>
@@ -142,7 +147,7 @@ number of envs each in their own seperate process.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>env</strong> (<a class="reference internal" href="#helping_hands_rl_envs.envs.base_env.BaseEnv" title="helping_hands_rl_envs.envs.base_env.BaseEnv"><em>BaseEnv</em></a>) – Environment</p></li>
-<li><p><strong>planner</strong> (<a class="reference internal" href="helping_hands_rl_envs.planners.html#helping_hands_rl_envs.planners.base_planner.BasePlanner" title="helping_hands_rl_envs.planners.base_planner.BasePlanner"><em>BasePlanner</em></a>) – Planner</p></li>
+<li><p><strong>planner</strong> (<em>BasePlanner</em>) – Planner</p></li>
 </ul>
 </dd>
 </dl>
@@ -289,7 +294,7 @@ number of envs each in their own seperate process.</p>
 
 </section>
 <section id="multi-env-runner">
-<h1>Multi Env Runner<a class="headerlink" href="#multi-env-runner" title="Permalink to this headline">¶</a></h1>
+<h2>Multi Env Runner<a class="headerlink" href="#multi-env-runner" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helping_hands_rl_envs.runner.</span></span><span class="sig-name descname"><span class="pre">MultiRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_fns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planner_fns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner" title="Permalink to this definition">¶</a></dt>
@@ -527,8 +532,22 @@ number of envs each in their own seperate process.</p>
 </dd></dl>
 
 </section>
+</section>
+<section id="environments">
+<h1>Environments<a class="headerlink" href="#environments" title="Permalink to this headline">¶</a></h1>
+<p>A number of different environments are aleady implemented and can found in the list
+below. To create your own environment, subclass the base environment and add the new
+environment to the list of avaliable environments in the env_fn file.</p>
+<section id="envs">
+<h2>Envs<a class="headerlink" href="#envs" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Env 1</p></li>
+<li><p>Env 2</p></li>
+<li><p>…</p></li>
+</ul>
+</section>
 <section id="module-helping_hands_rl_envs.envs.base_env">
-<span id="base-env"></span><h1>Base Env<a class="headerlink" href="#module-helping_hands_rl_envs.envs.base_env" title="Permalink to this headline">¶</a></h1>
+<span id="base-env"></span><h2>Base Env<a class="headerlink" href="#module-helping_hands_rl_envs.envs.base_env" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="helping_hands_rl_envs.envs.base_env.BaseEnv">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helping_hands_rl_envs.envs.base_env.</span></span><span class="sig-name descname"><span class="pre">BaseEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/base_env.html#BaseEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.base_env.BaseEnv" title="Permalink to this definition">¶</a></dt>
@@ -579,6 +598,41 @@ number of envs each in their own seperate process.</p>
 </dd></dl>
 
 </section>
+</section>
+<section id="pybullet-simulator">
+<h1>PyBullet Simulator<a class="headerlink" href="#pybullet-simulator" title="Permalink to this headline">¶</a></h1>
+<p>The physics simulator used for our domains is PyBullet. We include a number of robotic
+manipulators for use. There are also numerous objects and environment details which can
+be loaded into any enviornment.</p>
+<section id="robots">
+<h2>Robots<a class="headerlink" href="#robots" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Kuka</p></li>
+<li><p>UR5</p></li>
+<li><p>…</p></li>
+</ul>
+</section>
+<section id="objects">
+<h2>Objects<a class="headerlink" href="#objects" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Bottle</p></li>
+<li><p>Bowl</p></li>
+<li><p>Box</p></li>
+<li><p>Brick</p></li>
+<li></li>
+</ul>
+</section>
+<section id="equipment">
+<h2>Equipment<a class="headerlink" href="#equipment" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Blanket</p></li>
+<li><p>Cabinet</p></li>
+<li><p>Drawer</p></li>
+<li><p>Rack</p></li>
+<li></li>
+</ul>
+</section>
+</section>
 <section id="baselines">
 <h1>Baselines<a class="headerlink" href="#baselines" title="Permalink to this headline">¶</a></h1>
 <p>We include a number of baselines to allow for easier testing and benchmarking of new
@@ -618,10 +672,23 @@ and apperciated.</p>
     <h3><a href="#">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">HelpingHands RL Envs</a></li>
+<li><a class="reference internal" href="#initialization-and-running">Initialization and Running</a><ul>
 <li><a class="reference internal" href="#module-helping_hands_rl_envs.env_factory">Env Factory</a></li>
 <li><a class="reference internal" href="#single-env-runner">Single Env Runner</a></li>
 <li><a class="reference internal" href="#multi-env-runner">Multi Env Runner</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#environments">Environments</a><ul>
+<li><a class="reference internal" href="#envs">Envs</a></li>
 <li><a class="reference internal" href="#module-helping_hands_rl_envs.envs.base_env">Base Env</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pybullet-simulator">PyBullet Simulator</a><ul>
+<li><a class="reference internal" href="#robots">Robots</a></li>
+<li><a class="reference internal" href="#objects">Objects</a></li>
+<li><a class="reference internal" href="#equipment">Equipment</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#baselines">Baselines</a><ul>
 <li><a class="reference internal" href="#model-free">Model-Free</a></li>
 <li><a class="reference internal" href="#model-based">Model-Based</a></li>

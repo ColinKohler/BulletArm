@@ -1,6 +1,6 @@
 import os
 
-class NoValidPostionException(Exception):
+class NoValidPositionException(Exception):
   pass
 
 # File paths
