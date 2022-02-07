@@ -4,6 +4,9 @@ from helping_hands_rl_envs.envs.base_env import BaseEnv
 from helping_hands_rl_envs.pybullet.utils import transformations
 from helping_hands_rl_envs.pybullet.utils.renderer import Renderer
 from helping_hands_rl_envs.pybullet.utils.ortho_sensor import OrthographicSensor
+from helping_hands_rl_envs.pybullet.utils.sensor import Sensor
+from scipy.ndimage import rotate
+
 
 class CloseLoopEnv(BaseEnv):
   def __init__(self, config):
@@ -12,34 +15,42 @@ class CloseLoopEnv(BaseEnv):
       config['view_type'] = 'camera_center_xyzr'
     if 'obs_type' not in config:
       config['obs_type'] = 'pixel'
-
-    if 'workspace_check' not in config:
-      config['workspace_check'] = 'point'
-    if 'random_orientation' not in config:
-      config['random_orientation'] = True
-    if 'workspace' not in config:
-      config['workspace'] = np.array([[0.25, 0.65], [-0.2, 0.2], [0, 0.4]])
-
+    if 'view_scale' not in config:
+      config['view_scale'] = 1
     self.view_type = config['view_type']
     self.obs_type = config['obs_type']
-    assert self.view_type in ['render_center', 'render_fix', 'camera_center_xyzr', 'camera_center_xyr',
+    assert self.view_type in ['render_center', 'render_center_height', 'render_fix', 'camera_center_xyzr', 'camera_center_xyr',
                               'camera_center_xyz', 'camera_center_xy', 'camera_fix',
                               'camera_center_xyr_height', 'camera_center_xyz_height', 'camera_center_xy_height',
-                              'camera_fix_height']
+                              'camera_fix_height', 'camera_center_z', 'camera_center_z_height',
+                              'pers_center_xyz']
+    self.view_scale = config['view_scale']
+    self.robot_type = config['robot']
+    if config['robot'] == 'kuka':
+      self.robot.home_positions = [-0.4446, 0.0837, -2.6123, 1.8883, -0.0457, -1.1810, 0.0699, 0., 0., 0., 0., 0., 0., 0., 0.]
+      self.robot.home_positions_joint = self.robot.home_positions[:7]
 
-    self.robot.home_positions = [-0.4446, 0.0837, -2.6123, 1.8883, -0.0457, -1.1810, 0.0699, 0., 0., 0., 0., 0., 0., 0., 0.]
-    self.robot.home_positions_joint = self.robot.home_positions[:7]
+    # if self.view_type.find('center') > -1:
+    #   self.ws_size *= 1.5
 
-    self.ws_size = max(self.workspace[0][1] - self.workspace[0][0], self.workspace[1][1] - self.workspace[1][0])
-    if self.view_type.find('center') > -1:
-      self.ws_size *= 1.5
+    self.renderer = None
+    self.pers_sensor = None
+    self.obs_size_m = self.workspace_size * self.view_scale
+    self.initSensor()
 
+    self.simulate_z_threshold = self.workspace[2][0] + 0.07
+
+    self.simulate_pos = None
+    self.simulate_rot = None
+
+  def initSensor(self):
     cam_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0.29]
     target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
     cam_up_vector = [-1, 0, 0]
-    self.sensor = OrthographicSensor(cam_pos, cam_up_vector, target_pos, self.ws_size, 0.1, 1)
+    self.sensor = OrthographicSensor(cam_pos, cam_up_vector, target_pos, self.obs_size_m, 0.1, 1)
     self.sensor.setCamMatrix(cam_pos, cam_up_vector, target_pos)
     self.renderer = Renderer(self.workspace)
+    self.pers_sensor = Sensor(cam_pos, cam_up_vector, target_pos, self.obs_size_m, cam_pos[2] - 1, cam_pos[2])
 
   def _getValidOrientation(self, random_orientation):
     if random_orientation:
@@ -48,10 +59,20 @@ class CloseLoopEnv(BaseEnv):
       orientation = pb.getQuaternionFromEuler([0., 0., 0.])
     return orientation
 
+  def resetPybulletWorkspace(self):
+    self.renderer.clearPoints()
+    super().resetPybulletWorkspace()
+    self.robot.moveTo([self.workspace[0].mean(), self.workspace[1].mean(), 0.2], transformations.quaternion_from_euler(0, 0, 0))
+    self.simulate_pos = self.robot._getEndEffectorPosition()
+    self.simulate_rot = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())
+
   def step(self, action):
     p, x, y, z, rot = self._decodeAction(action)
     current_pos = self.robot._getEndEffectorPosition()
-    current_rot = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())
+    current_rot = list(transformations.euler_from_quaternion(self.robot._getEndEffectorRotation()))
+    if self.action_sequence.count('r') == 1:
+      current_rot[0] = 0
+      current_rot[1] = 0
 
     # bTg = transformations.euler_matrix(0, 0, current_rot[-1])
     # bTg[:3, 3] = current_pos
@@ -70,6 +91,7 @@ class CloseLoopEnv(BaseEnv):
     self.robot.controlGripper(p)
     self.robot.adjustGripperCommand()
     self.setRobotHoldingObj()
+    self.renderer.clearPoints()
     obs = self._getObservation(action)
     valid = self.isSimValid()
     if valid:
@@ -82,6 +104,8 @@ class CloseLoopEnv(BaseEnv):
       done = self.current_episode_steps >= self.max_steps
     self.current_episode_steps += 1
 
+    self.simulate_pos = pos
+    self.simulate_rot = rot
     return obs, reward, done
 
   def setRobotHoldingObj(self):
@@ -161,25 +185,96 @@ class CloseLoopEnv(BaseEnv):
 
   def _getObservation(self, action=None):
     ''''''
-    if self.obs_type == 'pixel':
+    if self.obs_type is 'pixel':
       self.heightmap = self._getHeightmap()
-      return self._isHolding(), None, self.heightmap.reshape([1, self.heightmap_size, self.heightmap_size])
+      gripper_img = self.getGripperImg()
+      heightmap = self.heightmap
+      if self.view_type.find('height') > -1:
+        gripper_pos = self.robot._getEndEffectorPosition()
+        heightmap[gripper_img == 1] = gripper_pos[2]
+      else:
+        heightmap[gripper_img == 1] = 0
+      heightmap = heightmap.reshape([1, self.heightmap_size, self.heightmap_size])
+      # gripper_img = gripper_img.reshape([1, self.heightmap_size, self.heightmap_size])
+      return self._isHolding(), None, heightmap
     else:
       obs = self._getVecObservation()
       return self._isHolding(), None, obs
 
-  def _getHeightmap(self):
-    gripper_pos = self.robot._getEndEffectorPosition()
-    gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
+  def simulate(self, action):
+    p, dx, dy, dz, r = self._decodeAction(action)
+    dtheta = r[2]
+    # pos = list(self.robot._getEndEffectorPosition())
+    # gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
+    pos = self.simulate_pos
+    gripper_rz = self.simulate_rot[2]
+    pos[0] += dx
+    pos[1] += dy
+    pos[2] += dz
+    pos[0] = np.clip(pos[0], self.workspace[0, 0], self.workspace[0, 1])
+    pos[1] = np.clip(pos[1], self.workspace[1, 0], self.workspace[1, 1])
+    pos[2] = np.clip(pos[2], self.simulate_z_threshold, self.workspace[2, 1])
+    gripper_rz += dtheta
+    self.simulate_pos = pos
+    self.simulate_rot = [0, 0, gripper_rz]
+    # obs = self.renderer.getTopDownDepth(self.obs_size_m, self.heightmap_size, pos, 0)
+    obs = self._getHeightmap(gripper_pos=self.simulate_pos, gripper_rz=gripper_rz)
+    gripper_img = self.getGripperImg(p, gripper_rz)
+    if self.view_type.find('height') > -1:
+      obs[gripper_img == 1] = self.simulate_pos[2]
+    else:
+      obs[gripper_img == 1] = 0
+    # gripper_img = gripper_img.reshape([1, self.heightmap_size, self.heightmap_size])
+    # obs[gripper_img==1] = 0
+    obs = obs.reshape([1, self.heightmap_size, self.heightmap_size])
+
+    return self._isHolding(), None, obs
+
+  def resetSimPose(self):
+    self.simulate_pos = np.array(self.robot._getEndEffectorPosition())
+    self.simulate_rot = np.array(transformations.euler_from_quaternion(self.robot._getEndEffectorRotation()))
+
+  def canSimulate(self):
+    # pos = list(self.robot._getEndEffectorPosition())
+    return not self._isHolding() and self.simulate_pos[2] > self.simulate_z_threshold
+
+  def getGripperImg(self, gripper_state=None, gripper_rz=None):
+    if gripper_state is None:
+      gripper_state = self.robot.getGripperOpenRatio()
+    if gripper_rz is None:
+      gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
+    im = np.zeros((self.heightmap_size, self.heightmap_size))
+    gripper_half_size = round(5 * self.workspace_size / self.obs_size_m)
+    if self.robot_type == 'panda':
+      gripper_max_open = 42 * self.workspace_size / self.obs_size_m
+    elif self.robot_type == 'kuka':
+      gripper_max_open = 45 * self.workspace_size / self.obs_size_m
+    else:
+      raise NotImplementedError
+    d = int(gripper_max_open/128*self.heightmap_size * gripper_state)
+    anchor = self.heightmap_size//2
+    im[int(anchor - d // 2 - gripper_half_size):int(anchor - d // 2 + gripper_half_size), int(anchor - gripper_half_size):int(anchor + gripper_half_size)] = 1
+    im[int(anchor + d // 2 - gripper_half_size):int(anchor + d // 2 + gripper_half_size), int(anchor - gripper_half_size):int(anchor + gripper_half_size)] = 1
+    im = rotate(im, np.rad2deg(gripper_rz), reshape=False, order=0)
+    return im
+
+  def _getHeightmap(self, gripper_pos=None, gripper_rz=None):
+    if gripper_pos is None:
+      gripper_pos = self.robot._getEndEffectorPosition()
+    if gripper_rz is None:
+      gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
     if self.view_type == 'render_center':
-      self.renderer.getNewPointCloud()
-      return self.renderer.getTopDownDepth(self.workspace_size * 1.5, self.heightmap_size, gripper_pos, gripper_rz)
+      return self.renderer.getTopDownDepth(self.obs_size_m, self.heightmap_size, gripper_pos, 0)
+    elif self.view_type == 'render_center_height':
+      depth = self.renderer.getTopDownDepth(self.obs_size_m, self.heightmap_size, gripper_pos, 0)
+      heightmap = gripper_pos[2] - depth
+      return heightmap
     elif self.view_type == 'render_fix':
       return self.renderer.getTopDownHeightmap(self.heightmap_size)
 
     elif self.view_type == 'camera_center_xyzr':
       # xyz centered, alighed
-      gripper_pos[2] += 0.12
+      # gripper_pos[2] += 0.12
       target_pos = [gripper_pos[0], gripper_pos[1], 0]
       T = transformations.euler_matrix(0, 0, gripper_rz)
       cam_up_vector = T.dot(np.array([-1, 0, 0, 1]))[:3]
@@ -202,7 +297,7 @@ class CloseLoopEnv(BaseEnv):
       return depth
     elif self.view_type in ['camera_center_xyz', 'camera_center_xyz_height']:
       # xyz centered, gripper will be visible
-      gripper_pos[2] += 0.12
+      # gripper_pos[2] += 0.12
       target_pos = [gripper_pos[0], gripper_pos[1], 0]
       cam_up_vector = [-1, 0, 0]
       self.sensor.setCamMatrix(gripper_pos, cam_up_vector, target_pos)
@@ -212,6 +307,15 @@ class CloseLoopEnv(BaseEnv):
       else:
         depth = heightmap
       return depth
+    elif self.view_type in ['pers_center_xyz']:
+      # xyz centered, gripper will be visible
+      # gripper_pos[2] += 0.07
+      target_pos = [gripper_pos[0], gripper_pos[1], 0]
+      cam_up_vector = [-1, 0, 0]
+      self.pers_sensor.setCamMatrix(gripper_pos, cam_up_vector, target_pos)
+      heightmap = self.pers_sensor.getHeightmap(self.heightmap_size)
+      depth = -heightmap + gripper_pos[2]
+      return depth
     elif self.view_type in ['camera_center_xy', 'camera_center_xy_height']:
       # xy centered
       target_pos = [gripper_pos[0], gripper_pos[1], 0]
@@ -220,6 +324,18 @@ class CloseLoopEnv(BaseEnv):
       self.sensor.setCamMatrix(cam_pos, cam_up_vector, target_pos)
       heightmap = self.sensor.getHeightmap(self.heightmap_size)
       if self.view_type == 'camera_center_xy':
+        depth = -heightmap + gripper_pos[2]
+      else:
+        depth = heightmap
+      return depth
+    elif self.view_type in ['camera_center_z', 'camera_center_z_height']:
+      # gripper_pos[2] += 0.12
+      cam_pos = [self.workspace[0].mean(), self.workspace[1].mean(), gripper_pos[2]]
+      target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
+      cam_up_vector = [-1, 0, 0]
+      self.sensor.setCamMatrix(cam_pos, cam_up_vector, target_pos)
+      heightmap = self.sensor.getHeightmap(self.heightmap_size)
+      if self.view_type == 'camera_center_z':
         depth = -heightmap + gripper_pos[2]
       else:
         depth = heightmap
@@ -256,7 +372,7 @@ class CloseLoopEnv(BaseEnv):
 
     primitive_idx, x_idx, y_idx, z_idx, rot_idx = map(lambda a: self.action_sequence.find(a),
                                                       ['p', 'x', 'y', 'z', 'r'])
-    action = np.zeros(len(self.action_sequence), dtype=np.float)
+    action = np.zeros(len(self.action_sequence), dtype=float)
     if primitive_idx != -1:
       action[primitive_idx] = primitive
     if x_idx != -1:

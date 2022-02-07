@@ -1,21 +1,8 @@
 import os
-import copy
-import math
-import numpy as np
-import numpy.random as npr
-from collections import deque
-
 import pybullet as pb
-import pybullet_data
+from helping_hands_rl_envs.pybullet.utils import constants
+from helping_hands_rl_envs.pybullet.robots.robot_base import RobotBase
 
-import helping_hands_rl_envs
-from helping_hands_rl_envs.simulators import constants
-from helping_hands_rl_envs.simulators.pybullet.robots.robot_base import RobotBase
-import time
-
-from helping_hands_rl_envs.simulators.pybullet.utils import pybullet_util
-from helping_hands_rl_envs.simulators.pybullet.utils import object_generation
-from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 
 class Panda(RobotBase):
   '''
@@ -36,7 +23,7 @@ class Panda(RobotBase):
 
   def initialize(self):
     ''''''
-    urdf_filepath = os.path.join(self.root_dir, 'simulators/urdf/franka_panda/panda.urdf')
+    urdf_filepath = os.path.join(constants.URDF_PATH, 'franka_panda/panda.urdf')
     self.id = pb.loadURDF(urdf_filepath, useFixedBase=True)
     pb.resetBasePositionAndOrientation(self.id, [-0.1,0,0], [0,0,0,1])
 

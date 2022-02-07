@@ -1,13 +1,12 @@
 import pybullet as pb
 import numpy as np
 
-from helping_hands_rl_envs.simulators import constants
-from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_env import CloseLoopEnv
-from helping_hands_rl_envs.simulators.pybullet.utils import transformations
+from helping_hands_rl_envs.pybullet.utils import constants
+from helping_hands_rl_envs.envs.close_loop_envs.close_loop_env import CloseLoopEnv
+from helping_hands_rl_envs.pybullet.utils import transformations
 from helping_hands_rl_envs.planners.close_loop_household_picking_cluttered_planner import CloseLoopHouseholdPickingClutteredPlanner
-from helping_hands_rl_envs.simulators.pybullet.equipments.tray import Tray
-from helping_hands_rl_envs.simulators.constants import NoValidPositionException
-from helping_hands_rl_envs.simulators.pybullet.utils.ortho_sensor import OrthographicSensor
+from helping_hands_rl_envs.pybullet.equipments.tray import Tray
+from helping_hands_rl_envs.pybullet.utils.constants import NoValidPositionException
 
 
 class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
@@ -46,7 +45,7 @@ class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
                          size=[self.bin_size, self.bin_size, 0.1], transparent=self.trans_bin)
 
   def resetEnv(self):
-    self.resetPybulletEnv()
+    self.resetPybulletWorkspace()
     self.robot.moveTo([self.workspace[0].mean(), self.workspace[1].mean(), 0.2], transformations.quaternion_from_euler(0, 0, 0))
     while True:
       try:

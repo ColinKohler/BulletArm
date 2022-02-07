@@ -1,11 +1,11 @@
 import pybullet as pb
 import numpy as np
 
-from helping_hands_rl_envs.simulators import constants
-from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_env import CloseLoopEnv
-from helping_hands_rl_envs.simulators.pybullet.utils import transformations
+from helping_hands_rl_envs.pybullet.utils import constants
+from helping_hands_rl_envs.envs.close_loop_envs.close_loop_env import CloseLoopEnv
+from helping_hands_rl_envs.pybullet.utils import transformations
 from helping_hands_rl_envs.planners.close_loop_block_pushing_planner import CloseLoopBlockPushingPlanner
-from helping_hands_rl_envs.simulators.pybullet.equipments.tray import Tray
+from helping_hands_rl_envs.pybullet.equipments.tray import Tray
 
 class CloseLoopBlockPushingEnv(CloseLoopEnv):
   def __init__(self, config):
@@ -34,7 +34,7 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
     return round(goal_pixel_x), round(goal_pixel_y)
 
   def reset(self):
-    self.resetPybulletEnv()
+    self.resetPybulletWorkspace()
     self._generateShapes(constants.CUBE, 1, random_orientation=self.random_orientation)
     # pb.changeDynamics(self.objects[0].object_id, -1, lateralFriction=0.1)
     goal_pos = self._getValidPositions(0.08+0.05, 0.09, self.getObjectPositions()[:, :2].tolist(), 1)[0]

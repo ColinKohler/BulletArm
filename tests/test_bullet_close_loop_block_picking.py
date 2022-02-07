@@ -33,9 +33,7 @@ class TestBulletBowlStacking(unittest.TestCase):
       t0 = time.time()
       action = env.getNextAction()
       t_plan = time.time() - t0
-      (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
-      if rewards:
-        print(1)
+      (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=True)
       # plt.imshow(obs_[0, 0], vmin=0, vmax=0.2)
       # plt.show()
       s += rewards.sum()

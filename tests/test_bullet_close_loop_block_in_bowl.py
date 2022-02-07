@@ -12,7 +12,7 @@ class TestBulletBowlStacking(unittest.TestCase):
                           [-0.15, 0.15],
                           [0.01, 0.25]])
   env_config = {'workspace': workspace, 'max_steps': 20, 'obs_size': 128, 'render': False, 'fast_mode': True,
-                'seed': 0, 'action_sequence': 'pxyzr', 'num_objects': 5, 'random_orientation': False,
+                'seed': 0, 'action_sequence': 'pxyzr', 'num_objects': 5, 'random_orientation': True,
                 'reward_type': 'sparse', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'panda',
                 'workspace_check': 'point', 'physics_mode': 'fast', 'hard_reset_freq': 1000, 'object_scale_range': (1, 1),
                 'view_type': 'render_center_height', 'transparent_bin': False, 'collision_penalty': False}
@@ -23,7 +23,7 @@ class TestBulletBowlStacking(unittest.TestCase):
     self.env_config['render'] = True
     self.env_config['seed'] = 0
     num_processes = 1
-    env = env_factory.createEnvs(num_processes, 'pybullet', 'close_loop_block_in_bowl', self.env_config, self.planner_config)
+    env = env_factory.createEnvs(num_processes, 'close_loop_block_in_bowl', self.env_config, self.planner_config)
     total = 0
     s = 0
     step_times = []
@@ -42,8 +42,6 @@ class TestBulletBowlStacking(unittest.TestCase):
       (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=True)
       # plt.imshow(obs_[0, 0], vmin=0, vmax=0.25)
       # plt.show()
-      if rewards:
-        print(1)
       obs = obs_
       s += rewards.sum()
       total += dones.sum()

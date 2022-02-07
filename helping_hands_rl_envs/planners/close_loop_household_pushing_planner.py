@@ -1,8 +1,5 @@
 import numpy as np
-
-from helping_hands_rl_envs.simulators import constants
 from helping_hands_rl_envs.planners.close_loop_planner import CloseLoopPlanner
-from helping_hands_rl_envs.simulators.pybullet.utils import transformations
 
 class CloseLoopHouseholdPushingPlanner(CloseLoopPlanner):
   def __init__(self, env, config):

@@ -20,6 +20,7 @@ import helping_hands_rl_envs.envs.configs as env_configs
 from helping_hands_rl_envs.pybullet.robots.ur5_simple import UR5_Simple
 from helping_hands_rl_envs.pybullet.robots.ur5_robotiq import UR5_Robotiq
 from helping_hands_rl_envs.pybullet.robots.kuka import Kuka
+from helping_hands_rl_envs.pybullet.robots.panda import Panda
 from helping_hands_rl_envs.pybullet.utils.sensor import Sensor
 from helping_hands_rl_envs.pybullet.objects.pybullet_object import PybulletObject
 import helping_hands_rl_envs.pybullet.utils.object_generation as pb_obj_generation
@@ -108,6 +109,8 @@ class BaseEnv:
       self.robot = UR5_Robotiq()
     elif config['robot'] == 'kuka':
       self.robot = Kuka()
+    elif config['robot'] == 'panda':
+      self.robot = Panda()
     else:
       raise NotImplementedError
 
@@ -543,6 +546,8 @@ class BaseEnv:
         handle = pb_obj_generation.generateSwab(position, orientation, scale, model_id=None)
       elif shape_type == constants.FLAT_BLOCK:
         handle = pb_obj_generation.generateFlatBlock(position, orientation, scale)
+      elif shape_type == constants.RANDOM_HOUSEHOLD200:
+        handle = pb_obj_generation.generateRandomHouseHoldObj200(position, orientation, scale, model_id)
 
       else:
         raise NotImplementedError

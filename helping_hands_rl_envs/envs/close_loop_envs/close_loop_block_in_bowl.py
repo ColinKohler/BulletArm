@@ -1,12 +1,11 @@
 import pybullet as pb
 import numpy as np
 
-from helping_hands_rl_envs.simulators import constants
-from helping_hands_rl_envs.envs.pybullet_envs.close_loop_envs.close_loop_env import CloseLoopEnv
-from helping_hands_rl_envs.simulators.pybullet.utils import transformations
+from helping_hands_rl_envs.envs.close_loop_envs.close_loop_env import CloseLoopEnv
+from helping_hands_rl_envs.pybullet.utils import constants
 from helping_hands_rl_envs.planners.close_loop_block_in_bowl_planner import CloseLoopBlockInBowlPlanner
-from helping_hands_rl_envs.simulators.constants import NoValidPositionException
-from helping_hands_rl_envs.simulators.pybullet.equipments.tray import Tray
+from helping_hands_rl_envs.pybullet.utils.constants import NoValidPositionException
+from helping_hands_rl_envs.pybullet.equipments.tray import Tray
 
 class CloseLoopBlockInBowlEnv(CloseLoopEnv):
   def __init__(self, config):
@@ -21,7 +20,7 @@ class CloseLoopBlockInBowlEnv(CloseLoopEnv):
 
   def reset(self):
     while True:
-      self.resetPybulletEnv()
+      self.resetPybulletWorkspace()
       try:
         self._generateShapes(constants.CUBE, 1, random_orientation=self.random_orientation)
         self._generateShapes(constants.BOWL, 1, scale=0.76, random_orientation=self.random_orientation)

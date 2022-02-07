@@ -9,12 +9,12 @@ import glob
 import re
 
 import helping_hands_rl_envs
-from helping_hands_rl_envs.simulators.pybullet.objects.pybullet_object import PybulletObject
-from helping_hands_rl_envs.simulators import constants
-from helping_hands_rl_envs.simulators.pybullet.objects.random_household_object_200_info import *
+from helping_hands_rl_envs.pybullet.objects.pybullet_object import PybulletObject
+from helping_hands_rl_envs.pybullet.utils import constants
+from helping_hands_rl_envs.pybullet.objects.random_household_object_200_info import *
 
 root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
-obj_pattern = os.path.join(root_dir, constants.URDF_PATH, 'random_household_object_200/3dnet/*/*.obj')
+obj_pattern = os.path.join(root_dir, constants.OBJECTS_PATH, 'random_household_object_200/3dnet/*/*.obj')
 found_object_directories = sorted(glob.glob(obj_pattern))
 total_num_objects = len(found_object_directories)
 

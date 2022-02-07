@@ -296,9 +296,9 @@ class RobotBase:
       dynamic (bool): Simualte arm dynamics when moving the arm. Defaults to True.
     '''
     if dynamic or not self.holding_obj:
-      self._moveToJointPose(pose, dynamic)
+      self._moveToJointPose(joint_pose, dynamic)
     else:
-      self._teleportArmWithObjJointPose(pose)
+      self._teleportArmWithObjJointPose(joint_pose)
 
   def _moveToJointPose(self, target_pose, dynamic=True, max_it=1000):
     '''
