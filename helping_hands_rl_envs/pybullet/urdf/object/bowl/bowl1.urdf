@@ -29,12 +29,12 @@
        <mass value="0"/>
        <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
     </inertial>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <box size="0.01 0.01 0.01"/>
-      </geometry>
-    </visual>
+    <!--<visual>-->
+      <!--<origin rpy="0 0 0" xyz="0 0 0"/>-->
+      <!--<geometry>-->
+        <!--<box size="0.01 0.01 0.01"/>-->
+      <!--</geometry>-->
+    <!--</visual>-->
   </link>
   <joint name="base2grasp" type="fixed">
     <origin rpy="0 0 0" xyz="0.09 0 0.01"/>

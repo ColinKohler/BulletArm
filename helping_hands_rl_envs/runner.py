@@ -32,6 +32,13 @@ def worker(remote, parent_remote, env_fn, planner_fn=None):
       if cmd == 'step':
         res = env.step(data)
         remote.send(res)
+      elif cmd == 'simulate':
+        res = env.simulate(data)
+        remote.send(res)
+      elif cmd == 'can_simulate':
+        remote.send(env.canSimulate())
+      elif cmd == 'reset_sim':
+        env.resetSimPose()
       elif cmd == 'step_auto_reset':
         res = env.step(data)
         done = res[2]
@@ -150,6 +157,32 @@ class MultiRunner(object):
     '''
     self.stepAsync(actions, auto_reset)
     return self.stepWait()
+
+  def simulate(self, actions):
+    for remote, action in zip(self.remotes, actions):
+      remote.send(('simulate', action))
+
+    obs = [remote.recv() for remote in self.remotes]
+    states, hand_obs, obs = zip(*obs)
+
+    states = np.stack(states).astype(float)
+    hand_obs = np.stack(hand_obs)
+    obs = np.stack(obs)
+    rewards = np.zeros_like(states).astype(np.float32)
+    dones = np.zeros_like(states).astype(np.float32)
+
+    return (states, hand_obs, obs), rewards, dones
+
+  def canSimulate(self):
+    for remote in self.remotes:
+      remote.send(('can_simulate', None))
+    flag = [remote.recv() for remote in self.remotes]
+    flag = np.stack(flag)
+    return flag
+
+  def resetSimPose(self):
+    for remote in self.remotes:
+      remote.send(('reset_sim', None))
 
   def stepAsync(self, actions, auto_reset=False):
     '''
