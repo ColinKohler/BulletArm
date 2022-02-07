@@ -1,10 +1,10 @@
 import os
-
+import helping_hands_rl_envs
 class NoValidPositionException(Exception):
   pass
 
 # File paths
-URDF_PATH = 'pybullet/urdf/'
+URDF_PATH = os.path.join(os.path.dirname(helping_hands_rl_envs.__file__), 'pybullet/urdf/')
 OBJECTS_PATH = os.path.join(URDF_PATH, 'object')
 
 # Shape types
@@ -30,6 +30,7 @@ PALLET = 18
 TEST_TUBE = 19
 SWAB = 20
 FLAT_BLOCK = 21
+RANDOM_HOUSEHOLD200 = 22
 
 # Motion primatives
 NUM_PRIMATIVES = 2

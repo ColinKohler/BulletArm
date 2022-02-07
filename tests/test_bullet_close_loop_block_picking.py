@@ -8,20 +8,20 @@ import matplotlib.pyplot as plt
 from helping_hands_rl_envs import env_factory
 
 class TestBulletBowlStacking(unittest.TestCase):
-  workspace = np.asarray([[0.3, 0.7],
-                          [-0.2, 0.2],
+  workspace = np.asarray([[0.3, 0.6],
+                          [-0.15, 0.15],
                           [0.01, 0.25]])
-  env_config = {'workspace': workspace, 'max_steps': 100, 'obs_size': 128, 'render': False, 'fast_mode': True,
+  env_config = {'workspace': workspace, 'max_steps': 50, 'obs_size': 128, 'render': False, 'fast_mode': True,
                 'seed': 0, 'action_sequence': 'pxyzr', 'num_objects': 1, 'random_orientation': True,
-                'reward_type': 'sparse', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
+                'reward_type': 'sparse', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'panda',
                 'workspace_check': 'point', 'physics_mode': 'fast', 'hard_reset_freq': 1000, 'object_scale_range': (1, 1),
-                'view_type': 'camera_fix'}
+                'view_type': 'render_center'}
 
   planner_config = {'random_orientation': True, 'dpos': 0.05, 'drot': np.pi/8}
 
   def testPlanner2(self):
     self.env_config['render'] = True
-    self.env_config['seed'] = 0
+    self.env_config['seed'] = 1
     num_processes = 1
     env = env_factory.createEnvs(num_processes,  'close_loop_block_picking', self.env_config, self.planner_config)
     total = 0

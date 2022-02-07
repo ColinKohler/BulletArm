@@ -61,6 +61,9 @@ from helping_hands_rl_envs.envs.close_loop_envs.close_loop_house_building_1 impo
 from helping_hands_rl_envs.envs.close_loop_envs.close_loop_block_picking_corner import createCloseLoopBlockPickingCornerEnv
 from helping_hands_rl_envs.envs.close_loop_envs.close_loop_drawer_opening import createCloseLoopDrawerOpeningEnv
 from helping_hands_rl_envs.envs.close_loop_envs.close_loop_household_picking import createCloseLoopHouseholdPickingEnv
+from helping_hands_rl_envs.envs.close_loop_envs.close_loop_household_picking_cluttered import createCloseLoopHouseholdPickingClutteredEnv
+from helping_hands_rl_envs.envs.close_loop_envs.close_loop_block_pushing import createCloseLoopBlockPushingEnv
+from helping_hands_rl_envs.envs.close_loop_envs.close_loop_block_in_bowl import createCloseLoopBlockInBowlEnv
 
 CREATE_ENV_FNS = {
   'block_picking' : createBlockPickingEnv,
@@ -120,4 +123,7 @@ CREATE_ENV_FNS = {
   'close_loop_block_picking_corner': createCloseLoopBlockPickingCornerEnv,
   'close_loop_drawer_opening': createCloseLoopDrawerOpeningEnv,
   'close_loop_household_picking': createCloseLoopHouseholdPickingEnv,
+  'close_loop_clutter_picking': createCloseLoopHouseholdPickingClutteredEnv,
+  'close_loop_block_pushing': createCloseLoopBlockPushingEnv,
+  'close_loop_block_in_bowl': createCloseLoopBlockInBowlEnv,
 }

@@ -5,10 +5,18 @@ from helping_hands_rl_envs.pybullet.utils import constants
 from helping_hands_rl_envs.envs.close_loop_envs.close_loop_env import CloseLoopEnv
 from helping_hands_rl_envs.pybullet.utils import transformations
 from helping_hands_rl_envs.planners.close_loop_block_picking_planner import CloseLoopBlockPickingPlanner
+from helping_hands_rl_envs.pybullet.equipments.tray import Tray
 
 class CloseLoopBlockPickingEnv(CloseLoopEnv):
   def __init__(self, config):
     super().__init__(config)
+    self.bin_size = 0.25
+    self.tray = Tray()
+
+  def initialize(self):
+    super().initialize()
+    self.tray.initialize(pos=[self.workspace[0].mean(), self.workspace[1].mean(), 0],
+                         size=[self.bin_size, self.bin_size, 0.1])
 
   def reset(self):
     self.resetPybulletWorkspace()
@@ -25,7 +33,7 @@ class CloseLoopBlockPickingEnv(CloseLoopEnv):
 
   def _checkTermination(self):
     gripper_z = self.robot._getEndEffectorPosition()[-1]
-    return self.robot.holding_obj == self.objects[-1] and gripper_z > 0.08
+    return self.robot.holding_obj == self.objects[-1] and gripper_z > 0.15
 
 def createCloseLoopBlockPickingEnv(config):
   return CloseLoopBlockPickingEnv(config)
@@ -39,7 +47,7 @@ if __name__ == '__main__':
                 'seed': 2, 'action_sequence': 'pxyzr', 'num_objects': 1, 'random_orientation': False,
                 'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
                 'object_init_space_check': 'point', 'physics_mode': 'fast', 'object_scale_range': (1, 1), 'hard_reset_freq': 1000}
-  planner_config = {'random_orientation': False}
+  planner_config = {'random_orientation': False, 'dpos': 0.05, 'drot': np.pi/8}
   env_config['seed'] = 1
   env = CloseLoopBlockPickingEnv(env_config)
   planner = CloseLoopBlockPickingPlanner(env, planner_config)
