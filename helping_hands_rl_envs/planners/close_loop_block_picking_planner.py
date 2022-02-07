@@ -15,7 +15,7 @@ class CloseLoopBlockPickingPlanner(CloseLoopPlanner):
 
       x, y, z, r = self.getActionByGoalPose(block_pos, block_rot)
 
-      if np.all(np.abs([x, y, z]) < self.dpos) and np.abs(r) < self.drot:
+      if np.all(np.abs([x, y, z]) < self.dpos) and (not self.random_orientation or np.abs(r) < self.drot):
         primitive = constants.PICK_PRIMATIVE
       else:
         primitive = constants.PLACE_PRIMATIVE

@@ -11,13 +11,13 @@ class TestBulletBowlStacking(unittest.TestCase):
   workspace = np.asarray([[0.3, 0.6],
                           [-0.15, 0.15],
                           [0.01, 0.25]])
-  env_config = {'workspace': workspace, 'max_steps': 20, 'obs_size': 142, 'render': False, 'fast_mode': True,
-                'seed': 0, 'action_sequence': 'pxyzr', 'num_objects': 5, 'random_orientation': True,
+  env_config = {'workspace': workspace, 'max_steps': 20, 'obs_size': 128, 'render': False, 'fast_mode': True,
+                'seed': 0, 'action_sequence': 'pxyz', 'num_objects': 1, 'random_orientation': False,
                 'reward_type': 'sparse', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'panda',
                 'workspace_check': 'point', 'physics_mode': 'fast', 'hard_reset_freq': 1000, 'object_scale_range': (1, 1),
                 'view_type': 'render_center_height', 'transparent_bin': False, 'collision_penalty': False}
 
-  planner_config = {'random_orientation': True, 'dpos': 0.05, 'drot': np.pi/4}
+  planner_config = {'random_orientation': False, 'dpos': 0.05, 'drot': np.pi/4}
 
   def testPlanner2(self):
     self.env_config['render'] = True
@@ -36,15 +36,15 @@ class TestBulletBowlStacking(unittest.TestCase):
       plt.imshow(obs[0, 0])
       plt.show()
 
-      (states_, in_hands_, obs_), rewards, dones = env.simulate(action)
-      plt.imshow(obs_[0, 0])
-      plt.show()
+      # (states_, in_hands_, obs_), rewards, dones = env.simulate(action)
+      # plt.imshow(obs_[0, 0])
+      # plt.show()
 
-      (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
-      plt.imshow(obs_[0, 0])
-      plt.show()
-      if rewards:
-        print(1)
+      (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset= True)
+      # plt.imshow(obs_[0, 0])
+      # plt.show()
+      # if rewards:
+      #   print(1)
       obs = obs_
       s += rewards.sum()
       total += dones.sum()

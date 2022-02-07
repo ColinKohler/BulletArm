@@ -17,7 +17,7 @@ class CloseLoopBlockInBowlPlanner(CloseLoopPlanner):
 
   def getNextActionToCurrentTarget(self):
     x, y, z, r = self.getActionByGoalPose(self.current_target[0], self.current_target[1])
-    if np.all(np.abs([x, y, z]) < self.dpos) and np.abs(r) < self.drot:
+    if np.all(np.abs([x, y, z]) < self.dpos) and (not self.random_orientation or np.abs(r) < self.drot):
       p = self.current_target[3]
       self.current_target = None
     else:
