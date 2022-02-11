@@ -25,6 +25,8 @@ from helping_hands_rl_envs.envs.deconstruct_envs.improvise_house_building_3_deco
 from helping_hands_rl_envs.envs.deconstruct_envs.improvise_house_building_discrete_deconstruct_env import createImproviseHouseBuildingDiscreteDeconstructEnv
 from helping_hands_rl_envs.envs.deconstruct_envs.improvise_house_building_random_deconstruct_env import createImproviseHouseBuildingRandomDeconstructEnv
 
+
+from helping_hands_rl_envs.envs.realistic_envs.object_grasping import createObjectGrasping
 from helping_hands_rl_envs.envs.realistic_envs.block_picking_env import createBlockPickingEnv
 from helping_hands_rl_envs.envs.realistic_envs.block_bin_packing_env import createBlockBinPackingEnv
 from helping_hands_rl_envs.envs.realistic_envs.random_block_picking_env import createRandomBlockPickingEnv
@@ -105,6 +107,7 @@ CREATE_ENV_FNS = {
   'ramp_house_building_4_deconstruct': createRampHouseBuilding4DeconstructEnv,
   'ramp_improvise_house_building_2_deconstruct': createRampImproviseHouseBuilding2DeconstructEnv,
   'ramp_improvise_house_building_3_deconstruct': createRampImproviseHouseBuilding3DeconstructEnv,
+  'object_grasping': createObjectGrasping,
   'block_bin_packing': createBlockBinPackingEnv,
   'random_block_picking': createRandomBlockPickingEnv,
   'random_household_picking': createRandomHouseholdPickingEnv,

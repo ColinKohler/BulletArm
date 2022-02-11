@@ -548,6 +548,8 @@ class BaseEnv:
         handle = pb_obj_generation.generateFlatBlock(position, orientation, scale)
       elif shape_type == constants.RANDOM_HOUSEHOLD200:
         handle = pb_obj_generation.generateRandomHouseHoldObj200(position, orientation, scale, model_id)
+      elif shape_type == constants.GRASP_NET_OBJ:
+        handle = pb_obj_generation.generateGraspNetObject(position, orientation, scale, model_id)
 
       else:
         raise NotImplementedError

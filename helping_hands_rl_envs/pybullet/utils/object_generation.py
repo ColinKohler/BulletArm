@@ -24,6 +24,7 @@ from helping_hands_rl_envs.pybullet.objects.bottle import Bottle
 from helping_hands_rl_envs.pybullet.objects.box import Box
 from helping_hands_rl_envs.pybullet.objects.flat_block import FlatBlock
 from helping_hands_rl_envs.pybullet.objects.random_household_object_200 import RandomHouseHoldObject200
+from helping_hands_rl_envs.pybullet.objects.grasp_net_obj import GraspNetObject
 
 def generateCube(pos, rot, scale):
   ''''''
@@ -82,3 +83,6 @@ def generateFlatBlock(pos, rot, scale):
 
 def generateRandomHouseHoldObj200(pos, rot, scale, index):
   return RandomHouseHoldObject200(pos, rot, scale, index)
+
+def generateGraspNetObject(pos, rot, scale, index):
+  return GraspNetObject(pos, rot, scale, index)
