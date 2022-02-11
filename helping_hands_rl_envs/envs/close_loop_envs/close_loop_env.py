@@ -185,7 +185,7 @@ class CloseLoopEnv(BaseEnv):
 
   def _getObservation(self, action=None):
     ''''''
-    if self.obs_type is 'pixel':
+    if self.obs_type == 'pixel':
       self.heightmap = self._getHeightmap()
       gripper_img = self.getGripperImg()
       heightmap = self.heightmap
