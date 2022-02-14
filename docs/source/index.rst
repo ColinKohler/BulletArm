@@ -145,6 +145,21 @@ Model-Based
 --------------------------------------------
 * RS: Random sampling
 
+Logging tools
+============================================
+We include a logging tool which is used by our baselines to log important information during training
+and also to plot the results post training.
+
+Logger
+--------------------------------------------
+.. automodule:: baselines.logger.logger
+  :members:
+
+Plotter
+--------------------------------------------
+.. automodule:: baselines.logger.plotter
+  :members:
+
 Indices and tables
 ==================
 

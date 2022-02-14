@@ -60,6 +60,7 @@
 <span class="kn">from</span> <span class="nn">helping_hands_rl_envs.pybullet.robots.ur5_simple</span> <span class="kn">import</span> <span class="n">UR5_Simple</span>
 <span class="kn">from</span> <span class="nn">helping_hands_rl_envs.pybullet.robots.ur5_robotiq</span> <span class="kn">import</span> <span class="n">UR5_Robotiq</span>
 <span class="kn">from</span> <span class="nn">helping_hands_rl_envs.pybullet.robots.kuka</span> <span class="kn">import</span> <span class="n">Kuka</span>
+<span class="kn">from</span> <span class="nn">helping_hands_rl_envs.pybullet.robots.panda</span> <span class="kn">import</span> <span class="n">Panda</span>
 <span class="kn">from</span> <span class="nn">helping_hands_rl_envs.pybullet.utils.sensor</span> <span class="kn">import</span> <span class="n">Sensor</span>
 <span class="kn">from</span> <span class="nn">helping_hands_rl_envs.pybullet.objects.pybullet_object</span> <span class="kn">import</span> <span class="n">PybulletObject</span>
 <span class="kn">import</span> <span class="nn">helping_hands_rl_envs.pybullet.utils.object_generation</span> <span class="k">as</span> <span class="nn">pb_obj_generation</span>
@@ -148,6 +149,8 @@
       <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">UR5_Robotiq</span><span class="p">()</span>
     <span class="k">elif</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;robot&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;kuka&#39;</span><span class="p">:</span>
       <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">Kuka</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;robot&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;panda&#39;</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">Panda</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
       <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
@@ -583,6 +586,10 @@
         <span class="n">handle</span> <span class="o">=</span> <span class="n">pb_obj_generation</span><span class="o">.</span><span class="n">generateSwab</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">orientation</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">model_id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
       <span class="k">elif</span> <span class="n">shape_type</span> <span class="o">==</span> <span class="n">constants</span><span class="o">.</span><span class="n">FLAT_BLOCK</span><span class="p">:</span>
         <span class="n">handle</span> <span class="o">=</span> <span class="n">pb_obj_generation</span><span class="o">.</span><span class="n">generateFlatBlock</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">orientation</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="n">shape_type</span> <span class="o">==</span> <span class="n">constants</span><span class="o">.</span><span class="n">RANDOM_HOUSEHOLD200</span><span class="p">:</span>
+        <span class="n">handle</span> <span class="o">=</span> <span class="n">pb_obj_generation</span><span class="o">.</span><span class="n">generateRandomHouseHoldObj200</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">orientation</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">model_id</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="n">shape_type</span> <span class="o">==</span> <span class="n">constants</span><span class="o">.</span><span class="n">GRASP_NET_OBJ</span><span class="p">:</span>
+        <span class="n">handle</span> <span class="o">=</span> <span class="n">pb_obj_generation</span><span class="o">.</span><span class="n">generateGraspNetObject</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">orientation</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">model_id</span><span class="p">)</span>
 
       <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>

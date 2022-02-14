@@ -1,3 +1,7 @@
+'''
+.. moduleauthor: Colin Kohler <github.com/ColinKohler>
+'''
+
 import numpy as np
 import more_itertools
 import matplotlib.pyplot as plt

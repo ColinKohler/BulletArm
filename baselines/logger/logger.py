@@ -1,3 +1,7 @@
+'''
+.. moduleauthor: Colin Kohler <github.com/ColinKohler>
+'''
+
 import os
 import time
 import pickle
@@ -111,8 +115,8 @@ class Logger(object):
       return self.scalar_logs[keys]
     elif isinstance(keys, list):
       return {key: self.scalar_logs[key] for key in keys}
-    else
-    raise TypeError
+    else:
+      raise TypeError
 
   def updateScalars(self, keys, values=None):
     '''

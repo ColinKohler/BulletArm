@@ -48,7 +48,7 @@
 <span class="kn">import</span> <span class="nn">git</span>
 <span class="kn">import</span> <span class="nn">helping_hands_rl_envs</span>
 
-<div class="viewcode-block" id="worker"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.worker">[docs]</a><span class="k">def</span> <span class="nf">worker</span><span class="p">(</span><span class="n">remote</span><span class="p">,</span> <span class="n">parent_remote</span><span class="p">,</span> <span class="n">env_fn</span><span class="p">,</span> <span class="n">planner_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">worker</span><span class="p">(</span><span class="n">remote</span><span class="p">,</span> <span class="n">parent_remote</span><span class="p">,</span> <span class="n">env_fn</span><span class="p">,</span> <span class="n">planner_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
   <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">  Worker function which interacts with the environment over the remove connection</span>
 
@@ -72,6 +72,13 @@
       <span class="k">if</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;step&#39;</span><span class="p">:</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;simulate&#39;</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;can_simulate&#39;</span><span class="p">:</span>
+        <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">canSimulate</span><span class="p">())</span>
+      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;reset_sim&#39;</span><span class="p">:</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">resetSimPose</span><span class="p">()</span>
       <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;step_auto_reset&#39;</span><span class="p">:</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="n">done</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
@@ -151,7 +158,7 @@
       <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">NotImplementerError</span>
   <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;MultiRunner worker: caught keyboard interrupt&#39;</span><span class="p">)</span></div>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;MultiRunner worker: caught keyboard interrupt&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MultiRunner"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.MultiRunner">[docs]</a><span class="k">class</span> <span class="nc">MultiRunner</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
   <span class="sd">&#39;&#39;&#39;</span>
@@ -190,6 +197,32 @@
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">stepAsync</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="n">auto_reset</span><span class="p">)</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepWait</span><span class="p">()</span></div>
+
+  <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">remote</span><span class="p">,</span> <span class="n">action</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;simulate&#39;</span><span class="p">,</span> <span class="n">action</span><span class="p">))</span>
+
+    <span class="n">obs</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">]</span>
+    <span class="n">states</span><span class="p">,</span> <span class="n">hand_obs</span><span class="p">,</span> <span class="n">obs</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">obs</span><span class="p">)</span>
+
+    <span class="n">states</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">states</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">hand_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">hand_obs</span><span class="p">)</span>
+    <span class="n">obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
+    <span class="n">rewards</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">states</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">dones</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">states</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">hand_obs</span><span class="p">,</span> <span class="n">obs</span><span class="p">),</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">dones</span>
+
+  <span class="k">def</span> <span class="nf">canSimulate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
+      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;can_simulate&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+    <span class="n">flag</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">]</span>
+    <span class="n">flag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">flag</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">flag</span>
+
+  <span class="k">def</span> <span class="nf">resetSimPose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
+      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;reset_sim&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 
 <div class="viewcode-block" id="MultiRunner.stepAsync"><a class="viewcode-back" href="../../index.html#helping_hands_rl_envs.runner.MultiRunner.stepAsync">[docs]</a>  <span class="k">def</span> <span class="nf">stepAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">auto_reset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -653,13 +686,13 @@
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">getEmptyInHand</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="SingleRunner.getEnvGitHash"><a class="viewcode-back" href="../../helping_hands_rl_envs.html#helping_hands_rl_envs.runner.SingleRunner.getEnvGitHash">[docs]</a>  <span class="nd">@staticmethod</span>
+  <span class="nd">@staticmethod</span>
   <span class="k">def</span> <span class="nf">getEnvGitHash</span><span class="p">():</span>
     <span class="n">repo</span> <span class="o">=</span> <span class="n">git</span><span class="o">.</span><span class="n">Repo</span><span class="p">(</span><span class="n">helping_hands_rl_envs</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">repo</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">hexsha</span></div>
+    <span class="k">return</span> <span class="n">repo</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">hexsha</span>
 
-<div class="viewcode-block" id="SingleRunner.close"><a class="viewcode-back" href="../../helping_hands_rl_envs.html#helping_hands_rl_envs.runner.SingleRunner.close">[docs]</a>  <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="k">return</span></div></div>
+  <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span></div>
 </pre></div>
 
             <div class="clearer"></div>
