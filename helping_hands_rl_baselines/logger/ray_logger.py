@@ -4,5 +4,5 @@ from helping_hands_rl_baselines.logger.logger import Logger
 
 @ray.remote
 class RayLogger(Logger):
-  def __init__(self, results_path, hyperparameters):
-    super().__init__(results_path, hyperparameters)
+  def __init__(self, results_path, num_eval_eps=100, hyperparameters=None):
+    super().__init__(results_path, num_eval_eps=num_eval_eps, hyperparameters=hyperparameters)
