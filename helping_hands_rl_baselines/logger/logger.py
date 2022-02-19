@@ -21,6 +21,7 @@ class Logger(object):
   def __init__(self, results_path, num_eval_eps=100, hyperparameters=None):
     self.results_path = results_path
     self.writer = SummaryWriter(results_path)
+    self.log_counter = 0
     self.scalar_logs = dict()
 
     # Training
@@ -31,7 +32,7 @@ class Logger(object):
     self.loss = dict()
 
     # Evaluation
-    self.num_eval_eps = num_eval_eps # TODO: Dunno if I want this here
+    self.num_eval_episodes = num_eval_eps # TODO: Dunno if I want this here
     self.num_eval_intervals = 0
     self.eval_eps_rewards = list()
     self.eval_mean_values = list()
@@ -65,7 +66,7 @@ class Logger(object):
       else:
         self.current_episode_rewards[i] += reward
 
-  def logTrainingEpsode(self, rewards):
+  def logTrainingEpisode(self, rewards):
     '''
     Log a episode.
 
@@ -94,7 +95,10 @@ class Logger(object):
 
     # TODO: Unsure if this is the best way to handle loss. See loss comment in writeLog().
     for k, v in loss.items():
-      self.loss[k].append(v)
+      if k in self.loss.keys():
+        self.loss[k].append(v)
+      else:
+        self.loss[k] = [v]
 
   def writeLog(self):
     '''
@@ -102,37 +106,37 @@ class Logger(object):
     slow down training.
     '''
 
-    writer.add_scalar('1.Evaluate/1.Reward',
-                      self.getAvg(self.eval_eps_rewards, n=self.num_eval_episodes),
-                      self.num_eval_intervals)
-    writer.add_scalar('1.Evaluate/2.Mean_value',
-                      self.getAvg(self.eval_mean_values, n=self.num_eval_episodes),
-                      self.num_eval_intervals)
-    writer.add_scalar('1.Evaluate/3.Eps_len',
-                      self.getAvg(self.eval_eps_lens, n=self.num_eval_episodes),
-                      self.num_eval_intervals)
+    self.writer.add_scalar('1.Evaluate/1.Reward',
+                           self.getAvg(self.eval_eps_rewards, n=self.num_eval_episodes),
+                           self.num_eval_intervals)
+    self.writer.add_scalar('1.Evaluate/2.Mean_value',
+                           self.getAvg(self.eval_mean_values, n=self.num_eval_episodes),
+                           self.num_eval_intervals)
+    self.writer.add_scalar('1.Evaluate/3.Eps_len',
+                          self.getAvg(self.eval_eps_lens, n=self.num_eval_episodes),
+                          self.num_eval_intervals)
     # TODO: Do we want to allow custom windows here?
-    writer.add_scalar('1.Evaluate/4.Learning_curve',
-                      self.getAvg(self.training_eps_rewards, n=100),
-                      len(self.training_eps_rewards))
+    self.writer.add_scalar('1.Evaluate/4.Learning_curve',
+                           self.getAvg(self.training_eps_rewards, n=100),
+                           len(self.training_eps_rewards))
 
-    writer.add_scalar('2.Data/1.Num_eps', self.num_eps, self.log_counter)
-    writer.add_scalar('2.Data/2.Num_steps', self.num_steps, self.log_counter)
-    writer.add_scalar('2.Data/3.Training_steps', self.num_training_steps, self.log_counter)
-    writer.add_scalar('2.Data/4.Training_steps_per_eps_step_ratio',
-                      self.num_training_steps / max(1, self.num_steps),
-                      self.log_counter)
+    self.writer.add_scalar('2.Data/1.Num_eps', self.num_eps, self.log_counter)
+    self.writer.add_scalar('2.Data/2.Num_steps', self.num_steps, self.log_counter)
+    self.writer.add_scalar('2.Data/3.Training_steps', self.num_training_steps, self.log_counter)
+    self.writer.add_scalar('2.Data/4.Training_steps_per_eps_step_ratio',
+                           self.num_training_steps / max(1, self.num_steps),
+                           self.log_counter)
 
     # TODO: This imposes a restriction on the loss dict keys. Dunno if its better to
     #       just give the user free reign in how they want to handle this? There *should*
     #       always be some loss while training though...
     if self.loss:
       for i, (k, v) in enumerate(self.loss.items()):
-        writer.add_scalar('3.Loss/{}.{}_loss'.format(i, k), v[-1], self.log_counter)
+        self.writer.add_scalar('3.Loss/{}.{}_loss'.format(i+1, k), v[-1], self.log_counter)
 
     # TODO: I have not needed to test this yet. Can't imagine it doesn't work but still...
     for k, v in self.scalar_logs.items():
-      writer.add_scalar(k, v, self.log_counter)
+      self.writer.add_scalar(k, v, self.log_counter)
 
     self.log_counter += 1
 
