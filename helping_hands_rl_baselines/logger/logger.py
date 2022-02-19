@@ -40,7 +40,7 @@ class Logger(object):
 
     if hyperparameters:
       hp_table = [
-        f'| {k} | {v} |' for k, v in hyperpameters.items()
+        f'| {k} | {v} |' for k, v in hyperparameters.items()
       ]
       self.writer.add_text(
         'Hyperparameters', '| Parameter | Value |\n|-------|-------|\n' + '\n'.join(hp_table)
@@ -76,6 +76,9 @@ class Logger(object):
     self.num_steps += int(len(rewards))
     self.num_eps += 1
     self.training_eps_rewards.append(np.sum(rewards))
+
+  def logEvalInterval(self):
+    self.num_eval_intervals += 1
 
   def logEvalEpisode(self, rewards, values):
     '''
