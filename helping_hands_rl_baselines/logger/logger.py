@@ -89,14 +89,13 @@ class Logger(object):
       values (list[float]): Values for the episode
     '''
     self.eval_eps_rewards.append(np.sum(rewards))
-    self.eval_mean_values.append(np.sum(values))
+    self.eval_mean_values.append(np.mean(values))
     self.eval_eps_lens.append(int(len(rewards)))
 
   def logTrainingStep(self, loss):
     ''''''
     self.num_training_steps += 1
 
-    # TODO: Unsure if this is the best way to handle loss. See loss comment in writeLog().
     for k, v in loss.items():
       if k in self.loss.keys():
         self.loss[k].append(v)
@@ -130,9 +129,6 @@ class Logger(object):
                            self.num_training_steps / max(1, self.num_steps),
                            self.log_counter)
 
-    # TODO: This imposes a restriction on the loss dict keys. Dunno if its better to
-    #       just give the user free reign in how they want to handle this? There *should*
-    #       always be some loss while training though...
     if self.loss:
       for i, (k, v) in enumerate(self.loss.items()):
         self.writer.add_scalar('3.Loss/{}.{}_loss'.format(i+1, k), v[-1], self.log_counter)
