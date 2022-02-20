@@ -22,7 +22,7 @@ class DeconstructEnv(BaseEnv):
   def takeAction(self, action):
     # keep track of the current positions of all objects
     self.prev_obj_pos = self.getObjectPositions(omit_hold=False)
-    self.takeAction(self, action)
+    BaseEnv.takeAction(self, action)
 
   def isSimValid(self):
     if self.prev_obj_pos is None:
@@ -31,7 +31,7 @@ class DeconstructEnv(BaseEnv):
       # Compare the object positions with the previous step. Only allow one object to move at each action step
       curr_obj_pos = self.getObjectPositions(omit_hold=False)
       dist = np.linalg.norm(curr_obj_pos - self.prev_obj_pos, axis=1)
-      return (dist > 0.005).sum() == 1 and self.isSimValid(self)
+      return (dist > 0.005).sum() == 1 and BaseEnv.isSimValid(self)
 
   def _getObservation(self, action=None):
     '''

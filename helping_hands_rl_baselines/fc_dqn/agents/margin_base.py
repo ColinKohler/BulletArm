@@ -37,7 +37,7 @@ class MarginBase:
 
                 qe = q_pred[j]
                 q_all = q_output[j]
-                over = q_all[q_all > qe - self.margin_l]
+                over = q_all[(q_all > qe - self.margin_l) * (torch.arange(0, q_all.shape[0]).to(q_output.device)!=action_idx[j])]
                 if over.shape[0] == 0:
                     margin_losses.append(torch.tensor(0).float().to(q_output.device))
                 else:

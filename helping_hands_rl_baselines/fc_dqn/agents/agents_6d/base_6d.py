@@ -33,7 +33,7 @@ class Base6D(BaseAgent):
         for rz in self.rzs:
             for ry in self.rys:
                 for rx in self.rxs:
-                    occupancy = np.ones((24, 24, 24))
+                    occupancy = np.ones((self.patch_size, self.patch_size, self.patch_size))
                     point = np.argwhere(occupancy)
                     point = point - self.patch_size / 2
                     R = transformations.euler_matrix(rx, ry, rz)[:3, :3].T

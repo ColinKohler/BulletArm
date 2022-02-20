@@ -36,8 +36,26 @@ def fillDeconstruct(agent, replay_buffer):
                 return False
         return True
 
+    if env in ['block_stacking',
+               'house_building_1',
+               'house_building_2',
+               'house_building_3',
+               'house_building_4',
+               'improvise_house_building_2',
+               'improvise_house_building_3',
+               'improvise_house_building_discrete',
+               'improvise_house_building_random',
+               'ramp_block_stacking',
+               'ramp_house_building_1',
+               'ramp_house_building_2',
+               'ramp_house_building_3',
+               'ramp_house_building_4']:
+        deconstruct_env = env + '_deconstruct'
+    else:
+        raise NotImplementedError('deconstruct env not supported for env: {}'.format(env))
+
     plt.style.use('default')
-    envs = EnvWrapper(num_processes,  env, env_config, planner_config)
+    envs = EnvWrapper(num_processes, deconstruct_env, env_config, planner_config)
 
     states, in_hands, obs = envs.reset()
     total = 0
@@ -49,9 +67,8 @@ def fillDeconstruct(agent, replay_buffer):
     local_action = [[] for i in range(num_processes)]
     local_reward = [[] for i in range(num_processes)]
 
-    pbar = tqdm(total=buffer_size)
-    buffer_len = 0
-    while len(replay_buffer) < buffer_size:
+    pbar = tqdm(total=planner_episode)
+    while total < planner_episode:
         # buffer_obs = agent.getCurrentObs(in_hands, obs)
         plan_actions = envs.getNextAction()
         actions_star_idx, actions_star = agent.getActionFromPlan(plan_actions)
@@ -111,11 +128,10 @@ def fillDeconstruct(agent, replay_buffer):
             '{}/{}, SR: {:.3f}, step time: {:.2f}; avg step time: {:.2f}'
             .format(s, total, float(s)/total if total !=0 else 0, t, np.mean(step_times))
         )
-        pbar.update(len(replay_buffer) - buffer_len)
-        buffer_len = len(replay_buffer)
+        pbar.update(done_idxes.shape[0])
 
         states = copy.copy(states_)
         obs = copy.copy(obs_)
-
+    pbar.close()
 if __name__ == '__main__':
     fillDeconstruct()

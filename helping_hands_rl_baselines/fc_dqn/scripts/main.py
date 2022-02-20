@@ -22,6 +22,8 @@ from helping_hands_rl_baselines.fc_dqn.utils.schedules import LinearSchedule
 from helping_hands_rl_baselines.fc_dqn.utils.env_wrapper import EnvWrapper
 
 from helping_hands_rl_baselines.fc_dqn.utils.parameters import *
+from helping_hands_rl_baselines.fc_dqn.utils.torch_utils import augmentBuffer, augmentBufferD4
+from helping_hands_rl_baselines.fc_dqn.scripts.fill_buffer_deconstruct import fillDeconstruct
 
 
 ExpertTransition = collections.namedtuple('ExpertTransition', 'state obs action reward next_state next_obs done step_left expert')
@@ -94,9 +96,42 @@ def train():
     if load_sub:
         logger.loadCheckPoint(os.path.join(log_dir, load_sub, 'checkpoint'), agent, replay_buffer)
 
+    if planner_episode > 0 and not load_sub:
+        if fill_buffer_deconstruct:
+            fillDeconstruct(agent, replay_buffer)
+        else:
+            planner_envs = envs
+            planner_num_process = num_processes
+            j = 0
+            states, obs = planner_envs.reset()
+            s = 0
+            if not no_bar:
+                planner_bar = tqdm(total=planner_episode)
+            while j < planner_episode:
+                plan_actions = planner_envs.getNextAction()
+                planner_actions_star_idx, planner_actions_star = agent.getActionFromPlan(plan_actions)
+                states_, obs_, rewards, dones = planner_envs.step(planner_actions_star, auto_reset=True)
+                steps_lefts = planner_envs.getStepLeft()
+                for i in range(planner_num_process):
+                    transition = ExpertTransition(states[i].numpy(), obs[i].numpy(), planner_actions_star_idx[i].numpy(),
+                                                  rewards[i].numpy(), states_[i].numpy(), obs_[i].numpy(), dones[i].numpy(),
+                                                  steps_lefts[i].numpy(), np.array(1))
+                    replay_buffer.add(transition)
+                states = copy.copy(states_)
+                obs = copy.copy(obs_)
+
+                j += dones.sum().item()
+                s += rewards.sum().item()
+
+                if not no_bar:
+                    planner_bar.set_description('{:.3f}/{}, AVG: {:.3f}'.format(s, j, float(s)/j if j != 0 else 0))
+                    planner_bar.update(dones.sum().item())
+        if expert_aug_n > 0:
+            augmentBuffer(replay_buffer, expert_aug_n, agent.rzs)
+        elif expert_aug_d4:
+            augmentBufferD4(replay_buffer, agent.rzs)
+
     # pre train
-    if load_buffer is not None and not load_sub:
-        logger.loadBuffer(replay_buffer, load_buffer, load_n)
     if pre_train_step > 0:
         pbar = tqdm(total=pre_train_step)
         while logger.num_training_steps < pre_train_step:
@@ -120,27 +155,11 @@ def train():
 
     while logger.num_eps < max_episode:
         if fixed_eps:
-            if logger.num_eps < planner_episode:
-                eps = 1
-            else:
-                eps = final_eps
+            eps = final_eps
         else:
             eps = exploration.value(logger.num_eps)
-        if planner_episode > logger.num_eps:
-            if np.random.random() < eps:
-                is_expert = 1
-                plan_actions = envs.getNextAction()
-                actions_star_idx, actions_star = agent.getActionFromPlan(plan_actions)
-            else:
-                is_expert = 0
-                q_value_maps, actions_star_idx, actions_star = agent.getEGreedyActions(states, in_hands, obs, final_eps)
-        else:
-            is_expert = 0
-            q_value_maps, actions_star_idx, actions_star = agent.getEGreedyActions(states, in_hands, obs, eps)
-
-        if alg.find('dagger')>=0:
-            plan_actions = envs.getNextAction()
-            planner_actions_star_idx, planner_actions_star = agent.getActionFromPlan(plan_actions)
+        is_expert = 0
+        q_value_maps, actions_star_idx, actions_star = agent.getEGreedyActions(states, in_hands, obs, eps)
 
         buffer_obs = getCurrentObs(in_hands, obs)
         actions_star = torch.cat((actions_star, states.unsqueeze(1)), dim=1)
@@ -164,15 +183,10 @@ def train():
         buffer_obs_ = getCurrentObs(in_hands_, obs_)
 
         for i in range(num_processes):
-            if alg.find('dagger') >= 0:
-                replay_buffer.add(
-                    ExpertTransition(states[i], buffer_obs[i], planner_actions_star_idx[i], rewards[i], states_[i],
-                                     buffer_obs_[i], dones[i], steps_lefts[i], torch.tensor(is_expert)))
-            else:
-                replay_buffer.add(
-                    ExpertTransition(states[i], buffer_obs[i], actions_star_idx[i], rewards[i], states_[i],
-                                     buffer_obs_[i], dones[i], steps_lefts[i], torch.tensor(is_expert))
-                )
+            replay_buffer.add(
+                ExpertTransition(states[i], buffer_obs[i], actions_star_idx[i], rewards[i], states_[i],
+                                 buffer_obs_[i], dones[i], steps_lefts[i], torch.tensor(is_expert))
+            )
         logger.logStep(rewards.numpy(), dones.numpy())
 
         states = copy.copy(states_)

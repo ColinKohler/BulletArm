@@ -224,13 +224,11 @@ def get_random_image_transform_params(image_size, theta_dis_n=32):
   pivot = (image_size[1] / 2, image_size[0] / 2)
   return theta, trans, pivot
 
-
-def perturb(current_image, next_image, pixels, set_theta_zero=False, theta_dis_n=32):
-  """Data augmentation on images."""
+# Code for this function modified from https://github.com/google-research/ravens
+def perturb(current_image, next_image, pixels, set_theta_zero=False, set_trans_zero=False, theta_dis_n=32):
   image_size = current_image.shape[:2]
 
   bbox_current = bbox(current_image)
-  bbox_next = bbox(next_image)
 
   if np.any(np.array([bbox_current[1]-bbox_current[0], bbox_current[3]-bbox_current[2]]) > image_size[0] - 10):
     set_theta_zero = True
@@ -239,10 +237,6 @@ def perturb(current_image, next_image, pixels, set_theta_zero=False, theta_dis_n
                  (bbox_current[0], bbox_current[3]),
                  (bbox_current[1], bbox_current[2]),
                  (bbox_current[1], bbox_current[3]),
-                 # (bbox_next[0], bbox_next[2]),
-                 # (bbox_next[0], bbox_next[3]),
-                 # (bbox_next[1], bbox_next[2]),
-                 # (bbox_next[1], bbox_next[3]),
                  ])
 
   # Compute random rigid transform.
@@ -250,6 +244,8 @@ def perturb(current_image, next_image, pixels, set_theta_zero=False, theta_dis_n
     theta, trans, pivot = get_random_image_transform_params(image_size, theta_dis_n)
     if set_theta_zero:
       theta = 0.
+    if set_trans_zero:
+      trans = [0., 0.]
     transform = get_image_transform(theta, trans, pivot)
     transform_params = theta, trans, pivot
 
@@ -286,10 +282,11 @@ def perturb(current_image, next_image, pixels, set_theta_zero=False, theta_dis_n
     current_image,
     transform[:2, :], (image_size[1], image_size[0]),
     flags=cv2.INTER_NEAREST)
-  next_image = cv2.warpAffine(
-    next_image,
-    transform[:2, :], (image_size[1], image_size[0]),
-    flags=cv2.INTER_NEAREST)
+  if next_image is not None:
+    next_image = cv2.warpAffine(
+      next_image,
+      transform[:2, :], (image_size[1], image_size[0]),
+      flags=cv2.INTER_NEAREST)
 
   return current_image, next_image, new_pixels, new_rounded_pixels, transform_params
 
@@ -335,7 +332,10 @@ def augmentBuffer(buffer, aug_n, rzs):
     for _ in range(aug_n):
       dtheta = rzs[1] - rzs[0]
       theta_dis_n = int(2 * np.pi / dtheta)
-      obs, next_obs, _, (trans_pixel,), transform_params = perturb(d.obs[0].clone().numpy(), d.next_obs[0].clone().numpy(), [d.action[:2].clone().numpy()], theta_dis_n=theta_dis_n)
+      obs, next_obs, _, (trans_pixel,), transform_params = perturb(d.obs[0].clone().numpy(),
+                                                                   d.next_obs[0].clone().numpy(),
+                                                                   [d.action[:2].clone().numpy()],
+                                                                   theta_dis_n=theta_dis_n)
       action_theta = d.action[2].clone()
       trans_theta, _, _ = transform_params
       if trans_theta >= dtheta:
@@ -445,3 +445,53 @@ def getPerlinFade(img_size):
     return int(np.random.choice([1, 2], 1)[0])
   elif img_size == 40:
     return int(np.random.choice([1, 2, 4, 5], 1)[0])
+
+def getDrQAugmentedTransition(obs, action_idx=None, rzs=(0, np.pi/2), aug_type='shift'):
+    theta_dis_n = 2 * np.pi // (rzs[1] - rzs[0])
+    num_rz = len(rzs)
+    heightmap_size = obs.shape[-1]
+    if aug_type in ['cn', 't', 'se2']:
+        if action_idx is None:
+            pixels = [[0, 0]]
+        else:
+            pixels = [action_idx[:2]]
+        if aug_type == 'cn':
+            set_trans_zero = True
+            set_theta_zero = False
+        elif aug_type == 't':
+            set_trans_zero = False
+            set_theta_zero = True
+        elif aug_type == 'se2':
+            set_trans_zero = False
+            set_theta_zero = False
+        else:
+            raise NotImplementedError
+        aug_obs, _, _, (trans_pixel, ), (trans_theta, _, _) = perturb(obs, None, pixels, set_trans_zero=set_trans_zero,
+                                                                      set_theta_zero=set_theta_zero,
+                                                                      theta_dis_n=theta_dis_n)
+        if action_idx is not None:
+            action_theta = action_idx[2]
+            if trans_theta >= rzs[1] - rzs[0]:
+                action_theta -= (trans_theta // rzs[1] - rzs[0]).long()
+                action_theta %= num_rz
+            if trans_theta <= -rzs[1] - rzs[0]:
+                action_theta += (trans_theta // rzs[1] - rzs[0]).long()
+                action_theta %= num_rz
+            trans_action = [trans_pixel[0], trans_pixel[1], action_theta]
+        else:
+            trans_action = None
+        return aug_obs, trans_action
+    elif aug_type == 'shift':
+        while True:
+            padded_obs = np.pad(obs, [4, 4], mode='edge')
+            mag_x = np.random.randint(8)
+            mag_y = np.random.randint(8)
+            aug_obs = padded_obs[mag_x:mag_x+heightmap_size, mag_y:mag_y+heightmap_size]
+            if action_idx is None:
+                trans_action = None
+                break
+            else:
+                trans_action = [action_idx[0]-mag_x+4, action_idx[1]-mag_y+4, action_idx[2]]
+                if (np.array(trans_action[:2]) > 0).all() and (np.array(trans_action[:2]) < heightmap_size).all():
+                    break
+        return aug_obs, trans_action

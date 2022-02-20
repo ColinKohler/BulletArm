@@ -521,7 +521,7 @@ class CNNShared(nn.Module):
 
     def _getConvOut(self, patch_shape):
         o1 = self.patch_conv(torch.zeros(1, *patch_shape))
-        return int(np.prod(o1.size()))*2
+        return int(np.prod(o1.size())) + 256*8*8
 
     def forward(self, obs_encoding, patch):
         # obs_encoding = obs_encoding.view(obs_encoding.size(0), -1)
@@ -763,6 +763,8 @@ class ResUTransport(nn.Module):
 
     def forward(self, obs, patch):
         batch_size = obs.shape[0]
+        patch_size = patch.shape[-1]
+        df_pad = (patch_size//2-1, patch_size//2, patch_size//2-1, patch_size//2)
 
         patch = patch.unsqueeze(1).repeat(1, self.n_rot, 1, 1, 1)
         patch = patch.reshape(patch.size(0) * patch.size(1), patch.size(2), patch.size(3), patch.size(4))
@@ -776,7 +778,7 @@ class ResUTransport(nn.Module):
         df_window = weight.shape[-1]
         weight = weight.reshape(batch_size*self.n_rot, df_channel, df_window, df_window)
         feature = feature.reshape(1, feature.size(0)*feature.size(1), feature.size(2), feature.size(3))
-        feature = F.conv2d(F.pad(feature, (11, 12, 11, 12)), weight=weight, groups=batch_size)
+        feature = F.conv2d(F.pad(feature, df_pad), weight=weight, groups=batch_size)
         feature = feature.reshape(batch_size, -1, feature.size(2), feature.size(3))
         return feature
 

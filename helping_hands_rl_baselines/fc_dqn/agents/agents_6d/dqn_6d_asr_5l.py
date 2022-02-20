@@ -206,7 +206,13 @@ class DQN6DASR5L(Base6D):
         pixel_y = torch.clamp(pixel_y, 0, self.heightmap_size - 1)
 
         z_id = (z.expand(-1, self.num_zs) - self.zs).abs().argmin(1)
-        rz_id = (rz.expand(-1, self.num_rz) - self.rzs).abs().argmin(1)
+        diff = (rz.expand(-1, self.num_rz) - self.rzs).abs()
+        diff2 = (diff - np.pi).abs()
+        rz_id = torch.min(diff, diff2).argmin(1).unsqueeze(1)
+        mask = diff.min(1)[0] > diff2.min(1)[0]
+        ry[mask] = -ry[mask]
+        rx[mask] = -rx[mask]
+        # rz_id = (rz.expand(-1, self.num_rz) - self.rzs).abs().argmin(1)
         ry_id = (ry.expand(-1, self.num_ry) - self.rys).abs().argmin(1)
         rx_id = (rx.expand(-1, self.num_rx) - self.rxs).abs().argmin(1)
 
