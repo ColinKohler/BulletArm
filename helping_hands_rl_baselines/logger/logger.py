@@ -30,7 +30,7 @@ class Logger(object):
     self.num_training_steps = 0
     self.training_eps_rewards = list()
     self.loss = dict()
-    self.current_episode_rewards = list()
+    self.current_episode_rewards = None
 
     # Evaluation
     self.num_eval_episodes = num_eval_eps # TODO: Dunno if I want this here
@@ -56,6 +56,8 @@ class Logger(object):
       rewards (list[float]): List of rewards
       done_masks (list[int]):
     '''
+    if self.current_episode_rewards is None:
+      self.current_episode_rewards = [0 for _ in rewards]
     if self.current_episode_rewards and len(rewards) != len(self.current_episode_rewards):
       raise ValueError("Length of rewards different than was previously logged.")
 
@@ -96,7 +98,10 @@ class Logger(object):
   def logTrainingStep(self, loss):
     ''''''
     self.num_training_steps += 1
-
+    if type(loss) is list or type(loss) is tuple:
+      loss = {'loss{}'.format(i): loss[i] for i in range(loss)}
+    elif type(loss) is float:
+      loss = {'loss': loss}
     for k, v in loss.items():
       if k in self.loss.keys():
         self.loss[k].append(v)
@@ -140,12 +145,9 @@ class Logger(object):
 
     self.log_counter += 1
 
-  def exportData(self, filepath):
+  def exportData(self):
     '''
     Export log data as a pickle
-
-    Args:
-      filepath (str): The filepath to save the exported data to
     '''
     pickle.dump(
       {

@@ -36,9 +36,9 @@ def createAgent():
 
     if action_sequence == 'xyp':
         if alg == 'dqn_fcn':
-            agent = DQN2DFCN(workspace, heightmap_size, device, lr, gamma, num_primitives, patch_size)
+            agent = DQN2DFCN(workspace, heightmap_size, device, lr, gamma, sl, num_primitives, patch_size)
         elif alg == 'margin_fcn':
-            agent = Margin2DFCN(workspace, heightmap_size, device, lr, gamma, num_primitives, patch_size, margin, margin_l, margin_weight, margin_beta)
+            agent = Margin2DFCN(workspace, heightmap_size, device, lr, gamma, sl, num_primitives, patch_size, margin, margin_l, margin_weight, margin_beta)
         else:
             raise NotImplementedError
         agent.initNetwork(fcn)
@@ -55,11 +55,11 @@ def createAgent():
             else:
                 raise NotImplementedError
             if alg == 'dqn_asr':
-                agent = DQN3DASR(workspace, heightmap_size, device, lr, gamma, num_primitives, patch_size,
+                agent = DQN3DASR(workspace, heightmap_size, device, lr, gamma, sl, num_primitives, patch_size,
                                  num_rotations, rz_range)
                 agent.initNetwork(fcn, q2)
             elif alg == 'margin_asr':
-                agent = Margin3DASR(workspace, heightmap_size, device, lr, gamma, num_primitives, patch_size,
+                agent = Margin3DASR(workspace, heightmap_size, device, lr, gamma, sl, num_primitives, patch_size,
                                     num_rotations, rz_range, margin, margin_l, margin_weight, margin_beta)
                 agent.initNetwork(fcn, q2)
             else:
@@ -67,9 +67,9 @@ def createAgent():
 
         elif alg.find('fcn') > -1:
             if alg == 'dqn_fcn':
-                agent = DQN3DFCN(workspace, heightmap_size, device, lr, gamma, num_primitives, patch_size, num_rotations, rz_range)
+                agent = DQN3DFCN(workspace, heightmap_size, device, lr, gamma, sl, num_primitives, patch_size, num_rotations, rz_range)
             elif alg == 'margin_fcn':
-                agent = Margin3DFCN(workspace, heightmap_size, device, lr, gamma, num_primitives, patch_size, num_rotations, rz_range, margin, margin_l, margin_weight, margin_beta)
+                agent = Margin3DFCN(workspace, heightmap_size, device, lr, gamma, sl, num_primitives, patch_size, num_rotations, rz_range, margin, margin_l, margin_weight, margin_beta)
             else:
                 raise NotImplementedError
             agent.initNetwork(fcn)
@@ -97,11 +97,11 @@ def createAgent():
                 q4 = CNNShared(q4_input_shape, q4_output_size).to(device)
                 q5 = CNNShared(q5_input_shape, q5_output_size).to(device)
                 if alg == 'dqn_asr_5l':
-                    agent = DQN6DASR5L(workspace, heightmap_size, device, lr, gamma, num_primitives, patch_size,
+                    agent = DQN6DASR5L(workspace, heightmap_size, device, lr, gamma, sl, num_primitives, patch_size,
                                        num_rotations, rz_range, num_rx, (min_rx, max_rx), num_rx, (min_rx, max_rx), num_zs,
                                        (min_z, max_z))
                 elif alg == 'margin_asr_5l':
-                    agent = Margin6DASR5L(workspace, heightmap_size, device, lr, gamma, num_primitives, patch_size,
+                    agent = Margin6DASR5L(workspace, heightmap_size, device, lr, gamma, sl, num_primitives, patch_size,
                                        num_rotations, rz_range, num_rx, (min_rx, max_rx), num_rx, (min_rx, max_rx),
                                        num_zs, (min_z, max_z), margin, margin_l, margin_weight, margin_beta)
             agent.initNetwork(fcn, q2, q3, q4, q5)

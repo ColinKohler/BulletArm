@@ -2,8 +2,9 @@ import sys
 import time
 import copy
 import collections
+import torch
 from tqdm import tqdm
-
+from helping_hands_rl_baselines.fc_dqn.utils.parameters import *
 import matplotlib.pyplot as plt
 
 sys.path.append('./')
@@ -39,8 +40,6 @@ def fillDeconstruct(agent, replay_buffer):
     envs = EnvWrapper(num_processes,  env, env_config, planner_config)
 
     states, in_hands, obs = envs.reset()
-    obs = obs.permute(0, 3, 1, 2)
-    in_hands = in_hands.permute(0, 3, 1, 2)
     total = 0
     s = 0
     step_times = []
@@ -64,9 +63,6 @@ def fillDeconstruct(agent, replay_buffer):
         t = time.time()-t0
         step_times.append(t)
 
-        obs_ = obs_.permute(0, 3, 1, 2)
-        in_hands_ = in_hands_.permute(0, 3, 1, 2)
-
         buffer_obs = getCurrentObs(in_hands_, obs)
         for i in range(num_processes):
             local_state[i].append(states[i])
@@ -79,11 +75,9 @@ def fillDeconstruct(agent, replay_buffer):
         done_idxes = torch.nonzero(dones).squeeze(1)
         if done_idxes.shape[0] != 0:
             empty_in_hands = envs.getEmptyInHand()
-            empty_in_hands = empty_in_hands.permute(0, 3, 1, 2)
 
             buffer_obs_ = getCurrentObs(empty_in_hands, copy.deepcopy(obs_))
             reset_states_, reset_in_hands_, reset_obs_ = envs.reset_envs(done_idxes)
-            reset_obs_ = reset_obs_.permute(0, 3, 1, 2)
             for i, idx in enumerate(done_idxes):
                 local_obs[idx].append(buffer_obs_[idx])
                 local_state[idx].append(copy.deepcopy(states_[idx]))

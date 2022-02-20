@@ -308,7 +308,7 @@ class BaseEnv:
         if self.perfect_place and not self._checkPerfectPlace(x, y, z, rot, self.objects):
           return
         self.robot.place(pos, rot_q, self.place_pre_offset,
-                         dynamic=self.dynamic, simulate_grasp=self.simulate_grasp, top_down_approach=self.place_top_down_approach)
+                         dynamic=self.dynamic, simulate_place=self.simulate_grasp, top_down_approach=self.place_top_down_approach)
     elif motion_primative == constants.PUSH_PRIMATIVE:
       pass
     elif motion_primative == constants.PULL_PRIMATIVE:

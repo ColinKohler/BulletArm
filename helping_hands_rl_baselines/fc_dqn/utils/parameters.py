@@ -43,6 +43,7 @@ training_group.add_argument('--device_name', type=str, default='cuda')
 training_group.add_argument('--target_update_freq', type=int, default=100)
 training_group.add_argument('--save_freq', type=int, default=500)
 training_group.add_argument('--load_model_pre', type=str, default=None)
+training_group.add_argument('--sl', action='store_true')
 training_group.add_argument('--planner_episode', type=int, default=0)
 training_group.add_argument('--note', type=str, default=None)
 training_group.add_argument('--seed', type=int, default=None)
@@ -147,6 +148,7 @@ max_episode = args.max_episode
 device = torch.device(args.device_name)
 target_update_freq = args.target_update_freq
 save_freq = args.save_freq
+sl = args.sl
 planner_episode = args.planner_episode
 
 load_model_pre = args.load_model_pre
