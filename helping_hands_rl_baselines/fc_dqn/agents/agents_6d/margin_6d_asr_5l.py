@@ -1,6 +1,6 @@
 import numpy as np
-from baselines.fc_dqn.agents.agents_6d.dqn_6d_asr_5l import DQN6DASR5L
-from baselines.fc_dqn.agents.margin_base import MarginBase
+from helping_hands_rl_baselines.fc_dqn.agents.agents_6d.dqn_6d_asr_5l import DQN6DASR5L
+from helping_hands_rl_baselines.fc_dqn.agents.margin_base import MarginBase
 
 class Margin6DASR5L(DQN6DASR5L, MarginBase):
     def __init__(self, workspace, heightmap_size, device, lr=1e-4, gamma=0.9, sl=False, num_primitives=1,

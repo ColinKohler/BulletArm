@@ -2,8 +2,8 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 from copy import deepcopy
-from baselines.fc_dqn.agents.agents_3d.base_3d import Base3D
-from baselines.fc_dqn.utils import torch_utils
+from helping_hands_rl_baselines.fc_dqn.agents.agents_3d.base_3d import Base3D
+from helping_hands_rl_baselines.fc_dqn.utils import torch_utils
 
 
 class DQN3DASR(Base3D):

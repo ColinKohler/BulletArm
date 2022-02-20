@@ -5,10 +5,10 @@ import copy
 
 from tqdm import tqdm
 
-from baselines.fc_dqn.scripts.create_agent import createAgent
-from baselines.fc_dqn.utils.env_wrapper import EnvWrapper
-from baselines.fc_dqn.utils.parameters import *
-from baselines.fc_dqn.scripts.create_agent import createAgent
+from helping_hands_rl_baselines.fc_dqn.scripts.create_agent import createAgent
+from helping_hands_rl_baselines.fc_dqn.utils.env_wrapper import EnvWrapper
+from helping_hands_rl_baselines.fc_dqn.utils.parameters import *
+from helping_hands_rl_baselines.fc_dqn.scripts.create_agent import createAgent
 
 def testPlanner():
     # test_episode = 500

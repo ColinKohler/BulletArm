@@ -30,6 +30,7 @@ class Logger(object):
     self.num_training_steps = 0
     self.training_eps_rewards = list()
     self.loss = dict()
+    self.current_episode_rewards = list()
 
     # Evaluation
     self.num_eval_episodes = num_eval_eps # TODO: Dunno if I want this here
@@ -62,7 +63,7 @@ class Logger(object):
     self.num_eps += np.sum(done_masks)
     for i, (reward, done) in enumerate(zip(rewards, done_masks)):
       if done:
-        self.training_eps_rewards.append(current_episode_rewards[i] + reward)
+        self.training_eps_rewards.append(self.current_episode_rewards[i] + reward)
       else:
         self.current_episode_rewards[i] += reward
 
@@ -151,7 +152,7 @@ class Logger(object):
         'num_eps' : self.num_eps,
         'num_steps' : self.num_steps,
         'num_training_steps' : self.num_training_steps,
-        'training_eps_rewards' : self.rewards,
+        'training_eps_rewards' : self.training_eps_rewards,
         'num_eval_intervals' : self.num_eval_intervals,
         'eval_eps_rewards' : self.eval_eps_rewards,
         'eval_mean_values' : self.eval_mean_values,
@@ -190,7 +191,7 @@ class Logger(object):
     '''
     if isinstance(keys, str) and values is not None:
       self.scalar_logs[keys] = values
-    elif isinstance(key, dict):
+    elif isinstance(keys, dict):
       self.scalar_logs.update(keys)
     else:
       raise TypeError

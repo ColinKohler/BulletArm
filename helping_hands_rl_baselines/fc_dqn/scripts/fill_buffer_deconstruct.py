@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 sys.path.append('./')
 sys.path.append('..')
-from baselines.fc_dqn.utils.env_wrapper import EnvWrapper
+from helping_hands_rl_baselines.fc_dqn.utils.env_wrapper import EnvWrapper
 
 ExpertTransition = collections.namedtuple('ExpertTransition', 'state obs action reward next_state next_obs done step_left expert')
 

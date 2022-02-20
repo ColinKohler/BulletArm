@@ -1,6 +1,6 @@
 import numpy as np
-from baselines.fc_dqn.agents.agents_3d.dqn_3d_fcn_si import DQN3DFCNSingleIn
-from baselines.fc_dqn.agents.agents_3d.margin_3d_fcn import Margin3DFCN
+from helping_hands_rl_baselines.fc_dqn.agents.agents_3d.dqn_3d_fcn_si import DQN3DFCNSingleIn
+from helping_hands_rl_baselines.fc_dqn.agents.agents_3d.margin_3d_fcn import Margin3DFCN
 
 class Margin3DFCNSingleIn(DQN3DFCNSingleIn, Margin3DFCN):
     def __init__(self, workspace, heightmap_size, device, lr=1e-4, gamma=0.9, sl=False, num_primitives=1,

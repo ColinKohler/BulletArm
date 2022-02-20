@@ -1,7 +1,7 @@
 import numpy as np
 import torch
-from baselines.fc_dqn.agents.base_agent import BaseAgent
-from baselines.fc_dqn.utils.torch_utils import perturb, ExpertTransition
+from helping_hands_rl_baselines.fc_dqn.agents.base_agent import BaseAgent
+from helping_hands_rl_baselines.fc_dqn.utils.torch_utils import perturb, ExpertTransition
 
 
 class Base3D(BaseAgent):

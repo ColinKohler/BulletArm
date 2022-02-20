@@ -3,8 +3,8 @@ import torch
 # from scipy.ndimage import median_filter
 from cupyx.scipy.ndimage import median_filter
 import cupy as cp
-from baselines.fc_dqn.agents.base_agent import BaseAgent
-from baselines.fc_dqn.utils import transformations
+from helping_hands_rl_baselines.fc_dqn.agents.base_agent import BaseAgent
+from helping_hands_rl_baselines.fc_dqn.utils import transformations
 
 
 class Base6D(BaseAgent):

@@ -1,5 +1,5 @@
-from baselines.fc_dqn.agents.agents_2d.dqn_2d_fcn import DQN2DFCN
-from baselines.fc_dqn.agents.margin_base import MarginBase
+from helping_hands_rl_baselines.fc_dqn.agents.agents_2d.dqn_2d_fcn import DQN2DFCN
+from helping_hands_rl_baselines.fc_dqn.agents.margin_base import MarginBase
 
 class Margin2DFCN(DQN2DFCN, MarginBase):
     def __init__(self, workspace, heightmap_size, device, lr=1e-4, gamma=0.9, sl=False, num_primitives=1,

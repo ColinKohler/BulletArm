@@ -2,8 +2,8 @@ from copy import deepcopy
 import numpy as np
 import torch
 import torch.nn.functional as F
-from baselines.fc_dqn.agents.base_agent import BaseAgent
-from baselines.fc_dqn.utils import torch_utils
+from helping_hands_rl_baselines.fc_dqn.agents.base_agent import BaseAgent
+from helping_hands_rl_baselines.fc_dqn.utils import torch_utils
 
 
 class DQN2DFCN(BaseAgent):

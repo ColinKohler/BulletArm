@@ -12,14 +12,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import AxesGrid
 
-from baselines.fc_dqn.scripts.create_agent import createAgent
-from baselines.fc_dqn.utils.parameters import *
-from baselines.fc_dqn.storage.buffer import QLearningBufferExpert, QLearningBuffer
+from helping_hands_rl_baselines.fc_dqn.scripts.create_agent import createAgent
+from helping_hands_rl_baselines.fc_dqn.utils.parameters import *
+from helping_hands_rl_baselines.fc_dqn.storage.buffer import QLearningBufferExpert, QLearningBuffer
 from helping_hands_rl_envs import env_factory
-from baselines.fc_dqn.utils.logger import Logger
-from baselines.fc_dqn.utils.schedules import LinearSchedule
-from baselines.fc_dqn.utils.torch_utils import rand_perlin_2d
-from baselines.fc_dqn.utils.env_wrapper import EnvWrapper
+from helping_hands_rl_baselines.fc_dqn.utils.logger import Logger
+from helping_hands_rl_baselines.fc_dqn.utils.schedules import LinearSchedule
+from helping_hands_rl_baselines.fc_dqn.utils.torch_utils import rand_perlin_2d
+from helping_hands_rl_baselines.fc_dqn.utils.env_wrapper import EnvWrapper
 
 
 ExpertTransition = collections.namedtuple('ExpertTransition', 'state obs action reward next_state next_obs done step_left expert')
