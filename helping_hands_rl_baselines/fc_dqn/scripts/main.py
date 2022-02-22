@@ -68,16 +68,16 @@ def train():
     agent.train()
 
     # logging
-    log_dir = os.path.join(log_pre, '{}_{}_{}'.format(alg, model, env))
+    base_dir = os.path.join(log_pre, '{}_{}_{}'.format(alg, model, env))
     if note:
-        log_dir += '_'
-        log_dir += note
+        base_dir += '_'
+        base_dir += note
     if not log_sub:
         timestamp = time.time()
         timestamp = datetime.datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d.%H:%M:%S')
-        log_dir = os.path.join(log_dir, timestamp)
+        log_dir = os.path.join(base_dir, timestamp)
     else:
-        log_dir = os.path.join(log_dir, log_sub)
+        log_dir = os.path.join(base_dir, log_sub)
 
     # logger = Logger(log_dir, env, 'train', num_processes, max_episode, log_sub)
 
@@ -94,7 +94,7 @@ def train():
     states, in_hands, obs = envs.reset()
 
     if load_sub:
-        logger.loadCheckPoint(os.path.join(log_dir, load_sub, 'checkpoint'), agent, replay_buffer)
+        logger.loadCheckPoint(os.path.join(base_dir, load_sub, 'checkpoint'), agent, replay_buffer)
 
     if planner_episode > 0 and not load_sub:
         if fill_buffer_deconstruct:
