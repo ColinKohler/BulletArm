@@ -1,6 +1,5 @@
 import pybullet as pb
 import numpy as np
-import cupy as cp
 
 class Sensor(object):
   def __init__(self, cam_pos, cam_up_vector, target_pos, target_size, near, far):
