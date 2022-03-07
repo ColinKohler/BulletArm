@@ -260,6 +260,9 @@ class CloseLoopEnv(BaseEnv):
     return im
 
   def _getHeightmap(self, gripper_pos=None, gripper_rz=None):
+    gripper_z_offset = 0.04 # panda
+    if self.robot_type == 'kuka':
+      gripper_z_offset = 0.12
     if gripper_pos is None:
       gripper_pos = self.robot._getEndEffectorPosition()
     if gripper_rz is None:
@@ -275,7 +278,7 @@ class CloseLoopEnv(BaseEnv):
 
     elif self.view_type == 'camera_center_xyzr':
       # xyz centered, alighed
-      gripper_pos[2] += 0.12
+      gripper_pos[2] += gripper_z_offset
       target_pos = [gripper_pos[0], gripper_pos[1], 0]
       T = transformations.euler_matrix(0, 0, gripper_rz)
       cam_up_vector = T.dot(np.array([-1, 0, 0, 1]))[:3]
@@ -298,7 +301,7 @@ class CloseLoopEnv(BaseEnv):
       return depth
     elif self.view_type in ['camera_center_xyz', 'camera_center_xyz_height']:
       # xyz centered, gripper will be visible
-      gripper_pos[2] += 0.12
+      gripper_pos[2] += gripper_z_offset
       target_pos = [gripper_pos[0], gripper_pos[1], 0]
       cam_up_vector = [-1, 0, 0]
       self.sensor.setCamMatrix(gripper_pos, cam_up_vector, target_pos)
@@ -310,7 +313,7 @@ class CloseLoopEnv(BaseEnv):
       return depth
     elif self.view_type in ['pers_center_xyz']:
       # xyz centered, gripper will be visible
-      # gripper_pos[2] += 0.07
+      gripper_pos[2] += gripper_z_offset
       target_pos = [gripper_pos[0], gripper_pos[1], 0]
       cam_up_vector = [-1, 0, 0]
       self.pers_sensor.setCamMatrix(gripper_pos, cam_up_vector, target_pos)
@@ -330,7 +333,7 @@ class CloseLoopEnv(BaseEnv):
         depth = heightmap
       return depth
     elif self.view_type in ['camera_center_z', 'camera_center_z_height']:
-      gripper_pos[2] += 0.12
+      gripper_pos[2] += gripper_z_offset
       cam_pos = [self.workspace[0].mean(), self.workspace[1].mean(), gripper_pos[2]]
       target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
       cam_up_vector = [-1, 0, 0]
