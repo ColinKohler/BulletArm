@@ -244,7 +244,8 @@ class CloseLoopEnv(BaseEnv):
     if gripper_rz is None:
       gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
     im = np.zeros((self.heightmap_size, self.heightmap_size))
-    gripper_half_size = round(5 * self.workspace_size / self.obs_size_m)
+    gripper_half_size = 5 * self.workspace_size / self.obs_size_m
+    gripper_half_size = round(gripper_half_size/128*self.heightmap_size)
     if self.robot_type == 'panda':
       gripper_max_open = 42 * self.workspace_size / self.obs_size_m
     elif self.robot_type == 'kuka':
