@@ -8,8 +8,8 @@ from more_itertools import windowed
 from.logger import Logger
 
 class BaselineLogger(Logger):
-  def __init__(self, results_path, num_eval_eps=100, hyperparameters=None, eval_freq=100):
-    super().__init__(results_path, num_eval_eps, hyperparameters)
+  def __init__(self, results_path, checkpoint_interval=500, num_eval_eps=100, hyperparameters=None, eval_freq=100):
+    super().__init__(results_path, checkpoint_interval, num_eval_eps, hyperparameters)
 
     self.eval_freq = eval_freq
     self.info_dir = os.path.join(self.results_path, 'info')

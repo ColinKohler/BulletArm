@@ -82,7 +82,7 @@ def train():
     # logger = Logger(log_dir, env, 'train', num_processes, max_episode, log_sub)
 
     hyper_parameters['model_shape'] = agent.getModelStr()
-    logger = BaselineLogger(log_dir, hyperparameters=hyper_parameters)
+    logger = BaselineLogger(log_dir, checkpoint_interval=save_freq, hyperparameters=hyper_parameters)
     logger.saveParameters(hyper_parameters)
 
     if buffer_type == 'expert':
