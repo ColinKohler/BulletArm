@@ -37,8 +37,8 @@ training_group.add_argument('--fixed_eps', action='store_true')
 training_group.add_argument('--init_eps', type=float, default=1.0)
 training_group.add_argument('--final_eps', type=float, default=0.)
 training_group.add_argument('--training_iters', type=int, default=1)
-training_group.add_argument('--training_offset', type=int, default=1000)
-training_group.add_argument('--max_episode', type=int, default=10000)
+training_group.add_argument('--training_offset', type=int, default=100)
+training_group.add_argument('--max_train_step', type=int, default=50000)
 training_group.add_argument('--device_name', type=str, default='cuda')
 training_group.add_argument('--target_update_freq', type=int, default=100)
 training_group.add_argument('--save_freq', type=int, default=500)
@@ -61,6 +61,11 @@ training_group.add_argument('--q2_model', type=str, default='cnn')
 training_group.add_argument('--equi_n', type=int, default=4)
 training_group.add_argument('--aug', type=strToBool, default=False)
 training_group.add_argument('--aug_type', type=str, choices=['se2', 'cn', 't', 'shift'], default='se2')
+
+eval_group = parser.add_argument_group('eval')
+eval_group.add_argument('--num_eval_processes', type=int, default=5)
+eval_group.add_argument('--eval_freq', default=1000, type=int)
+eval_group.add_argument('--num_eval_episodes', default=100, type=int)
 
 planner_group = parser.add_argument_group('planner')
 planner_group.add_argument('--planner_pos_noise', type=float, default=0)
@@ -147,7 +152,7 @@ init_eps = args.init_eps
 final_eps = args.final_eps
 training_iters = args.training_iters
 training_offset = args.training_offset
-max_episode = args.max_episode
+max_train_step = args.max_train_step
 device = torch.device(args.device_name)
 target_update_freq = args.target_update_freq
 save_freq = args.save_freq
@@ -167,6 +172,11 @@ equi_n = args.equi_n
 
 aug = args.aug
 aug_type = args.aug_type
+
+# eval
+num_eval_processes = args.num_eval_processes
+eval_freq = args.eval_freq
+num_eval_episodes = args.num_eval_episodes
 
 # pre train
 fill_buffer_deconstruct = args.fill_buffer_deconstruct

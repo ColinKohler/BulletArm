@@ -6,6 +6,7 @@ import math
 import collections
 from tqdm import tqdm
 import datetime
+import threading
 
 import torch
 
@@ -16,7 +17,7 @@ sys.path.append('./')
 sys.path.append('..')
 from helping_hands_rl_baselines.fc_dqn.scripts.create_agent import createAgent
 from helping_hands_rl_baselines.fc_dqn.storage.buffer import QLearningBufferExpert, QLearningBuffer
-# from helping_hands_rl_baselines.fc_dqn.utils.logger import Logger
+from helping_hands_rl_baselines.logger.logger import Logger
 from helping_hands_rl_baselines.logger.baseline_logger import BaselineLogger
 from helping_hands_rl_baselines.fc_dqn.utils.schedules import LinearSchedule
 from helping_hands_rl_baselines.fc_dqn.utils.env_wrapper import EnvWrapper
@@ -52,20 +53,60 @@ def train_step(agent, replay_buffer, logger):
 def saveModelAndInfo(logger, agent):
     logger.writeLog()
     logger.exportData()
+    agent.saveModel(os.path.join(logger.models_dir, 'snapshot'))
+
+
+def evaluate(envs, agent, logger):
+  states, in_hands, obs = envs.reset()
+  evaled = 0
+  temp_reward = [[] for _ in range(num_eval_processes)]
+  if not no_bar:
+    eval_bar = tqdm(total=num_eval_episodes)
+  while evaled < num_eval_episodes:
+    q_value_maps, actions_star_idx, actions_star = agent.getEGreedyActions(states, in_hands, obs, 0)
+    actions_star = torch.cat((actions_star, states.unsqueeze(1)), dim=1)
+    states_, in_hands_, obs_, rewards, dones = envs.step(actions_star, auto_reset=True)
+    rewards = rewards.numpy()
+    dones = dones.numpy()
+    states = copy.copy(states_)
+    in_hands = copy.copy(in_hands_)
+    obs = copy.copy(obs_)
+    for i, r in enumerate(rewards.reshape(-1)):
+      temp_reward[i].append(r)
+    evaled += int(np.sum(dones))
+    for i, d in enumerate(dones.astype(bool)):
+      if d:
+        R = 0
+        for r in reversed(temp_reward[i]):
+          R = r + gamma * R
+        logger.logEvalEpisode(temp_reward[i], discounted_return=R)
+        # eval_rewards.append(R)
+        temp_reward[i] = []
+    if not no_bar:
+      eval_bar.update(evaled - eval_bar.n)
+  # logger.eval_rewards.append(np.mean(eval_rewards[:num_eval_episodes]))
+  logger.logEvalInterval()
+  logger.writeLog()
+  if not no_bar:
+    eval_bar.close()
 
 def train():
+    eval_thread = None
     start_time = time.time()
     if seed is not None:
         set_seed(seed)
     # setup env
-    envs = EnvWrapper(num_processes,  env, env_config, planner_config)
+    envs = EnvWrapper(num_processes, env, env_config, planner_config)
+    eval_envs = EnvWrapper(num_eval_processes, env, env_config, planner_config)
 
     # setup agent
     agent = createAgent()
+    eval_agent = createAgent(test=True)
 
     if load_model_pre:
         agent.loadModel(load_model_pre)
     agent.train()
+    eval_agent.train()
 
     # logging
     base_dir = os.path.join(log_pre, '{}_{}_{}'.format(alg, model, env))
@@ -82,7 +123,8 @@ def train():
     # logger = Logger(log_dir, env, 'train', num_processes, max_episode, log_sub)
 
     hyper_parameters['model_shape'] = agent.getModelStr()
-    logger = BaselineLogger(log_dir, checkpoint_interval=save_freq, hyperparameters=hyper_parameters)
+    # logger = Logger(log_dir, checkpoint_interval=save_freq, hyperparameters=hyper_parameters)
+    logger = BaselineLogger(log_dir, checkpoint_interval=save_freq, hyperparameters=hyper_parameters, eval_freq=eval_freq)
     logger.saveParameters(hyper_parameters)
 
     if buffer_type == 'expert':
@@ -142,18 +184,18 @@ def train():
                 pbar.update(len(logger.num_training_steps)-pbar.n)
 
             if (time.time() - start_time) / 3600 > time_limit:
-                logger.saveCheckPoint(args, agent, replay_buffer)
+                logger.saveCheckPoint(agent, replay_buffer)
                 exit(0)
         pbar.close()
-        logger.saveModel('pretrain', agent)
+        agent.saveModel(os.path.join(logger.models_dir, 'snapshot_{}'.format('pretrain')))
         # agent.sl = sl
 
     if not no_bar:
-        pbar = tqdm(total=max_episode)
+        pbar = tqdm(total=max_train_step)
         pbar.set_description('Episodes:0; Reward:0.0; Explore:0.0; Loss:0.0; Time:0.0')
     timer_start = time.time()
 
-    while logger.num_eps < max_episode:
+    while logger.num_training_steps < max_train_step:
         if fixed_eps:
             eps = final_eps
         else:
@@ -198,20 +240,32 @@ def train():
 
         if not no_bar:
             timer_final = time.time()
-            description = 'Steps:{}; Reward:{:.03f}; Explore:{:.02f}; Loss:{:.03f}; Time:{:.03f}'.format(
-                logger.num_steps, logger.getAvg(logger.training_eps_rewards, 1000), eps, float(logger.getCurrentLoss()),
-                timer_final - timer_start)
+            description = 'Action Step:{}; Episode: {}; Reward:{:.03f}; Eval Reward:{:.03f}; Explore:{:.02f}; Loss:{:.03f}; Time:{:.03f}'.format(
+              logger.num_steps, logger.num_eps, logger.getAvg(logger.training_eps_rewards, 100),
+              np.mean(logger.eval_eps_rewards[-2]) if len(logger.eval_eps_rewards) > 1 and len(logger.eval_eps_rewards[-2]) > 0 else 0, eps, float(logger.getCurrentLoss()),
+              timer_final - timer_start)
             pbar.set_description(description)
             timer_start = timer_final
-            pbar.update(logger.num_eps-pbar.n)
+            pbar.update(logger.num_training_steps - pbar.n)
         logger.num_steps += num_processes
+
+        if logger.num_training_steps > 0 and eval_freq > 0 and logger.num_training_steps % eval_freq == 0:
+            if eval_thread is not None:
+                eval_thread.join()
+            eval_agent.copyNetworksFrom(agent)
+            eval_thread = threading.Thread(target=evaluate, args=(eval_envs, eval_agent, logger))
+            eval_thread.start()
 
         if logger.num_steps % (num_processes * save_freq) == 0:
             saveModelAndInfo(logger, agent)
 
+    if eval_thread is not None:
+        eval_thread.join()
+
     saveModelAndInfo(logger, agent)
-    logger.saveCheckPoint(args, agent, replay_buffer)
+    logger.saveCheckPoint(agent, replay_buffer)
     envs.close()
+    eval_envs.close()
 
 if __name__ == '__main__':
     train()

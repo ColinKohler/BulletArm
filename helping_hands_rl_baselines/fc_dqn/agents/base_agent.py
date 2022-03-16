@@ -315,3 +315,7 @@ class BaseAgent:
 
     def getModelStr(self):
         return str(self.networks)
+
+    def copyNetworksFrom(self, from_agent):
+        for i in range(len(self.networks)):
+            self.networks[i].load_state_dict(from_agent.networks[i].state_dict())

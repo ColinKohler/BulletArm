@@ -3,8 +3,10 @@
 '''
 
 import os
+import json
 import time
 import pickle
+import torch
 import matplotlib.pyplot as plt
 import numpy as np
 from torch.utils.tensorboard import SummaryWriter
@@ -36,9 +38,16 @@ class Logger(object):
     # Evaluation
     self.num_eval_episodes = num_eval_eps # TODO: Dunno if I want this here
     self.num_eval_intervals = 0
-    self.eval_eps_rewards = list()
-    self.eval_mean_values = list()
-    self.eval_eps_lens = list()
+    self.eval_eps_rewards = [[]]
+    self.eval_eps_dis_rewards = [[]]
+    self.eval_mean_values = [[]]
+    self.eval_eps_lens = [[]]
+
+    # sub folders for saving the models and checkpoint
+    self.models_dir = os.path.join(self.results_path, 'models')
+    self.checkpoint_dir = os.path.join(self.results_path, 'checkpoint')
+    os.makedirs(self.models_dir)
+    os.makedirs(self.checkpoint_dir)
 
     if hyperparameters:
       hp_table = [
@@ -83,18 +92,26 @@ class Logger(object):
 
   def logEvalInterval(self):
     self.num_eval_intervals += 1
+    self.eval_eps_rewards.append([])
+    self.eval_eps_dis_rewards.append([])
+    self.eval_mean_values.append([])
+    self.eval_eps_lens.append([])
 
-  def logEvalEpisode(self, rewards, values):
+  def logEvalEpisode(self, rewards, values=None, discounted_return=None):
     '''
-    Log a evaulation episode.
+    Log a evaluation episode.
 
     Args:
       rewards (list[float]: Rewards for the episode
       values (list[float]): Values for the episode
+      discounted_return (list[float]): Discounted return of the episode
     '''
-    self.eval_eps_rewards.append(np.sum(rewards))
-    self.eval_mean_values.append(np.mean(values))
-    self.eval_eps_lens.append(int(len(rewards)))
+    self.eval_eps_rewards[self.num_eval_intervals].append(np.sum(rewards))
+    self.eval_eps_lens[self.num_eval_intervals].append(int(len(rewards)))
+    if values is not None:
+      self.eval_mean_values[self.num_eval_intervals].append(np.mean(values))
+    if discounted_return is not None:
+      self.eval_eps_dis_rewards[self.num_eval_intervals].append(discounted_return)
 
   def logTrainingStep(self, loss):
     ''''''
@@ -114,16 +131,18 @@ class Logger(object):
     Write the logdir to the tensorboard summary writer. Calling this too often can
     slow down training.
     '''
-
-    self.writer.add_scalar('1.Evaluate/1.Reward',
-                           self.getAvg(self.eval_eps_rewards, n=self.num_eval_episodes),
-                           self.num_eval_intervals)
-    self.writer.add_scalar('1.Evaluate/2.Mean_value',
-                           self.getAvg(self.eval_mean_values, n=self.num_eval_episodes),
-                           self.num_eval_intervals)
-    self.writer.add_scalar('1.Evaluate/3.Eps_len',
-                          self.getAvg(self.eval_eps_lens, n=self.num_eval_episodes),
-                          self.num_eval_intervals)
+    # the eval list index at self.num_eval_intervals might be being updated, so log the eval list indexed
+    # at self.num_eval_intervals-1
+    if self.num_eval_intervals > 1:
+      self.writer.add_scalar('1.Evaluate/1.Reward',
+                             self.getAvg(self.eval_eps_rewards[self.num_eval_intervals-1], n=self.num_eval_episodes),
+                             self.num_eval_intervals-1)
+      self.writer.add_scalar('1.Evaluate/2.Mean_value',
+                             self.getAvg(self.eval_mean_values[self.num_eval_intervals-1], n=self.num_eval_episodes),
+                             self.num_eval_intervals-1)
+      self.writer.add_scalar('1.Evaluate/3.Eps_len',
+                            self.getAvg(self.eval_eps_lens[self.num_eval_intervals-1], n=self.num_eval_episodes),
+                            self.num_eval_intervals-1)
     # TODO: Do we want to allow custom windows here?
     self.writer.add_scalar('1.Evaluate/4.Learning_curve',
                            self.getAvg(self.training_eps_rewards, n=100),
@@ -149,6 +168,21 @@ class Logger(object):
 
     self.log_counter += 1
 
+  def getSaveState(self):
+    state = {
+      'num_steps': self.num_steps,
+      'num_eps': self.num_eps,
+      'num_training_steps': self.num_training_steps,
+      'training_eps_rewards': self.training_eps_rewards,
+      'loss': self.loss,
+      'num_eval_intervals': self.num_eval_intervals,
+      'eval_eps_rewards': self.eval_eps_rewards,
+      'eval_eps_dis_rewards': self.eval_eps_dis_rewards,
+      'eval_mean_values': self.eval_mean_values,
+      'eval_eps_lens': self.eval_eps_lens,
+    }
+    return state
+
   def exportData(self):
     '''
     Export log data as a pickle
@@ -157,17 +191,7 @@ class Logger(object):
       filepath (str): The filepath to save the exported data to
     '''
     pickle.dump(
-      {
-        'num_eps' : self.num_eps,
-        'num_steps' : self.num_steps,
-        'num_training_steps' : self.num_training_steps,
-        'training_eps_rewards' : self.training_eps_rewards,
-        'num_eval_intervals' : self.num_eval_intervals,
-        'eval_eps_rewards' : self.eval_eps_rewards,
-        'eval_mean_values' : self.eval_mean_values,
-        'eval_eps_lens' : self.eval_eps_lens,
-        'loss' : self.loss,
-      },
+      self.getSaveState(),
       open(os.path.join(self.results_path, 'log_data.pkl'), 'wb')
     )
 
@@ -218,3 +242,81 @@ class Logger(object):
     '''
     avg = np.mean(l[-n:]) if l else 0
     return avg
+
+  def saveParameters(self, parameters):
+    '''
+    Save the parameters as a json file
+
+    Args:
+      parameters: parameter dict to save
+    '''
+    class NumpyEncoder(json.JSONEncoder):
+      def default(self, obj):
+        if isinstance(obj, np.ndarray):
+          return obj.tolist()
+        return json.JSONEncoder.default(self, obj)
+    with open(os.path.join(self.results_path, "parameters.json"), 'w') as f:
+      json.dump(parameters, f, cls=NumpyEncoder)
+
+  def saveCheckPoint(self, agent, buffer):
+    '''
+    Save the checkpoint
+
+    Args:
+      agent: the agent class. The agent must implement getSaveState() function that returns a dict of the agent checkpoint
+      buffer: the buffer class. The buffer must implement getSaveState() function that returns a dict of the buffer checkpoint
+    '''
+    checkpoint = {
+      'agent': agent.getSaveState(),
+      'buffer_state': buffer.getSaveState(),
+      'logger': self.getSaveState(),
+      'torch_rng_state': torch.get_rng_state(),
+      'torch_cuda_rng_state': torch.cuda.get_rng_state(),
+      'np_rng_state': np.random.get_state()
+    }
+    torch.save(checkpoint, os.path.join(self.checkpoint_dir, 'checkpoint.pt'))
+
+  def loadCheckPoint(self, checkpoint_dir, agent, buffer):
+    '''
+    Load the checkpoint
+
+    Args:
+      checkpoint_dir: the directory of the checkpoint to load
+      agent: the agent class. The agent must implement loadFromState() function to load the checkpoint
+      buffer: the buffer class. The buffer must implement loadFromState() function to load the checkpoint
+    '''
+    print('loading checkpoint')
+
+    checkpoint = torch.load(os.path.join(checkpoint_dir, 'checkpoint.pt'))
+
+    agent.loadFromState(checkpoint['agent'])
+    buffer.loadFromState(checkpoint['buffer_state'])
+
+    self.num_steps = checkpoint['logger']['num_steps']
+    self.num_eps = checkpoint['logger']['num_eps']
+    self.num_training_steps = checkpoint['logger']['num_training_steps']
+    self.training_eps_rewards = checkpoint['logger']['training_eps_rewards']
+    self.loss = checkpoint['logger']['loss']
+    self.num_eval_intervals = checkpoint['logger']['num_eval_intervals']
+    self.eval_eps_rewards = checkpoint['logger']['eval_eps_rewards']
+    self.eval_eps_dis_rewards = checkpoint['logger']['eval_eps_dis_rewards']
+    self.eval_mean_values = checkpoint['logger']['eval_mean_values']
+    self.eval_eps_lens = checkpoint['logger']['eval_eps_lens']
+
+    torch.set_rng_state(checkpoint['torch_rng_state'])
+    torch.cuda.set_rng_state(checkpoint['torch_cuda_rng_state'])
+    np.random.set_state(checkpoint['np_rng_state'])
+
+  def getCurrentLoss(self, n=100):
+    '''
+    Calculate the average loss of previous n steps
+    Args:
+      n: the number of previous training steps to calculate the average loss
+    Returns:
+      the average loss value
+    '''
+    avg_losses = []
+    for k, v in self.loss.items():
+      avg_losses.append(self.getAvg(v, n))
+    return np.mean(avg_losses)
+
