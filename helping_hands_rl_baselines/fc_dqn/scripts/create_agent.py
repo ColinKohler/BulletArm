@@ -14,7 +14,7 @@ from helping_hands_rl_baselines.fc_dqn.networks.models import ResUCatShared, CNN
 from helping_hands_rl_baselines.fc_dqn.networks.equivariant_models import EquResUExpand, EquResUDFReg, EquResUDFRegNOut, EquShiftQ2DF3, EquShiftQ2DF3P40, EquResUExpandRegNOut
 from helping_hands_rl_baselines.fc_dqn.networks.models import ResURot, ResUTransport, ResUTransportRegress
 
-def createAgent(test=True):
+def createAgent(test=False):
     if half_rotation:
         rz_range = (0, (num_rotations - 1) * np.pi / num_rotations)
     else:

@@ -145,22 +145,25 @@ def train():
             planner_envs = envs
             planner_num_process = num_processes
             j = 0
-            states, obs = planner_envs.reset()
+            states, in_hands, obs = planner_envs.reset()
             s = 0
             if not no_bar:
                 planner_bar = tqdm(total=planner_episode)
             while j < planner_episode:
                 plan_actions = planner_envs.getNextAction()
                 planner_actions_star_idx, planner_actions_star = agent.getActionFromPlan(plan_actions)
-                states_, obs_, rewards, dones = planner_envs.step(planner_actions_star, auto_reset=True)
+                planner_actions_star = torch.cat((planner_actions_star, states.unsqueeze(1)), dim=1)
+                states_, in_hands_, obs_, rewards, dones = planner_envs.step(planner_actions_star, auto_reset=True)
                 steps_lefts = planner_envs.getStepLeft()
+                buffer_obs = getCurrentObs(in_hands, obs)
+                buffer_obs_ = getCurrentObs(in_hands_, obs_)
                 for i in range(planner_num_process):
-                    transition = ExpertTransition(states[i].numpy(), obs[i].numpy(), planner_actions_star_idx[i].numpy(),
-                                                  rewards[i].numpy(), states_[i].numpy(), obs_[i].numpy(), dones[i].numpy(),
-                                                  steps_lefts[i].numpy(), np.array(1))
-                    replay_buffer.add(transition)
+                  transition = ExpertTransition(states[i], buffer_obs[i], planner_actions_star_idx[i], rewards[i], states_[i],
+                                                buffer_obs_[i], dones[i], steps_lefts[i], torch.tensor(1))
+                  replay_buffer.add(transition)
                 states = copy.copy(states_)
                 obs = copy.copy(obs_)
+                in_hands = copy.copy(in_hands_)
 
                 j += dones.sum().item()
                 s += rewards.sum().item()
