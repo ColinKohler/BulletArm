@@ -258,17 +258,17 @@ class Logger(object):
     with open(os.path.join(self.results_path, "parameters.json"), 'w') as f:
       json.dump(parameters, f, cls=NumpyEncoder)
 
-  def saveCheckPoint(self, agent, buffer):
+  def saveCheckPoint(self, agent_save_state, buffer_save_state):
     '''
     Save the checkpoint
 
     Args:
-      agent: the agent class. The agent must implement getSaveState() function that returns a dict of the agent checkpoint
-      buffer: the buffer class. The buffer must implement getSaveState() function that returns a dict of the buffer checkpoint
+      agent_save_state (dict): the agent's save state for checkpointing
+      buffer_save_state (dict): the buffer's save state for checkpointing
     '''
     checkpoint = {
-      'agent': agent.getSaveState(),
-      'buffer_state': buffer.getSaveState(),
+      'agent': agent_save_state,
+      'buffer_state': buffer_save_state,
       'logger': self.getSaveState(),
       'torch_rng_state': torch.get_rng_state(),
       'torch_cuda_rng_state': torch.cuda.get_rng_state(),
@@ -276,21 +276,23 @@ class Logger(object):
     }
     torch.save(checkpoint, os.path.join(self.checkpoint_dir, 'checkpoint.pt'))
 
-  def loadCheckPoint(self, checkpoint_dir, agent, buffer):
+  def loadCheckPoint(self, checkpoint_dir, agent_load_func, buffer_load_func):
     '''
     Load the checkpoint
 
     Args:
       checkpoint_dir: the directory of the checkpoint to load
-      agent: the agent class. The agent must implement loadFromState() function to load the checkpoint
-      buffer: the buffer class. The buffer must implement loadFromState() function to load the checkpoint
+      agent_load_func (func): the agent's loading checkpoint function. agent_load_func must take a dict as input to
+        load the agent's checkpoint
+      buffer_load_func (func): the buffer's loading checkpoint function. buffer_load_func must take a dict as input to
+        load the buffer's checkpoint
     '''
     print('loading checkpoint')
 
     checkpoint = torch.load(os.path.join(checkpoint_dir, 'checkpoint.pt'))
 
-    agent.loadFromState(checkpoint['agent'])
-    buffer.loadFromState(checkpoint['buffer_state'])
+    agent_load_func(checkpoint['agent'])
+    buffer_load_func(checkpoint['buffer_state'])
 
     self.num_steps = checkpoint['logger']['num_steps']
     self.num_eps = checkpoint['logger']['num_eps']

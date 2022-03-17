@@ -136,7 +136,7 @@ def train():
     states, in_hands, obs = envs.reset()
 
     if load_sub:
-        logger.loadCheckPoint(os.path.join(base_dir, load_sub, 'checkpoint'), agent, replay_buffer)
+        logger.loadCheckPoint(os.path.join(base_dir, load_sub, 'checkpoint'), agent.loadFromState, replay_buffer.loadFromState)
 
     if planner_episode > 0 and not load_sub:
         if fill_buffer_deconstruct:
@@ -187,7 +187,7 @@ def train():
                 pbar.update(len(logger.num_training_steps)-pbar.n)
 
             if (time.time() - start_time) / 3600 > time_limit:
-                logger.saveCheckPoint(agent, replay_buffer)
+                logger.saveCheckPoint(agent.getSaveState(), replay_buffer.getSaveState())
                 exit(0)
         pbar.close()
         agent.saveModel(os.path.join(logger.models_dir, 'snapshot_{}'.format('pretrain')))
@@ -266,7 +266,7 @@ def train():
         eval_thread.join()
 
     saveModelAndInfo(logger, agent)
-    logger.saveCheckPoint(agent, replay_buffer)
+    logger.saveCheckPoint(agent.getSaveState(), replay_buffer.getSaveState())
     envs.close()
     eval_envs.close()
 
