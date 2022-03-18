@@ -149,6 +149,7 @@ def train():
             s = 0
             if not no_bar:
                 planner_bar = tqdm(total=planner_episode)
+            local_transitions = [[] for _ in range(planner_num_process)]
             while j < planner_episode:
                 plan_actions = planner_envs.getNextAction()
                 planner_actions_star_idx, planner_actions_star = agent.getActionFromPlan(plan_actions)
@@ -160,17 +161,24 @@ def train():
                 for i in range(planner_num_process):
                   transition = ExpertTransition(states[i], buffer_obs[i], planner_actions_star_idx[i], rewards[i], states_[i],
                                                 buffer_obs_[i], dones[i], steps_lefts[i], torch.tensor(1))
-                  replay_buffer.add(transition)
+                  local_transitions[i].append(transition)
                 states = copy.copy(states_)
                 obs = copy.copy(obs_)
                 in_hands = copy.copy(in_hands_)
 
-                j += dones.sum().item()
-                s += rewards.sum().item()
+                for i in range(planner_num_process):
+                  if dones[i] and rewards[i]:
+                    for t in local_transitions[i]:
+                      replay_buffer.add(t)
+                    local_transitions[i] = []
+                    j += 1
+                    s += 1
+                    if not no_bar:
+                      planner_bar.set_description('{:.3f}/{}, AVG: {:.3f}'.format(s, j, float(s) / j if j != 0 else 0))
+                      planner_bar.update(1)
+                  elif dones[i]:
+                    local_transitions[i] = []
 
-                if not no_bar:
-                    planner_bar.set_description('{:.3f}/{}, AVG: {:.3f}'.format(s, j, float(s)/j if j != 0 else 0))
-                    planner_bar.update(dones.sum().item())
         if expert_aug_n > 0:
             augmentBuffer(replay_buffer, expert_aug_n, agent.rzs)
         elif expert_aug_d4:
