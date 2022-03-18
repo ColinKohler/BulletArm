@@ -82,8 +82,6 @@ class BaseEnv:
     self.action_space = np.array(self.action_space)
     self.action_shape = self.action_space.shape[0]
 
-    self.offset = 0.01
-
     # Connect to pybullet and add data files to path
     if config['render']:
       self.client = pb.connect(pb.GUI)
@@ -925,24 +923,6 @@ class BaseEnv:
     elif shape_type == self.CONE: return 'cone'
     elif shape_type == self.BRICK: return 'brick'
     else: return 'unknown'
-
-  def _getPrimativeHeight(self, motion_primative, x, y):
-    '''
-    Get the z position for the given action using the current heightmap.
-    Args:
-      - motion_primative: Pick/place motion primative
-      - x: X coordinate for action
-      - y: Y coordinate for action
-      - offset: How much to offset the action along approach vector
-    Returns: Valid Z coordinate for the action
-    '''
-    x_pixel, y_pixel = self._getPixelsFromPos(x, y)
-    local_region = self.heightmap[int(max(x_pixel - self.heightmap_size/20, 0)):int(min(x_pixel + self.heightmap_size/20, self.heightmap_size)), \
-                                  int(max(y_pixel - self.heightmap_size/20, 0)):int(min(y_pixel + self.heightmap_size/20, self.heightmap_size))]
-    safe_z_pos = np.max(local_region) + self.workspace[2][0]
-    safe_z_pos = safe_z_pos - self.offset if motion_primative == constants.PICK_PRIMATIVE else safe_z_pos + self.offset
-
-    return safe_z_pos
 
   def _getPixelsFromPos(self, x, y):
     '''
