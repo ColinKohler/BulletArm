@@ -177,7 +177,7 @@ class PybulletObject(object):
     '''
     contact_points = self.getContactPoints()
     for p in contact_points:
-      if p[2] == id:
+      if p[2] == obj_id:
         return True
     return False
 
