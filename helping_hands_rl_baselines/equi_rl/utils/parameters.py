@@ -14,6 +14,7 @@ env_group = parser.add_argument_group('environment')
 env_group.add_argument('--env', type=str, default='close_loop_block_picking', help='close_loop_block_pulling, close_loop_household_picking, close_loop_drawer_opening, close_loop_block_stacking, close_loop_house_building_1, close_loop_block_picking_corner')
 env_group.add_argument('--simulator', type=str, default='pybullet')
 env_group.add_argument('--robot', type=str, default='kuka')
+env_group.add_argument('--num_objects', type=int, default=1)
 env_group.add_argument('--max_episode_steps', type=int, default=100)
 env_group.add_argument('--action_sequence', type=str, default='pxyzr')
 env_group.add_argument('--random_orientation', type=strToBool, default=True)
@@ -54,7 +55,7 @@ training_group.add_argument('--init_temp', type=float, default=1e-2)
 training_group.add_argument('--dpos', type=float, default=0.05)
 training_group.add_argument('--drot_n', type=int, default=8)
 training_group.add_argument('--demon_w', type=float, default=1)
-training_group.add_argument('--equi_n', type=int, default=8)
+training_group.add_argument('--equi_n', type=int, default=4)
 training_group.add_argument('--n_hidden', type=int, default=64)
 training_group.add_argument('--crop_size', type=int, default=128)
 training_group.add_argument('--aug', type=strToBool, default=False)
@@ -88,6 +89,7 @@ args = parser.parse_args()
 random_orientation = args.random_orientation
 env = args.env
 simulator = args.simulator
+num_objects = args.num_objects
 max_episode_steps = args.max_episode_steps
 action_sequence = args.action_sequence
 num_processes = args.num_processes
@@ -106,10 +108,11 @@ heightmap_resolution = workspace_size/heightmap_size
 action_space = [0, heightmap_size]
 view_type = args.view_type
 obs_type = args.obs_type
-if env in ['close_loop_block_stacking', 'close_loop_house_building_1', 'close_loop_block_pulling']:
-    num_objects = 2
+
+if env == 'close_loop_clutter_picking':
+  tray = True
 else:
-    num_objects = 1
+  tray = False
 
 ######################################################################################
 # training
@@ -188,9 +191,9 @@ drot = np.pi/args.drot_n
 ######################################################################################
 env_config = {'workspace': workspace, 'max_steps': max_episode_steps, 'obs_size': heightmap_size,
               'fast_mode': True,  'action_sequence': action_sequence, 'render': render, 'num_objects': num_objects,
-              'random_orientation':random_orientation, 'robot': robot,
-              'workspace_check': 'point', 'object_scale_range': (1, 1),
-              'hard_reset_freq': 1000, 'physics_mode' : 'fast', 'view_type': view_type, 'obs_type': obs_type}
+              'random_orientation':random_orientation, 'robot': robot, 'workspace_check': 'point',
+              'object_scale_range': (1, 1), 'hard_reset_freq': 1000, 'physics_mode' : 'fast', 'view_type': view_type,
+              'obs_type': obs_type, 'close_loop_tray': tray}
 planner_config = {'random_orientation':random_orientation, 'dpos': dpos, 'drot': drot}
 if env == 'close_loop_household_picking':
     env_config['object_scale_range'] = (0.6, 0.6)
