@@ -117,7 +117,7 @@ class Logger(object):
     ''''''
     self.num_training_steps += 1
     if type(loss) is list or type(loss) is tuple:
-      loss = {'loss{}'.format(i): loss[i] for i in range(loss)}
+      loss = {'loss{}'.format(i): loss[i] for i in range(len(loss))}
     elif type(loss) is float:
       loss = {'loss': loss}
     for k, v in loss.items():
