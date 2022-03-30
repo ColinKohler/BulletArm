@@ -17,15 +17,6 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
     self.goal_size = 0.09
     self.goal_grid_size_half = round(self.goal_size / self.heightmap_resolution / 2)
 
-    self.bin_size = 0.25
-    self.tray = Tray()
-
-  def initialize(self):
-    super().initialize()
-    self.tray.initialize(pos=[self.workspace[0].mean(), self.workspace[1].mean(), 0],
-                         size=[self.bin_size, self.bin_size, 0.1])
-
-
   def getGoalPixel(self, gripper_pos=None):
     if gripper_pos is None:
       gripper_pos = self.robot._getEndEffectorPosition()

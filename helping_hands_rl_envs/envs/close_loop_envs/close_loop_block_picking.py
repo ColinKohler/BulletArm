@@ -10,13 +10,6 @@ from helping_hands_rl_envs.pybullet.equipments.tray import Tray
 class CloseLoopBlockPickingEnv(CloseLoopEnv):
   def __init__(self, config):
     super().__init__(config)
-    self.bin_size = 0.25
-    self.tray = Tray()
-
-  def initialize(self):
-    super().initialize()
-    self.tray.initialize(pos=[self.workspace[0].mean(), self.workspace[1].mean(), 0],
-                         size=[self.bin_size, self.bin_size, 0.1])
 
   def reset(self):
     self.resetPybulletWorkspace()

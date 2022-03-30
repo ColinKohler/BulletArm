@@ -45,4 +45,6 @@ DEFAULT_CONFIG = {
   # The offset when adjusting gripper commands after gripper closes at an object. A bigger value increases the chance
   # for a grasp, but reduces the stability while holding it. Recommended value 0.01 or 0.001
   'kuka_adjust_gripper_offset': 0.01,
+  # whether to include a tray in close loop env
+  'close_loop_tray': False
 }

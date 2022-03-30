@@ -29,8 +29,6 @@ class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
       self.collision_terminate = False
     else:
       self.collision_terminate = config['collision_terminate']
-    self.tray = Tray()
-    self.bin_size = 0.25
 
     self.max_grasp_attempt = int(self.num_obj * 1.5)
 
@@ -38,11 +36,6 @@ class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
     self.grasp_done = 0
     self.grasp_attempted = 0
     self.current_grasp_steps = 1
-
-  def initialize(self):
-    super().initialize()
-    self.tray.initialize(pos=[self.workspace[0].mean(), self.workspace[1].mean(), 0],
-                         size=[self.bin_size, self.bin_size, 0.1], transparent=self.trans_bin)
 
   def resetEnv(self):
     self.resetPybulletWorkspace()

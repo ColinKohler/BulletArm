@@ -5,6 +5,7 @@ from helping_hands_rl_envs.pybullet.utils import transformations
 from helping_hands_rl_envs.pybullet.utils.renderer import Renderer
 from helping_hands_rl_envs.pybullet.utils.ortho_sensor import OrthographicSensor
 from helping_hands_rl_envs.pybullet.utils.sensor import Sensor
+from helping_hands_rl_envs.pybullet.equipments.tray import Tray
 from scipy.ndimage import rotate
 
 
@@ -16,7 +17,7 @@ class CloseLoopEnv(BaseEnv):
     if 'obs_type' not in config:
       config['obs_type'] = 'pixel'
     if 'view_scale' not in config:
-      config['view_scale'] = 1
+      config['view_scale'] = 1.5
     self.view_type = config['view_type']
     self.obs_type = config['obs_type']
     assert self.view_type in ['render_center', 'render_center_height', 'render_fix', 'camera_center_xyzr', 'camera_center_xyr',
@@ -30,6 +31,12 @@ class CloseLoopEnv(BaseEnv):
       self.robot.home_positions = [-0.4446, 0.0837, -2.6123, 1.8883, -0.0457, -1.1810, 0.0699, 0., 0., 0., 0., 0., 0., 0., 0.]
       self.robot.home_positions_joint = self.robot.home_positions[:7]
 
+    self.has_tray = config['close_loop_tray']
+    self.bin_size = self.workspace_size - 0.05
+    self.tray = None
+    if self.has_tray:
+      self.tray = Tray()
+
     # if self.view_type.find('center') > -1:
     #   self.ws_size *= 1.5
 
@@ -42,6 +49,12 @@ class CloseLoopEnv(BaseEnv):
 
     self.simulate_pos = None
     self.simulate_rot = None
+
+  def initialize(self):
+    super().initialize()
+    if self.has_tray:
+      self.tray.initialize(pos=[self.workspace[0].mean(), self.workspace[1].mean(), 0],
+                           size=[self.bin_size, self.bin_size, 0.1])
 
   def initSensor(self):
     cam_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0.29]
