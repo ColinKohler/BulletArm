@@ -18,6 +18,8 @@ class CloseLoopEnv(BaseEnv):
       config['obs_type'] = 'pixel'
     if 'view_scale' not in config:
       config['view_scale'] = 1.5
+    if 'close_loop_tray' not in config:
+      config['close_loop_tray'] = False
     self.view_type = config['view_type']
     self.obs_type = config['obs_type']
     assert self.view_type in ['render_center', 'render_center_height', 'render_fix', 'camera_center_xyzr', 'camera_center_xyr',
