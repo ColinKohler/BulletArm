@@ -10,51 +10,30 @@ from helping_hands_rl_envs.pybullet.equipments.tray import Tray
 from scipy.ndimage.interpolation import rotate
 import pybullet as pb
 
-
-def creat_duck(pos):
-    shift = [0, -0.02, 0]
-    scale = 0.08
-    meshScale = [scale, scale, scale]
-    # the visual shape and collision shape can be re-used by all createMultiBody instances (instancing)
-    visualShapeId = pb.createVisualShape(shapeType=pb.GEOM_MESH,
-                                         fileName="duck.obj",
-                                         rgbaColor=[1, 1, 1, 1],
-                                         specularColor=[0.4, .4, 0],
-                                         visualFramePosition=shift,
-                                         meshScale=meshScale)
-    collisionShapeId = pb.createCollisionShape(shapeType=pb.GEOM_MESH,
-                                               fileName="duck_vhacd.obj",
-                                               collisionFramePosition=shift,
-                                               meshScale=meshScale)
-
-    pb.createMultiBody(baseMass=1,
-                       baseInertialFramePosition=[0, 0, 0],
-                       baseCollisionShapeIndex=collisionShapeId,
-                       baseVisualShapeIndex=visualShapeId,
-                       basePosition=pos,
-                       useMaximalCoordinates=True)
-
-
 class ObjectGrasping(BaseEnv):
     '''
   '''
 
     def __init__(self, config):
+        config['adjust_gripper_after_lift'] = True
+        config['min_object_distance'] = 0.
+        config['min_boarder_padding'] = 0.15
         super(ObjectGrasping, self).__init__(config)
         self.object_init_z = 0.1
         self.obj_grasped = 0
         self.tray = Tray()
         self.exhibit_env_obj = False
         # self.exhibit_env_obj = True
-        self.z_heuristic = config['z_heuristic']
-        self.bin_size = config['bin_size']
+        self.bin_size = self.workspace_size - 0.1
         self.gripper_depth = 0.04
         self.gripper_clearance = 0.01
+        self.initialized = False
 
     def initialize(self):
         super().initialize()
         self.tray.initialize(pos=[self.workspace[0].mean(), self.workspace[1].mean(), 0],
                              size=[self.bin_size + 0.03, self.bin_size + 0.03, 0.1])
+        self.initialized = True
 
     def _decodeAction(self, action):
         """
@@ -78,9 +57,7 @@ class ObjectGrasping(BaseEnv):
         y = action[y_idx]
         # x += (self.workspace[0, 0] + self.workspace[0, 1]) / 2
         # y += (self.workspace[1, 0] + self.workspace[1, 1]) / 2
-        if self.z_heuristic == 'residual' and z_idx != -1:
-            z = self.getPatch_z(x, y, rz, z=action[z_idx])
-        elif z_idx != -1:
+        if z_idx != -1:
             z = action[z_idx]
         else:
             z = self.getPatch_z(x, y, rz)
@@ -108,10 +85,10 @@ class ObjectGrasping(BaseEnv):
         row_pixel, col_pixel = self._getPixelsFromPos(x, y)
         # local_region is as large as ih_img
         local_region = self.heightmap[int(row_pixel - self.in_hand_size / 2): int(row_pixel + self.in_hand_size / 2),
-                                      int(col_pixel - self.in_hand_size / 2): int(col_pixel + self.in_hand_size / 2)]
+                       int(col_pixel - self.in_hand_size / 2): int(col_pixel + self.in_hand_size / 2)]
         local_region = rotate(local_region, angle=-rz * 180 / np.pi, reshape=False)
         patch = local_region[int(self.in_hand_size / 2 - 16):int(self.in_hand_size / 2 + 16),
-                             int(self.in_hand_size / 2 - 4):int(self.in_hand_size / 2 + 4)]
+                int(self.in_hand_size / 2 - 4):int(self.in_hand_size / 2 + 4)]
         if z is None:
             edge = patch.copy()
             edge[5:-5] = 0
@@ -149,16 +126,11 @@ class ObjectGrasping(BaseEnv):
 
         obs = self._getObservation(action)
         done = self._checkTermination()
-        if self.reward_type == 'dense':
-            reward = 1.0 if self.obj_grasped > pre_obj_grasped else 0.0
-        else:
-            reward = 1.0 if done else 0.0
+        reward = 1.0 if self.obj_grasped > pre_obj_grasped else 0.0
 
-        if not done:
-            done = self.current_episode_steps >= self.max_steps or not self.isSimValid()
         self.current_episode_steps += 1
 
-        return obs, reward, done
+        return obs, reward, True
 
     def isSimValid(self):
         for obj in self.objects:
@@ -175,91 +147,92 @@ class ObjectGrasping(BaseEnv):
                     return False
             if self.pos_candidate is not None:
                 if np.abs(self.pos_candidate[0] - p[0]).min() > 0.02 or np.abs(
-                        self.pos_candidate[1] - p[1]).min() > 0.02:
+                    self.pos_candidate[1] - p[1]).min() > 0.02:
                     return False
         return True
 
     def reset(self):
         ''''''
-        while True:
-            self.resetPybulletWorkspace()
-            try:
-                if not self.exhibit_env_obj:
-                    for i in range(self.num_obj):
-                        x = (np.random.rand() - 0.5) * 0.1
-                        x += self.workspace[0].mean()
-                        y = (np.random.rand() - 0.5) * 0.1
-                        y += self.workspace[1].mean()
-                        randpos = [x, y, 0.40]
-                        # obj = self._generateShapes(constants.RANDOM_HOUSEHOLD, 1, random_orientation=self.random_orientation,
-                        #                            pos=[randpos], padding=self.min_boarder_padding,
-                        #                            min_distance=self.min_object_distance, model_id=-1)
-                        # obj = self._generateShapes(constants.RANDOM_HOUSEHOLD200, 1,
-                        #                            random_orientation=self.random_orientation,
-                        #                            pos=[randpos], padding=self.min_boarder_padding,
-                        #                            min_distance=self.min_object_distance, model_id=-1)
+        if not self.initialized or self.obj_grasped == self.num_obj or self.current_episode_steps > self.max_steps or not self.isSimValid():
+            while True:
+                self.resetPybulletWorkspace()
+                try:
+                    if not self.exhibit_env_obj:
+                        for i in range(self.num_obj):
+                            x = (np.random.rand() - 0.5) * 0.1
+                            x += self.workspace[0].mean()
+                            y = (np.random.rand() - 0.5) * 0.1
+                            y += self.workspace[1].mean()
+                            randpos = [x, y, 0.40]
+                            # obj = self._generateShapes(constants.RANDOM_HOUSEHOLD, 1, random_orientation=self.random_orientation,
+                            #                            pos=[randpos], padding=self.min_boarder_padding,
+                            #                            min_distance=self.min_object_distance, model_id=-1)
+                            # obj = self._generateShapes(constants.RANDOM_HOUSEHOLD200, 1,
+                            #                            random_orientation=self.random_orientation,
+                            #                            pos=[randpos], padding=self.min_boarder_padding,
+                            #                            min_distance=self.min_object_distance, model_id=-1)
 
-                        obj = self._generateShapes(constants.GRASP_NET_OBJ, 1,
-                                                   random_orientation=self.random_orientation,
-                                                   pos=[randpos], padding=self.min_boarder_padding,
-                                                   min_distance=self.min_object_distance, model_id=-1)
-                        pb.changeDynamics(obj[0].object_id, -1, lateralFriction=0.6)
-                        self.wait(10)
-                # elif True:
-                # #create ducks
-                #     for i in range(15):
-                #         x = (np.random.rand() - 0.5) * 0.1
-                #         x += self.workspace[0].mean()
-                #         y = (np.random.rand() - 0.5) * 0.1
-                #         y += self.workspace[1].mean()
-                #         randpos = [x, y, 0.20]
-                #         creat_duck(randpos)
-                #         self.wait(100)
-                elif self.exhibit_env_obj:  # exhibit all random objects in this environment
-                    # root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
-                    # urdf_pattern = os.path.join(root_dir, constants.URDF_PATH, 'random_household_object_200/*/*/*.obj')
-                    # found_object_directories = glob.glob(urdf_pattern)
-                    # total_num_objects = len(found_object_directories)
-                    root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
-                    urdf_pattern = os.path.join(root_dir, constants.URDF_PATH, 'GraspNet1B_object/0*/')
-                    found_object_directories = glob.glob(urdf_pattern)
-                    total_num_objects = len(found_object_directories)
+                            obj = self._generateShapes(constants.GRASP_NET_OBJ, 1,
+                                                       random_orientation=self.random_orientation,
+                                                       pos=[randpos], padding=self.min_boarder_padding,
+                                                       min_distance=self.min_object_distance, model_id=-1)
+                            pb.changeDynamics(obj[0].object_id, -1, lateralFriction=0.6)
+                            self.wait(10)
+                    # elif True:
+                    # #create ducks
+                    #     for i in range(15):
+                    #         x = (np.random.rand() - 0.5) * 0.1
+                    #         x += self.workspace[0].mean()
+                    #         y = (np.random.rand() - 0.5) * 0.1
+                    #         y += self.workspace[1].mean()
+                    #         randpos = [x, y, 0.20]
+                    #         creat_duck(randpos)
+                    #         self.wait(100)
+                    elif self.exhibit_env_obj:  # exhibit all random objects in this environment
+                        # root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
+                        # urdf_pattern = os.path.join(root_dir, constants.URDF_PATH, 'random_household_object_200/*/*/*.obj')
+                        # found_object_directories = glob.glob(urdf_pattern)
+                        # total_num_objects = len(found_object_directories)
+                        root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
+                        urdf_pattern = os.path.join(root_dir, constants.URDF_PATH, 'GraspNet1B_object/0*/')
+                        found_object_directories = glob.glob(urdf_pattern)
+                        total_num_objects = len(found_object_directories)
 
-                    display_size = 1.5
-                    columns = math.floor(math.sqrt(total_num_objects))
-                    distance = display_size / (columns - 1)
+                        display_size = 1.5
+                        columns = math.floor(math.sqrt(total_num_objects))
+                        distance = display_size / (columns - 1)
 
-                    obj_centers = []
-                    obj_scales = []
+                        obj_centers = []
+                        obj_scales = []
 
-                    for i in range(total_num_objects):
-                        x = (i // columns) * distance
-                        x += self.workspace[0].mean() + 0.6
-                        y = (i % columns) * distance
-                        y += self.workspace[1].mean() - display_size / 2
-                        display_pos = [x, y, 0.08]
-                        obj = self._generateShapes(constants.GRASP_NET_OBJ, 1,
-                                                   rot=[pb.getQuaternionFromEuler([0., 0., -np.pi / 4])],
-                                                   pos=[display_pos], padding=self.min_boarder_padding,
-                                                   min_distance=self.min_object_distance, model_id=i)
-                        # obj = self._generateShapes(constants.RANDOM_HOUSEHOLD200, 1,
-                        #                            rot=[pb.getQuaternionFromEuler([0., 0., -np.pi / 4])],
-                        #                            pos=[display_pos], padding=self.min_boarder_padding,
-                        #                            min_distance=self.min_object_distance, model_id=i)
-                    #     obj_centers.append(obj[0].center)
-                    #     obj_scales.append(obj[0].real_scale)
-                    #
-                    # obj_centers = np.array(obj_centers)
-                    # obj_scales = np.array(obj_scales)
-                    print('Number of all objects: ', total_num_objects)
-                    self.wait(10000)
-            except NoValidPositionException:
-                continue
-            else:
-                break
-        self.wait(200)
-        self.obj_grasped = 0
-        # self.num_in_tray_obj = self.num_obj
+                        for i in range(total_num_objects):
+                            x = (i // columns) * distance
+                            x += self.workspace[0].mean() + 0.6
+                            y = (i % columns) * distance
+                            y += self.workspace[1].mean() - display_size / 2
+                            display_pos = [x, y, 0.08]
+                            obj = self._generateShapes(constants.GRASP_NET_OBJ, 1,
+                                                       rot=[pb.getQuaternionFromEuler([0., 0., -np.pi / 4])],
+                                                       pos=[display_pos], padding=self.min_boarder_padding,
+                                                       min_distance=self.min_object_distance, model_id=i)
+                            # obj = self._generateShapes(constants.RANDOM_HOUSEHOLD200, 1,
+                            #                            rot=[pb.getQuaternionFromEuler([0., 0., -np.pi / 4])],
+                            #                            pos=[display_pos], padding=self.min_boarder_padding,
+                            #                            min_distance=self.min_object_distance, model_id=i)
+                        #     obj_centers.append(obj[0].center)
+                        #     obj_scales.append(obj[0].real_scale)
+                        #
+                        # obj_centers = np.array(obj_centers)
+                        # obj_scales = np.array(obj_scales)
+                        print('Number of all objects: ', total_num_objects)
+                        self.wait(10000)
+                except NoValidPositionException:
+                    continue
+                else:
+                    break
+            self.wait(200)
+            self.obj_grasped = 0
+            # self.num_in_tray_obj = self.num_obj
         return self._getObservation()
 
     def isObjInBox(self, obj_pos, tray_pos, tray_size):
