@@ -241,6 +241,8 @@ if env in ['bottle_tray', 'box_palletizing', 'bumpy_box_palletizing']:
     env_config['kuka_adjust_gripper_offset'] = 0.0025
 if env in ['covid_test']:
     env_config['object_scale_range'] = (0.55, 0.55)
+if env in ['object_grasping']:
+    env_config['object_scale_range'] = (1, 1)
 if seed is not None:
     env_config['seed'] = seed
 ######################################################################################
