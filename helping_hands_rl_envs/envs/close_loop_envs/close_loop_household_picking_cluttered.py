@@ -18,7 +18,7 @@ class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
     else:
       self.trans_bin = config['transparent_bin']
     if 'collision_penalty' not in config:
-      self.coll_pen = True
+      self.coll_pen = False
     else:
       self.coll_pen = config['collision_penalty']
     if 'fix_set' not in config:
