@@ -75,22 +75,6 @@ class BlockBinPackingEnv(BaseEnv):
         break
     return self._getObservation()
 
-  def step(self, action):
-    self.takeAction(action)
-    self.wait(100)
-    obs = self._getObservation(action)
-    done = self._checkTermination()
-    if done:
-      reward = self.getReward()
-    else:
-      reward = 0
-
-    if not done:
-      done = self.current_episode_steps >= self.max_steps or not self.isSimValid()
-    self.current_episode_steps += 1
-
-    return obs, reward, done
-
   def _checkTermination(self):
     for obj in self.objects:
       if self.isObjInBox(obj):
@@ -98,10 +82,6 @@ class BlockBinPackingEnv(BaseEnv):
       else:
         return False
     return True
-
-  def getReward(self):
-    max_z = max(map(lambda x: pb.getAABB(x.object_id)[1][2], self.objects))
-    return 100 * (self.z_threshold - max_z)
 
   def isObjInBox(self, obj):
     R = np.array([[np.cos(-self.box_rz), -np.sin(-self.box_rz)],
