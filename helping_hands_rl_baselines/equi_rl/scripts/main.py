@@ -38,8 +38,6 @@ def train_step(agent, replay_buffer, logger, p_beta_schedule):
         loss, td_error = agent.update(batch)
         new_priorities = np.abs(td_error.cpu()) + np.stack([t.expert for t in batch]) * per_expert_eps + per_eps
         replay_buffer.update_priorities(batch_idxes, new_priorities)
-        logger.expertSampleBookkeeping(
-            np.stack(list(zip(*batch))[-1]).sum() / batch_size)
     else:
         batch = replay_buffer.sample(batch_size)
         loss, td_error = agent.update(batch)
@@ -129,7 +127,7 @@ def train():
         log_dir = os.path.join(base_dir, log_sub)
 
     hyper_parameters['model_shape'] = agent.getModelStr()
-    logger = BaselineLogger(log_dir, checkpoint_interval=save_freq, hyperparameters=hyper_parameters, eval_freq=eval_freq)
+    logger = BaselineLogger(log_dir, checkpoint_interval=save_freq, num_eval_eps=num_eval_episodes, hyperparameters=hyper_parameters, eval_freq=eval_freq)
     logger.saveParameters(hyper_parameters)
 
     if buffer_type == 'per':

@@ -43,11 +43,11 @@ class BaselineLogger(Logger):
     plt.close()
 
   def saveEvalCurve(self):
-    if len(self.eval_eps_rewards) > 0:
+    if len(self.eval_eps_rewards) > 1:
       eval_data = []
-      for i in range(len(self.eval_eps_rewards)):
+      for i in range(len(self.eval_eps_rewards)-1):
         eval_data.append(np.mean(self.eval_eps_rewards[i]))
-      xs = np.arange(self.eval_freq, (len(self.eval_eps_rewards) + 1) * self.eval_freq, self.eval_freq)
+      xs = np.arange(self.eval_freq, len(self.eval_eps_rewards) * self.eval_freq, self.eval_freq)
       plt.plot(xs, eval_data)
       plt.savefig(os.path.join(self.info_dir, 'eval_curve.pdf'))
       plt.close()
@@ -59,7 +59,7 @@ class BaselineLogger(Logger):
     np.save(os.path.join(self.info_dir, 'losses.npy'), self.loss)
 
   def saveEvalRewards(self):
-    np.save(os.path.join(self.info_dir, 'eval_rewards.npy'), self.eval_eps_rewards)
+    np.save(os.path.join(self.info_dir, 'eval_rewards.npy'), np.array(self.eval_eps_rewards, dtype=object))
 
   def exportData(self):
     super().exportData()
