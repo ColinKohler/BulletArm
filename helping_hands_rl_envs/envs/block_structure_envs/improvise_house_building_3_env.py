@@ -28,6 +28,7 @@ class ImproviseHouseBuilding3Env(BaseEnv):
         padding = pybullet_util.getPadding(constants.BRICK, self.max_block_size)
         min_distance = pybullet_util.getMinDistance(constants.BRICK, self.max_block_size)
         pos = self._getValidPositions(padding, min_distance, [], 1)[0]
+        pos.append(self.object_init_z)
         rot = self._getValidOrientation(self.random_orientation)
         brick_xscale = np.random.uniform(0.5, 0.7)
         brick_yscale = np.random.uniform(0.5, 0.7)
