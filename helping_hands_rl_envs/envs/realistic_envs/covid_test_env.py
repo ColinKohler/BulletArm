@@ -87,7 +87,7 @@ class CovidTestEnv(BaseEnv):
     '''
     assert n in (0, 1, 2, 3)
     perterb_range = np.arcsin(self.workspace_padding
-                              / ((self.workspace[0, 1] - self.workspace[0, 0]) / 2 -  self.workspace_padding))
+                              / ((self.workspace[0, 1] - self.workspace[0, 0]) / 2 - self.workspace_padding))
     perterb_range = min(perterb_range, perterb_range - np.pi / 180)
     angel = n * (np.pi / 2) + np.random.uniform(-perterb_range, perterb_range)
     R_perterb_90 = np.array([[np.cos(angel), -np.sin(angel)],

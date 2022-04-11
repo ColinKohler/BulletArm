@@ -95,7 +95,7 @@ class CovidTestPlanner(BlockStructureBasePlanner):
     if in_hand_obj == [] or in_hand_obj is None:
       rand_x, rand_y, rot = 0, 0, 0
       rand_z = 0.1
-    elif in_hand_obj.object_type_id == constants.TEST_TUBE:
+    elif in_hand_obj.object_type_id == constants.TEST_TUBE:  # placing tube
       x, y, z = self.env.test_box_pos.copy()
       rand_trans = self.env.flips[self.env.flip].dot(self.env.R_perterb_90.dot(np.random.uniform(-0.00, 0.00, (2,1))))
       rand_x, rand_y = rand_trans[0], rand_trans[1]
@@ -104,18 +104,18 @@ class CovidTestPlanner(BlockStructureBasePlanner):
       rot = 1.57 + self.env.R_angel_after_flip + np.random.uniform(-np.pi/6, np.pi/6)
       rand_z = 0.02
       self.prev_place = [rand_x, rand_y, rand_z, rot]
-    else:  # placing swab
+    elif in_hand_obj.object_type_id == constants.SWAB:  # placing swab
       if self.prev_place is None:
         rand_x, rand_y, rand_z = self.env.test_box_pos.copy()
         rot = 0
       else:
-        # rand_x, rand_y, rand_z, rot = self.prev_place
+        rand_x, rand_y, rand_z, rot = self.prev_place
         objs, types = self.env.OnTableObj()
         for obj, type in zip(objs, types):
           if type == constants.TEST_TUBE:
             pos, _ = pb.getBasePositionAndOrientation(obj.object_id)
             rand_x, rand_y, rand_z = pos
-      # x, y, z = self.env.test_box_pos.copy(
+
       rand_trans = np.array([np.random.uniform(-0.02, 0.02), 0.1 * (int(np.random.rand() > 0.5) - 0.5)])
       rand_trans = self.env.flips[self.env.flip].dot(self.env.R_perterb_90.dot(rand_trans))
       x, y = rand_trans[0], rand_trans[1]
@@ -123,6 +123,8 @@ class CovidTestPlanner(BlockStructureBasePlanner):
       rand_y += y
       rot = 1.57 + self.env.R_angel_after_flip + np.random.uniform(-np.pi/6, np.pi/6)
       rand_z = 0.02
+    else:
+      raise NotImplementedError('In hand object: ', in_hand_obj.object_type_id)
     return self.encodeAction(constants.PLACE_PRIMATIVE, rand_x, rand_y, rand_z, rot)
 
   def getStepsLeft(self):
