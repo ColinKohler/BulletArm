@@ -197,6 +197,8 @@ env_config = {'workspace': workspace, 'max_steps': max_episode_steps, 'obs_size'
 planner_config = {'random_orientation':random_orientation, 'dpos': dpos, 'drot': drot}
 if env == 'close_loop_household_picking':
     env_config['object_scale_range'] = (0.6, 0.6)
+elif env == 'close_loop_block_pulling':
+  env_config['object_scale_range'] = (0.8, 0.8)
 if seed is not None:
     env_config['seed'] = seed
 ######################################################################################
