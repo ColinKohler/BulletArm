@@ -12,7 +12,7 @@ from helping_hands_rl_baselines.equi_rl.agents.curl_sacfd import CURLSACfD
 from helping_hands_rl_baselines.equi_rl.agents.sac_drq import SACDrQ
 from helping_hands_rl_baselines.equi_rl.agents.sacfd_drq import SACfDDrQ
 from helping_hands_rl_baselines.equi_rl.networks.sac_net import SACCritic, SACGaussianPolicy
-from helping_hands_rl_baselines.equi_rl.networks.equivariant_sac_net import EquivariantSACActor, EquivariantSACCritic
+from helping_hands_rl_baselines.equi_rl.networks.equivariant_sac_net import EquivariantSACActor, EquivariantSACCritic, EquivariantSACActorDihedral, EquivariantSACCriticDihedral
 from helping_hands_rl_baselines.equi_rl.networks.curl_sac_net import CURLSACCritic, CURLSACGaussianPolicy, CURLSACEncoderOri, CURLSACEncoder
 from helping_hands_rl_baselines.equi_rl.networks.dqn_net import DQNComCURL, DQNComCURLOri
 
@@ -102,6 +102,9 @@ def createAgent(test=False):
             elif model == 'equi_both':
                 actor = EquivariantSACActor((obs_channel, crop_size, crop_size), len(action_sequence), n_hidden=n_hidden, initialize=initialize, N=equi_n).to(device)
                 critic = EquivariantSACCritic((obs_channel, crop_size, crop_size), len(action_sequence), n_hidden=n_hidden, initialize=initialize, N=equi_n).to(device)
+            elif model == 'equi_both_d':
+              actor = EquivariantSACActorDihedral((obs_channel, crop_size, crop_size), len(action_sequence), n_hidden=n_hidden, initialize=initialize, N=equi_n).to(device)
+              critic = EquivariantSACCriticDihedral((obs_channel, crop_size, crop_size), len(action_sequence), n_hidden=n_hidden, initialize=initialize, N=equi_n).to(device)
             else:
                 raise NotImplementedError
         else:
