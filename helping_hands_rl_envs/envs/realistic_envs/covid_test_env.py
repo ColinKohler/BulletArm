@@ -17,8 +17,6 @@ class CovidTestEnv(BaseEnv):
     if 'max_steps' not in config:
       config['max_steps'] = 30
     super().__init__(config)
-    if self.workspace_size != 0.4:
-      raise NotImplementedError("Covid Test Environment requires the workspace size to be 0.4")
     self.object_init_space = np.array([[0.3, 0.7],
                                        [-0.4, 0],
                                        [0, 0.40]])
