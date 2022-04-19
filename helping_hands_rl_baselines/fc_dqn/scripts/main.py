@@ -258,7 +258,6 @@ def train():
             pbar.set_description(description)
             timer_start = timer_final
             pbar.update(logger.num_training_steps - pbar.n)
-        logger.num_steps += num_processes
 
         if logger.num_training_steps > 0 and eval_freq > 0 and logger.num_training_steps % eval_freq == 0:
             if eval_thread is not None:
