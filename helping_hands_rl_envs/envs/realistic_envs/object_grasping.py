@@ -15,6 +15,13 @@ class ObjectGrasping(BaseEnv):
   '''
 
     def __init__(self, config):
+        # env specific parameters
+        if 'object_scale_range' not in config:
+            config['object_scale_range'] = [1, 1]
+        if 'num_objects' not in config:
+            config['num_objects'] = 15
+        if 'max_steps' not in config:
+            config['max_steps'] = 30
         config['adjust_gripper_after_lift'] = True
         config['min_object_distance'] = 0.
         config['min_boarder_padding'] = 0.15

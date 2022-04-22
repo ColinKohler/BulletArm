@@ -9,6 +9,8 @@ from helping_hands_rl_envs.pybullet.utils.constants import NoValidPositionExcept
 
 class CloseLoopHouseBuilding1Env(CloseLoopEnv):
   def __init__(self, config):
+    if 'num_objects' not in config:
+      config['num_objects'] = 2
     super().__init__(config)
     assert self.num_obj >= 2
 

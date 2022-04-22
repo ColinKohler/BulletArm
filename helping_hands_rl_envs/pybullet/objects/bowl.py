@@ -40,7 +40,7 @@ class Bowl(PybulletObject):
 
     super(Bowl, self).__init__(constants.BOWL, object_id)
 
-    pb.changeVisualShape(object_id, -1, rgbaColor=[1, 0, 0, 1])
+    pb.changeVisualShape(object_id, -1, rgbaColor=[1, 1, 0, 1])
 
   def getGraspRotation(self):
     return self.getGraspPose()[1]

@@ -11,6 +11,10 @@ from helping_hands_rl_envs.pybullet.utils.constants import NoValidPositionExcept
 
 class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
   def __init__(self, config):
+    if 'num_objects' not in config:
+      config['num_objects'] = 15
+    if 'close_loop_tray' not in config:
+      config['close_loop_tray'] = True
     super().__init__(config)
     self.object_init_z = 0.1
     if 'transparent_bin' not in config:

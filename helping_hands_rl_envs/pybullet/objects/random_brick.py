@@ -21,4 +21,6 @@ class RandomBrick(PybulletObject):
                                    baseVisualShapeIndex=visualShapeId,
                                    basePosition=pos,
                                    baseOrientation=rot)
+    pb.changeVisualShape(object_id, -1, rgbaColor=[0, 0, 1, 1])
+
     super(RandomBrick, self).__init__(constants.BRICK, object_id)

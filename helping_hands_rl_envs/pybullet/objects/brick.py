@@ -15,7 +15,7 @@ class Brick(PybulletObject):
     root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
     urdf_filepath = os.path.join(root_dir, constants.OBJECTS_PATH, 'brick_small.urdf')
     object_id = pb.loadURDF(urdf_filepath, basePosition=pos, baseOrientation=rot, globalScaling=scale)
-
+    pb.changeVisualShape(object_id, -1, rgbaColor=[0, 0, 1, 1])
     super(Brick, self).__init__(constants.BRICK, object_id)
 
     self.original_size = 0.05

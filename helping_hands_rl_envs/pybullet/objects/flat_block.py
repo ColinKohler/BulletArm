@@ -20,4 +20,5 @@ class FlatBlock(PybulletObject):
                             basePosition=pos,
                             baseOrientation=rot,
                             )
+    pb.changeVisualShape(object_id, -1, rgbaColor=[0, 0, 1, 1])
     super(FlatBlock, self).__init__(constants.FLAT_BLOCK, object_id)

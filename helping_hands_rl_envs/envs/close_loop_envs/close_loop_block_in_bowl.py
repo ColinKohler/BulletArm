@@ -9,6 +9,8 @@ from helping_hands_rl_envs.pybullet.equipments.tray import Tray
 
 class CloseLoopBlockInBowlEnv(CloseLoopEnv):
   def __init__(self, config):
+    if 'num_objects' not in config:
+      config['num_objects'] = 2
     super().__init__(config)
 
   def reset(self):

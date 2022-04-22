@@ -9,6 +9,8 @@ from helping_hands_rl_envs.pybullet.utils.constants import NoValidPositionExcept
 
 class CloseLoopBlockPullingEnv(CloseLoopEnv):
   def __init__(self, config):
+    if 'object_scale_range' not in config:
+      config['object_scale_range'] = [0.8, 0.8]
     super().__init__(config)
 
   def reset(self):

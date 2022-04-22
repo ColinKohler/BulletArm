@@ -11,7 +11,18 @@ from scipy.ndimage import rotate
 
 class CloseLoopEnv(BaseEnv):
   def __init__(self, config):
-    super().__init__(config)
+    if 'workspace' not in config:
+      config['workspace'] = np.asarray([[0.3, 0.6],
+                                        [-0.15, 0.15],
+                                        [0.01, 0.25]])
+    if 'robot' not in config:
+      config['robot'] = 'kuka'
+    if 'action_sequence' not in config:
+      config['action_sequence'] = 'pxyzr'
+    if 'max_steps' not in config:
+      config['max_steps'] = 50
+    if 'object_scale_range' not in config:
+      config['object_scale_range'] = [1, 1]
     if 'view_type' not in config:
       config['view_type'] = 'camera_center_xyzr'
     if 'obs_type' not in config:
@@ -20,6 +31,7 @@ class CloseLoopEnv(BaseEnv):
       config['view_scale'] = 1.5
     if 'close_loop_tray' not in config:
       config['close_loop_tray'] = False
+    super().__init__(config)
     self.view_type = config['view_type']
     self.obs_type = config['obs_type']
     assert self.view_type in ['render_center', 'render_center_height', 'render_fix', 'camera_center_xyzr', 'camera_center_xyr',
