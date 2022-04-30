@@ -9,6 +9,8 @@ from helping_hands_rl_envs.pybullet.equipments.corner import Corner
 
 class CloseLoopBlockPickingCornerEnv(CloseLoopEnv):
   def __init__(self, config):
+    if 'object_scale_range' not in config:
+      config['object_scale_range'] = [1.2, 1.2]
     super().__init__(config)
     self.corner = Corner()
     self.corner_rz = 0
