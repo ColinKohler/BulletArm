@@ -51,8 +51,7 @@ def preTrainCURLStep(agent, replay_buffer, logger):
         batch, weights, batch_idxes = replay_buffer.sample(batch_size, per_beta)
     else:
         batch = replay_buffer.sample(batch_size)
-    loss = agent.updateCURLOnly(batch)
-    logger.logTrainingStep(loss)
+    agent.updateCURLOnly(batch)
 
 def saveModelAndInfo(logger, agent):
     logger.writeLog()
