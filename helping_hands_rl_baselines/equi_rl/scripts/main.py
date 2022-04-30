@@ -43,7 +43,6 @@ def train_step(agent, replay_buffer, logger, p_beta_schedule):
         loss, td_error = agent.update(batch)
 
     logger.logTrainingStep(loss)
-    logger.num_training_steps += 1
     if logger.num_training_steps % target_update_freq == 0:
         agent.updateTarget()
 
