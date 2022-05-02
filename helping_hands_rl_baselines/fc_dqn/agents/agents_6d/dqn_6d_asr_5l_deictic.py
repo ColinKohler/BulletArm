@@ -31,7 +31,7 @@ class DQN6DASR5LDeictic(DQN6DASR5L):
 
     def getProjAll(self, obs, center_pixel, rz, z, ry, rx, batch_dimension='ry'):
         batch_size = obs.shape[0]
-        patch = self.getPatch(obs, center_pixel, torch.zeros_like(rz))
+        patch = self.getPatch(obs, center_pixel, torch.zeros_like(rz.squeeze(1)))
         patch = np.round(patch.cpu().numpy(), 5)
         patch = np.array(patch)
         size = self.patch_size
