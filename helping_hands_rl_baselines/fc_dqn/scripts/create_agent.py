@@ -8,6 +8,10 @@ from helping_hands_rl_baselines.fc_dqn.agents.agents_3d.dqn_3d_asr import DQN3DA
 from helping_hands_rl_baselines.fc_dqn.agents.agents_3d.margin_3d_asr import Margin3DASR
 from helping_hands_rl_baselines.fc_dqn.agents.agents_6d.dqn_6d_asr_5l import DQN6DASR5L
 from helping_hands_rl_baselines.fc_dqn.agents.agents_6d.margin_6d_asr_5l import Margin6DASR5L
+from helping_hands_rl_baselines.fc_dqn.agents.agents_6d.dqn_6d_asr_5l_deictic import DQN6DASR5LDeictic
+from helping_hands_rl_baselines.fc_dqn.agents.agents_6d.dqn_6d_asr_5l_deictic_35 import DQN6DASR5LDeictic35
+from helping_hands_rl_baselines.fc_dqn.agents.agents_6d.margin_6d_asr_5l_deictic import Margin6DASR5LDeictic
+from helping_hands_rl_baselines.fc_dqn.agents.agents_6d.margin_6d_asr_5l_deictic_35 import Margin6DASR5LDeictic35
 
 from helping_hands_rl_baselines.fc_dqn.utils.parameters import *
 from helping_hands_rl_baselines.fc_dqn.networks.models import ResUCatShared, CNNShared, UCat, CNNSepEnc, CNNPatchOnly, CNNShared5l
@@ -177,8 +181,37 @@ def createAgent(test=False):
                                        (min_z, max_z))
                 elif alg == 'margin_asr_5l':
                     agent = Margin6DASR5L(workspace, heightmap_size, device, lr, gamma, sl, num_primitives, patch_size,
-                                       num_rotations, rz_range, num_rx, (min_rx, max_rx), num_rx, (min_rx, max_rx),
-                                       num_zs, (min_z, max_z), margin, margin_l, margin_weight, margin_beta)
+                                          num_rotations, rz_range, num_rx, (min_rx, max_rx), num_rx, (min_rx, max_rx),
+                                          num_zs, (min_z, max_z), margin, margin_l, margin_weight, margin_beta)
+                # deictic q2-q5
+                elif alg == 'dqn_asr_5l_deictic':
+                    agent = DQN6DASR5LDeictic(workspace, heightmap_size, device, lr, gamma, sl, num_primitives,
+                                              patch_size,
+                                              num_rotations, rz_range, num_rx, (min_rx, max_rx), num_rx,
+                                              (min_rx, max_rx),
+                                              num_zs, (min_z, max_z))
+                elif alg == 'margin_asr_5l_deictic':
+                    agent = Margin6DASR5LDeictic(workspace, heightmap_size, device, lr, gamma, sl, num_primitives,
+                                                 patch_size,
+                                                 num_rotations, rz_range, num_rx, (min_rx, max_rx), num_rx,
+                                                 (min_rx, max_rx),
+                                                 num_zs, (min_z, max_z), margin, margin_l, margin_weight,
+                                                 margin_beta)
+                # deictic q3-q5 (specifically for using equivariant q2)
+                elif alg == 'dqn_asr_5l_deictic35':
+                    agent = DQN6DASR5LDeictic35(workspace, heightmap_size, device, lr, gamma, sl, num_primitives,
+                                                patch_size,
+                                                num_rotations, rz_range, num_rx, (min_rx, max_rx), num_rx,
+                                                (min_rx, max_rx),
+                                                num_zs, (min_z, max_z))
+                elif alg == 'margin_asr_5l_deictic35':
+                    agent = Margin6DASR5LDeictic35(workspace, heightmap_size, device, lr, gamma, sl, num_primitives,
+                                                   patch_size,
+                                                   num_rotations, rz_range, num_rx, (min_rx, max_rx), num_rx,
+                                                   (min_rx, max_rx),
+                                                   num_zs, (min_z, max_z), margin, margin_l, margin_weight,
+                                                   margin_beta)
+
             agent.initNetwork(fcn, q2, q3, q4, q5)
 
     agent.per_td_error = per_td_error
