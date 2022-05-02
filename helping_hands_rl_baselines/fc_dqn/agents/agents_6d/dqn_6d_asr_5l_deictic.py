@@ -1,10 +1,10 @@
 import numpy as np
-# import cupy as cp
+import cupy as cp
 import torch
 import time
 from functools import wraps
 from helping_hands_rl_baselines.fc_dqn.agents.agents_6d.dqn_6d_asr_5l import DQN6DASR5L
-from scipy.ndimage import median_filter
+from cupyx.scipy.ndimage import median_filter
 
 def timer(func):
     @wraps(func)
@@ -27,22 +27,22 @@ class DQN6DASR5LDeictic(DQN6DASR5L):
 
     def initTMap(self):
         super().initTMap()
-        self.map = np.array(self.map)
+        self.map = cp.array(self.map)
 
     def getProjAll(self, obs, center_pixel, rz, z, ry, rx, batch_dimension='ry'):
         batch_size = obs.shape[0]
         patch = self.getPatch(obs, center_pixel, torch.zeros_like(rz.squeeze(1)))
         patch = np.round(patch.cpu().numpy(), 5)
-        patch = np.array(patch)
+        patch = cp.array(patch)
         size = self.patch_size
         if batch_dimension in ('ry', 'rx'):
-            zs = np.array(z.numpy()) + np.array([(-size / 2 + j) * self.heightmap_resolution for j in range(size)])
+            zs = cp.array(z.numpy()) + cp.array([(-size / 2 + j) * self.heightmap_resolution for j in range(size)])
             zs = zs.reshape((zs.shape[0], 1, 1, zs.shape[1]))
             zs = zs.repeat(size, 1).repeat(size, 2)
             c = patch.reshape(patch.shape[0], self.patch_size, self.patch_size, 1).repeat(size, 3)
             ori_occupancy = c > zs
             # transform into points
-            point_w_d = np.argwhere(ori_occupancy)
+            point_w_d = cp.argwhere(ori_occupancy)
 
             if batch_dimension == 'ry':
                 rz_id = (rz.expand(-1, self.num_rz) - self.rzs).abs().argmin(1).unsqueeze(0).expand(self.num_ry, -1)
@@ -59,21 +59,21 @@ class DQN6DASR5LDeictic(DQN6DASR5L):
 
             dimension = point_w_d[:, 0]
             point = point_w_d[:, 1:4]
-            dimension = np.tile(dimension, extra_d_size)
-            point = np.tile(point, (extra_d_size, 1))
-            extra_dimension = np.tile(np.arange(extra_d_size).reshape(-1, 1), (1, point_w_d.shape[0])).reshape(-1)
+            dimension = cp.tile(dimension, extra_d_size)
+            point = cp.tile(point, (extra_d_size, 1))
+            extra_dimension = cp.tile(cp.arange(extra_d_size).reshape(-1, 1), (1, point_w_d.shape[0])).reshape(-1)
 
         elif batch_dimension == 'z':
-            add = np.array([(-size / 2 + j) * self.heightmap_resolution for j in range(size)])
-            add = np.tile(add.reshape((1, 1, size)), (batch_size, self.num_zs, 1))
-            zs = np.tile(self.zs.reshape(1, -1, 1), (batch_size, 1, size))
+            add = cp.array([(-size / 2 + j) * self.heightmap_resolution for j in range(size)])
+            add = cp.tile(add.reshape((1, 1, size)), (batch_size, self.num_zs, 1))
+            zs = cp.tile(self.zs.reshape(1, -1, 1), (batch_size, 1, size))
             zs = zs + add
             zs = zs.reshape((batch_size, self.num_zs, 1, 1, size))
-            zs = np.tile(zs, (1, 1, size, size, 1))
+            zs = cp.tile(zs, (1, 1, size, size, 1))
             c = patch.reshape(batch_size, 1, size, size, 1)
-            c = np.tile(c, (1, self.num_zs, 1, 1, size))
+            c = cp.tile(c, (1, self.num_zs, 1, 1, size))
             ori_occupancy = c > zs
-            point_w_d = np.argwhere(ori_occupancy)
+            point_w_d = cp.argwhere(ori_occupancy)
             dimension = point_w_d[:, 0]
             extra_dimension = point_w_d[:, 1]
             point = point_w_d[:, -3:]
@@ -83,20 +83,20 @@ class DQN6DASR5LDeictic(DQN6DASR5L):
             extra_d_size = self.num_zs
         else:
             raise NotImplementedError
-        rz_id = np.array(rz_id)
-        ry_id = np.array(ry_id)
-        rx_id = np.array(rx_id)
+        rz_id = cp.array(rz_id)
+        ry_id = cp.array(ry_id)
+        rx_id = cp.array(rx_id)
         mapped_point = self.map[rz_id[extra_dimension, dimension], ry_id[extra_dimension, dimension], rx_id[extra_dimension, dimension], point[:, 0], point[:, 1], point[:, 2]].T
-        valid_point_mask = (np.logical_and(0 < mapped_point.T, mapped_point.T < size)).all(1)
+        valid_point_mask = (cp.logical_and(0 < mapped_point.T, mapped_point.T < size)).all(1)
         rotated_point = mapped_point.T[valid_point_mask]
         batch_dimension = dimension[valid_point_mask].T.astype(int)
         extra_dimension = extra_dimension[valid_point_mask]
-        occupancy = np.zeros((extra_d_size, patch.shape[0], size, size, size))
+        occupancy = cp.zeros((extra_d_size, patch.shape[0], size, size, size))
         if rotated_point.shape[0] > 0:
             occupancy[extra_dimension, batch_dimension, rotated_point[:, 0], rotated_point[:, 1], rotated_point[:, 2]] = 1
         occupancy = median_filter(occupancy, size=(1, 1, 2, 2, 2))
-        occupancy = np.ceil(occupancy)
-        projection = np.stack((occupancy.sum(2), occupancy.sum(3), occupancy.sum(4)), 2)
+        occupancy = cp.ceil(occupancy)
+        projection = cp.stack((occupancy.sum(2), occupancy.sum(3), occupancy.sum(4)), 2)
         return torch.tensor(projection).float().to(self.device).reshape(projection.shape[0]*projection.shape[1], projection.shape[2], projection.shape[3], projection.shape[4])
 
     def getQ2Input(self, obs, center_pixel):

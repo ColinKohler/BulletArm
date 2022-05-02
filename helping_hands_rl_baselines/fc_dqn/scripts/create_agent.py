@@ -6,12 +6,6 @@ from helping_hands_rl_baselines.fc_dqn.agents.agents_3d.dqn_3d_fcn_si import DQN
 from helping_hands_rl_baselines.fc_dqn.agents.agents_3d.margin_3d_fcn_si import Margin3DFCNSingleIn
 from helping_hands_rl_baselines.fc_dqn.agents.agents_3d.dqn_3d_asr import DQN3DASR
 from helping_hands_rl_baselines.fc_dqn.agents.agents_3d.margin_3d_asr import Margin3DASR
-from helping_hands_rl_baselines.fc_dqn.agents.agents_6d.dqn_6d_asr_5l import DQN6DASR5L
-from helping_hands_rl_baselines.fc_dqn.agents.agents_6d.margin_6d_asr_5l import Margin6DASR5L
-from helping_hands_rl_baselines.fc_dqn.agents.agents_6d.dqn_6d_asr_5l_deictic import DQN6DASR5LDeictic
-from helping_hands_rl_baselines.fc_dqn.agents.agents_6d.dqn_6d_asr_5l_deictic_35 import DQN6DASR5LDeictic35
-from helping_hands_rl_baselines.fc_dqn.agents.agents_6d.margin_6d_asr_5l_deictic import Margin6DASR5LDeictic
-from helping_hands_rl_baselines.fc_dqn.agents.agents_6d.margin_6d_asr_5l_deictic_35 import Margin6DASR5LDeictic35
 
 from helping_hands_rl_baselines.fc_dqn.utils.parameters import *
 from helping_hands_rl_baselines.fc_dqn.networks.models import ResUCatShared, CNNShared, UCat, CNNSepEnc, CNNPatchOnly, CNNShared5l
@@ -156,6 +150,12 @@ def createAgent(test=False):
 
     # 6d agent (x, y, z, theta, phi, psi)
     elif action_sequence == 'xyzrrrp':
+        from helping_hands_rl_baselines.fc_dqn.agents.agents_6d.dqn_6d_asr_5l import DQN6DASR5L
+        from helping_hands_rl_baselines.fc_dqn.agents.agents_6d.margin_6d_asr_5l import Margin6DASR5L
+        from helping_hands_rl_baselines.fc_dqn.agents.agents_6d.dqn_6d_asr_5l_deictic import DQN6DASR5LDeictic
+        from helping_hands_rl_baselines.fc_dqn.agents.agents_6d.dqn_6d_asr_5l_deictic_35 import DQN6DASR5LDeictic35
+        from helping_hands_rl_baselines.fc_dqn.agents.agents_6d.margin_6d_asr_5l_deictic import Margin6DASR5LDeictic
+        from helping_hands_rl_baselines.fc_dqn.agents.agents_6d.margin_6d_asr_5l_deictic_35 import Margin6DASR5LDeictic35
         # ASR agents
         if alg.find('asr') > -1:
             if alg.find('5l') > -1:
