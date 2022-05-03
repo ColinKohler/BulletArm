@@ -1030,7 +1030,12 @@ class BaseEnv:
     # center
     ori_point = point - size/2
     R = transformations.euler_matrix(rx, ry, rz)[:3, :3].T
-    point = R.dot(ori_point.T)
+    points = []
+    batch_size = 4096
+    for i in range(int(np.ceil(ori_point.shape[0]/batch_size))):
+      points.append(R.dot(ori_point[batch_size*i:batch_size*(i+1)].T))
+    point = np.concatenate(points, 1)
+    # point = R.dot(ori_point.T)
     point = point + size/2
     point = np.round(point).astype(int)
     point = point.T[(np.logical_and(0 < point.T, point.T < size)).all(1)].T
