@@ -398,7 +398,7 @@
     </inertial>
   </link>
   <joint name="simple_gripper_tip_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0.0 0.0 0.040"/>
+    <origin rpy="0 3.1415 3.1415" xyz="0.0 0.0 0.055"/>
     <parent link="simple_gripper_base"/>
     <child link="simple_gripper_tip"/>
   </joint>

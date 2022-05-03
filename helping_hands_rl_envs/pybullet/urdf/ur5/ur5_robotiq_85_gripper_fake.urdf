@@ -302,17 +302,20 @@
     <child link="simple_gripper_base"/>
   </joint>
   <link name="simple_gripper_base">
-    <!--<visual>-->
-      <!--<geometry>-->
-        <!--<box size="0.085 0.025 0.005"/>-->
-      <!--</geometry>-->
-    <!--</visual>-->
     <collision>
       <origin rpy="0 0 0" xyz="0.0 0.0 0.02"/>
       <geometry>
-        <box size="0.005 0.0025 0.005"/>
+        <box size="0.085 0.025 0.005"/>
       </geometry>
     </collision>
+    <visual>
+      <geometry>
+        <box size="0.085 0.025 0.005"/>
+      </geometry>
+      <material name="transparent">
+        <color rgba="0.5 0.5 0.5 0"/>
+      </material>
+    </visual>
     <inertial>
       <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
       <mass value="1.0"/>
@@ -338,6 +341,9 @@
       <geometry>
         <box size="0.005 0.02 0.06"/>
       </geometry>
+      <material name="transparent">
+        <color rgba="0.5 0.5 0.5 0"/>
+      </material>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0.0"/>
@@ -371,6 +377,9 @@
       <geometry>
         <box size="0.005 0.02 0.06"/>
       </geometry>
+      <material name="transparent">
+        <color rgba="0.5 0.5 0.5 0"/>
+      </material>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0.0"/>
