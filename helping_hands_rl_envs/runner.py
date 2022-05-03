@@ -7,6 +7,9 @@ from multiprocessing import Process, Pipe
 import os
 import git
 import helping_hands_rl_envs
+from tqdm import tqdm
+import copy
+import time
 
 def worker(remote, parent_remote, env_fn, planner_fn=None):
   '''
@@ -472,6 +475,112 @@ class MultiRunner(object):
     '''
     repo = git.Repo(helping_hands_rl_envs.__path__[0])
     return repo.head.object.hexsha
+
+  def gatherDeconstructTransitions(self, planner_episode, num_objects):
+    '''
+    Gather deconstruction transitions and reverse them for construction
+
+    Args:
+      - planner_episode: The number of expert episodes to gather
+      - num_objects: Number of objects in the environment
+
+    Returns: list of transitions. Each transition is in the form of
+    ((state, in_hand, obs), action, reward, done, (next_state, next_in_hand, next_obs))
+    '''
+    num_processes = self.num_processes
+    def states_valid(states_list):
+      if len(states_list) < 2:
+        return False
+      for i in range(1, len(states_list)):
+        if states_list[i] != 1 - states_list[i-1]:
+          return False
+      return True
+
+    def rewards_valid(reward_list):
+      if reward_list[0] != 1:
+        return False
+      for i in range(1, len(reward_list)):
+        if reward_list[i] != 0:
+          return False
+      return True
+
+    def getCurrentObs(in_hand, obs):
+      obss = []
+      for i, o in enumerate(obs):
+        obss.append((o.squeeze(), in_hand[i].squeeze()))
+      return obss
+
+    states, in_hands, obs = self.reset()
+    total = 0
+    s = 0
+    step_times = []
+    steps = [0 for i in range(num_processes)]
+    local_state = [[] for i in range(num_processes)]
+    local_obs = [[] for i in range(num_processes)]
+    local_action = [[] for i in range(num_processes)]
+    local_reward = [[] for i in range(num_processes)]
+
+    pbar = tqdm(total=planner_episode)
+
+    transitions = []
+    while total < planner_episode:
+      plan_actions = self.getNextAction()
+      actions_star = np.concatenate((plan_actions, np.expand_dims(states, 1)), axis=1)
+      t0 = time.time()
+      (states_, in_hands_, obs_), rewards, dones = self.step(actions_star, auto_reset=False)
+      dones[states + states_ != 1] = 1
+      t = time.time()-t0
+      step_times.append(t)
+
+      buffer_obs = getCurrentObs(in_hands_, obs)
+      for i in range(num_processes):
+        local_state[i].append(states[i])
+        local_obs[i].append(buffer_obs[i])
+        local_action[i].append(plan_actions[i])
+        local_reward[i].append(rewards[i])
+
+      steps = list(map(lambda x: x + 1, steps))
+
+      done_idxes = np.nonzero(dones)[0]
+      if done_idxes.shape[0] != 0:
+        empty_in_hands = self.getEmptyInHand()
+
+        buffer_obs_ = getCurrentObs(empty_in_hands, copy.deepcopy(obs_))
+        reset_states_, reset_in_hands_, reset_obs_ = self.reset_envs(done_idxes)
+        for i, idx in enumerate(done_idxes):
+          local_obs[idx].append(buffer_obs_[idx])
+          local_state[idx].append(copy.deepcopy(states_[idx]))
+          if (num_objects-2)*2 <= steps[idx] <= num_objects*2 and states_valid(local_state[idx]) and rewards_valid(local_reward[idx]):
+            s += 1
+            for j in range(len(local_reward[idx])):
+              obs = local_obs[idx][j+1]
+              next_obs = local_obs[idx][j]
+              transitions.append(((local_state[idx][j+1], obs[1], obs[0]), # (state, in_hand, obs)
+                                  local_action[idx][j], # action
+                                  local_reward[idx][j], # reward
+                                  j == 0, # done
+                                  (local_state[idx][j], next_obs[1], next_obs[0]))) # (next_state, next_in_hand, next_obs)
+
+          states_[idx] = reset_states_[i]
+          obs_[idx] = reset_obs_[i]
+
+          total += 1
+          steps[idx] = 0
+          local_state[idx] = []
+          local_obs[idx] = []
+          local_action[idx] = []
+          local_reward[idx] = []
+
+      pbar.set_description(
+        '{}/{}, SR: {:.3f}, step time: {:.2f}; avg step time: {:.2f}'
+          .format(s, total, float(s)/total if total !=0 else 0, t, np.mean(step_times))
+      )
+      pbar.update(done_idxes.shape[0])
+
+      states = copy.copy(states_)
+      obs = copy.copy(obs_)
+    pbar.close()
+    return transitions
 
 class SingleRunner(object):
   '''
