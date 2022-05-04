@@ -24,7 +24,7 @@ class CloseLoopEnv(BaseEnv):
     if 'object_scale_range' not in config:
       config['object_scale_range'] = [1, 1]
     if 'view_type' not in config:
-      config['view_type'] = 'camera_center_xyzr'
+      config['view_type'] = 'camera_center_xyz'
     if 'obs_type' not in config:
       config['obs_type'] = 'pixel'
     if 'view_scale' not in config:
@@ -89,7 +89,7 @@ class CloseLoopEnv(BaseEnv):
   def resetPybulletWorkspace(self):
     self.renderer.clearPoints()
     super().resetPybulletWorkspace()
-    self.robot.moveTo([self.workspace[0].mean(), self.workspace[1].mean(), 0.2], transformations.quaternion_from_euler(0, 0, 0))
+    self.robot.moveTo([self.workspace[0].mean(), self.workspace[1].mean(), 0.2], transformations.quaternion_from_euler(0, 0, np.pi/2))
     self.simulate_pos = self.robot._getEndEffectorPosition()
     self.simulate_rot = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())
 
@@ -273,7 +273,7 @@ class CloseLoopEnv(BaseEnv):
     im = np.zeros((self.heightmap_size, self.heightmap_size))
     gripper_half_size = 5 * self.workspace_size / self.obs_size_m
     gripper_half_size = round(gripper_half_size/128*self.heightmap_size)
-    if self.robot_type == 'panda':
+    if self.robot_type in ['panda', 'ur5', 'ur5_robotiq']:
       gripper_max_open = 42 * self.workspace_size / self.obs_size_m
     elif self.robot_type == 'kuka':
       gripper_max_open = 45 * self.workspace_size / self.obs_size_m
@@ -290,6 +290,8 @@ class CloseLoopEnv(BaseEnv):
     gripper_z_offset = 0.04 # panda
     if self.robot_type == 'kuka':
       gripper_z_offset = 0.12
+    elif self.robot_type == 'ur5':
+      gripper_z_offset = 0.06
     if gripper_pos is None:
       gripper_pos = self.robot._getEndEffectorPosition()
     if gripper_rz is None:
