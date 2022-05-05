@@ -43,7 +43,7 @@ class BoxPalletizingEnv(BaseEnv):
     return positions
 
   def resetPallet(self):
-    self.pallet_rz = np.random.random_sample() * np.pi
+    self.pallet_rz = np.random.random_sample() * np.pi if self.random_orientation else np.pi/2
     # self.pallet_rz = np.random.choice(np.linspace(0, np.pi, 8, endpoint=False))
     self.pallet_pos = self._getValidPositions(np.linalg.norm([self.pallet_size[0]/2, self.pallet_size[1]/2])*2, 0, [], 1)[0]
     self.pallet_pos.append(self.pallet_z)

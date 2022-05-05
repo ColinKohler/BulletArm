@@ -31,7 +31,7 @@ class BlockBinPackingEnv(BaseEnv):
     self.z_threshold = self.box_size[-1]
 
   def resetBox(self):
-    self.box_rz = np.random.random_sample() * np.pi
+    self.box_rz = np.random.random_sample() * np.pi if self. random_orientation else 0
     self.box_pos = self._getValidPositions(np.linalg.norm([self.box_size[0], self.box_size[1]]), 0, [], 1)[
       0]
     self.box_pos.append(0)

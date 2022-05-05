@@ -87,7 +87,10 @@ class CovidTestEnv(BaseEnv):
     perterb_range = np.arcsin(self.workspace_padding
                               / ((self.workspace[0, 1] - self.workspace[0, 0]) / 2 - self.workspace_padding))
     perterb_range = min(perterb_range, perterb_range - np.pi / 180)
-    angel = n * (np.pi / 2) + np.random.uniform(-perterb_range, perterb_range)
+    if self.random_orientation:
+      angel = n * (np.pi / 2) + np.random.uniform(-perterb_range, perterb_range)
+    else:
+      angel = n * (np.pi / 2)
     R_perterb_90 = np.array([[np.cos(angel), -np.sin(angel)],
                              [np.sin(angel),  np.cos(angel)]])
     return R_perterb_90, angel
@@ -107,7 +110,10 @@ class CovidTestEnv(BaseEnv):
   def resetBoxs(self):
 
     # initial boxs in D4 group: rot90 + reflection
-    self.rot_n = np.random.randint(0,4)
+    if self.random_orientation:
+      self.rot_n = np.random.randint(0,4)
+    else:
+      self.rot_n = np.random.choice([0, 2])
     self.flip = np.random.randint(0,2)
     self.R_perterb_90, self.R_angel = self.perterb_rot90(self.rot_n)
     self.R_angel_after_flip = np.pi - self.R_angel if self.flip else self.R_angel
@@ -162,15 +168,24 @@ class CovidTestEnv(BaseEnv):
       self.resetPybulletWorkspace()
       self.resetBoxs()
       try:
-        tube_rot = 1.57 + np.random.uniform(-np.pi/6, np.pi/6) + self.R_angel_after_flip + np.random.randint(2) * np.pi
+        if self.random_orientation:
+          tube_rot = 1.57 + np.random.uniform(-np.pi/6, np.pi/6) + self.R_angel_after_flip + np.random.randint(2) * np.pi
+        else:
+          tube_rot = 1.57 + self.R_angel_after_flip + np.random.randint(2) * np.pi
         for i in range(3):
           self._generateShapes(constants.TEST_TUBE,
                                rot=[pb.getQuaternionFromEuler([0., 0., tube_rot])],
                                pos=[tuple(self.tube_pos_candidate[i])])
         if self.flip == 1:
-          swab_rot = np.pi - (-1.57 + np.random.uniform(-np.pi/6, np.pi/6) + self.R_angel)
+          if self.random_orientation:
+            swab_rot = np.pi - (-1.57 + np.random.uniform(-np.pi/6, np.pi/6) + self.R_angel)
+          else:
+            swab_rot = np.pi - (-1.57 + self.R_angel)
         else:
-          swab_rot = -1.57 + np.random.uniform(-np.pi/6, np.pi/6) + self.R_angel
+          if self.random_orientation:
+            swab_rot = -1.57 + np.random.uniform(-np.pi/6, np.pi/6) + self.R_angel
+          else:
+            swab_rot = -1.57 + self.R_angel
         # swab_rot = np.pi - (-1.57 + np.random.rand() - 0.5 + self.R_angel_after_flip)
         for i in range(3):
           self._generateShapes(constants.SWAB,
@@ -207,6 +222,8 @@ class CovidTestEnv(BaseEnv):
           # else:
           #   rot_test_box_size = self.test_box_size[:2]
           rot = 2 * np.pi * np.random.rand()
+          if not self.random_orientation:
+            rot = np.pi/2
           x_offset = (self.test_box_size[0] - 0.1) * np.random.rand()\
                      - (self.test_box_size[0] - 0.1) / 2
           y_offset = (self.test_box_size[1] - 0.1) * np.random.rand()\
