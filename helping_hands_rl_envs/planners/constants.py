@@ -10,7 +10,6 @@ from helping_hands_rl_envs.planners.house_building_2_planner import HouseBuildin
 from helping_hands_rl_envs.planners.house_building_3_planner import HouseBuilding3Planner
 from helping_hands_rl_envs.planners.house_building_4_planner import HouseBuilding4Planner
 from helping_hands_rl_envs.planners.improvise_house_building_2_planner import ImproviseHouseBuilding2Planner
-from helping_hands_rl_envs.planners.improvise_house_building_3_planner import ImproviseHouseBuilding3Planner
 from helping_hands_rl_envs.planners.deconstruct_planner import DeconstructPlanner
 from helping_hands_rl_envs.planners.ramp_block_stacking_planner import RampBlockStackingPlanner
 from helping_hands_rl_envs.planners.ramp_deconstruct_planner import RampDeconstructPlanner
@@ -31,6 +30,7 @@ from helping_hands_rl_envs.planners.close_loop_block_pushing_planner import Clos
 from helping_hands_rl_envs.planners.close_loop_block_in_bowl_planner import CloseLoopBlockInBowlPlanner
 
 PLANNERS = {
+  'none': lambda *args: None,
   'random' : RandomPlanner,
   'multi_task' : MultiTaskPlanner,
   'play' : PlayPlanner,
@@ -43,7 +43,6 @@ PLANNERS = {
   'house_building_3' : HouseBuilding3Planner,
   'house_building_4' : HouseBuilding4Planner,
   'improvise_house_building_2' : ImproviseHouseBuilding2Planner,
-  'improvise_house_building_3' : ImproviseHouseBuilding3Planner,
   'block_stacking_deconstruct': DeconstructPlanner,
   'house_building_1_deconstruct' : DeconstructPlanner,
   'house_building_2_deconstruct' : DeconstructPlanner,

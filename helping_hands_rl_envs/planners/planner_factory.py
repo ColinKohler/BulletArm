@@ -9,7 +9,7 @@ def getPlannerFn(env_type, planner_config):
   elif env_type in  constants.PLANNERS:
     planner_type = env_type
   else:
-    planner_type = 'random'
+    planner_type = 'none'
 
   if planner_type in constants.PLANNERS:
     return lambda env: constants.PLANNERS[planner_type](env, planner_config)
