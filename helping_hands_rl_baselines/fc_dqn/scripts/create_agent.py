@@ -214,7 +214,6 @@ def createAgent(test=False):
 
             agent.initNetwork(fcn, q2, q3, q4, q5)
 
-    agent.per_td_error = per_td_error
     agent.aug = aug
     agent.aug_type = aug_type
     return agent

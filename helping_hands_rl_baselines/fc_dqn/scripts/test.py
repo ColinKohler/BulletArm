@@ -29,12 +29,10 @@ def test():
     plt.style.use('default')
     envs = EnvWrapper(num_processes, env, env_config, planner_config)
     agent = createAgent()
-
+    agent.train()
     agent.loadModel(load_model_pre)
     agent.eval()
     states, in_hands, obs = envs.reset()
-    obs = obs.permute(0, 3, 1, 2)
-    in_hands = in_hands.permute(0, 3, 1, 2)
     test_episode = 1000
     total = 0
     s = 0
@@ -56,8 +54,6 @@ def test():
         # print('avg rank of ae: {}'.format(np.mean(ranks)))
 
         states_, in_hands_, obs_, rewards, dones = envs.step(actions_star, auto_reset=True)
-        obs_ = obs_.permute(0, 3, 1, 2)
-        in_hands_ = in_hands_.permute(0, 3, 1, 2)
 
         states = copy.copy(states_)
         obs = copy.copy(obs_)

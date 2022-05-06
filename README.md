@@ -34,24 +34,15 @@ based simulator is included for quick prototyping.
     ```
 5. Run the block stacking demo
     ```python
-    import numpy as np
     from helping_hands_rl_envs import env_factory
-    
-    workspace = np.asarray([[0.3, 0.6],
-                            [-0.15, 0.15],
-                            [0, 0.50]])
     # environment parameters
-    env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 90, 'render': True, 'fast_mode': True,
-                  'seed': 0, 'action_sequence': 'pxyr', 'num_objects': 4, 'random_orientation': True,
-                  'reward_type': 'sparse', 'robot': 'kuka', 'workspace_check': 'point'}
-    # planner parameters
-    planner_config = {'random_orientation': True}
+    env_config = {'render': True}
     # create 1 block_stacking environment
-    env = env_factory.createEnvs(1, 'block_stacking', env_config, planner_config)
+    env = env_factory.createEnvs(1, 'block_stacking', env_config)
     env.reset()
     for i in range(5, -1, -1):
         action = env.getNextAction()
-        (states_, in_hands_, obs_), rewards, dones = env.step(action, auto_reset=False)
+        (states_, in_hands_, obs_), rewards, dones = env.step(action)
         input('press enter to continue')
     env.close()
     ```
@@ -93,6 +84,10 @@ based simulator is included for quick prototyping.
 
 <a name="parameters"></a>
 ## Parameters
+
+## Baselines
+### Open Loop Baselines
+
 
 <a name="publications"></a>
 ## Publications

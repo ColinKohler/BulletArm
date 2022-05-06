@@ -26,8 +26,8 @@ env_group.add_argument('--patch_size', type=int, default=24)
 env_group.add_argument('--in_hand_mode', type=str, default='raw', choices=['raw', 'proj'])
 
 training_group = parser.add_argument_group('training')
-training_group.add_argument('--alg', default='dqn')
-training_group.add_argument('--model', type=str, default='resucat')
+training_group.add_argument('--alg', default='margin_asr')
+training_group.add_argument('--model', type=str, default='equ_resu_df_flip')
 training_group.add_argument('--num_rotations', type=int, default=16)
 training_group.add_argument('--half_rotation', type=strToBool, default=True)
 training_group.add_argument('--lr', type=float, default=1e-4)
@@ -38,17 +38,15 @@ training_group.add_argument('--init_eps', type=float, default=1.0)
 training_group.add_argument('--final_eps', type=float, default=0.)
 training_group.add_argument('--training_iters', type=int, default=1)
 training_group.add_argument('--training_offset', type=int, default=100)
-training_group.add_argument('--max_train_step', type=int, default=50000)
+training_group.add_argument('--max_train_step', type=int, default=20000)
 training_group.add_argument('--device_name', type=str, default='cuda')
 training_group.add_argument('--target_update_freq', type=int, default=100)
 training_group.add_argument('--save_freq', type=int, default=500)
 training_group.add_argument('--load_model_pre', type=str, default=None)
 training_group.add_argument('--sl', action='store_true')
-training_group.add_argument('--planner_episode', type=int, default=0)
+training_group.add_argument('--planner_episode', type=int, default=200)
 training_group.add_argument('--note', type=str, default=None)
 training_group.add_argument('--seed', type=int, default=None)
-training_group.add_argument('--perlin', type=float, default=0.0)
-training_group.add_argument('--gaussian', type=float, default=0.0)
 training_group.add_argument('--load_n', type=int, default=1000000)
 training_group.add_argument('--expert_aug_n', type=int, default=0)
 training_group.add_argument('--expert_aug_d4', action='store_true')
@@ -57,14 +55,14 @@ training_group.add_argument('--pre_train_step', type=int, default=0)
 training_group.add_argument('--num_zs', type=int, default=36)
 training_group.add_argument('--min_z', type=float, default=0.02)
 training_group.add_argument('--max_z', type=float, default=0.20)
-training_group.add_argument('--q2_model', type=str, default='cnn')
+training_group.add_argument('--q2_model', type=str, default='equ_shift_df')
 training_group.add_argument('--equi_n', type=int, default=4)
 training_group.add_argument('--aug', type=strToBool, default=False)
 training_group.add_argument('--aug_type', type=str, choices=['se2', 'cn', 't', 'shift'], default='se2')
 
 eval_group = parser.add_argument_group('eval')
 eval_group.add_argument('--num_eval_processes', type=int, default=5)
-eval_group.add_argument('--eval_freq', default=1000, type=int)
+eval_group.add_argument('--eval_freq', default=500, type=int)
 eval_group.add_argument('--num_eval_episodes', default=100, type=int)
 
 planner_group = parser.add_argument_group('planner')
@@ -79,24 +77,16 @@ margin_group.add_argument('--margin_beta', type=float, default=100)
 
 buffer_group = parser.add_argument_group('buffer')
 buffer_group.add_argument('--buffer', default='expert', choices=['normal', 'expert'])
-buffer_group.add_argument('--per_eps', type=float, default=1e-6, help='Epsilon parameter for PER')
-buffer_group.add_argument('--per_alpha', type=float, default=0.6, help='Alpha parameter for PER')
-buffer_group.add_argument('--per_beta', type=float, default=0.4, help='Initial beta parameter for PER')
-buffer_group.add_argument('--per_expert_eps', type=float, default=1)
-buffer_group.add_argument('--per_td_error', type=str, default='last', choices=['all', 'last'])
 buffer_group.add_argument('--batch_size', type=int, default=16)
 buffer_group.add_argument('--buffer_size', type=int, default=100000)
 buffer_group.add_argument('--fixed_buffer', action='store_true')
 
 logging_group = parser.add_argument_group('logging')
-logging_group.add_argument('--log_pre', type=str, default='/tmp')
+logging_group.add_argument('--log_pre', type=str, default='output')
 logging_group.add_argument('--log_sub', type=str, default=None)
 logging_group.add_argument('--no_bar', action='store_true')
 logging_group.add_argument('--time_limit', type=float, default=10000)
 logging_group.add_argument('--load_sub', type=str, default=None)
-
-test_group = parser.add_argument_group('test')
-test_group.add_argument('--test', action='store_true')
 
 args = parser.parse_args()
 # env
@@ -141,8 +131,6 @@ in_hand_mode = args.in_hand_mode
 ######################################################################################
 # training
 alg = args.alg
-if alg == 'dqn_sl_anneal':
-    args.sl = True
 model = args.model
 lr = args.lr
 gamma = args.gamma
@@ -160,11 +148,8 @@ sl = args.sl
 planner_episode = args.planner_episode
 
 load_model_pre = args.load_model_pre
-is_test = args.test
 note = args.note
 seed = args.seed
-perlin = args.perlin
-gaussian = args.gaussian
 
 q2_model = args.q2_model
 
@@ -191,11 +176,6 @@ planner_rot_noise = args.planner_rot_noise
 
 # buffer
 buffer_type = args.buffer
-per_eps = args.per_eps
-per_alpha = args.per_alpha
-per_beta = args.per_beta
-per_expert_eps = args.per_expert_eps
-per_td_error = args.per_td_error
 batch_size = args.batch_size
 buffer_size = args.buffer_size
 fixed_buffer = args.fixed_buffer
@@ -221,11 +201,16 @@ min_z = args.min_z
 max_z = args.max_z
 
 ######################################################################################
-env_config = {'workspace': workspace, 'max_steps': max_episode_steps, 'obs_size': heightmap_size, 'in_hand_size': patch_size,
-              'fast_mode': True,  'action_sequence': action_sequence, 'render': render, 'num_objects': num_objects,
-              'random_orientation':random_orientation, 'robot': robot, 'workspace_check': 'point', 'in_hand_mode': in_hand_mode,
-              'object_scale_range': (0.6, 0.6), 'hard_reset_freq': 1000, 'physics_mode' : 'fast',}
+env_config = {'workspace': workspace, 'obs_size': heightmap_size, 'in_hand_size': patch_size,
+              'action_sequence': action_sequence, 'render': render, 'random_orientation':random_orientation,
+              'robot': robot, 'workspace_check': 'point', 'in_hand_mode': in_hand_mode,
+              'object_scale_range': (0.6, 0.6)}
 planner_config = {'pos_noise': planner_pos_noise, 'rot_noise': planner_rot_noise, 'random_orientation':random_orientation, 'half_rotation': half_rotation}
+
+if max_episode_steps != -1:
+    env_config['max_steps'] = max_episode_steps
+if num_objects != -1:
+    env_config['num_objects'] = num_objects
 
 if env in ['block_bin_packing']:
     env_config['object_scale_range'] = (0.8, 0.8)
