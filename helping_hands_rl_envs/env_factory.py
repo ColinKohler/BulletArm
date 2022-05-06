@@ -26,7 +26,7 @@ def getEnvFn(env_type):
   else:
     raise ValueError('Invalid environment type passed to factory. No env for {}'.format(env_type))
 
-def createEnvs(num_processes, env_type, env_config, planner_config={}):
+def createEnvs(num_processes, env_type, env_config={}, planner_config={}):
   '''
   Wrapper function to create either a single env the the main process or some
   number of envs each in their own seperate process.
@@ -45,7 +45,7 @@ def createEnvs(num_processes, env_type, env_config, planner_config={}):
   else:
     return createMultiprocessEnvs(num_processes, env_type, env_config, planner_config)
 
-def createSingleProcessEnv(env_type, env_config, planner_config={}):
+def createSingleProcessEnv(env_type, env_config={}, planner_config={}):
   '''
   Create a single environment
 
@@ -67,15 +67,10 @@ def createSingleProcessEnv(env_type, env_config, planner_config={}):
   # Create the environment and planner if planner_config exists
   env_func = getEnvFn(env_type)
   env = env_func(env_config)
-
-  if planner_config:
-    planner = getPlannerFn(env_type, planner_config)(env)
-  else:
-    planner = None
-
+  planner = getPlannerFn(env_type, planner_config)(env)
   return SingleRunner(env, planner)
 
-def createMultiprocessEnvs(num_processes, env_type, env_config, planner_config={}):
+def createMultiprocessEnvs(num_processes, env_type, env_config={}, planner_config={}):
   '''
   Create a number of environments on different processes to run in parralel
 
@@ -104,9 +99,5 @@ def createMultiprocessEnvs(num_processes, env_type, env_config, planner_config={
       return env_func(c)
     return _thunk
   envs = [getEnv(env_configs[i]) for i in range(num_processes)]
-  if planner_config:
-    planners = [getPlannerFn(env_type, planner_config) for i in range(num_processes)]
-  else:
-    planners = [None for i in range(num_processes)]
-
+  planners = [getPlannerFn(env_type, planner_config) for i in range(num_processes)]
   return MultiRunner(envs, planners)
