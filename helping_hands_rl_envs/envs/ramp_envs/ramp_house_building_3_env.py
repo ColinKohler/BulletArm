@@ -4,6 +4,13 @@ from helping_hands_rl_envs.pybullet.utils import constants
 
 class RampHouseBuilding3Env(RampBaseEnv):
   def __init__(self, config):
+    # env specific parameters
+    if 'object_scale_range' not in config:
+      config['object_scale_range'] = [0.6, 0.6]
+    if 'num_objects' not in config:
+      config['num_objects'] = 4
+    if 'max_steps' not in config:
+      config['max_steps'] = 10
     super(RampHouseBuilding3Env, self).__init__(config)
 
   def reset(self):
