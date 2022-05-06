@@ -87,7 +87,31 @@ based simulator is included for quick prototyping.
 
 ## Baselines
 ### Open Loop Baselines
+#### Prerequisite
+1. Goto the baseline directory
+    ```
+    cd helping_hands_rl_envs/helping_hands_rl_baselines/fc_dqn
+    ```
+1. Install [PyTorch](https://pytorch.org/) (Recommended: pytorch==1.7.0, torchvision==0.8.1)
+1. (Optional, required for 6D agents) Install [CuPy](https://github.com/cupy/cupy)
+1. Install other required packages
+    ```
+    pip install -r requirement.txt
+    ```
+1. Goto the scripts folder of this repo to run experiments
+    ```
+    cd scripts
+    ```
+#### Running Baselines
 
+1. Equivariant ASR
+    ```
+    python main.py --alg=margin_asr --model=equ_resu_df_flip --q2_model=equ_shift_df --env=[env]
+    ```
+1. CNN ASR
+    ```
+    python main.py --alg=margin_asr --model=resucat --q2_model=cnn --env=[env]
+    ```
 
 <a name="publications"></a>
 ## Publications

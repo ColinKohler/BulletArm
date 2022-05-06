@@ -203,8 +203,7 @@ max_z = args.max_z
 ######################################################################################
 env_config = {'workspace': workspace, 'obs_size': heightmap_size, 'in_hand_size': patch_size,
               'action_sequence': action_sequence, 'render': render, 'random_orientation':random_orientation,
-              'robot': robot, 'workspace_check': 'point', 'in_hand_mode': in_hand_mode,
-              'object_scale_range': (0.6, 0.6)}
+              'robot': robot, 'in_hand_mode': in_hand_mode}
 planner_config = {'pos_noise': planner_pos_noise, 'rot_noise': planner_rot_noise, 'random_orientation':random_orientation, 'half_rotation': half_rotation}
 
 if max_episode_steps != -1:
@@ -212,22 +211,6 @@ if max_episode_steps != -1:
 if num_objects != -1:
     env_config['num_objects'] = num_objects
 
-if env in ['block_bin_packing']:
-    env_config['object_scale_range'] = (0.8, 0.8)
-    env_config['min_object_distance'] = 0.1
-    env_config['min_boarder_padding'] = 0.05
-if env in ['random_block_picking_clutter']:
-    env_config['object_scale_range'] = (0.8, 0.8)
-    env_config['min_object_distance'] = 0
-    env_config['min_boarder_padding'] = 0.15
-    env_config['adjust_gripper_after_lift'] = True
-if env in ['bottle_tray', 'box_palletizing', 'bumpy_box_palletizing']:
-    env_config['object_scale_range'] = (0.8, 0.8)
-    env_config['kuka_adjust_gripper_offset'] = 0.0025
-if env in ['covid_test']:
-    env_config['object_scale_range'] = (0.55, 0.55)
-if env in ['object_grasping']:
-    env_config['object_scale_range'] = (1, 1)
 if seed is not None:
     env_config['seed'] = seed
 ######################################################################################
