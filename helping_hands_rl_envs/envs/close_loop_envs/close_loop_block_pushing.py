@@ -6,6 +6,7 @@ from helping_hands_rl_envs.envs.close_loop_envs.close_loop_env import CloseLoopE
 from helping_hands_rl_envs.pybullet.utils import transformations
 from helping_hands_rl_envs.planners.close_loop_block_pushing_planner import CloseLoopBlockPushingPlanner
 from helping_hands_rl_envs.pybullet.equipments.tray import Tray
+from helping_hands_rl_envs.pybullet.utils.constants import NoValidPositionException
 
 class CloseLoopBlockPushingEnv(CloseLoopEnv):
   def __init__(self, config):
@@ -25,12 +26,29 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
     return round(goal_pixel_x), round(goal_pixel_y)
 
   def reset(self):
-    self.resetPybulletWorkspace()
-    self._generateShapes(constants.CUBE, 1, random_orientation=self.random_orientation)
-    # pb.changeDynamics(self.objects[0].object_id, -1, lateralFriction=0.1)
-    goal_pos = self._getValidPositions(0.08+0.05, 0.09, self.getObjectPositions()[:, :2].tolist(), 1)[0]
-    self.goal_pos = goal_pos
-
+    while True:
+      self.resetPybulletWorkspace()
+      try:
+        if not self.random_orientation:
+          padding = 0.08+0.05
+          min_distance = 0.09
+          x = np.random.random() * (self.workspace_size - padding) + self.workspace[0][0] + padding / 2
+          while True:
+            y1 = np.random.random() * (self.workspace_size - padding) + self.workspace[1][0] + padding / 2
+            y2 = np.random.random() * (self.workspace_size - padding) + self.workspace[1][0] + padding / 2
+            if max(y1, y2) - min(y1, y2) > min_distance:
+              break
+          self._generateShapes(constants.CUBE, 1, pos=[[x, y1, self.object_init_z]], random_orientation=False)
+          goal_pos = [x, y2]
+        else:
+          self._generateShapes(constants.CUBE, 1, random_orientation=self.random_orientation)
+          # pb.changeDynamics(self.objects[0].object_id, -1, lateralFriction=0.1)
+          goal_pos = self._getValidPositions(0.08+0.05, 0.09, self.getObjectPositions()[:, :2].tolist(), 1)[0]
+        self.goal_pos = goal_pos
+      except NoValidPositionException as e:
+        continue
+      else:
+        break
     if self.goal_id is not None:
       pb.removeBody(self.goal_id)
     goal_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[self.goal_size/2, self.goal_size/2, 0.0025], rgbaColor=[0, 0, 1, 1])

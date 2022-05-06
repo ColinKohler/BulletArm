@@ -22,7 +22,7 @@ class CloseLoopDrawerOpeningEnv(CloseLoopEnv):
     # pos = self._getValidPositions(0.1, 0, [], 1)[0]
     # pos.append(0)
     pos = np.array([self.workspace[0].mean(), self.workspace[1].mean(), 0])
-    self.drawer_rot = np.random.random()*2*np.pi if self.random_orientation else 0
+    self.drawer_rot = np.random.random()*2*np.pi if self.random_orientation else np.random.choice([np.pi/2, 3*np.pi/2])
     m = np.array(transformations.euler_matrix(0, 0, self.drawer_rot))[:3, :3]
     dx = np.random.random() * (0.2 - 0.15) + 0.15
     dy = np.random.random() * (0.1 - -0.1) + -0.1
