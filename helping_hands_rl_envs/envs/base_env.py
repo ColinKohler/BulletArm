@@ -1027,7 +1027,7 @@ class BaseEnv:
     # transform into points
     point = np.argwhere(ori_occupancy)
     if point.shape[0] == 0:
-      return np.zeros(3, size, size)
+      return np.zeros((3, size, size))
 
     # center
     ori_point = point - size/2
