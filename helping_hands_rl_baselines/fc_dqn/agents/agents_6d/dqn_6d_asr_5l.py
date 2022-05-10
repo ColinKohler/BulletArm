@@ -81,7 +81,7 @@ class DQN6DASR5L(Base6D):
 
     def forwardQ3(self, states, in_hand, obs, obs_encoding, pixels, a2_id, target_net=False, to_cpu=False):
         a2_id, a2 = self.decodeA2(a2_id)
-        patch = self.getQ3Input(obs.to(self.device), pixels.to(self.device), a2)
+        patch = self.getQ3Input(obs.to(self.device), pixels.to(self.device), a2.squeeze(1))
         patch = self.encodeInHand(patch, in_hand.to(self.device))
 
         q3 = self.q3 if not target_net else self.target_q3
