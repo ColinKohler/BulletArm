@@ -121,6 +121,9 @@ python main.py  --algorithm=[algorithm] --architecture=[architecture] --action_s
 - Set `[patch_size]` to be `40` (required for `bumpy_box_palletizing` environment) or `24`
 - Add `--fill_buffer_deconstruct` to use deconstruction planner for gathering expert data.
 
+#### Additional Training Arguments
+See [helping_hands_rl_baselines/fc_dqn/utils/parameters.py](helping_hands_rl_baselines/fc_dqn/utils/parameters.py)
+
 ### Close-Loop Benchmarks
 #### Prerequisite
 1. Install [PyTorch](https://pytorch.org/) (Recommended: pytorch==1.7.0, torchvision==0.8.1)
@@ -133,17 +136,20 @@ python main.py  --algorithm=[algorithm] --architecture=[architecture] --action_s
     ```
     cd helping_hands_rl_envs/helping_hands_rl_baselines/equi_rl/scripts
     ```
-### Close-Loop 4D Benchmark
+#### Close-Loop 4D Benchmark
 ```
 python main.py --algorithm=[algorithm] --env=[env]
 ```
 - Select `[algorithm]` from: `sac`, `sacfd`, `equi_sac`, `equi_sacfd`, `ferm_sac`, `ferm_sacfd`, `rad_sac`, `rad_sacfd`, `drq_sac`, `drq_sacfd`
 - To use PER and data augmentation buffer, add `--buffer=per_expert_aug`
-### Close-Loop 3D Benchmark
+#### Close-Loop 3D Benchmark
 ```
 python main.py --algorithm=[algorithm] --action_sequence=pxyz --random_orientation=f --env=[env]
 ```
 - Select `[algorithm]` from: `sac`, `sacfd`, `equi_sac`, `equi_sacfd`, `ferm_sac`, `ferm_sacfd`, `rad_sac`, `rad_sacfd`, `drq_sac`, `drq_sacfd`
+
+#### Additional Training Arguments
+See [helping_hands_rl_baselines/equi_rl/utils/parameters.py](helping_hands_rl_baselines/equi_rl/utils/parameters.py)
 
 <a name="publications"></a>
 ## Publications
