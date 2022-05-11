@@ -85,15 +85,15 @@ based simulator is included for quick prototyping.
 <a name="parameters"></a>
 ## Parameters
 
-## Baselines
-### Open Loop Baselines
+## Benchmarks
+### Open Loop Benchmarks
 #### Prerequisite
 1. Goto the baseline directory
     ```
     cd helping_hands_rl_envs/helping_hands_rl_baselines/fc_dqn
     ```
 1. Install [PyTorch](https://pytorch.org/) (Recommended: pytorch==1.7.0, torchvision==0.8.1)
-1. (Optional, required for 6D agents) Install [CuPy](https://github.com/cupy/cupy)
+1. (Optional, required for 6D benchmark) Install [CuPy](https://github.com/cupy/cupy)
 1. Install other required packages
     ```
     pip install -r requirement.txt
@@ -102,16 +102,28 @@ based simulator is included for quick prototyping.
     ```
     cd scripts
     ```
-#### Running Baselines
+#### Open-Loop 3D Benchmark
+```
+python main.py --algorithm=[algorithm] --architecture=[architecture] --env=[env]
+```
+- Select `[algorithm]` from: `sdqfd` (recommended), `dqfd`, `adet`, `dqn`
+- Select `[architecture]` from: `equi_asr` (recommended), `cnn_asr`, `equi_fcn`, `cnn_fcn`, `rot_fcn`
 
-1. Equivariant ASR
-    ```
-    python main.py --alg=margin_asr --model=equ_resu_df_flip --q2_model=equ_shift_df --env=[env]
-    ```
-1. CNN ASR
-    ```
-    python main.py --alg=margin_asr --model=resucat --q2_model=cnn --env=[env]
-    ```
+#### Open-Loop 2D Benchmark
+```
+python main.py  --algorithm=[algorithm] --architecture=[architecture] --action_sequence=xyp --random_orientation=f --env=[env]
+```
+- Select `[algorithm]` from: `sdqfd` (recommended), `dqfd`, `adet`, `dqn`
+- Select `[architecture]` from: `equi_fcn` (recommended), `cnn_fcn`
+
+#### Open-Loop 6D Benchmark
+```
+python main.py  --algorithm=[algorithm] --architecture=[architecture] --action_sequence=xyzrrrp --patch_size=[patch_size] --env=[env]
+```
+- Select `[algorithm]` from: `sdqfd` (recommended), `dqfd`, `adet`, `dqn`
+- Select `[architecture]` from: `equi_deictic_asr` (recommended), `cnn_asr`
+- Set `[patch_size]` to be `40` (required for `bumpy_box_palletizing` environment) or `24`
+
 
 <a name="publications"></a>
 ## Publications
