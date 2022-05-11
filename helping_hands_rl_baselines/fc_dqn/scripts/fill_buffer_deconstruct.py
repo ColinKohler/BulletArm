@@ -49,7 +49,9 @@ def fillDeconstruct(agent, replay_buffer):
                'ramp_house_building_1',
                'ramp_house_building_2',
                'ramp_house_building_3',
-               'ramp_house_building_4']:
+               'ramp_house_building_4',
+               'ramp_improvise_house_building_2',
+               'ramp_improvise_house_building_3']:
         deconstruct_env = env + '_deconstruct'
     else:
         raise NotImplementedError('deconstruct env not supported for env: {}'.format(env))

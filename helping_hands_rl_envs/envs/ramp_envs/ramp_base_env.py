@@ -64,6 +64,8 @@ class RampBaseEnv(BaseEnv):
                                  self.ramp2_height],
                                 pb.getQuaternionFromEuler([-self.ramp2_angle, 0, self.ramp_rz + np.pi]),
                                 globalScaling=1)
+    pb.changeVisualShape(self.ramp1_id, -1, rgbaColor=[0.8706, 0.7216, 0.5294, 1])
+    pb.changeVisualShape(self.ramp2_id, -1, rgbaColor=[0.8706, 0.7216, 0.5294, 1])
 
   def getY1Y2fromX(self, x):
     y1 = np.tan(self.ramp_rz) * x - np.tan(self.ramp_rz) * (self.workspace[0].mean() - self.ramp1_dist_to_center / np.sin(self.ramp_rz))

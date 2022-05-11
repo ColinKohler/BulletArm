@@ -8,6 +8,8 @@ from helping_hands_rl_envs.planners.close_loop_block_picking_planner import Clos
 
 class CloseLoopHouseholdPickingEnv(CloseLoopEnv):
   def __init__(self, config):
+    if 'object_scale_range' not in config:
+      config['object_scale_range'] = [0.6, 0.6]
     super().__init__(config)
 
   def reset(self):

@@ -46,7 +46,7 @@ class Base6D(BaseAgent):
         self.map = cp.array(self.map)
 
     def getProj(self, obs, center_pixel, rz, z, ry, rx):
-        patch = self.getPatch(obs, center_pixel, torch.zeros_like(rz))
+        patch = self.getPatch(obs, center_pixel, torch.zeros(center_pixel.size(0)))
         patch = np.round(patch.cpu().numpy(), 5)
         patch = cp.array(patch)
         projections = []
