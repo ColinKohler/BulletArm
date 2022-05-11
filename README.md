@@ -88,19 +88,15 @@ based simulator is included for quick prototyping.
 ## Benchmarks
 ### Open-Loop Benchmarks
 #### Prerequisite
-1. Goto the baseline directory
-    ```
-    cd helping_hands_rl_envs/helping_hands_rl_baselines/fc_dqn
-    ```
 1. Install [PyTorch](https://pytorch.org/) (Recommended: pytorch==1.7.0, torchvision==0.8.1)
 1. (Optional, required for 6D benchmark) Install [CuPy](https://github.com/cupy/cupy)
 1. Install other required packages
     ```
-    pip install -r requirement.txt
+    pip install -r baseline_requirement.txt
     ```
-1. Goto the scripts folder of this repo to run experiments
+1. Goto the baseline directory
     ```
-    cd scripts
+    cd helping_hands_rl_envs/helping_hands_rl_baselines/fc_dqn/scripts
     ```
 #### Open-Loop 3D Benchmark
 ```
@@ -125,8 +121,29 @@ python main.py  --algorithm=[algorithm] --architecture=[architecture] --action_s
 - Set `[patch_size]` to be `40` (required for `bumpy_box_palletizing` environment) or `24`
 - Add `--fill_buffer_deconstruct` to use deconstruction planner for gathering expert data.
 
-
-
+### Close-Loop Benchmarks
+#### Prerequisite
+1. Install [PyTorch](https://pytorch.org/) (Recommended: pytorch==1.7.0, torchvision==0.8.1)
+1. (Optional, required for 6D benchmark) Install [CuPy](https://github.com/cupy/cupy)
+1. Install other required packages
+    ```
+    pip install -r baseline_requirement.txt
+    ```
+1. Goto the baseline directory
+    ```
+    cd helping_hands_rl_envs/helping_hands_rl_baselines/equi_rl/scripts
+    ```
+### Close-Loop 4D Benchmark
+```
+python main.py --algorithm=[algorithm] --env=[env]
+```
+- Select `[algorithm]` from: `sac`, `sacfd`, `equi_sac`, `equi_sacfd`, `ferm_sac`, `ferm_sacfd`, `rad_sac`, `rad_sacfd`, `drq_sac`, `drq_sacfd`
+- To use PER and data augmentation buffer, add `--buffer=per_expert_aug`
+### Close-Loop 3D Benchmark
+```
+python main.py --algorithm=[algorithm] --action_sequence=pxyz --random_orientation=f --env=[env]
+```
+- Select `[algorithm]` from: `sac`, `sacfd`, `equi_sac`, `equi_sacfd`, `ferm_sac`, `ferm_sacfd`, `rad_sac`, `rad_sacfd`, `drq_sac`, `drq_sacfd`
 
 <a name="publications"></a>
 ## Publications

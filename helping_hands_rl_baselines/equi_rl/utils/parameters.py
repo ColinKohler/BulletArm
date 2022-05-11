@@ -27,8 +27,9 @@ env_group.add_argument('--view_type', type=str, default='camera_center_xyz')
 env_group.add_argument('--obs_type', type=str, default='pixel')
 
 training_group = parser.add_argument_group('training')
-training_group.add_argument('--alg', default='sac')
-training_group.add_argument('--model', type=str, default='equi_both')
+training_group.add_argument('--algorithm', default='equi_sacfd', choices=['sac', 'sacfd', 'equi_sac', 'equi_sacfd',
+                                                                          'ferm_sac', 'ferm_sacfd', 'rad_sac', 'rad_sacfd',
+                                                                          'drq_sac', 'drq_sacfd'])
 training_group.add_argument('--lr', type=float, default=1e-3)
 training_group.add_argument('--actor_lr', type=float, default=None)
 training_group.add_argument('--critic_lr', type=float, default=None)
@@ -78,7 +79,7 @@ buffer_group.add_argument('--batch_size', type=int, default=64)
 buffer_group.add_argument('--buffer_size', type=int, default=100000)
 
 logging_group = parser.add_argument_group('logging')
-logging_group.add_argument('--log_pre', type=str, default='/tmp')
+logging_group.add_argument('--log_pre', type=str, default='output')
 logging_group.add_argument('--log_sub', type=str, default=None)
 logging_group.add_argument('--no_bar', action='store_true')
 logging_group.add_argument('--time_limit', type=float, default=10000)
@@ -116,8 +117,7 @@ else:
 
 ######################################################################################
 # training
-alg = args.alg
-model = args.model
+algorithm = args.algorithm
 lr = args.lr
 actor_lr = args.actor_lr
 critic_lr = args.critic_lr
@@ -187,6 +187,55 @@ if load_sub == 'None':
 
 dpos = args.dpos
 drot = np.pi/args.drot_n
+
+if algorithm == 'sac':
+  alg = 'sac'
+  model = 'cnn'
+elif algorithm == 'sacfd':
+  alg = 'sacfd'
+  model = 'cnn'
+
+elif algorithm == 'equi_sac':
+  alg = 'sac'
+  model = 'equi_both'
+elif algorithm == 'equi_sacfd':
+  alg = 'sacfd'
+  model = 'equi_both'
+
+elif algorithm == 'ferm_sac':
+  alg = 'curl_sac'
+  model = 'cnn'
+  heightmap_size = 142
+  heightmap_resolution = workspace_size / heightmap_size
+elif algorithm == 'ferm_sacfd':
+  alg = 'curl_sacfd'
+  model = 'cnn'
+  heightmap_size = 142
+  heightmap_resolution = workspace_size / heightmap_size
+
+elif algorithm == 'rad_sac':
+  alg = 'sac'
+  model = 'cnn'
+  heightmap_size = 142
+  heightmap_resolution = workspace_size / heightmap_size
+  aug = True
+  aug_type = 'crop'
+elif algorithm == 'rad_sacfd':
+  alg = 'curl_sacfd'
+  model = 'cnn'
+  heightmap_size = 142
+  heightmap_resolution = workspace_size / heightmap_size
+  aug = True
+  aug_type = 'crop'
+
+elif algorithm == 'drq_sac':
+  alg = 'drq_sac'
+  model = 'cnn'
+  aug_type = 'shift'
+elif algorithm == 'drq_sacfd':
+  alg = 'drq_sacfd'
+  model = 'cnn'
+  aug_type = 'shift'
 
 ######################################################################################
 env_config = {'workspace': workspace, 'max_steps': max_episode_steps, 'obs_size': heightmap_size,
