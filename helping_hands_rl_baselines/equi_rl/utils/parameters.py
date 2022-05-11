@@ -239,17 +239,10 @@ elif algorithm == 'drq_sacfd':
 
 ######################################################################################
 env_config = {'workspace': workspace, 'max_steps': max_episode_steps, 'obs_size': heightmap_size,
-              'fast_mode': True,  'action_sequence': action_sequence, 'render': render, 'num_objects': num_objects,
-              'random_orientation':random_orientation, 'robot': robot, 'workspace_check': 'point',
-              'object_scale_range': (1, 1), 'hard_reset_freq': 1000, 'physics_mode' : 'fast', 'view_type': view_type,
+              'action_sequence': action_sequence, 'render': render, 'num_objects': num_objects,
+              'random_orientation':random_orientation, 'robot': robot, 'view_type': view_type,
               'obs_type': obs_type, 'close_loop_tray': tray}
 planner_config = {'random_orientation':random_orientation, 'dpos': dpos, 'drot': drot}
-if env == 'close_loop_household_picking':
-    env_config['object_scale_range'] = (0.6, 0.6)
-elif env == 'close_loop_block_pulling':
-  env_config['object_scale_range'] = (0.8, 0.8)
-elif env == 'close_loop_block_picking_corner':
-  env_config['object_scale_range'] = (1.2, 1.2)
 if seed is not None:
     env_config['seed'] = seed
 ######################################################################################
