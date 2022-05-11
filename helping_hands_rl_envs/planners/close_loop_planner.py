@@ -7,8 +7,8 @@ from helping_hands_rl_envs.pybullet.utils import transformations
 class CloseLoopPlanner(BasePlanner):
   def __init__(self, env, config):
     super().__init__(env, config)
-    self.dpos = config['dpos'] if 'dpos' in config else 0.005
-    self.drot = config['drot'] if 'drot' in config else np.pi/16
+    self.dpos = config['dpos'] if 'dpos' in config else 0.05
+    self.drot = config['drot'] if 'drot' in config else np.pi / 4
 
   def getActionByGoalPose(self, goal_pos, goal_rot):
     current_pos = self.env.robot._getEndEffectorPosition()
