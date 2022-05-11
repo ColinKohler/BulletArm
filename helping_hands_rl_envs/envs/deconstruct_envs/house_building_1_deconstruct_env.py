@@ -8,7 +8,7 @@ class HouseBuilding1DeconstructEnv(DeconstructEnv):
     if 'object_scale_range' not in config:
       config['object_scale_range'] = [0.6, 0.6]
     if 'num_objects' not in config:
-      config['num_objects'] = 3
+      config['num_objects'] = 4
     if 'max_steps' not in config:
       config['max_steps'] = 10
     super(HouseBuilding1DeconstructEnv, self).__init__(config)
