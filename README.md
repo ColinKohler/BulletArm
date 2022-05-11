@@ -86,7 +86,7 @@ based simulator is included for quick prototyping.
 ## Parameters
 
 ## Benchmarks
-### Open Loop Benchmarks
+### Open-Loop Benchmarks
 #### Prerequisite
 1. Goto the baseline directory
     ```
@@ -108,14 +108,14 @@ python main.py --algorithm=[algorithm] --architecture=[architecture] --env=[env]
 ```
 - Select `[algorithm]` from: `sdqfd` (recommended), `dqfd`, `adet`, `dqn`
 - Select `[architecture]` from: `equi_asr` (recommended), `cnn_asr`, `equi_fcn`, `cnn_fcn`, `rot_fcn`
-
+- Add `--fill_buffer_deconstruct` to use deconstruction planner for gathering expert data.
 #### Open-Loop 2D Benchmark
 ```
 python main.py  --algorithm=[algorithm] --architecture=[architecture] --action_sequence=xyp --random_orientation=f --env=[env]
 ```
 - Select `[algorithm]` from: `sdqfd` (recommended), `dqfd`, `adet`, `dqn`
 - Select `[architecture]` from: `equi_fcn` (recommended), `cnn_fcn`
-
+- Add `--fill_buffer_deconstruct` to use deconstruction planner for gathering expert data.
 #### Open-Loop 6D Benchmark
 ```
 python main.py  --algorithm=[algorithm] --architecture=[architecture] --action_sequence=xyzrrrp --patch_size=[patch_size] --env=[env]
@@ -123,6 +123,9 @@ python main.py  --algorithm=[algorithm] --architecture=[architecture] --action_s
 - Select `[algorithm]` from: `sdqfd` (recommended), `dqfd`, `adet`, `dqn`
 - Select `[architecture]` from: `equi_deictic_asr` (recommended), `cnn_asr`
 - Set `[patch_size]` to be `40` (required for `bumpy_box_palletizing` environment) or `24`
+- Add `--fill_buffer_deconstruct` to use deconstruction planner for gathering expert data.
+
+
 
 
 <a name="publications"></a>

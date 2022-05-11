@@ -229,6 +229,8 @@ elif action_sequence == 'xyrp':
   elif architecture == 'rot_fcn':
     alg = '{}_fcn'
     model = 'resucat'
+    batch_size = 8
+    heightmap_size = 90
   else:
     raise NotImplementedError
 
