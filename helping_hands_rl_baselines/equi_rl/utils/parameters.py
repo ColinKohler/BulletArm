@@ -229,11 +229,11 @@ elif algorithm == 'rad_sacfd':
   aug_type = 'crop'
 
 elif algorithm == 'drq_sac':
-  alg = 'drq_sac'
+  alg = 'sac_drq'
   model = 'cnn'
   aug_type = 'shift'
 elif algorithm == 'drq_sacfd':
-  alg = 'drq_sacfd'
+  alg = 'sacfd_drq'
   model = 'cnn'
   aug_type = 'shift'
 
