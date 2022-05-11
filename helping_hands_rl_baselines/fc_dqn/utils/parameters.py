@@ -23,11 +23,10 @@ env_group.add_argument('--render', type=strToBool, default=False)
 env_group.add_argument('--workspace_size', type=float, default=0.4)
 env_group.add_argument('--heightmap_size', type=int, default=128)
 env_group.add_argument('--patch_size', type=int, default=24)
-env_group.add_argument('--in_hand_mode', type=str, default='raw', choices=['raw', 'proj'])
 
 training_group = parser.add_argument_group('training')
-training_group.add_argument('--alg', default='margin_asr')
-training_group.add_argument('--model', type=str, default='equ_resu_df_flip')
+training_group.add_argument('--algorithm', default='sdqfd')
+training_group.add_argument('--architecture', type=str, default='equi_asr')
 training_group.add_argument('--num_rotations', type=int, default=16)
 training_group.add_argument('--half_rotation', type=strToBool, default=True)
 training_group.add_argument('--lr', type=float, default=1e-4)
@@ -55,7 +54,6 @@ training_group.add_argument('--pre_train_step', type=int, default=0)
 training_group.add_argument('--num_zs', type=int, default=36)
 training_group.add_argument('--min_z', type=float, default=0.02)
 training_group.add_argument('--max_z', type=float, default=0.20)
-training_group.add_argument('--q2_model', type=str, default='equ_shift_df')
 training_group.add_argument('--equi_n', type=int, default=4)
 training_group.add_argument('--aug', type=strToBool, default=False)
 training_group.add_argument('--aug_type', type=str, choices=['se2', 'cn', 't', 'shift'], default='se2')
@@ -70,9 +68,8 @@ planner_group.add_argument('--planner_pos_noise', type=float, default=0)
 planner_group.add_argument('--planner_rot_noise', type=float, default=0)
 
 margin_group = parser.add_argument_group('margin')
-margin_group.add_argument('--margin', default='l', choices=['ce', 'bce', 'bcel', 'l', 'oril'])
 margin_group.add_argument('--margin_l', type=float, default=0.1)
-margin_group.add_argument('--margin_weight', type=float, default=0.1)
+margin_group.add_argument('--margin_weight', type=float, default=None)
 margin_group.add_argument('--margin_beta', type=float, default=100)
 
 buffer_group = parser.add_argument_group('buffer')
@@ -126,12 +123,15 @@ if half_rotation:
     rotations = [np.pi / num_rotations * i for i in range(num_rotations)]
 else:
     rotations = [(2 * np.pi) / num_rotations * i for i in range(num_rotations)]
-in_hand_mode = args.in_hand_mode
+if action_sequence == 'xyzrrrp':
+  in_hand_mode = 'proj'
+else:
+  in_hand_mode = 'raw'
 
 ######################################################################################
 # training
-alg = args.alg
-model = args.model
+algorithm = args.algorithm
+architecture = args.architecture
 lr = args.lr
 gamma = args.gamma
 explore = args.explore
@@ -150,8 +150,6 @@ planner_episode = args.planner_episode
 load_model_pre = args.load_model_pre
 note = args.note
 seed = args.seed
-
-q2_model = args.q2_model
 
 equi_n = args.equi_n
 
@@ -181,7 +179,6 @@ buffer_size = args.buffer_size
 fixed_buffer = args.fixed_buffer
 
 # margin
-margin = args.margin
 margin_l = args.margin_l
 margin_weight = args.margin_weight
 margin_beta = args.margin_beta
@@ -199,6 +196,78 @@ if load_sub == 'None':
 num_zs = args.num_zs
 min_z = args.min_z
 max_z = args.max_z
+
+# setting alg and model based on algorithm and architecture
+q2_model = 'cnn'
+if action_sequence == 'xyp':
+  # 2D Benchmark
+  if architecture == 'equi_fcn':
+    alg = '{}_fcn'
+    model = 'equ_resu_df_flip'
+  elif architecture == 'cnn_fcn':
+    alg = '{}_fcn'
+    model = 'resucat'
+  else:
+    raise NotImplementedError
+
+elif action_sequence == 'xyrp':
+  # 3D Benchmark
+  if architecture == 'equi_asr':
+    alg = '{}_asr'
+    model = 'equ_resu_df_flip'
+    q2_model = 'equ_shift_df'
+  elif architecture == 'cnn_asr':
+    alg = '{}_asr'
+    model = 'resucat'
+    q2_model = 'cnn'
+  elif architecture == 'equi_fcn':
+    alg = '{}_fcn_si'
+    model = 'equ_resu_df_nout'
+  elif architecture == 'cnn_fcn':
+    alg = '{}_fcn_si'
+    model = 'resucat'
+  elif architecture == 'rot_fcn':
+    alg = '{}_fcn'
+    model = 'resucat'
+  else:
+    raise NotImplementedError
+
+elif action_sequence == 'xyzrrrp':
+  # 6D Benchmark
+  if architecture == 'equi_deictic_asr':
+    alg = '{}_asr_5l_deictic35'
+    model = 'equ_resu_df_flip'
+    q2_model = 'equ_shift_df'
+  elif architecture == 'cnn_asr':
+    alg = '{}_asr_5l'
+    model = 'resucat'
+    q2_model = 'cnn'
+  else:
+    raise NotImplementedError
+
+else:
+  raise NotImplementedError
+
+
+if algorithm == 'dqn':
+  alg = alg.format('dqn')
+else:
+  alg = alg.format('margin')
+  if algorithm == 'sdqfd':
+    margin = 'l'
+    if margin_weight is None:
+      margin_weight = 0.1
+  elif algorithm == 'dqfd':
+    margin = 'oril'
+    if margin_weight is None:
+      margin_weight = 0.1
+  elif algorithm == 'adet':
+    margin = 'ce'
+    if margin_weight is None:
+      margin_weight = 0.01
+  else:
+    raise NotImplementedError
+
 
 ######################################################################################
 env_config = {'workspace': workspace, 'obs_size': heightmap_size, 'in_hand_size': patch_size,

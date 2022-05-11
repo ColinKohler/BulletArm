@@ -59,10 +59,12 @@ def createAgent(test=False):
         fcn = EquResUDFReg(1, fcn_out, domain_shape=(1, diag_length, diag_length), patch_shape=patch_shape, N=equi_n, flip=True, initialize=initialize).to(device)
     # equivariant fcn with dynamic filter
     elif model == 'equ_resu_df_nout':
-        fcn = EquResUDFRegNOut(1, num_primitives, domain_shape=(1, diag_length, diag_length), patch_shape=patch_shape, N=equi_n, n_middle_channels=(16, 32, 64, 128), kernel_size=3, quotient=False, last_quotient=True, initialize=initialize).to(device)
+        assert half_rotation
+        fcn = EquResUDFRegNOut(1, num_primitives, domain_shape=(1, diag_length, diag_length), patch_shape=patch_shape, N=num_rotations, n_middle_channels=(16, 32, 64, 128), kernel_size=3, quotient=False, last_quotient=True, initialize=initialize).to(device)
     # equivariant fcn with lift expansion
     elif model == 'equ_resu_exp_nout':
-        fcn = EquResUExpandRegNOut(1, num_primitives, domain_shape=(1, diag_length, diag_length), patch_shape=patch_shape, N=equi_n, n_middle_channels=(16, 32, 64, 128), kernel_size=3, quotient=False, last_quotient=True, initialize=initialize).to(device)
+        assert half_rotation
+        fcn = EquResUExpandRegNOut(1, num_primitives, domain_shape=(1, diag_length, diag_length), patch_shape=patch_shape, N=num_rotations, n_middle_channels=(16, 32, 64, 128), kernel_size=3, quotient=False, last_quotient=True, initialize=initialize).to(device)
 
     ###################################################################################
 
