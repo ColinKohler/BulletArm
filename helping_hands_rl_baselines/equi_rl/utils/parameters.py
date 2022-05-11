@@ -221,7 +221,7 @@ elif algorithm == 'rad_sac':
   aug = True
   aug_type = 'crop'
 elif algorithm == 'rad_sacfd':
-  alg = 'curl_sacfd'
+  alg = 'sacfd'
   model = 'cnn'
   heightmap_size = 142
   heightmap_resolution = workspace_size / heightmap_size
