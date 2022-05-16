@@ -1,31 +1,58 @@
 import numpy as np
 
 DEFAULT_CONFIG = {
+  # The type of robot to use in the simulator. Currently supports: kuka, panda, ur5, ur5_robotiq
   'robot' : 'kuka',
-  'pos_candidate' : None,
-  'perfect_grasp' : False,
-  'perfect_place' : False,
+  # Check object out of bound using the COM or the bounding box. Choices: 'point', 'box'
   'workspace_check' : 'point',
+  # The pixel size of the in-hand image
   'in_hand_size' : 24,
+  # The type of the in-hand image:
+  # 'raw': will use the raw crop
+  # 'sub': will adjust the in-hand image to remove background objects by subtracting the max of the new observation
+  #        after picking
+  # 'proj': will generate the 3-channel orthographic projection image
   'in_hand_mode' : 'raw',
-  'num_random_objects' : 0,
+  # Whether or not to initialize the objects with random orientation
   'random_orientation' : True,
-  'check_random_obj_valid' : False,
+  # The action space. Consists of the following substrings:
+  # p: the gripper motion;
+  # x, y, z: the position of the gripper;
+  # r: the rotation of the gripper;
+  # rrr: the 3-dimensional rotation of the gripper
+  # example: pxyr, pxyzrrr
   'action_sequence' : 'pxyr',
-  'simulate_grasp' : True,
+  # The workspace
   'workspace' : np.array([[0.25, 0.65], [-0.2, 0.2], [0, 1]]),
+  # The scale of the objects
   'object_scale_range': (0.60, 0.70),
+  # The maximal number of steps per episode
   'max_steps' : 10,
+  # The observation size in pixel
   'obs_size' : 128,
+  # If True, disable the physics simulation when the arm is moving from pre pose to home pose to speed up the simulation
   'fast_mode' : True,
+  # If True, render the GUI of pybullet
   'render' : False,
+  # The physics parameters
   'physics_mode' : 'fast',
+  # The reward type
   'reward_type' : 'sparse',
+  # The number of objects in the environment
   'num_objects' : 1,
+  # The type of object in the environment. Currently only valid for block stacking. Choices: cube, cylinder
   'object_type' : 'cube',
+  # The number of episodes to run a hard reset of pybullet
   'hard_reset_freq': 1000,
+  # The type of the observation. Choices: 'render_center', 'render_center_height', 'render_fix', 'camera_center_xyzr',
+  #                                       'camera_center_xyr', 'camera_center_xyz', 'camera_center_xy', 'camera_fix',
+  #                                       'camera_center_xyr_height', 'camera_center_xyz_height',
+  #                                       'camera_center_xy_height', 'camera_fix_height', 'camera_center_z',
+  #                                       'camera_center_z_height', 'pers_center_xyz'
   'view_type': 'camera_center_xyz',
+  # The minimal distance between objects in initialization
   'min_object_distance': None,
+  # The minimal distance to the workspace boarder in initialization
   'min_boarder_padding': None,
   # The random offset range for each object when generating the goal structure. This will help to reduce the domain gap
   # (because when constructing, the objects are aligned less perfectly), but will also decrease the optimality of the expert.
@@ -45,6 +72,20 @@ DEFAULT_CONFIG = {
   # The offset when adjusting gripper commands after gripper closes at an object. A bigger value increases the chance
   # for a grasp, but reduces the stability while holding it. Recommended value 0.01 or 0.001
   'kuka_adjust_gripper_offset': 0.01,
+
+  ## close-loop env parameters ##
   # whether to include a tray in close loop env
-  'close_loop_tray': False
+  'close_loop_tray': False,
+  # The ratio between the length covered in the observation to the size of the workspace
+  'view_scale': 1.5,
+  # The type of observation. Choices: 'pixel', 'vec'
+  'obs_type': 'pixel',
+
+  ## Deprecated parameters ##
+  'pos_candidate': None,
+  'perfect_grasp': False,
+  'perfect_place': False,
+  'num_random_objects': 0,
+  'check_random_obj_valid': False,
+  'simulate_grasp': True,
 }
