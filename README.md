@@ -122,7 +122,7 @@ python main.py  --algorithm=[algorithm] --architecture=[architecture] --action_s
 - Add `--fill_buffer_deconstruct` to use deconstruction planner for gathering expert data.
 
 #### Additional Training Arguments
-See [helping_hands_rl_baselines/fc_dqn/utils/parameters.py](helping_hands_rl_baselines/fc_dqn/utils/parameters.py)
+See [bulletarm_baselines/fc_dqn/utils/parameters.py](bulletarm_baselines/fc_dqn/utils/parameters.py)
 
 ### Close-Loop Benchmarks
 #### Prerequisite
@@ -149,7 +149,7 @@ python main.py --algorithm=[algorithm] --action_sequence=pxyz --random_orientati
 - Select `[algorithm]` from: `sac`, `sacfd`, `equi_sac`, `equi_sacfd`, `ferm_sac`, `ferm_sacfd`, `rad_sac`, `rad_sacfd`, `drq_sac`, `drq_sacfd`
 
 #### Additional Training Arguments
-See [helping_hands_rl_baselines/equi_rl/utils/parameters.py](helping_hands_rl_baselines/equi_rl/utils/parameters.py)
+See [bulletarm_baselines/equi_rl/utils/parameters.py](bulletarm_baselines/equi_rl/utils/parameters.py)
 
 <a name="publications"></a>
 ## Publications
