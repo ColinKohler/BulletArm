@@ -5,7 +5,7 @@ import numpy as np
 import torch
 import matplotlib.pyplot as plt
 
-from helping_hands_rl_envs import env_factory
+from bulletarm import env_factory
 
 class TestBulletHouse4(unittest.TestCase):
   env_config = {}

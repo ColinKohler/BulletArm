@@ -3,7 +3,7 @@ import time
 from tqdm import tqdm
 import numpy as np
 
-from helping_hands_rl_envs import env_factory
+from bulletarm import env_factory
 
 class TestBulletRampHouse1(unittest.TestCase):
   env_config = {'action_sequence': 'xyzrrrp', 'num_objects': 4}

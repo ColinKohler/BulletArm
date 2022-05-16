@@ -12,7 +12,7 @@ from data import data_utils
 from data import constants
 import utils
 
-from helping_hands_rl_envs import env_factory
+from bulletarm import env_factory
 
 @ray.remote
 class DataGenerator(object):

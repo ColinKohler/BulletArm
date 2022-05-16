@@ -1,5 +1,5 @@
 import torch
-from helping_hands_rl_envs import env_factory
+from bulletarm import env_factory
 
 class EnvWrapper:
     def __init__(self, num_processes, env, env_config, planner_config):

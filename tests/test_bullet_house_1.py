@@ -3,7 +3,7 @@ import time
 import numpy as np
 from tqdm import tqdm
 
-from helping_hands_rl_envs import env_factory
+from bulletarm import env_factory
 
 class TestBulletHouse1(unittest.TestCase):
   env_config = {'num_objects': 3, 'random_orientation': False}

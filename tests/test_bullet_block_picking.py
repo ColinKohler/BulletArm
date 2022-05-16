@@ -4,7 +4,7 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
-from helping_hands_rl_envs import env_factory
+from bulletarm import env_factory
 
 class TestBulletBlockPicking(unittest.TestCase):
   env_config = {'num_objects': 4}

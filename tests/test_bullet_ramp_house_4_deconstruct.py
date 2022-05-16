@@ -4,7 +4,7 @@ from tqdm import tqdm
 import numpy as np
 import torch
 
-from helping_hands_rl_envs import env_factory
+from bulletarm import env_factory
 
 class TestBulletRampHouseBuilding4Deconstruct(unittest.TestCase):
   env_config = {'action_sequence': 'xyzrrrp'}

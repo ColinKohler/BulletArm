@@ -3,7 +3,7 @@ import time
 import numpy as np
 import torch
 
-from helping_hands_rl_envs import env_factory
+from bulletarm import env_factory
 
 class TestBulletHouse2(unittest.TestCase):
   env_config = {'random_orientation': False}

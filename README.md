@@ -34,7 +34,7 @@ based simulator is included for quick prototyping.
     ```
 5. Run the block stacking demo
     ```python
-    from helping_hands_rl_envs import env_factory
+    from bulletarm import env_factory
     # environment parameters
     env_config = {'render': True}
     # create 1 block_stacking environment

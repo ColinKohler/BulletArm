@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 import matplotlib.pyplot as plt
 
-from helping_hands_rl_envs import env_factory
+from bulletarm import env_factory
 
 class TestBulletCloseLoopBlockInBowl(unittest.TestCase):
   env_config = {}

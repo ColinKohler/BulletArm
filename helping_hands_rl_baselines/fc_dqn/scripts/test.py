@@ -15,7 +15,7 @@ from mpl_toolkits.axes_grid1 import AxesGrid
 from helping_hands_rl_baselines.fc_dqn.scripts.create_agent import createAgent
 from helping_hands_rl_baselines.fc_dqn.utils.parameters import *
 from helping_hands_rl_baselines.fc_dqn.storage.buffer import QLearningBufferExpert, QLearningBuffer
-from helping_hands_rl_envs import env_factory
+from bulletarm import env_factory
 from helping_hands_rl_baselines.fc_dqn.utils.logger import Logger
 from helping_hands_rl_baselines.fc_dqn.utils.schedules import LinearSchedule
 from helping_hands_rl_baselines.fc_dqn.utils.torch_utils import rand_perlin_2d
