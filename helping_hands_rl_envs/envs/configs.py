@@ -7,7 +7,7 @@ DEFAULT_CONFIG = {
   'perfect_place' : False,
   'workspace_check' : 'point',
   'in_hand_size' : 24,
-  'in_hand_mode' : 'sub',
+  'in_hand_mode' : 'raw',
   'num_random_objects' : 0,
   'random_orientation' : True,
   'check_random_obj_valid' : False,
