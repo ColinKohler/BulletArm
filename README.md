@@ -1,10 +1,8 @@
 # BulletArm
 - [License](https://github.com/ColinKohler/BulletArm/blob/main/LICENSE)
 
-This package contains various simulated robotics environments used for research in the [Helping Hands](https://www2.ccs.neu.edu/research/helpinghands/) lab.
-The majority of these environments entail a robotic arm armed with a paralel jaw gripper executing a series of manipulation based tasks. For a full list of 
-the tasks currently implemented see below. The core simulator used for most tasks is [PyBullet](https://github.com/bulletphysics/bullet3) but a simple numpy
-based simulator is included for quick prototyping. 
+**BulletArm** is a benchmark and learning-environment for robotic manipulation. BulletArm provides a set of standardized 
+benchmark tasks in simulation alongside a collection of baseline algorithms. Please see our paper [here]().
 
 ## Table of Contents
 1. [Requirments](#requirments)
@@ -80,6 +78,8 @@ based simulator is included for quick prototyping.
 - **bumpy_box_palletizing**: (i) Finish box_palletizing in the workspace with a bumpy surface
 
 ### Close-Loop Environments
+<img src="/img/close_envs.png" width="640">
+
 - **close_loop_block_reaching**: The robot needs to place the gripper close to a cubic block.
 - **close_loop_block_picking**: The robot needs to pick up a cubic block.
 - **close_loop_block_pushing**: The robot needs to push the block into a goal area.
