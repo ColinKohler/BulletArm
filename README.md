@@ -7,11 +7,11 @@ the tasks currently implemented see below. The core simulator used for most task
 based simulator is included for quick prototyping. 
 
 ## Table of Contents
-1. [Requirments](#requirements)
+1. [Requirments](#requirments)
 2. [Installation](#install)
 3. [Environments](#envs)
 4. [Parameters](#parameters)
-1. [Benchmarks](#Benchmarks)
+1. [Benchmarks](#benchmarks)
 5. [Publications](#publications)
 
 <a name="requirments"></a>
@@ -47,10 +47,11 @@ based simulator is included for quick prototyping.
         input('press enter to continue')
     env.close()
     ```
-
+<a name="envs"></a>
 ## Environments
 ### Open-Loop Environments
-![The Open-Loop Environments](/img/open_envs.png)
+<img src="/img/open_envs.png" width="640">
+
 - **block_picking**: The robot needs to pick up all N cubic blocks. The number of blocks N in this environments is configurable. 
 - **block_stacking**: (a) The robot needs to stack all N cubic blocks. The number of blocks N in this environments is configurable. 
 - **house_building_1**: (b) The robot needs to first stack N-1 cubic blocks then place a triangle block on top of the stack. The number of blocks N in this environments is configurable. 
@@ -66,7 +67,8 @@ based simulator is included for quick prototyping.
 - **object_grasping**: (l) The robot needs to pick up an object in a cluttered scene containing N random objects. The number of objects N in this environment is configurable.
 
 ### Open-Loop 6D Environments
-![The Open-Loop 6D Environments](/img/open_6d_envs.png)
+<img src="/img/open_6d_envs.png" width="480">
+
 - **ramp_block_stacking**: (a) Finish block_stacking in the workspace with two ramps
 - **ramp_house_building_1**: (b) Finish house_building_1 in the workspace with two ramps
 - **ramp_house_building_2**: (c) Finish house_building_2 in the workspace with two ramps
@@ -92,6 +94,7 @@ based simulator is included for quick prototyping.
 <a name="parameters"></a>
 ## Parameters
 
+<a name="benchmarks"></a>
 ## Benchmarks
 ### Open-Loop Benchmarks
 #### Prerequisite
