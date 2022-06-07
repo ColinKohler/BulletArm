@@ -22,9 +22,9 @@ The package is structured into two subpackages:
 * :doc:`bulletarm <api/bulletarm>` contains the PyBullet environments, tasks, and robots.
 * :doc:`bulletarm_baselines <api/bulletarm_baselines>` implements several baseline algorithms alongside logging and plotting tools.
 
-To get started, we provide a number of `tutorials <https://github.com/ColinKohler/BulletArm>`_ including an 
-`introcutory tutorial <https://github.com/ColinKohler/BulletArm>`_ demonstrating how to run existing task and 
-more advanced `tutorial <https://github.com/ColinKohler/BulletArm>`_ how to create a new task.
+To get started, we provide a number of `tutorials <https://github.com/ColinKohler/BulletArm/tutorials>`_ including an 
+`introcutory tutorial <https://github.com/ColinKohler/BulletArm/blob/main/tutorials/run_task.py>`_ demonstrating how to run existing task and 
+more advanced `tutorial <https://github.com/ColinKohler/BulletArm/blob/main/tutorials/new_task.py>`_ how to create a new task.
 
 Cite Us
 ============================================
