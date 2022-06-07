@@ -1,1152 +1,112 @@
-
 <!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>HelpingHands RL Envs &#8212; HelpingHandsEnvs 0.0.1 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
-    
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
-    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BulletArm Documentation &mdash; BulletArm 1.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">HelpingHandsEnvs 0.0.1 documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">HelpingHands RL Envs</a></li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <section id="helpinghands-rl-envs">
-<h1>HelpingHands RL Envs<a class="headerlink" href="#helpinghands-rl-envs" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="#" class="icon icon-home"> BulletArm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
 </div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">BulletArm Documentation</a></li>
+<li><a class="reference internal" href="#package-reference">Package Reference</a></li>
+<li><a class="reference internal" href="#cite-us">Cite Us</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">BulletArm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+      <li>BulletArm Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+              <!-- User defined GitHub URL -->
+              <a href="https://github.com/ColinKohler/BulletArm" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="bulletarm-documentation">
+<h1>BulletArm Documentation<a class="headerlink" href="#bulletarm-documentation" title="Permalink to this heading"></a></h1>
+<p><strong>BulletArm</strong> is a PyBullet based package for robotics maipulation research.</p>
 <p>This package contains various simulated robotics environments used for research in the
 Helping Hands lab. The majority of these environments entail a robotic arm armed with a
-paralel jaw gripper executing a series of manipulation based tasks. For a full list of
-the tasks currently implemented see below. The physics simulator used is PyBullet.</p>
+paralel jaw gripper executing a series of manipulation based tasks.</p>
 </section>
-<section id="initialization-and-running">
-<h1>Initialization and Running<a class="headerlink" href="#initialization-and-running" title="Permalink to this headline">¶</a></h1>
-<p>Creating a environment instance is done through the use of the env_factory. Depending
-on the number of environments you wish to run in parallel, either a SingleRunner or a
-MultiRunner will be returned which you can interact with.</p>
-<section id="module-helping_hands_rl_envs.env_factory">
-<span id="env-factory"></span><h2>Env Factory<a class="headerlink" href="#module-helping_hands_rl_envs.env_factory" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.env_factory.createEnvs">
-<span class="sig-prename descclassname"><span class="pre">helping_hands_rl_envs.env_factory.</span></span><span class="sig-name descname"><span class="pre">createEnvs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_processes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planner_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/env_factory.html#createEnvs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.env_factory.createEnvs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wrapper function to create either a single env the the main process or some
-number of envs each in their own seperate process.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>num_processes</strong> (<em>int</em>) – Number of envs to create</p></li>
-<li><p><strong>env_type</strong> (<em>str</em>) – The type of environment to create</p></li>
-<li><p><strong>env_config</strong> (<em>dict</em>) – Intialization arguments for the env</p></li>
-<li><p><strong>planner_config</strong> (<em>dict</em>) – Intialization arguments for the planner</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>SingleRunner or MultiRunner containing the environment</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>EnvRunner</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.env_factory.createMultiprocessEnvs">
-<span class="sig-prename descclassname"><span class="pre">helping_hands_rl_envs.env_factory.</span></span><span class="sig-name descname"><span class="pre">createMultiprocessEnvs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_processes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planner_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/env_factory.html#createMultiprocessEnvs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.env_factory.createMultiprocessEnvs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a number of environments on different processes to run in parralel</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>num_processes</strong> (<em>int</em>) – Number of envs to create</p></li>
-<li><p><strong>env_type</strong> (<em>str</em>) – The type of environment to create</p></li>
-<li><p><strong>env_config</strong> (<em>dict</em>) – Intialization arguments for the env</p></li>
-<li><p><strong>planner_config</strong> (<em>dict</em>) – Intialization arguments for the planner</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>MultiRunner containing all environments</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#helping_hands_rl_envs.runner.MultiRunner" title="helping_hands_rl_envs.runner.MultiRunner">MultiRunner</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.env_factory.createSingleProcessEnv">
-<span class="sig-prename descclassname"><span class="pre">helping_hands_rl_envs.env_factory.</span></span><span class="sig-name descname"><span class="pre">createSingleProcessEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planner_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/env_factory.html#createSingleProcessEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.env_factory.createSingleProcessEnv" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a single environment</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>env_type</strong> (<em>str</em>) – The type of environment to create</p></li>
-<li><p><strong>env_config</strong> (<em>dict</em>) – Intialization arguments for the env</p></li>
-<li><p><strong>planner_config</strong> (<em>dict</em>) – Intialization arguments for the planner</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>SingleRunner containing the environment</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#helping_hands_rl_envs.runner.SingleRunner" title="helping_hands_rl_envs.runner.SingleRunner">SingleRunner</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.env_factory.getEnvFn">
-<span class="sig-prename descclassname"><span class="pre">helping_hands_rl_envs.env_factory.</span></span><span class="sig-name descname"><span class="pre">getEnvFn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/env_factory.html#getEnvFn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.env_factory.getEnvFn" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the env creation function of the given type.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>env_type</strong> (<em>str</em>) – The type of environment to create</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A function which creates the env when run</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>function</p>
-</dd>
-</dl>
-</dd></dl>
-
-</section>
-<section id="single-env-runner">
-<h2>Single Env Runner<a class="headerlink" href="#single-env-runner" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helping_hands_rl_envs.runner.</span></span><span class="sig-name descname"><span class="pre">SingleRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner" title="Permalink to this definition">¶</a></dt>
-<dd><p>RL environment runner which runs a single environment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>env</strong> (<a class="reference internal" href="#helping_hands_rl_envs.envs.base_env.BaseEnv" title="helping_hands_rl_envs.envs.base_env.BaseEnv"><em>BaseEnv</em></a>) – Environment</p></li>
-<li><p><strong>planner</strong> (<em>BasePlanner</em>) – Planner</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.areObjectsInWorkspace">
-<span class="sig-name descname"><span class="pre">areObjectsInWorkspace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.areObjectsInWorkspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.areObjectsInWorkspace" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.didBlockFall">
-<span class="sig-name descname"><span class="pre">didBlockFall</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.didBlockFall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.didBlockFall" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.getActiveEnvId">
-<span class="sig-name descname"><span class="pre">getActiveEnvId</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.getActiveEnvId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.getActiveEnvId" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.getEmptyInHand">
-<span class="sig-name descname"><span class="pre">getEmptyInHand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.getEmptyInHand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.getEmptyInHand" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.getNextAction">
-<span class="sig-name descname"><span class="pre">getNextAction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.getNextAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.getNextAction" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.getObjectPoses">
-<span class="sig-name descname"><span class="pre">getObjectPoses</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.getObjectPoses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.getObjectPoses" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.getObjectPositions">
-<span class="sig-name descname"><span class="pre">getObjectPositions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.getObjectPositions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.getObjectPositions" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.getObs">
-<span class="sig-name descname"><span class="pre">getObs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.getObs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.getObs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.getRandomAction">
-<span class="sig-name descname"><span class="pre">getRandomAction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.getRandomAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.getRandomAction" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.getStepsLeft">
-<span class="sig-name descname"><span class="pre">getStepsLeft</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.getStepsLeft"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.getStepsLeft" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.getValue">
-<span class="sig-name descname"><span class="pre">getValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.getValue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.getValue" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.isSimValid">
-<span class="sig-name descname"><span class="pre">isSimValid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.isSimValid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.isSimValid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.loadFromFile">
-<span class="sig-name descname"><span class="pre">loadFromFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.loadFromFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.loadFromFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads the state of the environment from a file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – The path to the environment state to load</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Flag indicating if the loading succeeded</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.reset">
-<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.reset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reset the environment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Observation</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>numpy.array</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.restore">
-<span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.restore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.restore" title="Permalink to this definition">¶</a></dt>
-<dd><p>Restores the locally saved state of the environment.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Locally saves the current state of the environment.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.saveToFile">
-<span class="sig-name descname"><span class="pre">saveToFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.saveToFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.saveToFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Saves the current state of the environment to file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – The path to save the enviornment state to</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.setPosCandidate">
-<span class="sig-name descname"><span class="pre">setPosCandidate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_candidate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.setPosCandidate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.setPosCandidate" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.SingleRunner.step">
-<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#SingleRunner.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.SingleRunner.step" title="Permalink to this definition">¶</a></dt>
-<dd><p>Step the environment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>action</strong> (<em>numpy.array</em>) – Action to take in the environment</p></li>
-<li><p><strong>auto_reset</strong> (<em>bool</em>) – Reset the environment after an episode ends</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>(observations, rewards, done flags)</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(numpy.array, numpy.array, numpy.array)</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-</section>
-<section id="multi-env-runner">
-<h2>Multi Env Runner<a class="headerlink" href="#multi-env-runner" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helping_hands_rl_envs.runner.</span></span><span class="sig-name descname"><span class="pre">MultiRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_fns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planner_fns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner" title="Permalink to this definition">¶</a></dt>
-<dd><p>Runner which runs mulitple environemnts in parallel in subprocesses and communicates with them via pipe.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>env_fns</strong> (<em>list</em><em>[</em><em>function</em><em>]</em>) – Env creation functions</p></li>
-<li><p><strong>planner_fns</strong> (<em>list</em><em>[</em><em>function</em><em>]</em>) – Planner creation functions</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.areObjectsInWorkspace">
-<span class="sig-name descname"><span class="pre">areObjectsInWorkspace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.areObjectsInWorkspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.areObjectsInWorkspace" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.close">
-<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.close" title="Permalink to this definition">¶</a></dt>
-<dd><p>Close all worker processes.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.didBlockFall">
-<span class="sig-name descname"><span class="pre">didBlockFall</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.didBlockFall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.didBlockFall" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getActiveEnvId">
-<span class="sig-name descname"><span class="pre">getActiveEnvId</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getActiveEnvId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getActiveEnvId" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getEmptyInHand">
-<span class="sig-name descname"><span class="pre">getEmptyInHand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getEmptyInHand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getEmptyInHand" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getEnvGitHash">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">getEnvGitHash</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getEnvGitHash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getEnvGitHash" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getNextAction">
-<span class="sig-name descname"><span class="pre">getNextAction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getNextAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getNextAction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the next action from the planner for each environment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Actions</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>numpy.array</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getObjectPoses">
-<span class="sig-name descname"><span class="pre">getObjectPoses</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getObjectPoses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getObjectPoses" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getObjectPositions">
-<span class="sig-name descname"><span class="pre">getObjectPositions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getObjectPositions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getObjectPositions" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getObs">
-<span class="sig-name descname"><span class="pre">getObs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getObs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getObs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the current observation for the environments.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>(hand state, in-hand observation, workspace observation)</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>(numpy.array, numpy.array, numpy.array)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getRandomAction">
-<span class="sig-name descname"><span class="pre">getRandomAction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getRandomAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getRandomAction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a random action for each environment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Actions</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>numpy.array</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getStepsLeft">
-<span class="sig-name descname"><span class="pre">getStepsLeft</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getStepsLeft"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getStepsLeft" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.getValue">
-<span class="sig-name descname"><span class="pre">getValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.getValue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.getValue" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.isSimValid">
-<span class="sig-name descname"><span class="pre">isSimValid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.isSimValid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.isSimValid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.loadFromFile">
-<span class="sig-name descname"><span class="pre">loadFromFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.loadFromFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.loadFromFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads the state of the environments from a file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – The path to the environment states to load</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Flag indicating if the loading succeeded for all environments</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.reset">
-<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.reset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reset each environment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Observations</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>numpy.array</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.reset_envs">
-<span class="sig-name descname"><span class="pre">reset_envs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_nums</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.reset_envs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.reset_envs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Resets the specified environments.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>env_nums</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – The environments to be reset</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Observations</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>numpy.array</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.restore">
-<span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.restore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.restore" title="Permalink to this definition">¶</a></dt>
-<dd><p>Restores the locally saved state of the environments.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Locally saves the current state of the environments.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.saveToFile">
-<span class="sig-name descname"><span class="pre">saveToFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.saveToFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.saveToFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Saves the current state of the environments to file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – The path to save the enviornment states to</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.setPosCandidate">
-<span class="sig-name descname"><span class="pre">setPosCandidate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_candidate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.setPosCandidate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.setPosCandidate" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.step">
-<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.step" title="Permalink to this definition">¶</a></dt>
-<dd><p>Step the environments synchronously.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>actions</strong> (<em>numpy.array</em>) – Actions to take in each environment</p></li>
-<li><p><strong>auto_reset</strong> (<em>bool</em>) – Reset environments automatically after an episode ends</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>(observations, rewards, done flags)</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(numpy.array, numpy.array, numpy.array)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.stepAsync">
-<span class="sig-name descname"><span class="pre">stepAsync</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.stepAsync"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.stepAsync" title="Permalink to this definition">¶</a></dt>
-<dd><p>Step each environment in a async fashion.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>actions</strong> (<em>numpy.array</em>) – Actions to take in each environment</p></li>
-<li><p><strong>auto_reset</strong> (<em>bool</em>) – Reset environments automatically after an episode ends</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.runner.MultiRunner.stepWait">
-<span class="sig-name descname"><span class="pre">stepWait</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/runner.html#MultiRunner.stepWait"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.runner.MultiRunner.stepWait" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wait until each environment has completed its next step.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>(observations, rewards, done flags)</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>(numpy.array, numpy.array, numpy.array)</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-</section>
-</section>
-<section id="environments">
-<h1>Environments<a class="headerlink" href="#environments" title="Permalink to this headline">¶</a></h1>
-<p>A number of different environments are aleady implemented and can found in the list
-below. To create your own environment, subclass the base environment and add the new
-environment to the list of avaliable environments in the env_fn file.</p>
-<section id="envs">
-<h2>Envs<a class="headerlink" href="#envs" title="Permalink to this headline">¶</a></h2>
+<section id="package-reference">
+<h1>Package Reference<a class="headerlink" href="#package-reference" title="Permalink to this heading"></a></h1>
+<p>The package is structured into two subpackages:</p>
 <ul class="simple">
-<li><p>Env 1</p></li>
-<li><p>Env 2</p></li>
-<li><p>…</p></li>
+<li><p><a class="reference internal" href="api/bulletarm.html"><span class="doc">bulletarm</span></a> contains the PyBullet environments, tasks, and robots.</p></li>
+<li><p><a class="reference internal" href="api/bulletarm_baselines.html"><span class="doc">bulletarm_baselines</span></a> implements several baseline algorithms alongside logging and plotting tools.</p></li>
 </ul>
+<p>To get started, we provide a number of <a class="reference external" href="https://github.com/ColinKohler/BulletArm">tutorials</a> including an
+<a class="reference external" href="https://github.com/ColinKohler/BulletArm">introcutory tutorial</a> demonstrating how to run existing task and
+more advanced <a class="reference external" href="https://github.com/ColinKohler/BulletArm">tutorial</a> how to create a new task.</p>
 </section>
-<section id="module-helping_hands_rl_envs.envs.base_env">
-<span id="base-env"></span><h2>Base Env<a class="headerlink" href="#module-helping_hands_rl_envs.envs.base_env" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.base_env.BaseEnv">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helping_hands_rl_envs.envs.base_env.</span></span><span class="sig-name descname"><span class="pre">BaseEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/base_env.html#BaseEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.base_env.BaseEnv" title="Permalink to this definition">¶</a></dt>
-<dd><p>Base Env Class.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>config</strong> – Config used to specify various environment details</p>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.base_env.BaseEnv.initialize">
-<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/base_env.html#BaseEnv.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.base_env.BaseEnv.initialize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize the pybullet world.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.base_env.BaseEnv.reset">
-<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/base_env.html#BaseEnv.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.base_env.BaseEnv.reset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reset the environment.</p>
-<p>Returns: Numpy vector of the observation</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.base_env.BaseEnv.resetPybulletWorkspace">
-<span class="sig-name descname"><span class="pre">resetPybulletWorkspace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/base_env.html#BaseEnv.resetPybulletWorkspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.base_env.BaseEnv.resetPybulletWorkspace" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reset the PyBullet world to just contain the robot.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.envs.base_env.BaseEnv.step">
-<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/envs/base_env.html#BaseEnv.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.envs.base_env.BaseEnv.step" title="Permalink to this definition">¶</a></dt>
-<dd><p>Take an action in the enviornment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>action</strong> (<em>-</em>) – Int indicating the action to take</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>Returns: (obs, reward, done)</dt><dd><ul class="simple">
-<li><p>obs: Numpy vector of the observation</p></li>
-<li><p>reward: Double of the reward given</p></li>
-<li><p>done: Bool flag indicating if the episode is done</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-</section>
-</section>
-<section id="pybullet-simulator">
-<h1>PyBullet Simulator<a class="headerlink" href="#pybullet-simulator" title="Permalink to this headline">¶</a></h1>
-<p>The physics simulator used for our domains is PyBullet. We include a number of robotic
-manipulators for use. There are also numerous objects and environment details which can
-be loaded into any enviornment.</p>
-<section id="robots">
-<h2>Robots<a class="headerlink" href="#robots" title="Permalink to this headline">¶</a></h2>
-<p>The currently avaliable robots are:</p>
-<ul class="simple">
-<li><p>Kuka</p></li>
-<li><p>Floating Kuka Gripper</p></li>
-<li><p>UR5 w/Prismatic Gripper</p></li>
-<li><p>UR5 w/Robotiq 85-2f Gripper</p></li>
-</ul>
-<p>Additional robots can be added by sub-classing the Robot Base class detailed below. Note:
-Robot base contains a number of abstract functions which are specific to the robot being used
-and therefor must be implemetned on any new robots.</p>
-</section>
-<section id="module-helping_hands_rl_envs.pybullet.robots.robot_base">
-<span id="robot-base"></span><h2>Robot Base<a class="headerlink" href="#module-helping_hands_rl_envs.pybullet.robots.robot_base" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helping_hands_rl_envs.pybullet.robots.robot_base.</span></span><span class="sig-name descname"><span class="pre">RobotBase</span></span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Base Robot Class.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.getEndToHoldingObj">
-<span class="sig-name descname"><span class="pre">getEndToHoldingObj</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.getEndToHoldingObj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.getEndToHoldingObj" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the transfomration from the end effector to the object currently beinging held.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Transformation matrix</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>numpy.array</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.getPickedObj">
-<span class="sig-name descname"><span class="pre">getPickedObj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">objects</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.getPickedObj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.getPickedObj" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object which is currently being held by the gripper.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>objects</strong> (<em>numpy.array</em>) – Objects to check if are being held.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Object being held.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(pybullet.objects.PybulletObject)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.moveTo">
-<span class="sig-name descname"><span class="pre">moveTo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_th</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rot_th</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.moveTo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.moveTo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Move the end-effector to the given pose.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pos</strong> (<em>numpy.array</em>) – Desired end-effector position.</p></li>
-<li><p><strong>rot</strong> (<em>numpy.array</em>) – Desired end-effector orientation.</p></li>
-<li><p><strong>dynamic</strong> (<em>bool</em>) – Simualte arm dynamics when moving the arm. Defaults to True.</p></li>
-<li><p><strong>pos_th</strong> (<em>float</em>) – Positional threshold for ending the movement. Defaults to 1e-3.</p></li>
-<li><p><strong>rot_th</strong> (<em>float</em>) – Rotational threshold for ending the movement. Defaults to 1e-3.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.moveToJ">
-<span class="sig-name descname"><span class="pre">moveToJ</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">joint_pose</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.moveToJ"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.moveToJ" title="Permalink to this definition">¶</a></dt>
-<dd><p>Move the desired joint positions</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>joint_pose</strong> (<em>numpy.array</em>) – Joint positions for each joint in the manipulator.</p></li>
-<li><p><strong>dynamic</strong> (<em>bool</em>) – Simualte arm dynamics when moving the arm. Defaults to True.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.pick">
-<span class="sig-name descname"><span class="pre">pick</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulate_grasp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_down_approach</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.pick"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.pick" title="Permalink to this definition">¶</a></dt>
-<dd><p>Execute a pick action at the given pose.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pos</strong> (<em>numpy.array</em>) – Desired end effector position.</p></li>
-<li><p><strong>rot</strong> (<em>numpy.array</em>) – Desired end effector orientation.</p></li>
-<li><p><strong>offset</strong> (<em>float</em>) – Grasp offset along the approach axis of the grasp.</p></li>
-<li><p><strong>dynamic</strong> (<em>bool</em>) – Simualte arm dynamics when moving the arm. Defaults to True.</p></li>
-<li><p><strong>objects</strong> (<em>numpy.array</em>) – List of objects which can be picked up. Defaults to None.</p></li>
-<li><p><strong>simulate_grasp</strong> (<em>bool</em>) – Simulate the grasping action. Defaults to True. If set to False, object
-will be grasped if it is within a small distance from the gripper.</p></li>
-<li><p><strong>top_down_approach</strong> (<em>bool</em>) – Force a top-down grasp action. Defaults to False. If set to True,
-approach vector will be set to top-down.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.place">
-<span class="sig-name descname"><span class="pre">place</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulate_place</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_down_approach</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.place"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.place" title="Permalink to this definition">¶</a></dt>
-<dd><p>Execute a place action at the given pose.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pos</strong> (<em>numpy.array</em>) – Desired end effector position.</p></li>
-<li><p><strong>rot</strong> (<em>numpy.array</em>) – Desired end effector orientation.</p></li>
-<li><p><strong>offset</strong> (<em>float</em>) – Place offset along the approach axis of the grasp.</p></li>
-<li><p><strong>dynamic</strong> (<em>bool</em>) – Simualte arm dynamics when moving the arm. Defaults to True.</p></li>
-<li><p><strong>simulate_place</strong> (<em>bool</em>) – Simulate the placing action. Defaults to True. If set to False, object
-will be grasped if it is within a small distance from the gripper.</p></li>
-<li><p><strong>top_down_approach</strong> (<em>bool</em>) – Force a top-down grasp action. Defaults to False. If set to True,
-approach vector will be set to top-down.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.plotEndEffectorFrame">
-<span class="sig-name descname"><span class="pre">plotEndEffectorFrame</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.plotEndEffectorFrame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.plotEndEffectorFrame" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot the end effector’s frame in the PyBullet GUI.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>()</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.pull">
-<span class="sig-name descname"><span class="pre">pull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.pull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.pull" title="Permalink to this definition">¶</a></dt>
-<dd><p>Execute a pull action at the given pose.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pos</strong> (<em>numpy.array</em>) – Desired end effector position.</p></li>
-<li><p><strong>rot</strong> (<em>numpy.array</em>) – Desired end effector orientation.</p></li>
-<li><p><strong>offset</strong> (<em>float</em>) – Pull offset along the approach axis of the pull.</p></li>
-<li><p><strong>dynamic</strong> (<em>bool</em>) – Simualte arm dynamics when moving the arm. Defaults to True.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.push">
-<span class="sig-name descname"><span class="pre">push</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.push"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.push" title="Permalink to this definition">¶</a></dt>
-<dd><p>Execute a push action at the given pose.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pos</strong> (<em>numpy.array</em>) – Desired end effector position.</p></li>
-<li><p><strong>rot</strong> (<em>numpy.array</em>) – Desired end effector orientation.</p></li>
-<li><p><strong>offset</strong> (<em>float</em>) – Push offset along the approach axis of the push.</p></li>
-<li><p><strong>dynamic</strong> (<em>bool</em>) – Simualte arm dynamics when moving the arm. Defaults to True.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.restoreState">
-<span class="sig-name descname"><span class="pre">restoreState</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.restoreState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.restoreState" title="Permalink to this definition">¶</a></dt>
-<dd><p>Restores the robot to the previously saved state.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.roundPull">
-<span class="sig-name descname"><span class="pre">roundPull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.roundPull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.roundPull" title="Permalink to this definition">¶</a></dt>
-<dd><p>Execute a pull action at the given pose. In a circular motion.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pos</strong> (<em>numpy.array</em>) – Desired end effector position.</p></li>
-<li><p><strong>rot</strong> (<em>numpy.array</em>) – Desired end effector orientation.</p></li>
-<li><p><strong>offset</strong> (<em>float</em>) – Pull offset along the approach axis of the pull.</p></li>
-<li><p><strong>radius</strong> (<em>float</em>) – Radius for the circle in the circular pulling motion.</p></li>
-<li><p><strong>left</strong> (<em>bool</em>) – Rotate round pull action from the left. Defaults to True.</p></li>
-<li><p><strong>dynamic</strong> (<em>bool</em>) – Simualte arm dynamics when moving the arm. Defaults to True.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.saveState">
-<span class="sig-name descname"><span class="pre">saveState</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/robots/robot_base.html#RobotBase.saveState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.robots.robot_base.RobotBase.saveState" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the robot state. The state consists of the object that is being held and
-if the gripper is closed.</p>
-</dd></dl>
-
-</dd></dl>
-
-</section>
-<section id="objects">
-<h2>Objects<a class="headerlink" href="#objects" title="Permalink to this headline">¶</a></h2>
-<p>The currently avaliable objects are:</p>
-<ul class="simple">
-<li><p>Bottle</p></li>
-<li><p>Bowl</p></li>
-<li><p>Box</p></li>
-<li><p>Brick</p></li>
-<li><p>Cube</p></li>
-<li><p>Cup</p></li>
-<li><p>Cylinder</p></li>
-<li><p>Flat Block</p></li>
-<li><p>Pallet</p></li>
-<li><p>Plate</p></li>
-<li><p>Roof</p></li>
-<li><p>Spoon</p></li>
-<li><p>Swab</p></li>
-<li><p>Teapot Base</p></li>
-<li><p>Teapot Lid</p></li>
-<li><p>Test Tube</p></li>
-<li><p>Triangle</p></li>
-</ul>
-<p>Additional objects can be added by sub-classing the object base class detailed below. The urdf
-for the new object must be added to the urdf directory as well.</p>
-</section>
-<section id="module-helping_hands_rl_envs.pybullet.objects.pybullet_object">
-<span id="object-base"></span><h2>Object Base<a class="headerlink" href="#module-helping_hands_rl_envs.pybullet.objects.pybullet_object" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helping_hands_rl_envs.pybullet.objects.pybullet_object.</span></span><span class="sig-name descname"><span class="pre">PybulletObject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_type_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject" title="Permalink to this definition">¶</a></dt>
-<dd><p>Base obejct class.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>object_type_id</strong> (<em>int</em>) – The id for the object type being loaded. See cosntants.py.</p></li>
-<li><p><strong>object_id</strong> (<em>int</em>) – The object id.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getBoundingBox">
-<span class="sig-name descname"><span class="pre">getBoundingBox</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getBoundingBox"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getBoundingBox" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the bounding box for the object</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The AABB bounding box</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>list[float]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getContactPoints">
-<span class="sig-name descname"><span class="pre">getContactPoints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getContactPoints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getContactPoints" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the current points of contact on the obejct.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The points of contact</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>list[float]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getGraspPose">
-<span class="sig-name descname"><span class="pre">getGraspPose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getGraspPose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getGraspPose" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the canonical grasp pose for the object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The grasp pose</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>list[float]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getGraspPosition">
-<span class="sig-name descname"><span class="pre">getGraspPosition</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getGraspPosition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getGraspPosition" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the canonical grasp position for the object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The grasp position</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>list[float]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getGraspRotation">
-<span class="sig-name descname"><span class="pre">getGraspRotation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getGraspRotation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getGraspRotation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the canonical grasp orientation for the object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The grasp orientation</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>list[float]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getPose">
-<span class="sig-name descname"><span class="pre">getPose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getPose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getPose" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the current pose of the object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>(position, orientation)</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>(list[float], list[float])</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getPosition">
-<span class="sig-name descname"><span class="pre">getPosition</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getPosition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getPosition" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the current xyz position of the object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The xyz position of the object.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>list[float]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getRotation">
-<span class="sig-name descname"><span class="pre">getRotation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getRotation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getRotation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the current rpy orientation of the object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The rpy orientation of the object.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>list[float](numpy.array)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getVelocity">
-<span class="sig-name descname"><span class="pre">getVelocity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getVelocity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getVelocity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the velocity for the object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>(linear_velocity, angular velocity)</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>(list[float], list[float])</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getXPosition">
-<span class="sig-name descname"><span class="pre">getXPosition</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getXPosition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getXPosition" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the current x position of the object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The x position of the object.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getXYPosition">
-<span class="sig-name descname"><span class="pre">getXYPosition</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getXYPosition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getXYPosition" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the current xy position of the object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The xy position of the object.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>list[float]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getYPosition">
-<span class="sig-name descname"><span class="pre">getYPosition</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getYPosition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getYPosition" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the current y position of the object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The y position of the object.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getZPosition">
-<span class="sig-name descname"><span class="pre">getZPosition</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.getZPosition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.getZPosition" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the current z position of the object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The z position of the object.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.isTouching">
-<span class="sig-name descname"><span class="pre">isTouching</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.isTouching"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.isTouching" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks to see if two objects are touching.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>obj</strong> (<a class="reference internal" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject" title="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject"><em>PybulletObject</em></a>) – Other object</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True if objects are touching, False otherwise.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.isTouchingId">
-<span class="sig-name descname"><span class="pre">isTouchingId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.isTouchingId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.isTouchingId" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks to see if two objects are touching.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>obj_id</strong> (<em>int</em>) – ID of the other object</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True if objects are touching, False otherwise.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.resetPose">
-<span class="sig-name descname"><span class="pre">resetPose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rot</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.resetPose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.resetPose" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the object to the given pose.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pos</strong> (<em>numpy.array</em>) – Position</p></li>
-<li><p><strong>rot</strong> (<em>numpy.array</em>) – Orientation</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.setVelocity">
-<span class="sig-name descname"><span class="pre">setVelocity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">linear_velocity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angular_velocity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/helping_hands_rl_envs/pybullet/objects/pybullet_object.html#PybulletObject.setVelocity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helping_hands_rl_envs.pybullet.objects.pybullet_object.PybulletObject.setVelocity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the velocity for the object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>linear_velocity</strong> (<em>numpy.array</em>) – Linear velocity for the object.</p></li>
-<li><p><strong>angular_velocity</strong> (<em>numpy.array</em>) – Angular velocity for the object.</p></li>
-</ul>
-</dd>
-</dl>
-<p>Returns:</p>
-</dd></dl>
-
-</dd></dl>
-
-</section>
-<section id="equipment">
-<h2>Equipment<a class="headerlink" href="#equipment" title="Permalink to this headline">¶</a></h2>
-<p>The currently avaliable equipment is:</p>
-<ul class="simple">
-<li><p>Blanket</p></li>
-<li><p>Cabinet</p></li>
-<li><p>Container Box</p></li>
-<li><p>Corner</p></li>
-<li><p>Drawer</p></li>
-<li><p>Drawer Handle</p></li>
-<li><p>Drawer w/Rack</p></li>
-<li><p>Rack</p></li>
-<li><p>Shelf</p></li>
-<li><p>Tray</p></li>
-</ul>
-<p>Additional equipment can be added by sub-classing the equipment base class detailed below. The urdf
-for the new equipment must be added to the urdf directory as well.</p>
-</section>
-<section id="equipment-base">
-<h2>Equipment Base<a class="headerlink" href="#equipment-base" title="Permalink to this headline">¶</a></h2>
-</section>
-</section>
-<section id="baselines">
-<h1>Baselines<a class="headerlink" href="#baselines" title="Permalink to this headline">¶</a></h1>
-<p>We include a number of baselines to allow for easier testing and benchmarking of new
-algorithms. Additional baselines will be added over time but pull requests are encouraged
-and apperciated.</p>
-<p>There are both model-free and model-based methods available, see below for a complete list.</p>
-<section id="model-free">
-<h2>Model-Free<a class="headerlink" href="#model-free" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>FC_DQN: Fully convolutional DQN</p></li>
-</ul>
-</section>
-<section id="model-based">
-<h2>Model-Based<a class="headerlink" href="#model-based" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>RS: Random sampling</p></li>
-</ul>
-</section>
-</section>
-<section id="logging-tools">
-<h1>Logging tools<a class="headerlink" href="#logging-tools" title="Permalink to this headline">¶</a></h1>
-<p>We include a logging tool which is used by our baselines to log important information during training
-and also to plot the results post training.</p>
-<section id="logger">
-<h2>Logger<a class="headerlink" href="#logger" title="Permalink to this headline">¶</a></h2>
-</section>
-<section id="plotter">
-<h2>Plotter<a class="headerlink" href="#plotter" title="Permalink to this headline">¶</a></h2>
-</section>
+<section id="cite-us">
+<h1>Cite Us<a class="headerlink" href="#cite-us" title="Permalink to this heading"></a></h1>
+<p>The development of this package was part of the work done in our ISRR 22 paper. Please,
+cite us if you use this code in your own work:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@misc</span><span class="p">{</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">doi</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mf">10.48550</span><span class="o">/</span><span class="n">arxiv</span><span class="mf">.2205.14292</span><span class="p">,</span>
+  <span class="n">doi</span> <span class="o">=</span> <span class="p">{</span><span class="mf">10.48550</span><span class="o">/</span><span class="n">ARXIV</span><span class="mf">.2205.14292</span><span class="p">},</span>
+  <span class="n">url</span> <span class="o">=</span> <span class="p">{</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">arxiv</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="nb">abs</span><span class="o">/</span><span class="mf">2205.14292</span><span class="p">},</span>
+  <span class="n">author</span> <span class="o">=</span> <span class="p">{</span><span class="n">Wang</span><span class="p">,</span> <span class="n">Dian</span> <span class="ow">and</span> <span class="n">Kohler</span><span class="p">,</span> <span class="n">Colin</span> <span class="ow">and</span> <span class="n">Zhu</span><span class="p">,</span> <span class="n">Xupeng</span> <span class="ow">and</span> <span class="n">Jia</span><span class="p">,</span> <span class="n">Mingxi</span> <span class="ow">and</span> <span class="n">Platt</span><span class="p">,</span> <span class="n">Robert</span><span class="p">},</span>
+  <span class="n">keywords</span> <span class="o">=</span> <span class="p">{</span><span class="n">Robotics</span> <span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">RO</span><span class="p">),</span> <span class="n">FOS</span><span class="p">:</span> <span class="n">Computer</span> <span class="ow">and</span> <span class="n">information</span> <span class="n">sciences</span><span class="p">,</span> <span class="n">FOS</span><span class="p">:</span> <span class="n">Computer</span> <span class="ow">and</span> <span class="n">information</span> <span class="n">sciences</span><span class="p">},</span>
+  <span class="n">title</span> <span class="o">=</span> <span class="p">{</span><span class="n">BulletArm</span><span class="p">:</span> <span class="n">An</span> <span class="n">Open</span><span class="o">-</span><span class="n">Source</span> <span class="n">Robotic</span> <span class="n">Manipulation</span> <span class="n">Benchmark</span> <span class="ow">and</span> <span class="n">Learning</span> <span class="n">Framework</span><span class="p">},</span>
+  <span class="n">publisher</span> <span class="o">=</span> <span class="p">{</span><span class="n">arXiv</span><span class="p">},</span>
+  <span class="n">year</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2022</span><span class="p">},</span>
+  <span class="n">copyright</span> <span class="o">=</span> <span class="p">{</span><span class="n">arXiv</span><span class="o">.</span><span class="n">org</span> <span class="n">perpetual</span><span class="p">,</span> <span class="n">non</span><span class="o">-</span><span class="n">exclusive</span> <span class="n">license</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </section>
 <section id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading"></a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
@@ -1155,87 +115,31 @@ and also to plot the results post training.</p>
 </section>
 
 
-            <div class="clearer"></div>
+           </div>
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <div>
-    <h3><a href="#">Table of Contents</a></h3>
-    <ul>
-<li><a class="reference internal" href="#">HelpingHands RL Envs</a></li>
-<li><a class="reference internal" href="#initialization-and-running">Initialization and Running</a><ul>
-<li><a class="reference internal" href="#module-helping_hands_rl_envs.env_factory">Env Factory</a></li>
-<li><a class="reference internal" href="#single-env-runner">Single Env Runner</a></li>
-<li><a class="reference internal" href="#multi-env-runner">Multi Env Runner</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#environments">Environments</a><ul>
-<li><a class="reference internal" href="#envs">Envs</a></li>
-<li><a class="reference internal" href="#module-helping_hands_rl_envs.envs.base_env">Base Env</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#pybullet-simulator">PyBullet Simulator</a><ul>
-<li><a class="reference internal" href="#robots">Robots</a></li>
-<li><a class="reference internal" href="#module-helping_hands_rl_envs.pybullet.robots.robot_base">Robot Base</a></li>
-<li><a class="reference internal" href="#objects">Objects</a></li>
-<li><a class="reference internal" href="#module-helping_hands_rl_envs.pybullet.objects.pybullet_object">Object Base</a></li>
-<li><a class="reference internal" href="#equipment">Equipment</a></li>
-<li><a class="reference internal" href="#equipment-base">Equipment Base</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#baselines">Baselines</a><ul>
-<li><a class="reference internal" href="#model-free">Model-Free</a></li>
-<li><a class="reference internal" href="#model-based">Model-Based</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#logging-tools">Logging tools</a><ul>
-<li><a class="reference internal" href="#logger">Logger</a></li>
-<li><a class="reference internal" href="#plotter">Plotter</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
-</ul>
+          <footer>
 
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Colin Kohler, Dian Wang.</p>
   </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/index.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">HelpingHandsEnvs 0.0.1 documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">HelpingHands RL Envs</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2022, Colin Kohler, Dian Wang.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
-    </div>
-  </body>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
 </html>

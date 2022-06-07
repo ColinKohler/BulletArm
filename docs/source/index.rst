@@ -1,168 +1,50 @@
-.. HelpingHandsEnvs documentation master file, created by
+.. BulletArm documentation master file, created by
    sphinx-quickstart on Tue Jan 18 13:15:56 2022.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-HelpingHands RL Envs
+:github_url: https://github.com/ColinKohler/BulletArm
+
+BulletArm Documentation
 ============================================
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+
+**BulletArm** is a PyBullet based package for robotics maipulation research.
 
 This package contains various simulated robotics environments used for research in the 
 Helping Hands lab. The majority of these environments entail a robotic arm armed with a
-paralel jaw gripper executing a series of manipulation based tasks. For a full list of 
-the tasks currently implemented see below. The physics simulator used is PyBullet.
+paralel jaw gripper executing a series of manipulation based tasks.
 
-Initialization and Running
+Package Reference
 ============================================
-Creating a environment instance is done through the use of the env_factory. Depending
-on the number of environments you wish to run in parallel, either a SingleRunner or a 
-MultiRunner will be returned which you can interact with.
 
-Env Factory
---------------------------------------------
-.. automodule:: helping_hands_rl_envs.env_factory
-   :members:
+The package is structured into two subpackages:
 
-Single Env Runner
---------------------------------------------
-.. autoclass:: helping_hands_rl_envs.runner.SingleRunner
-   :members:
+* :doc:`bulletarm <api/bulletarm>` contains the PyBullet environments, tasks, and robots.
+* :doc:`bulletarm_baselines <api/bulletarm_baselines>` implements several baseline algorithms alongside logging and plotting tools.
 
-Multi Env Runner
---------------------------------------------
-.. autoclass:: helping_hands_rl_envs.runner.MultiRunner
-   :members:
+To get started, we provide a number of `tutorials <https://github.com/ColinKohler/BulletArm/tutorials>`_ including an 
+`introcutory tutorial <https://github.com/ColinKohler/BulletArm/blob/main/tutorials/run_task.py>`_ demonstrating how to run existing task and 
+more advanced `tutorial <https://github.com/ColinKohler/BulletArm/blob/main/tutorials/new_task.py>`_ how to create a new task.
 
-Environments
+Cite Us
 ============================================
-A number of different environments are aleady implemented and can found in the list
-below. To create your own environment, subclass the base environment and add the new
-environment to the list of avaliable environments in the env_fn file.
+The development of this package was part of the work done in our ISRR 22 paper. Please,
+cite us if you use this code in your own work::
 
-Envs
---------------------------------------------
-* Env 1
-* Env 2
-* ...
+  @misc{https://doi.org/10.48550/arxiv.2205.14292,
+    doi = {10.48550/ARXIV.2205.14292},
+    url = {https://arxiv.org/abs/2205.14292},
+    author = {Wang, Dian and Kohler, Colin and Zhu, Xupeng and Jia, Mingxi and Platt, Robert},
+    keywords = {Robotics (cs.RO), FOS: Computer and information sciences, FOS: Computer and information sciences},
+    title = {BulletArm: An Open-Source Robotic Manipulation Benchmark and Learning Framework},
+    publisher = {arXiv},
+    year = {2022},
+    copyright = {arXiv.org perpetual, non-exclusive license}
+  }
 
-Base Env
---------------------------------------------
-.. automodule:: helping_hands_rl_envs.envs.base_env
-  :members:
-
-PyBullet Simulator
-============================================
-The physics simulator used for our domains is PyBullet. We include a number of robotic 
-manipulators for use. There are also numerous objects and environment details which can 
-be loaded into any enviornment.
-
-Robots
---------------------------------------------
-The currently avaliable robots are:
-
-* Kuka
-* Floating Kuka Gripper
-* UR5 w/Prismatic Gripper
-* UR5 w/Robotiq 85-2f Gripper
-
-Additional robots can be added by sub-classing the Robot Base class detailed below. Note:
-Robot base contains a number of abstract functions which are specific to the robot being used
-and therefor must be implemetned on any new robots.
-
-Robot Base
---------------------------------------------
-.. automodule:: helping_hands_rl_envs.pybullet.robots.robot_base
-  :members:
-
-Objects
---------------------------------------------
-The currently avaliable objects are:
-
-* Bottle
-* Bowl
-* Box
-* Brick
-* Cube
-* Cup
-* Cylinder
-* Flat Block
-* Pallet
-* Plate
-* Roof
-* Spoon
-* Swab
-* Teapot Base
-* Teapot Lid
-* Test Tube
-* Triangle
-
-Additional objects can be added by sub-classing the object base class detailed below. The urdf
-for the new object must be added to the urdf directory as well.
-
-Object Base
---------------------------------------------
-.. automodule:: helping_hands_rl_envs.pybullet.objects.pybullet_object
-  :members:
-
-Equipment
---------------------------------------------
-The currently avaliable equipment is:
-
-* Blanket
-* Cabinet
-* Container Box
-* Corner
-* Drawer
-* Drawer Handle
-* Drawer w/Rack
-* Rack
-* Shelf
-* Tray
-
-Additional equipment can be added by sub-classing the equipment base class detailed below. The urdf
-for the new equipment must be added to the urdf directory as well.
-
-Equipment Base
---------------------------------------------
-.. automodule:: helping_hands_rl_envs.pybullet.objects.pybullet_equipment
-  :members:
-
-Baselines 
-============================================
-We include a number of baselines to allow for easier testing and benchmarking of new 
-algorithms. Additional baselines will be added over time but pull requests are encouraged
-and apperciated.
-
-There are both model-free and model-based methods available, see below for a complete list.
-
-Model-Free
---------------------------------------------
-* FC_DQN: Fully convolutional DQN 
-
-Model-Based
---------------------------------------------
-* RS: Random sampling
-
-Logging tools
-============================================
-We include a logging tool which is used by our baselines to log important information during training
-and also to plot the results post training.
-
-Logger
---------------------------------------------
-.. automodule:: baselines.logger.logger
-  :members:
-
-Plotter
---------------------------------------------
-.. automodule:: baselines.logger.plotter
-  :members:
 
 Indices and tables
 ==================
-
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
