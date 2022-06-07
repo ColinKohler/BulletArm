@@ -1,16 +1,15 @@
-# Helping Hands RL Environments
-- [License](https://github.com/ColinKohler/helping_hands_rl_envs/blob/master/LICENSE)
+# BulletArm
+- [License](https://github.com/ColinKohler/BulletArm/blob/main/LICENSE)
 
-This package contains various simulated robotics environments used for research in the [Helping Hands](https://www2.ccs.neu.edu/research/helpinghands/) lab.
-The majority of these environments entail a robotic arm armed with a paralel jaw gripper executing a series of manipulation based tasks. For a full list of 
-the tasks currently implemented see below. The core simulator used for most tasks is [PyBullet](https://github.com/bulletphysics/bullet3) but a simple numpy
-based simulator is included for quick prototyping. 
+**BulletArm** is a benchmark and learning-environment for robotic manipulation. BulletArm provides a set of standardized 
+benchmark tasks in simulation alongside a collection of baseline algorithms. Please see our paper [here]().
 
 ## Table of Contents
-1. [Requirments](#requirements)
+1. [Requirments](#requirments)
 2. [Installation](#install)
 3. [Environments](#envs)
 4. [Parameters](#parameters)
+1. [Benchmarks](#benchmarks)
 5. [Publications](#publications)
 
 <a name="requirments"></a>
@@ -46,45 +45,56 @@ based simulator is included for quick prototyping.
         input('press enter to continue')
     env.close()
     ```
-
+<a name="envs"></a>
 ## Environments
-### 2.5D Environments
-#### Block Stacking Environments
-- **block_picking**: Pick up all blocks.
-- **block_stacking**: Pick up blocks and place them in a stack. 
-- **block_adjacent**: TODO
-- **brick_stacking**: TODO
-- **pyramid_stacking**: TODO
-- **house_building_1**: Build a house structure with a block stack and a small triangle roof on top.
-- **house_building_2**: Build a house structure with two block bases and a large triangle roof.
-- **house_building_3**: Build a house structure with two block bases, one brick in the middle, and a large triangle roof.
-- **house_building_4**: Build a house structure with two block bases, one brick in the second layer, two blocks in the third layer, and a large triangle roof.
-- **house_building_x**: TODO
-- **improvise_house_building_2**: Build a house structure with two random shape bases and a large triangle roof.
-- **improvise_house_building_3**: Build a house structure with two random shape bases, one brick in the middle, and a large triangle roof.
-- **improvise_house_building_discrete**: Build a house structure with 4 random shapes and a large triangle roof. The heights of the random shapes are sampled from two discrete numbers.
-- **improvise_house_building_random**: Build a house structure with 4 random shapes and a large triangle roof. The heights of the random shapes are sampled from continuous numbers.
-#### Realistic Environments
-- **block_bin_packing**: Pack blocks in a box.
-- **bottle_tray**: Arrange 6 bottles in a tray.
-- **box_palletizing**: Stack boxes on top of a pallet.
-- **covid_test**: Supervise 3 covid tests.
-- **object_grasping**: Grasping objects in clutter.
+### Open-Loop Environments
+<img src="/img/open_envs.png" width="640">
 
-### 6D Environments
-- **ramp_block_stacking**: Finish block_stacking in the workspace with two ramps
-- **ramp_house_building_1**: Finish house_building_1 in the workspace with two ramps
-- **ramp_house_building_2**: Finish house_building_2 in the workspace with two ramps
-- **ramp_house_building_3**: Finish house_building_3 in the workspace with two ramps
-- **ramp_house_building_4**: Finish house_building_4 in the workspace with two ramps
-- **ramp_improvise_house_building_2**: Finish improvise_house_building_2 in the workspace with two ramps
-- **ramp_improvise_house_building_3**: Finish improvise_house_building_3 in the workspace with two ramps
-- **bumpy_house_building_4**: Finish house_building_4 in the workspace with a bumpy surface
-- **bumpy_box_palletizing**: Finish bumpy_box_palletizing in the workspace with a bumpy surface
+- **block_picking**: The robot needs to pick up all N cubic blocks. The number of blocks N in this environments is configurable. 
+- **block_stacking**: (a) The robot needs to stack all N cubic blocks. The number of blocks N in this environments is configurable. 
+- **house_building_1**: (b) The robot needs to first stack N-1 cubic blocks then place a triangle block on top of the stack. The number of blocks N in this environments is configurable. 
+- **house_building_2**: (c) The robot needs to first place two cubic blocks adjacent to each other, then place a roof on top.
+- **house_building_3**: (d) The robot needs to: 1. place two cubic blocks adjacent to each other; 2. put a cuboid on top of the two cubic blocks; 3. put a roof on top of the cuboid.
+- **house_building_4**: (e) The robot needs to: 1. place two cubic blocks adjacent to each other; 2. put a cuboid on top of the two cubic blocks; 3. put another two cubic blocks on top of the cuboid; 4. put a roof on top of the structure.
+- **improvise_house_building_2**: (f) Similar task as House Building 2, but the fixed cubic blocks are replaced with random shape blocks.
+- **improvise_house_building_3**: (g) Similar task as House Building 3, but the fixed cubic blocks are replaced with random shape blocks.
+- **block_bin_packing**: (h) The robot needs to pack the N blocks in the workspace inside a bin. The number of blocks N in this environments is configurable. 
+- **bottle_tray**: (i) The robot needs to arrange six bottles in the tray.
+- **box_palletizing**: (j) The robot needs to palletize N boxes on top of a pallet. The number of boxes N in this environment is configurable (6, 12, or 18). This environments is first proposed in~\cite{transporter}.
+- **covid_test**: (k) The robot needs to supervise three covid tests and gather the test tubes.
+- **object_grasping**: (l) The robot needs to pick up an object in a cluttered scene containing N random objects. The number of objects N in this environment is configurable.
+
+### Open-Loop 6D Environments
+<img src="/img/open_6d_envs.png" width="480">
+
+- **ramp_block_stacking**: (a) Finish block_stacking in the workspace with two ramps
+- **ramp_house_building_1**: (b) Finish house_building_1 in the workspace with two ramps
+- **ramp_house_building_2**: (c) Finish house_building_2 in the workspace with two ramps
+- **ramp_house_building_3**: (d) Finish house_building_3 in the workspace with two ramps
+- **ramp_house_building_4**: (e) Finish house_building_4 in the workspace with two ramps
+- **ramp_improvise_house_building_2**: (f) Finish improvise_house_building_2 in the workspace with two ramps
+- **ramp_improvise_house_building_3**: (g) Finish improvise_house_building_3 in the workspace with two ramps
+- **bumpy_house_building_4**: (h) Finish house_building_4 in the workspace with a bumpy surface
+- **bumpy_box_palletizing**: (i) Finish box_palletizing in the workspace with a bumpy surface
+
+### Close-Loop Environments
+<img src="/img/close_envs.png" width="640">
+
+- **close_loop_block_reaching**: The robot needs to place the gripper close to a cubic block.
+- **close_loop_block_picking**: The robot needs to pick up a cubic block.
+- **close_loop_block_pushing**: The robot needs to push the block into a goal area.
+- **close_loop_block_pulling**: The robot needs to pull one of the two blocks to make contact with the other block.
+- **close_loop_block_in_bowl**: The robot needs to pick up a block and place it inside a bowl.
+- **close_loop_block_stacking**: The robot needs to stack N cubic blocks. The number of blocks N in this environment is configurable. 
+- **close_loop_house_building_1**: The robot needs to stack N-1 cubic blocks then place a triangle block on top of the stack. The number of blocks N in this environments is configurable.
+- **close_loop_block_picking_corner**: The robot needs to slide the block from the corner and then pick it up.
+- **close_loop_drawer_opening**: The robot needs to pull the handle of the drawer to open it.
+- **close_loop_clutter_picking**:  The robot needs to pick up an object in a cluttered scene containing N random objects. The number of objects N in this environment is configurable.
 
 <a name="parameters"></a>
 ## Parameters
 
+<a name="benchmarks"></a>
 ## Benchmarks
 ### Open-Loop Benchmarks
 #### Prerequisite
