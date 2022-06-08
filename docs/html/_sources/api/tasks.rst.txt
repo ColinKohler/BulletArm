@@ -26,26 +26,46 @@ Tasks
 
 Block Reaching
 ---------------
+
+.. figure:: ../images/reach.png
+  :figwidth: 200px
+  
 .. autoclass:: bulletarm.envs.close_loop_envs.close_loop_block_reaching.CloseLoopBlockReachingEnv
   :no-members:
 
 Block Pushing
 ---------------
+
+.. figure:: ../images/push.png
+  :figwidth: 200px
+
 .. autoclass:: bulletarm.envs.close_loop_envs.close_loop_block_pushing.CloseLoopBlockPushingEnv
   :no-members:
 
 Block Pulling
 ---------------
+
+.. figure:: ../images/pull.png
+  :figwidth: 200px
+
 .. autoclass:: bulletarm.envs.close_loop_envs.close_loop_block_pulling.CloseLoopBlockPullingEnv
   :no-members:
 
 Block Picking
 ---------------
+
+.. figure:: ../images/pick.png
+  :figwidth: 200px
+
 .. autoclass:: bulletarm.envs.close_loop_envs.close_loop_block_picking.CloseLoopBlockPickingEnv
   :no-members:
 
 Block Stacking
 ---------------
+
+.. figure:: ../images/stack.png
+  :figwidth: 200px
+
 .. autoclass:: bulletarm.envs.block_structure_envs.block_stacking_env.BlockStackingEnv
   :no-members:
 
@@ -54,11 +74,19 @@ Block Stacking
 
 Block In Bowl
 ---------------
+
+.. figure:: ../images/bowl.png
+  :figwidth: 200px
+
 .. autoclass:: bulletarm.envs.close_loop_envs.close_loop_block_in_bowl.CloseLoopBlockInBowlEnv
   :no-members:
 
 House Building 1
 -----------------
+
+.. figure:: ../images/4h1.png
+  :figwidth: 200px
+
 .. autoclass:: bulletarm.envs.block_structure_envs.house_building_1_env.HouseBuilding1Env
   :no-members:
 
@@ -67,61 +95,109 @@ House Building 1
 
 House Building 2
 -----------------
+
+.. figure:: ../images/h2.png
+  :figwidth: 200px
+
 .. autoclass:: bulletarm.envs.block_structure_envs.house_building_2_env.HouseBuilding2Env
   :no-members:
 
 House Building 3
 -----------------
+
+.. figure:: ../images/h3.png
+  :figwidth: 200px
+
 .. autoclass:: bulletarm.envs.block_structure_envs.house_building_3_env.HouseBuilding3Env
   :no-members:
 
 House Building 4
 -----------------
+
+.. figure:: ../images/h4.png
+  :figwidth: 200px
+
 .. autoclass:: bulletarm.envs.block_structure_envs.house_building_4_env.HouseBuilding4Env
   :no-members:
 
 Improvise House Building 2
 ---------------------------
+
+.. figure:: ../images/imh2.png
+  :figwidth: 200px
+
 .. autoclass:: bulletarm.envs.block_structure_envs.improvise_house_building_2_env.ImproviseHouseBuilding2Env
   :no-members:
 
 Improvise House Building 3
 ---------------------------
+
+.. figure:: ../images/imh3.png
+  :figwidth: 200px
+
 .. autoclass:: bulletarm.envs.block_structure_envs.improvise_house_building_3_env.ImproviseHouseBuilding3Env
   :no-members:
 
 Bin Packing
 ------------------
+
+.. figure:: ../images/pack.png
+  :figwidth: 200px
+
 .. autoclass:: bulletarm.envs.realistic_envs.block_bin_packing_env.BlockBinPackingEnv
   :no-members:
 
 Bottle Arrangement
 -------------------
+
+.. figure:: ../images/bottle.png
+  :figwidth: 200px
+
 .. autoclass:: bulletarm.envs.realistic_envs.bottle_tray_env.BottleTrayEnv
   :no-members:
 
 Box Palletizing
 ----------------
+
+.. figure:: ../images/box.png
+  :figwidth: 200px
+
 .. autoclass:: bulletarm.envs.realistic_envs.box_palletizing_env.BoxPalletizingEnv
   :no-members:
 
 Covid Test
 --------------
+
+.. figure:: ../images/covid.png
+  :figwidth: 200px
+
 .. autoclass:: bulletarm.envs.realistic_envs.covid_test_env.CovidTestEnv
   :no-members:
 
 Corner Picking
 ---------------
+
+.. figure:: ../images/corner.png
+  :figwidth: 200px
+
 .. autoclass:: bulletarm.envs.close_loop_envs.close_loop_block_picking_corner.CloseLoopBlockPickingCornerEnv
   :no-members:
 
 Drawer Opening
 ---------------
+
+.. figure:: ../images/drawer.png
+  :figwidth: 200px
+
 .. autoclass:: bulletarm.envs.close_loop_envs.close_loop_drawer_opening.CloseLoopDrawerOpeningEnv
   :no-members:
 
 Object Grasping
 ----------------
+
+.. figure:: ../images/grasp.png
+  :figwidth: 200px
+
 .. autoclass:: bulletarm.envs.realistic_envs.object_grasping.ObjectGrasping
   :no-members:
 
