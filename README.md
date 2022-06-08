@@ -5,31 +5,43 @@
 benchmark tasks in simulation alongside a collection of baseline algorithms.
 
 ## Table of Contents
-1. [Requirments](#requirments)
+1. [Dependencies](#dependencies)
 2. [Installation](#install)
 1. [Benchmarks](#benchmarks)
 5. [Cite](#cite)
 
-<a name="requirments"></a>
-## Requirments
+<a name="dependencies"></a>
+## Dependencies
+
+The library is based on Python>=3.7
+
+```
+attrdict
+matplotlib
+GitPython
+numpy>=1.19.5
+pybullet>=2.7.1
+scikit-image>=0.14.2
+scipy>=1.2.1
+tqdm
+```
 
 <a name="install"></a>
 ## Install
-1. Install Python 3.7
-2. Clone this repo
+1. Clone this repo
     ```
     git clone https://github.com/ColinKohler/helping_hands_rl_envs.git
     cd helping_hands_rl_envs
     ```
-3. Install dependencies
+2. Install dependencies
     ```
     pip install -r requirements.txt 
     ```
-4. Install this package
+3. Install this package
     ```
     pip install .
     ```
-5. Run the block stacking demo
+4. Run the block stacking demo
     ```python
     from bulletarm import env_factory
     # environment parameters
