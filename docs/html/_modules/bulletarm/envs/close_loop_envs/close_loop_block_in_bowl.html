@@ -73,6 +73,13 @@
 <span class="kn">from</span> <span class="nn">bulletarm.pybullet.equipments.tray</span> <span class="kn">import</span> <span class="n">Tray</span>
 
 <div class="viewcode-block" id="CloseLoopBlockInBowlEnv"><a class="viewcode-back" href="../../../../api/tasks.html#bulletarm.envs.close_loop_envs.close_loop_block_in_bowl.CloseLoopBlockInBowlEnv">[docs]</a><span class="k">class</span> <span class="nc">CloseLoopBlockInBowlEnv</span><span class="p">(</span><span class="n">CloseLoopEnv</span><span class="p">):</span>
+  <span class="sd">&#39;&#39;&#39;Close loop block in bowl task.</span>
+
+<span class="sd">  The robot needs to pick up a block and place it inside a bowl.</span>
+
+<span class="sd">  Args:</span>
+<span class="sd">    config (dict): Intialization arguments for the env</span>
+<span class="sd">  &#39;&#39;&#39;</span>
   <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
     <span class="k">if</span> <span class="s1">&#39;num_objects&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
       <span class="n">config</span><span class="p">[</span><span class="s1">&#39;num_objects&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>

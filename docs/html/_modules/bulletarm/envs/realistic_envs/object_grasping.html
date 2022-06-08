@@ -76,7 +76,14 @@
 <span class="kn">import</span> <span class="nn">pybullet</span> <span class="k">as</span> <span class="nn">pb</span>
 
 <div class="viewcode-block" id="ObjectGrasping"><a class="viewcode-back" href="../../../../api/tasks.html#bulletarm.envs.realistic_envs.object_grasping.ObjectGrasping">[docs]</a><span class="k">class</span> <span class="nc">ObjectGrasping</span><span class="p">(</span><span class="n">BaseEnv</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Open loop object grasping task.&#39;&#39;&#39;</span>
+    <span class="sd">&#39;&#39;&#39;Open loop object grasping task.</span>
+
+<span class="sd">    The robot needs to pick up and object in a cluttered scene containing N random objects.</span>
+<span class="sd">    The number of blocks N is set by the config.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (dict): Intialization arguments for the env</span>
+<span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
         <span class="c1"># env specific parameters</span>
         <span class="k">if</span> <span class="s1">&#39;object_scale_range&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>

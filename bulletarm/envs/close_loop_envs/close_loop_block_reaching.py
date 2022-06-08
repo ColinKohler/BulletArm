@@ -7,7 +7,13 @@ from bulletarm.pybullet.utils import transformations
 from bulletarm.planners.close_loop_block_picking_planner import CloseLoopBlockPickingPlanner
 
 class CloseLoopBlockReachingEnv(CloseLoopEnv):
-  ''' Close loop block reaching task.'''
+  ''' Close loop block reaching task.
+
+  The robot needs to place the gripper close to a cubic block.
+
+  Args:
+    config (dict): Intialization arguments for the env
+  '''
   def __init__(self, config):
     super().__init__(config)
 

@@ -8,7 +8,14 @@ from bulletarm.planners.close_loop_house_building_1_planner import CloseLoopHous
 from bulletarm.pybullet.utils.constants import NoValidPositionException
 
 class CloseLoopHouseBuilding1Env(CloseLoopEnv):
-  '''Close loop house building 1 task.'''
+  '''Close loop house building 1 task.
+
+  The robot needs to stack N-1 cubic blocks then place a triangle block on top of the stack.
+  The number of blocks N is set by the config.
+
+  Args:
+    config (dict): Intialization arguments for the env
+  '''
   def __init__(self, config):
     if 'num_objects' not in config:
       config['num_objects'] = 2

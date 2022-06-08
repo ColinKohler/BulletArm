@@ -9,7 +9,13 @@ from bulletarm.pybullet.equipments.tray import Tray
 from bulletarm.pybullet.utils.constants import NoValidPositionException
 
 class CloseLoopBlockPushingEnv(CloseLoopEnv):
-  ''' Close loop block pushing task.'''
+  ''' Close loop block pushing task.
+
+  The robot needs to push a block into a goal area.
+
+  Args:
+    config (dict): Intialization arguments for the env
+  '''
   def __init__(self, config):
     super().__init__(config)
     self.goal_pos = self.workspace.mean(1)[:2]

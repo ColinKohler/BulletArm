@@ -11,7 +11,14 @@ from scipy.ndimage.interpolation import rotate
 import pybullet as pb
 
 class ObjectGrasping(BaseEnv):
-    '''Open loop object grasping task.'''
+    '''Open loop object grasping task.
+
+    The robot needs to pick up and object in a cluttered scene containing N random objects.
+    The number of blocks N is set by the config.
+
+    Args:
+        config (dict): Intialization arguments for the env
+    '''
     def __init__(self, config):
         # env specific parameters
         if 'object_scale_range' not in config:

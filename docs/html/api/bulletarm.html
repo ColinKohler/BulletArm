@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bulletarm &mdash; BulletArm 1.0.0 documentation</title>
+  <title>BulletArm &mdash; BulletArm 1.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -39,7 +39,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <!-- Local TOC -->
               <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">bulletarm</a><ul>
+<li><a class="reference internal" href="#">BulletArm</a></li>
 <li><a class="reference internal" href="#tasks">Tasks</a></li>
 <li><a class="reference internal" href="#envfactory-envrunner">EnvFactory &amp; EnvRunner</a><ul>
 <li><a class="reference internal" href="#module-bulletarm.env_factory">EnvFactory</a></li>
@@ -47,8 +47,6 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#robots">Robots</a></li>
-</ul>
-</li>
 </ul>
 </div>
         </div>
@@ -65,7 +63,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>bulletarm</li>
+      <li>BulletArm</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/api/bulletarm.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -76,7 +74,7 @@
            <div itemprop="articleBody">
              
   <span class="target" id="module-bulletarm"></span><section id="bulletarm">
-<h1>bulletarm<a class="headerlink" href="#bulletarm" title="Permalink to this heading"></a></h1>
+<h1>BulletArm<a class="headerlink" href="#bulletarm" title="Permalink to this heading"></a></h1>
 <p>This is the main package for the BulletArm library. It contains the PyBullet simulation environments, robots, and task definitions.
 The simulation workspace consists of a robot arm mounted on the floor of the simulation environment, a workspace where objects are
 generated, and sensor(s). There are three key terms within BulletArm: <em>Enviornment</em>, <em>Configuration</em>, and <em>Episode</em>. An <em>environment</em>
@@ -90,8 +88,10 @@ for the task such as the robot arm, the size of the workspace, the physics mode,
 <p><span class="caption-text">The simulation environment containing a robot arm, a camera, and a workspace.</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
+</section>
+<hr class="docutils" />
 <section id="tasks">
-<h2>Tasks<a class="headerlink" href="#tasks" title="Permalink to this heading"></a></h2>
+<h1>Tasks<a class="headerlink" href="#tasks" title="Permalink to this heading"></a></h1>
 <p>Our set of tasks are seperated into two categories based on the action space: open-loop control and closed-loop control.
 Future work is planned to allow all tasks to use either control-type but for now the below table shows current avaliable
 control type for each task.</p>
@@ -187,15 +187,16 @@ control type for each task.</p>
 </tbody>
 </table>
 </section>
+<hr class="docutils" />
 <section id="envfactory-envrunner">
-<h2>EnvFactory &amp; EnvRunner<a class="headerlink" href="#envfactory-envrunner" title="Permalink to this heading"></a></h2>
+<h1>EnvFactory &amp; EnvRunner<a class="headerlink" href="#envfactory-envrunner" title="Permalink to this heading"></a></h1>
 <p>Interaction with BulletArm is done through the <em>EnvFactory</em> and <em>EnvRunner</em> classes.
 The <em>EnvFactory</em> is the entry point and creates the <em>environment</em> specified by the <em>configuration</em> passed as input. The <em>EnvFactory</em>
 can create either a single environment (SingleRunner) or multiple environments (MultiRunner) to be run in parallel.
 The <em>EnvRunner</em> provides the API which interacts with the environment. This API is modeled after the typical agent-environment
 RL setup popularized by OpenAI Gym.</p>
 <section id="module-bulletarm.env_factory">
-<span id="envfactory"></span><h3>EnvFactory<a class="headerlink" href="#module-bulletarm.env_factory" title="Permalink to this heading"></a></h3>
+<span id="envfactory"></span><h2>EnvFactory<a class="headerlink" href="#module-bulletarm.env_factory" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="bulletarm.env_factory.createEnvs">
 <span class="sig-name descname"><span class="pre">createEnvs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_processes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planner_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/env_factory.html#createEnvs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.env_factory.createEnvs" title="Permalink to this definition"></a></dt>
@@ -281,7 +282,7 @@ number of envs each in their own seperate process.</p>
 
 </section>
 <section id="envrunner">
-<h3>EnvRunner<a class="headerlink" href="#envrunner" title="Permalink to this heading"></a></h3>
+<h2>EnvRunner<a class="headerlink" href="#envrunner" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bulletarm.runner.MultiRunner">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultiRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_fns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planner_fns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner" title="Permalink to this definition"></a></dt>
@@ -689,8 +690,9 @@ number of envs each in their own seperate process.</p>
 
 </section>
 </section>
+<hr class="docutils" />
 <section id="robots">
-<h2>Robots<a class="headerlink" href="#robots" title="Permalink to this heading"></a></h2>
+<h1>Robots<a class="headerlink" href="#robots" title="Permalink to this heading"></a></h1>
 <p>Different robotic arms can lead to drastically different policies due to the differing kinematics between arms. We
 provide four robotic arms: KUKA IIWA, Frane Emika Panda, Universal Robots UR5 with a parallel jaw gripper, and
 Universal Robots UR5 with Robotiq 2F-85 gripper. To add a new manipulator see the <a class="reference external" href="https://github.com/ColinKohler/BulletArm/blob/main/tutorials/new_robot.py">tutorial</a>.</p>
@@ -700,7 +702,6 @@ Universal Robots UR5 with Robotiq 2F-85 gripper. To add a new manipulator see th
 <p><span class="caption-text">Currently supported robotic arms.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
-</section>
 </section>
 
 

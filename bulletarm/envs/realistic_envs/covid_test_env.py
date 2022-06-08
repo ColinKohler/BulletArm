@@ -8,7 +8,13 @@ from bulletarm.pybullet.utils import constants
 from bulletarm.pybullet.utils.constants import NoValidPositionException
 
 class CovidTestEnv(BaseEnv):
-  '''Open loop covid test task.'''
+  '''Open loop covid test task.
+
+  The robot needs to supervise three covid tests and gather the test tubes.
+
+  Args:
+    config (dict): Intialization arguments for the env
+  '''
   def __init__(self, config):
     # env specific parameters
     if 'object_scale_range' not in config:

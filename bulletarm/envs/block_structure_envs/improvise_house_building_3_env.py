@@ -8,7 +8,15 @@ from bulletarm.pybullet.utils import pybullet_util
 from bulletarm.pybullet.utils.constants import NoValidPositionException
 
 class ImproviseHouseBuilding3Env(BaseEnv):
-  '''Open loop improvise house building 3 task.'''
+  '''Open loop improvise house building 3 task.
+
+  The robot needs to: (1) place two blocks adjacent to each other, (2) put a cuboid on
+  top of the two cubic bricks, (3) put a roof on top of the cuboid.
+  The two base blocks are randomly generated shapes.
+
+  Args:
+    config (dict): Intialization arguments for the env
+  '''
   def __init__(self, config):
     # env specific parameters
     if 'object_scale_range' not in config:

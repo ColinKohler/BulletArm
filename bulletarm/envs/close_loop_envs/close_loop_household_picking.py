@@ -7,7 +7,14 @@ from bulletarm.pybullet.utils import transformations
 from bulletarm.planners.close_loop_block_picking_planner import CloseLoopBlockPickingPlanner
 
 class CloseLoopHouseholdPickingEnv(CloseLoopEnv):
-  '''Close loop object grasping task.'''
+  '''Close loop object grasping task.
+
+  The robot needs to pick up an object in a cluttered scene containing N random objects.
+  The number of blocks N is set by the config.
+
+  Args:
+    config (dict): Intialization arguments for the env
+  '''
   def __init__(self, config):
     if 'object_scale_range' not in config:
       config['object_scale_range'] = [0.6, 0.6]

@@ -72,7 +72,14 @@
 <span class="kn">from</span> <span class="nn">bulletarm.planners.close_loop_block_picking_planner</span> <span class="kn">import</span> <span class="n">CloseLoopBlockPickingPlanner</span>
 
 <div class="viewcode-block" id="CloseLoopHouseholdPickingEnv"><a class="viewcode-back" href="../../../../api/tasks.html#bulletarm.envs.close_loop_envs.close_loop_household_picking.CloseLoopHouseholdPickingEnv">[docs]</a><span class="k">class</span> <span class="nc">CloseLoopHouseholdPickingEnv</span><span class="p">(</span><span class="n">CloseLoopEnv</span><span class="p">):</span>
-  <span class="sd">&#39;&#39;&#39;Close loop object grasping task.&#39;&#39;&#39;</span>
+  <span class="sd">&#39;&#39;&#39;Close loop object grasping task.</span>
+
+<span class="sd">  The robot needs to pick up an object in a cluttered scene containing N random objects.</span>
+<span class="sd">  The number of blocks N is set by the config.</span>
+
+<span class="sd">  Args:</span>
+<span class="sd">    config (dict): Intialization arguments for the env</span>
+<span class="sd">  &#39;&#39;&#39;</span>
   <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
     <span class="k">if</span> <span class="s1">&#39;object_scale_range&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
       <span class="n">config</span><span class="p">[</span><span class="s1">&#39;object_scale_range&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]</span>

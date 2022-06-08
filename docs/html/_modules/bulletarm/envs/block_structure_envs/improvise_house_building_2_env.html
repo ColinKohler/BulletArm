@@ -71,7 +71,14 @@
 <span class="kn">from</span> <span class="nn">bulletarm.pybullet.utils.constants</span> <span class="kn">import</span> <span class="n">NoValidPositionException</span>
 
 <div class="viewcode-block" id="ImproviseHouseBuilding2Env"><a class="viewcode-back" href="../../../../api/tasks.html#bulletarm.envs.block_structure_envs.improvise_house_building_2_env.ImproviseHouseBuilding2Env">[docs]</a><span class="k">class</span> <span class="nc">ImproviseHouseBuilding2Env</span><span class="p">(</span><span class="n">BaseEnv</span><span class="p">):</span>
-  <span class="sd">&#39;&#39;&#39;Open loop improvise house building 2 task.&#39;&#39;&#39;</span>
+  <span class="sd">&#39;&#39;&#39;Open loop improvise house building 2 task.</span>
+
+<span class="sd">  The robot needs to first place two blocks adjacent to each other, then place a roof on top.</span>
+<span class="sd">  The two base blocks are randomly generated shapes.</span>
+
+<span class="sd">  Args:</span>
+<span class="sd">    config (dict): Intialization arguments for the env</span>
+<span class="sd">  &#39;&#39;&#39;</span>
   <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
     <span class="c1"># env specific parameters</span>
     <span class="k">if</span> <span class="s1">&#39;object_scale_range&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>

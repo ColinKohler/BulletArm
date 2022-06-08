@@ -3,7 +3,13 @@ from bulletarm.pybullet.utils import constants
 from bulletarm.pybullet.utils.constants import NoValidPositionException
 
 class BlockStackingEnv(BaseEnv):
-  '''Open loop block stacking task.'''
+  '''Open loop block stacking task.
+
+  The robot needs to stack all N cubic blocks. The number of blocks N is set by the config.
+
+  Args:
+    config (dict): Intialization arguments for the env
+  '''
   def __init__(self, config):
     # env specific parameters
     if 'object_scale_range' not in config:

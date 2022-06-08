@@ -8,7 +8,13 @@ from bulletarm.planners.close_loop_block_picking_planner import CloseLoopBlockPi
 from bulletarm.pybullet.equipments.tray import Tray
 
 class CloseLoopBlockPickingEnv(CloseLoopEnv):
-  ''' Close loop block picking task.'''
+  ''' Close loop block picking task.
+
+  The robot needs to pick up all N cubic blocks. The number of blocks N is set by the config.
+
+  Args:
+    config (dict): Intialization arguments for the env
+  '''
 
   def __init__(self, config):
     super().__init__(config)

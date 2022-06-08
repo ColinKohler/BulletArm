@@ -8,7 +8,13 @@ from bulletarm.planners.close_loop_block_stacking_planner import CloseLoopBlockS
 from bulletarm.pybullet.utils.constants import NoValidPositionException
 
 class CloseLoopBlockStackingEnv(CloseLoopEnv):
-  '''Close loop block stacking task.'''
+  '''Close loop block stacking task.
+
+  The robot needs to stack all N cubic blocks. The number of blocks N is set by the config.
+
+  Args:
+    config (dict): Intialization arguments for the env
+  '''
   def __init__(self, config):
     if 'num_objects' not in config:
       config['num_objects'] = 2

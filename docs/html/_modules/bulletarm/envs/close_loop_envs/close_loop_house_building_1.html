@@ -73,7 +73,14 @@
 <span class="kn">from</span> <span class="nn">bulletarm.pybullet.utils.constants</span> <span class="kn">import</span> <span class="n">NoValidPositionException</span>
 
 <div class="viewcode-block" id="CloseLoopHouseBuilding1Env"><a class="viewcode-back" href="../../../../api/tasks.html#bulletarm.envs.close_loop_envs.close_loop_house_building_1.CloseLoopHouseBuilding1Env">[docs]</a><span class="k">class</span> <span class="nc">CloseLoopHouseBuilding1Env</span><span class="p">(</span><span class="n">CloseLoopEnv</span><span class="p">):</span>
-  <span class="sd">&#39;&#39;&#39;Close loop house building 1 task.&#39;&#39;&#39;</span>
+  <span class="sd">&#39;&#39;&#39;Close loop house building 1 task.</span>
+
+<span class="sd">  The robot needs to stack N-1 cubic blocks then place a triangle block on top of the stack.</span>
+<span class="sd">  The number of blocks N is set by the config.</span>
+
+<span class="sd">  Args:</span>
+<span class="sd">    config (dict): Intialization arguments for the env</span>
+<span class="sd">  &#39;&#39;&#39;</span>
   <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
     <span class="k">if</span> <span class="s1">&#39;num_objects&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
       <span class="n">config</span><span class="p">[</span><span class="s1">&#39;num_objects&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>

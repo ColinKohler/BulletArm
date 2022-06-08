@@ -8,6 +8,13 @@ from bulletarm.pybullet.utils.constants import NoValidPositionException
 from bulletarm.pybullet.equipments.tray import Tray
 
 class CloseLoopBlockInBowlEnv(CloseLoopEnv):
+  '''Close loop block in bowl task.
+
+  The robot needs to pick up a block and place it inside a bowl.
+
+  Args:
+    config (dict): Intialization arguments for the env
+  '''
   def __init__(self, config):
     if 'num_objects' not in config:
       config['num_objects'] = 2

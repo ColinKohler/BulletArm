@@ -4,7 +4,14 @@ from bulletarm.pybullet.utils import constants
 from bulletarm.pybullet.utils.constants import NoValidPositionException
 
 class HouseBuilding3Env(BaseEnv):
-  '''Open loop house building 3 task.'''
+  '''Open loop house building 3 task.
+
+  The robot needs to: (1) place two cubic blocks adjacent to each other, (2) put a cuboid on
+  top of the two cubic bricks, (3) put a roof on top of the cuboid.
+
+  Args:
+    config (dict): Intialization arguments for the env
+  '''
   def __init__(self, config):
     # env specific parameters
     if 'object_scale_range' not in config:
