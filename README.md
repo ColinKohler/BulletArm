@@ -5,13 +5,26 @@
 benchmark tasks in simulation alongside a collection of baseline algorithms.
 
 ## Table of Contents
-1. [Requirments](#requirments)
+1. [Dependencies](#dependencies)
 2. [Installation](#install)
 1. [Benchmarks](#benchmarks)
 5. [Cite](#cite)
 
-<a name="requirments"></a>
-## Requirments
+<a name="dependencies"></a>
+## Dependencies
+
+The library is based on Python 3.7+
+
+```
+attrdict
+matplotlib
+GitPython
+numpy>=1.19.5
+pybullet>=2.7.1
+scikit-image>=0.14.2
+scipy>=1.2.1
+tqdm
+```
 
 <a name="install"></a>
 ## Install
