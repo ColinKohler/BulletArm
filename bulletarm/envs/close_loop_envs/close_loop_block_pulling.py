@@ -8,6 +8,7 @@ from bulletarm.planners.close_loop_block_pulling_planner import CloseLoopBlockPu
 from bulletarm.pybullet.utils.constants import NoValidPositionException
 
 class CloseLoopBlockPullingEnv(CloseLoopEnv):
+  ''' Close loop block pulling task.'''
   def __init__(self, config):
     if 'object_scale_range' not in config:
       config['object_scale_range'] = [0.8, 0.8]

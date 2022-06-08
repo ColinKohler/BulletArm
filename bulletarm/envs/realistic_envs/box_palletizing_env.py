@@ -9,6 +9,7 @@ from bulletarm.pybullet.objects.pallet import Pallet
 from bulletarm.planners.box_palletizing_planner import BoxPalletizingPlanner
 
 class BoxPalletizingEnv(BaseEnv):
+  '''Open loop box palletizing task.'''
   def __init__(self, config):
     # env specific parameters
     if 'object_scale_range' not in config:

@@ -8,6 +8,7 @@ from bulletarm.planners.close_loop_block_picking_corner_planner import CloseLoop
 from bulletarm.pybullet.equipments.corner import Corner
 
 class CloseLoopBlockPickingCornerEnv(CloseLoopEnv):
+  '''Close loop corner block picking task.'''
   def __init__(self, config):
     if 'object_scale_range' not in config:
       config['object_scale_range'] = [1.2, 1.2]

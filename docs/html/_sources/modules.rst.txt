@@ -1,7 +1,7 @@
-helping_hands_rl_envs
+bulletarm
 =====================
 
 .. toctree::
    :maxdepth: 4
 
-   helping_hands_rl_envs
+  bulletarm 

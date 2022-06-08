@@ -11,9 +11,7 @@ from scipy.ndimage.interpolation import rotate
 import pybullet as pb
 
 class ObjectGrasping(BaseEnv):
-    '''
-  '''
-
+    '''Open loop object grasping task.'''
     def __init__(self, config):
         # env specific parameters
         if 'object_scale_range' not in config:

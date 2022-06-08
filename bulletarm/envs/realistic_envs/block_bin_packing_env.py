@@ -9,6 +9,7 @@ from bulletarm.pybullet.utils.constants import NoValidPositionException
 from bulletarm.planners.block_bin_packing_planner import BlockBinPackingPlanner
 
 class BlockBinPackingEnv(BaseEnv):
+  '''Open loop bin packing task.'''
   def __init__(self, config):
     # env specific parameters
     if 'object_scale_range' not in config:

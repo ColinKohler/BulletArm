@@ -4,7 +4,7 @@ from bulletarm.pybullet.utils import constants
 from bulletarm.pybullet.utils.constants import NoValidPositionException
 
 class HouseBuilding4Env(BaseEnv):
-  ''''''
+  '''Open loop house building 4 task.'''
   def __init__(self, config):
     # env specific parameters
     if 'object_scale_range' not in config:

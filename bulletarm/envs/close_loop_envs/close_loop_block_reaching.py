@@ -7,6 +7,7 @@ from bulletarm.pybullet.utils import transformations
 from bulletarm.planners.close_loop_block_picking_planner import CloseLoopBlockPickingPlanner
 
 class CloseLoopBlockReachingEnv(CloseLoopEnv):
+  ''' Close loop block reaching task.'''
   def __init__(self, config):
     super().__init__(config)
 

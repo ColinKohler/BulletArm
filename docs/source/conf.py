@@ -45,6 +45,7 @@ extensions = [
   'sphinx.ext.githubpages',
   'sphinx.ext.napoleon',
   'sphinx_rtd_theme',
+  'sphinx.ext.autosectionlabel'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -91,6 +92,9 @@ intershpinx_mapping = {
   'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
   'PyTorch': ('http://pytorch.org/docs/master/', None),
 }
+
+# Don't show entire module path
+add_module_names = False
 
 def setup(app):
   app.add_css_file('custom.css')

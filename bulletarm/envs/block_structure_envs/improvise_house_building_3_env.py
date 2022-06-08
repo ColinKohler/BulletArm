@@ -8,7 +8,7 @@ from bulletarm.pybullet.utils import pybullet_util
 from bulletarm.pybullet.utils.constants import NoValidPositionException
 
 class ImproviseHouseBuilding3Env(BaseEnv):
-  ''''''
+  '''Open loop improvise house building 3 task.'''
   def __init__(self, config):
     # env specific parameters
     if 'object_scale_range' not in config:

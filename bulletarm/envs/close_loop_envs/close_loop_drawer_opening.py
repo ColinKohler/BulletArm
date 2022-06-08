@@ -7,6 +7,7 @@ from bulletarm.planners.close_loop_drawer_opening_planner import CloseLoopDrawer
 from bulletarm.pybullet.equipments.drawer import Drawer
 
 class CloseLoopDrawerOpeningEnv(CloseLoopEnv):
+  '''Close loop drawer opening task.'''
   def __init__(self, config):
     super().__init__(config)
     self.drawer = Drawer()

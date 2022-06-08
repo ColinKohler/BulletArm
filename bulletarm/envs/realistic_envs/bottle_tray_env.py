@@ -8,6 +8,7 @@ from bulletarm.pybullet.utils.constants import NoValidPositionException
 from bulletarm.planners.bottle_tray_planner import BottleTrayPlanner
 
 class BottleTrayEnv(BaseEnv):
+  '''Open loop bottle arrangement task.'''
   def __init__(self, config):
     # env specific parameters
     if 'object_scale_range' not in config:

@@ -7,6 +7,7 @@ from bulletarm.pybullet.utils import transformations
 from bulletarm.planners.close_loop_block_picking_planner import CloseLoopBlockPickingPlanner
 
 class CloseLoopHouseholdPickingEnv(CloseLoopEnv):
+  '''Close loop object grasping task.'''
   def __init__(self, config):
     if 'object_scale_range' not in config:
       config['object_scale_range'] = [0.6, 0.6]
