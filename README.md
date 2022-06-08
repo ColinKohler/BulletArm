@@ -125,9 +125,8 @@ Benchmark and Learning Framework](https://arxiv.org/abs/2205.14292). Please cite
       year = {2022},
       copyright = {arXiv.org perpetual, non-exclusive license}
 } 
-Feel free to [contact us](mailto:kohler.c@northeastern.edu).
 ```
+Feel free to [contact us](mailto:kohler.c@northeastern.edu).
 
 ## License
-
-*BulletArm* is distributed under MIT license. See LICENSE file.
+*BulletArm* is distributed under GNU General Public License. See [License](https://github.com/ColinKohler/BulletArm/blob/main/LICENSE).
