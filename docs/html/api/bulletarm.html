@@ -296,20 +296,10 @@ number of envs each in their own seperate process.</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.areObjectsInWorkspace">
-<span class="sig-name descname"><span class="pre">areObjectsInWorkspace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.areObjectsInWorkspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.areObjectsInWorkspace" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.close">
 <span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.close" title="Permalink to this definition"></a></dt>
 <dd><p>Close all worker processes.</p>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.didBlockFall">
-<span class="sig-name descname"><span class="pre">didBlockFall</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.didBlockFall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.didBlockFall" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.gatherDeconstructTransitions">
@@ -326,11 +316,6 @@ number of envs each in their own seperate process.</p>
 <p>Returns: list of transitions. Each transition is in the form of
 ((state, in_hand, obs), action, reward, done, (next_state, next_in_hand, next_obs))</p>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.getActiveEnvId">
-<span class="sig-name descname"><span class="pre">getActiveEnvId</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.getActiveEnvId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.getActiveEnvId" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.getEmptyInHand">
@@ -355,59 +340,6 @@ number of envs each in their own seperate process.</p>
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.getObjectPoses">
-<span class="sig-name descname"><span class="pre">getObjectPoses</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.getObjectPoses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.getObjectPoses" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.getObjectPositions">
-<span class="sig-name descname"><span class="pre">getObjectPositions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.getObjectPositions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.getObjectPositions" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.getObs">
-<span class="sig-name descname"><span class="pre">getObs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.getObs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.getObs" title="Permalink to this definition"></a></dt>
-<dd><p>Get the current observation for the environments.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>(hand state, in-hand observation, workspace observation)</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>(numpy.array, numpy.array, numpy.array)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.getRandomAction">
-<span class="sig-name descname"><span class="pre">getRandomAction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.getRandomAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.getRandomAction" title="Permalink to this definition"></a></dt>
-<dd><p>Get a random action for each environment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Actions</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>numpy.array</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.getStepsLeft">
-<span class="sig-name descname"><span class="pre">getStepsLeft</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.getStepsLeft"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.getStepsLeft" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.getValue">
-<span class="sig-name descname"><span class="pre">getValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.getValue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.getValue" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.isSimValid">
-<span class="sig-name descname"><span class="pre">isSimValid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.isSimValid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.isSimValid" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.loadFromFile">
@@ -481,11 +413,6 @@ number of envs each in their own seperate process.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.setPosCandidate">
-<span class="sig-name descname"><span class="pre">setPosCandidate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_candidate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.setPosCandidate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.setPosCandidate" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.step">
 <span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.step" title="Permalink to this definition"></a></dt>
 <dd><p>Step the environments synchronously.</p>
@@ -548,63 +475,8 @@ number of envs each in their own seperate process.</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="bulletarm.runner.SingleRunner.areObjectsInWorkspace">
-<span class="sig-name descname"><span class="pre">areObjectsInWorkspace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#SingleRunner.areObjectsInWorkspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.SingleRunner.areObjectsInWorkspace" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bulletarm.runner.SingleRunner.didBlockFall">
-<span class="sig-name descname"><span class="pre">didBlockFall</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#SingleRunner.didBlockFall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.SingleRunner.didBlockFall" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bulletarm.runner.SingleRunner.getActiveEnvId">
-<span class="sig-name descname"><span class="pre">getActiveEnvId</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#SingleRunner.getActiveEnvId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.SingleRunner.getActiveEnvId" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bulletarm.runner.SingleRunner.getEmptyInHand">
-<span class="sig-name descname"><span class="pre">getEmptyInHand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#SingleRunner.getEmptyInHand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.SingleRunner.getEmptyInHand" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="bulletarm.runner.SingleRunner.getNextAction">
 <span class="sig-name descname"><span class="pre">getNextAction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#SingleRunner.getNextAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.SingleRunner.getNextAction" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bulletarm.runner.SingleRunner.getObjectPoses">
-<span class="sig-name descname"><span class="pre">getObjectPoses</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#SingleRunner.getObjectPoses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.SingleRunner.getObjectPoses" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bulletarm.runner.SingleRunner.getObjectPositions">
-<span class="sig-name descname"><span class="pre">getObjectPositions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#SingleRunner.getObjectPositions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.SingleRunner.getObjectPositions" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bulletarm.runner.SingleRunner.getObs">
-<span class="sig-name descname"><span class="pre">getObs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#SingleRunner.getObs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.SingleRunner.getObs" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bulletarm.runner.SingleRunner.getRandomAction">
-<span class="sig-name descname"><span class="pre">getRandomAction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#SingleRunner.getRandomAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.SingleRunner.getRandomAction" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bulletarm.runner.SingleRunner.getStepsLeft">
-<span class="sig-name descname"><span class="pre">getStepsLeft</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#SingleRunner.getStepsLeft"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.SingleRunner.getStepsLeft" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bulletarm.runner.SingleRunner.getValue">
-<span class="sig-name descname"><span class="pre">getValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#SingleRunner.getValue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.SingleRunner.getValue" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bulletarm.runner.SingleRunner.isSimValid">
-<span class="sig-name descname"><span class="pre">isSimValid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#SingleRunner.isSimValid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.SingleRunner.isSimValid" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -660,11 +532,6 @@ number of envs each in their own seperate process.</p>
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bulletarm.runner.SingleRunner.setPosCandidate">
-<span class="sig-name descname"><span class="pre">setPosCandidate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_candidate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#SingleRunner.setPosCandidate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.SingleRunner.setPosCandidate" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bulletarm.runner.SingleRunner.step">

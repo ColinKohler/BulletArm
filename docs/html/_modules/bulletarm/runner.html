@@ -76,7 +76,7 @@
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
-<div class="viewcode-block" id="worker"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.worker">[docs]</a><span class="k">def</span> <span class="nf">worker</span><span class="p">(</span><span class="n">remote</span><span class="p">,</span> <span class="n">parent_remote</span><span class="p">,</span> <span class="n">env_fn</span><span class="p">,</span> <span class="n">planner_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">worker</span><span class="p">(</span><span class="n">remote</span><span class="p">,</span> <span class="n">parent_remote</span><span class="p">,</span> <span class="n">env_fn</span><span class="p">,</span> <span class="n">planner_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
   <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">  Worker function which interacts with the environment over the remove connection</span>
 
@@ -117,29 +117,8 @@
       <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;reset&#39;</span><span class="p">:</span>
         <span class="n">obs</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
         <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
-      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;get_obs&#39;</span><span class="p">:</span>
-        <span class="n">obs</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">_getObservation</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">last_action</span><span class="p">)</span>
-        <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
       <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;get_spaces&#39;</span><span class="p">:</span>
         <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="n">env</span><span class="o">.</span><span class="n">obs_shape</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">action_shape</span><span class="p">))</span>
-      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;get_object_positions&#39;</span><span class="p">:</span>
-        <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">getObjectPositions</span><span class="p">())</span>
-      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;get_object_poses&#39;</span><span class="p">:</span>
-        <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">getObjectPoses</span><span class="p">())</span>
-      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;set_pos_candidate&#39;</span><span class="p">:</span>
-        <span class="n">env</span><span class="o">.</span><span class="n">setPosCandidate</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;did_block_fall&#39;</span><span class="p">:</span>
-        <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">didBlockFall</span><span class="p">())</span>
-      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;are_objects_in_workspace&#39;</span><span class="p">:</span>
-        <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">areObjectsInWorkspace</span><span class="p">())</span>
-      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;is_sim_valid&#39;</span><span class="p">:</span>
-        <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">isSimValid</span><span class="p">())</span>
-      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;get_value&#39;</span><span class="p">:</span>
-        <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">planner</span><span class="o">.</span><span class="n">getValue</span><span class="p">())</span>
-      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;get_step_left&#39;</span><span class="p">:</span>
-        <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">planner</span><span class="o">.</span><span class="n">getStepLeft</span><span class="p">())</span>
-      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;get_active_env_id&#39;</span><span class="p">:</span>
-        <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">active_env_id</span><span class="p">)</span>
       <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;get_empty_in_hand&#39;</span><span class="p">:</span>
         <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">getEmptyInHand</span><span class="p">())</span>
       <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;get_env_id&#39;</span><span class="p">:</span>
@@ -147,21 +126,6 @@
       <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;get_next_action&#39;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">planner</span><span class="p">:</span>
           <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">planner</span><span class="o">.</span><span class="n">getNextAction</span><span class="p">())</span>
-        <span class="k">else</span><span class="p">:</span>
-          <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Attempting to use a planner which was not initialized.&#39;</span><span class="p">)</span>
-      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;get_random_action&#39;</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">planner</span><span class="p">:</span>
-          <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">planner</span><span class="o">.</span><span class="n">getRandomAction</span><span class="p">())</span>
-        <span class="k">else</span><span class="p">:</span>
-          <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Attempting to use a planner which was not initialized.&#39;</span><span class="p">)</span>
-      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;get_value&#39;</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">planner</span><span class="p">:</span>
-          <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">planner</span><span class="o">.</span><span class="n">getValue</span><span class="p">())</span>
-        <span class="k">else</span><span class="p">:</span>
-          <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Attempting to use a planner which was not initialized.&#39;</span><span class="p">)</span>
-      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;get_steps_left&#39;</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">planner</span><span class="p">:</span>
-          <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">planner</span><span class="o">.</span><span class="n">getStepsLeft</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
           <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Attempting to use a planner which was not initialized.&#39;</span><span class="p">)</span>
       <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;save&#39;</span><span class="p">:</span>
@@ -186,7 +150,7 @@
       <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">NotImplementerError</span>
   <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;MultiRunner worker: caught keyboard interrupt&#39;</span><span class="p">)</span></div>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;MultiRunner worker: caught keyboard interrupt&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MultiRunner"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner">[docs]</a><span class="k">class</span> <span class="nc">MultiRunner</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
   <span class="sd">&#39;&#39;&#39;</span>
@@ -340,16 +304,6 @@
 
     <span class="k">return</span> <span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">hand_obs</span><span class="p">,</span> <span class="n">obs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MultiRunner.getActiveEnvId"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.getActiveEnvId">[docs]</a>  <span class="k">def</span> <span class="nf">getActiveEnvId</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
-      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;get_active_env_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
-    <span class="n">active_env_id</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">]</span>
-    <span class="n">active_env_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">active_env_id</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">active_env_id</span></div>
-
 <div class="viewcode-block" id="MultiRunner.close"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.close">[docs]</a>  <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Close all worker processes.</span>
@@ -401,26 +355,6 @@
       <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;load_from_file&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))))</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="MultiRunner.getObjectPositions"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.getObjectPositions">[docs]</a>  <span class="k">def</span> <span class="nf">getObjectPositions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
-      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;get_object_positions&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
-
-    <span class="n">positions</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="MultiRunner.getObjectPoses"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.getObjectPoses">[docs]</a>  <span class="k">def</span> <span class="nf">getObjectPoses</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
-      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;get_object_poses&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
-
-    <span class="n">poses</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">poses</span><span class="p">)</span></div>
-
 <div class="viewcode-block" id="MultiRunner.getNextAction"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.getNextAction">[docs]</a>  <span class="k">def</span> <span class="nf">getNextAction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Get the next action from the planner for each environment.</span>
@@ -433,95 +367,6 @@
     <span class="n">action</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">]</span>
     <span class="n">action</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">action</span></div>
-
-<div class="viewcode-block" id="MultiRunner.getRandomAction"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.getRandomAction">[docs]</a>  <span class="k">def</span> <span class="nf">getRandomAction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Get a random action for each environment.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">      numpy.array: Actions</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
-      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;get_random_action&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
-    <span class="n">action</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">]</span>
-    <span class="n">action</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">action</span></div>
-
-<div class="viewcode-block" id="MultiRunner.getValue"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.getValue">[docs]</a>  <span class="k">def</span> <span class="nf">getValue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
-      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;get_value&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
-    <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">]</span>
-    <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">values</span></div>
-
-<div class="viewcode-block" id="MultiRunner.getStepsLeft"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.getStepsLeft">[docs]</a>  <span class="k">def</span> <span class="nf">getStepsLeft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
-      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;get_steps_left&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
-    <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">]</span>
-    <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">values</span></div>
-
-<div class="viewcode-block" id="MultiRunner.getObs"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.getObs">[docs]</a>  <span class="k">def</span> <span class="nf">getObs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Get the current observation for the environments.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">      (numpy.array, numpy.array, numpy.array): (hand state, in-hand observation, workspace observation)</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
-      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;get_obs&#39;</span><span class="p">))</span>
-
-    <span class="n">obs</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">]</span>
-    <span class="n">states</span><span class="p">,</span> <span class="n">hand_obs</span><span class="p">,</span> <span class="n">obs</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">obs</span><span class="p">)</span>
-
-    <span class="n">states</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">states</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-    <span class="n">hand_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">hand_obs</span><span class="p">)</span>
-    <span class="n">obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">states</span><span class="p">,</span> <span class="n">hand_obs</span><span class="p">,</span> <span class="n">obs</span></div>
-
-<div class="viewcode-block" id="MultiRunner.areObjectsInWorkspace"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.areObjectsInWorkspace">[docs]</a>  <span class="k">def</span> <span class="nf">areObjectsInWorkspace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
-      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;are_objects_in_workspace&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
-    <span class="n">in_workspace</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">]</span>
-    <span class="n">in_workspace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">in_workspace</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">in_workspace</span></div>
-
-<div class="viewcode-block" id="MultiRunner.isSimValid"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.isSimValid">[docs]</a>  <span class="k">def</span> <span class="nf">isSimValid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
-      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;is_sim_valid&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
-    <span class="n">valid</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">]</span>
-    <span class="n">valid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">valid</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">valid</span></div>
-
-<div class="viewcode-block" id="MultiRunner.didBlockFall"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.didBlockFall">[docs]</a>  <span class="k">def</span> <span class="nf">didBlockFall</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
-      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;did_block_fall&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
-    <span class="n">did_block_fall</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">]</span>
-    <span class="n">did_block_fall</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">did_block_fall</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">did_block_fall</span></div>
-
-<div class="viewcode-block" id="MultiRunner.setPosCandidate"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.setPosCandidate">[docs]</a>  <span class="k">def</span> <span class="nf">setPosCandidate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos_candidate</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
-      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;set_pos_candidate&#39;</span><span class="p">,</span> <span class="n">pos_candidate</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="MultiRunner.getEmptyInHand"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.getEmptyInHand">[docs]</a>  <span class="k">def</span> <span class="nf">getEmptyInHand</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -726,18 +571,6 @@
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">loadFromFile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SingleRunner.getObjectPositions"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.SingleRunner.getObjectPositions">[docs]</a>  <span class="k">def</span> <span class="nf">getObjectPositions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">getObjectPositions</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="SingleRunner.getObjectPoses"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.SingleRunner.getObjectPoses">[docs]</a>  <span class="k">def</span> <span class="nf">getObjectPoses</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">getObjectPoses</span><span class="p">()</span></div>
-
 <div class="viewcode-block" id="SingleRunner.getNextAction"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.SingleRunner.getNextAction">[docs]</a>  <span class="k">def</span> <span class="nf">getNextAction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 
@@ -746,79 +579,6 @@
       <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner</span><span class="o">.</span><span class="n">getNextAction</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
       <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Attempting to use a planner which was not initialized.&#39;</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="SingleRunner.getRandomAction"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.SingleRunner.getRandomAction">[docs]</a>  <span class="k">def</span> <span class="nf">getRandomAction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner</span><span class="p">:</span>
-      <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner</span><span class="o">.</span><span class="n">getRandomAction</span><span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span>
-      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Attempting to use a planner which was not initialized.&#39;</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="SingleRunner.getValue"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.SingleRunner.getValue">[docs]</a>  <span class="k">def</span> <span class="nf">getValue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner</span><span class="p">:</span>
-      <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner</span><span class="o">.</span><span class="n">getValue</span><span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span>
-      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Attempting to use a planner which was not initialized.&#39;</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="SingleRunner.getStepsLeft"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.SingleRunner.getStepsLeft">[docs]</a>  <span class="k">def</span> <span class="nf">getStepsLeft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner</span><span class="p">:</span>
-      <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner</span><span class="o">.</span><span class="n">getStepsLeft</span><span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span>
-      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Attempting to use a planner which was not initialized.&#39;</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="SingleRunner.getActiveEnvId"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.SingleRunner.getActiveEnvId">[docs]</a>  <span class="k">def</span> <span class="nf">getActiveEnvId</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">active_env_id</span></div>
-
-<div class="viewcode-block" id="SingleRunner.areObjectsInWorkspace"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.SingleRunner.areObjectsInWorkspace">[docs]</a>  <span class="k">def</span> <span class="nf">areObjectsInWorkspace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner</span><span class="p">:</span>
-      <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner</span><span class="o">.</span><span class="n">areObjectsInWorkspace</span><span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span>
-      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Attempting to use a planner which was not initialized.&#39;</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="SingleRunner.isSimValid"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.SingleRunner.isSimValid">[docs]</a>  <span class="k">def</span> <span class="nf">isSimValid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">isSimValid</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="SingleRunner.getObs"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.SingleRunner.getObs">[docs]</a>  <span class="k">def</span> <span class="nf">getObs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">_getObservation</span><span class="p">(</span><span class="n">action</span> <span class="k">if</span> <span class="n">action</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">last_action</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="SingleRunner.didBlockFall"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.SingleRunner.didBlockFall">[docs]</a>  <span class="k">def</span> <span class="nf">didBlockFall</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">didBlockFall</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="SingleRunner.setPosCandidate"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.SingleRunner.setPosCandidate">[docs]</a>  <span class="k">def</span> <span class="nf">setPosCandidate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos_candidate</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">setPosCandidate</span><span class="p">(</span><span class="n">pos_candidate</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="SingleRunner.getEmptyInHand"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.SingleRunner.getEmptyInHand">[docs]</a>  <span class="k">def</span> <span class="nf">getEmptyInHand</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">getEmptyInHand</span><span class="p">()</span></div>
 
   <span class="nd">@staticmethod</span>
   <span class="k">def</span> <span class="nf">getEnvGitHash</span><span class="p">():</span>

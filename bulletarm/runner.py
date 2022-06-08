@@ -52,29 +52,8 @@ def worker(remote, parent_remote, env_fn, planner_fn=None):
       elif cmd == 'reset':
         obs = env.reset()
         remote.send(obs)
-      elif cmd == 'get_obs':
-        obs = env._getObservation(env.last_action)
-        remote.send(obs)
       elif cmd == 'get_spaces':
         remote.send((env.obs_shape, env.action_space, env.action_shape))
-      elif cmd == 'get_object_positions':
-        remote.send(env.getObjectPositions())
-      elif cmd == 'get_object_poses':
-        remote.send(env.getObjectPoses())
-      elif cmd == 'set_pos_candidate':
-        env.setPosCandidate(data)
-      elif cmd == 'did_block_fall':
-        remote.send(env.didBlockFall())
-      elif cmd == 'are_objects_in_workspace':
-        remote.send(env.areObjectsInWorkspace())
-      elif cmd == 'is_sim_valid':
-        remote.send(env.isSimValid())
-      elif cmd == 'get_value':
-        remote.send(planner.getValue())
-      elif cmd == 'get_step_left':
-        remote.send(planner.getStepLeft())
-      elif cmd == 'get_active_env_id':
-        remote.send(env.active_env_id)
       elif cmd == 'get_empty_in_hand':
         remote.send(env.getEmptyInHand())
       elif cmd == 'get_env_id':
@@ -82,21 +61,6 @@ def worker(remote, parent_remote, env_fn, planner_fn=None):
       elif cmd == 'get_next_action':
         if planner:
           remote.send(planner.getNextAction())
-        else:
-          raise ValueError('Attempting to use a planner which was not initialized.')
-      elif cmd == 'get_random_action':
-        if planner:
-          remote.send(planner.getRandomAction())
-        else:
-          raise ValueError('Attempting to use a planner which was not initialized.')
-      elif cmd == 'get_value':
-        if planner:
-          remote.send(planner.getValue())
-        else:
-          raise ValueError('Attempting to use a planner which was not initialized.')
-      elif cmd == 'get_steps_left':
-        if planner:
-          remote.send(planner.getStepsLeft())
         else:
           raise ValueError('Attempting to use a planner which was not initialized.')
       elif cmd == 'save':
@@ -275,16 +239,6 @@ class MultiRunner(object):
 
     return (states, hand_obs, obs)
 
-  def getActiveEnvId(self):
-    '''
-    '''
-    for remote in self.remotes:
-      remote.send(('get_active_env_id', None))
-    active_env_id = [remote.recv() for remote in self.remotes]
-    active_env_id = np.stack(active_env_id)
-
-    return active_env_id
-
   def close(self):
     '''
     Close all worker processes.
@@ -336,26 +290,6 @@ class MultiRunner(object):
       remote.send(('load_from_file', os.path.join(path, str(i))))
     return np.array([remote.recv() for remote in self.remotes]).all()
 
-  def getObjectPositions(self):
-    '''
-
-    '''
-    for remote in self.remotes:
-      remote.send(('get_object_positions', None))
-
-    positions = [remote.recv() for remote in self.remotes]
-    return np.array(positions)
-
-  def getObjectPoses(self):
-    '''
-
-    '''
-    for remote in self.remotes:
-      remote.send(('get_object_poses', None))
-
-    poses = [remote.recv() for remote in self.remotes]
-    return np.array(poses)
-
   def getNextAction(self):
     '''
     Get the next action from the planner for each environment.
@@ -368,95 +302,6 @@ class MultiRunner(object):
     action = [remote.recv() for remote in self.remotes]
     action = np.stack(action)
     return action
-
-  def getRandomAction(self):
-    '''
-    Get a random action for each environment.
-
-    Returns:
-      numpy.array: Actions
-    '''
-    for remote in self.remotes:
-      remote.send(('get_random_action', None))
-    action = [remote.recv() for remote in self.remotes]
-    action = np.stack(action)
-    return action
-
-  def getValue(self):
-    '''
-
-    '''
-    for remote in self.remotes:
-      remote.send(('get_value', None))
-    values = [remote.recv() for remote in self.remotes]
-    values = np.stack(values)
-    return values
-
-  def getStepsLeft(self):
-    '''
-
-    '''
-    for remote in self.remotes:
-      remote.send(('get_steps_left', None))
-    values = [remote.recv() for remote in self.remotes]
-    values = np.stack(values)
-    return values
-
-  def getObs(self):
-    '''
-    Get the current observation for the environments.
-
-    Returns:
-      (numpy.array, numpy.array, numpy.array): (hand state, in-hand observation, workspace observation)
-    '''
-    for remote in self.remotes:
-      remote.send(('get_obs'))
-
-    obs = [remote.recv() for remote in self.remotes]
-    states, hand_obs, obs = zip(*obs)
-
-    states = np.stack(states).astype(float)
-    hand_obs = np.stack(hand_obs)
-    obs = np.stack(obs)
-
-    return states, hand_obs, obs
-
-  def areObjectsInWorkspace(self):
-    '''
-
-    '''
-    for remote in self.remotes:
-      remote.send(('are_objects_in_workspace', None))
-    in_workspace = [remote.recv() for remote in self.remotes]
-    in_workspace = np.stack(in_workspace)
-    return in_workspace
-
-  def isSimValid(self):
-    '''
-
-    '''
-    for remote in self.remotes:
-      remote.send(('is_sim_valid', None))
-    valid = [remote.recv() for remote in self.remotes]
-    valid = np.stack(valid)
-    return valid
-
-  def didBlockFall(self):
-    '''
-
-    '''
-    for remote in self.remotes:
-      remote.send(('did_block_fall', None))
-    did_block_fall = [remote.recv() for remote in self.remotes]
-    did_block_fall = np.stack(did_block_fall)
-    return did_block_fall
-
-  def setPosCandidate(self, pos_candidate):
-    '''
-
-    '''
-    for remote in self.remotes:
-      remote.send(('set_pos_candidate', pos_candidate))
 
   def getEmptyInHand(self):
     '''
@@ -661,18 +506,6 @@ class SingleRunner(object):
     '''
     return self.env.loadFromFile(path)
 
-  def getObjectPositions(self):
-    '''
-
-    '''
-    return self.env.getObjectPositions()
-
-  def getObjectPoses(self):
-    '''
-
-    '''
-    return self.env.getObjectPoses()
-
   def getNextAction(self):
     '''
 
@@ -681,79 +514,6 @@ class SingleRunner(object):
       return self.planner.getNextAction()
     else:
       raise ValueError('Attempting to use a planner which was not initialized.')
-
-  def getRandomAction(self):
-    '''
-
-    '''
-    if self.planner:
-      return self.planner.getRandomAction()
-    else:
-      raise ValueError('Attempting to use a planner which was not initialized.')
-
-  def getValue(self):
-    '''
-
-    '''
-    if self.planner:
-      return self.planner.getValue()
-    else:
-      raise ValueError('Attempting to use a planner which was not initialized.')
-
-  def getStepsLeft(self):
-    '''
-
-    '''
-    if self.planner:
-      return self.planner.getStepsLeft()
-    else:
-      raise ValueError('Attempting to use a planner which was not initialized.')
-
-  def getActiveEnvId(self):
-    '''
-
-    '''
-    return self.env.active_env_id
-
-  def areObjectsInWorkspace(self):
-    '''
-
-    '''
-    if self.planner:
-      return self.planner.areObjectsInWorkspace()
-    else:
-      raise ValueError('Attempting to use a planner which was not initialized.')
-
-  def isSimValid(self):
-    '''
-
-    '''
-    return self.env.isSimValid()
-
-
-  def getObs(self, action=None):
-    '''
-
-    '''
-    return self.env._getObservation(action if action else self.env.last_action)
-
-  def didBlockFall(self):
-    '''
-
-    '''
-    return self.env.didBlockFall()
-
-  def setPosCandidate(self, pos_candidate):
-    '''
-
-    '''
-    self.env.setPosCandidate(pos_candidate)
-
-  def getEmptyInHand(self):
-    '''
-
-    '''
-    return self.env.getEmptyInHand()
 
   @staticmethod
   def getEnvGitHash():
