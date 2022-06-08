@@ -13,7 +13,7 @@ benchmark tasks in simulation alongside a collection of baseline algorithms.
 <a name="dependencies"></a>
 ## Dependencies
 
-The library is based on Python 3.7+
+The library is based on Python>=3.7
 
 ```
 attrdict
