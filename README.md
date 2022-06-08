@@ -7,7 +7,6 @@ benchmark tasks in simulation alongside a collection of baseline algorithms. Ple
 ## Table of Contents
 1. [Requirments](#requirments)
 2. [Installation](#install)
-4. [Parameters](#parameters)
 1. [Benchmarks](#benchmarks)
 5. [Publications](#publications)
 
