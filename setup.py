@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
-setup(name='helping_hands_rl_envs',
+setup(name='BulletArm',
       version='0.1',
-      author='Colin Kohler and Dian Wang and Ondrej Biza',
-      url='https://github.com/ColinKohler/helping_hands_rl_envs',
+      author='Colin Kohler and Dian Wang',
+      url='https://github.com/ColinKohler/BulletArm',
       packages=find_packages(),
       include_package_data=True,
       )
