@@ -30,8 +30,8 @@ tqdm
 ## Install
 1. Clone this repo
     ```
-    git clone https://github.com/ColinKohler/helping_hands_rl_envs.git
-    cd helping_hands_rl_envs
+    git clone https://github.com/ColinKohler/BulletArm.git
+    cd BulletArm
     ```
 2. Install dependencies
     ```
@@ -40,6 +40,10 @@ tqdm
 3. Install this package
     ```
     pip install .
+    ```
+    Or add to your PYTHONPATH
+    ```
+    export PYTHONPATH=/path/to/BulletArm/:$PYTHONPATH
     ```
 4. Run the block stacking demo
     ```
