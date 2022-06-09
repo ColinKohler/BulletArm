@@ -121,6 +121,66 @@ EnvRunner
 
 ----
 
+Configuration Parameters
+==========================
+
+A task in BulletArm is defined as the combination of the environment and the configuration
+passed to that environemnt. The environment details the high level details for the task i.e.
+the initial state, goal state, invalid states, etc. The configuration contains lower level details which
+can add to task variety. The default config can be found `here <https://github.com/ColinKohler/BulletArm/blob/main/bulletarm/envs/configs.py>`_.
+We briefly detail the various config parameters below but additional information can be found in the default config.
+
+.. list-table::
+  :widths: 25 25 25
+  :header-rows: 1
+  :align: center
+
+  * - Parameter 
+    - Example
+    - Description 
+  * - render
+    - False/True
+    - Render the PyBullet GUI or run headless
+  * - max_steps
+    - 10
+    - The maximum number of steps per episode.
+  * - workspace
+    - [[0, 0.2], [0, 0.2], [0, 0.2]]
+    - The workspace in terms of the range in x, y, and z.
+  * - workspace_check
+    - point/bounding_box
+    - How to determine if a object is within the workspace by either check the COM of the object of the bounding box.
+  * - robot 
+    - kuka
+    - The type of the robot to use in the simulator. 
+  * - action_sequence
+    - pxyzr
+    - The action space the agent will act within. 'pxyzr' defines a 5-vector action including the gripper action (p), the position of the gripper (x,y,z),
+      and its top-down rotation (r). 
+  * - obs_size
+    - 128
+    - The pixel size of the heightmap.
+  * - in_hand_size
+    - 24
+    - The pixel size of the in-hand image.
+  * - random_orientation
+    - True
+    - Whether or not to generate objects with a random orientation
+  * - object_scale_range
+    - [0.6, 0.7]
+    - The scale applied to objects in the workspace. Addes variation and helps with generalization.
+  * - fast_mode
+    - False/True
+    - If True, teleports the arm when possible to speed up simulation. Bad for more dynamical domains & closed-loop control.
+  * - phyics_mode
+    - fast, slow
+    - The type of physics to use during simulation. Can be run faster with less accurate physics or slower with more accurate physics.
+  * - num_objects
+    - 3
+    - Specifies the number of objects to generate in domains which have a variable number of objects.
+
+----
+
 Robots
 ===========
 Different robotic arms can lead to drastically different policies due to the differing kinematics between arms. We

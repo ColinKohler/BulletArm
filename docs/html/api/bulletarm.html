@@ -46,6 +46,7 @@
 <li><a class="reference internal" href="#envrunner">EnvRunner</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#configuration-parameters">Configuration Parameters</a></li>
 <li><a class="reference internal" href="#robots">Robots</a></li>
 </ul>
 </div>
@@ -556,6 +557,83 @@ number of envs each in their own seperate process.</p>
 </dd></dl>
 
 </section>
+</section>
+<hr class="docutils" />
+<section id="configuration-parameters">
+<h1>Configuration Parameters<a class="headerlink" href="#configuration-parameters" title="Permalink to this heading"></a></h1>
+<p>A task in BulletArm is defined as the combination of the environment and the configuration
+passed to that environemnt. The environment details the high level details for the task i.e.
+the initial state, goal state, invalid states, etc. The configuration contains lower level details which
+can add to task variety. The default config can be found <a class="reference external" href="https://github.com/ColinKohler/BulletArm/blob/main/bulletarm/envs/configs.py">here</a>.
+We briefly detail the various config parameters below but additional information can be found in the default config.</p>
+<table class="colwidths-given docutils align-center">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Example</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>render</p></td>
+<td><p>False/True</p></td>
+<td><p>Render the PyBullet GUI or run headless</p></td>
+</tr>
+<tr class="row-odd"><td><p>max_steps</p></td>
+<td><p>10</p></td>
+<td><p>The maximum number of steps per episode.</p></td>
+</tr>
+<tr class="row-even"><td><p>workspace</p></td>
+<td><p>[[0, 0.2], [0, 0.2], [0, 0.2]]</p></td>
+<td><p>The workspace in terms of the range in x, y, and z.</p></td>
+</tr>
+<tr class="row-odd"><td><p>workspace_check</p></td>
+<td><p>point/bounding_box</p></td>
+<td><p>How to determine if a object is within the workspace by either check the COM of the object of the bounding box.</p></td>
+</tr>
+<tr class="row-even"><td><p>robot</p></td>
+<td><p>kuka</p></td>
+<td><p>The type of the robot to use in the simulator.</p></td>
+</tr>
+<tr class="row-odd"><td><p>action_sequence</p></td>
+<td><p>pxyzr</p></td>
+<td><p>The action space the agent will act within. ‘pxyzr’ defines a 5-vector action including the gripper action (p), the position of the gripper (x,y,z),
+and its top-down rotation (r).</p></td>
+</tr>
+<tr class="row-even"><td><p>obs_size</p></td>
+<td><p>128</p></td>
+<td><p>The pixel size of the heightmap.</p></td>
+</tr>
+<tr class="row-odd"><td><p>in_hand_size</p></td>
+<td><p>24</p></td>
+<td><p>The pixel size of the in-hand image.</p></td>
+</tr>
+<tr class="row-even"><td><p>random_orientation</p></td>
+<td><p>True</p></td>
+<td><p>Whether or not to generate objects with a random orientation</p></td>
+</tr>
+<tr class="row-odd"><td><p>object_scale_range</p></td>
+<td><p>[0.6, 0.7]</p></td>
+<td><p>The scale applied to objects in the workspace. Addes variation and helps with generalization.</p></td>
+</tr>
+<tr class="row-even"><td><p>fast_mode</p></td>
+<td><p>False/True</p></td>
+<td><p>If True, teleports the arm when possible to speed up simulation. Bad for more dynamical domains &amp; closed-loop control.</p></td>
+</tr>
+<tr class="row-odd"><td><p>phyics_mode</p></td>
+<td><p>fast, slow</p></td>
+<td><p>The type of physics to use during simulation. Can be run faster with less accurate physics or slower with more accurate physics.</p></td>
+</tr>
+<tr class="row-even"><td><p>num_objects</p></td>
+<td><p>3</p></td>
+<td><p>Specifies the number of objects to generate in domains which have a variable number of objects.</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 <hr class="docutils" />
 <section id="robots">
