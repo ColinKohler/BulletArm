@@ -42,18 +42,8 @@ tqdm
     pip install .
     ```
 4. Run the block stacking demo
-    ```python
-    from bulletarm import env_factory
-    # environment parameters
-    env_config = {'render': True}
-    # create 1 block_stacking environment
-    env = env_factory.createEnvs(1, 'block_stacking', env_config)
-    env.reset()
-    for i in range(5, -1, -1):
-        action = env.getNextAction()
-        (states_, in_hands_, obs_), rewards, dones = env.step(action)
-        input('press enter to continue')
-    env.close()
+    ```
+    python tutorials/block_stacking_demo.py
     ```
 <a name="benchmarks"></a>
 ## Benchmarks
