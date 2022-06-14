@@ -7,7 +7,8 @@ benchmark tasks in simulation alongside a collection of baseline algorithms.
 ## Table of Contents
 1. [Dependencies](#dependencies)
 2. [Installation](#install)
-1. [Benchmarks](#benchmarks)
+3. [Benchmarks](#benchmarks)
+4. [Contributions](#contributions)
 5. [Cite](#cite)
 
 <a name="dependencies"></a>
@@ -115,6 +116,11 @@ python main.py --algorithm=[algorithm] --action_sequence=pxyz --random_orientati
 
 #### Additional Training Arguments
 See [bulletarm_baselines/equi_rl/utils/parameters.py](bulletarm_baselines/equi_rl/utils/parameters.py)
+
+<a name="contributions"></a>
+## Contributions
+We hope that other researchers will help us extend this package by adding new tasks, robots, etc. Please see the 
+[Contributions section](https://colinkohler.github.io/BulletArm/html/api/contributions.html) of the documentation for additional details.
 
 <a name="cite"></a>
 ## Cite
