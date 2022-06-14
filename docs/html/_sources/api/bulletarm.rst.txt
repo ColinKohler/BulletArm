@@ -1,11 +1,10 @@
 .. automodule:: bulletarm
-  :no-members:
 
 .. |check| unicode:: U+2611 .. CHECKMARK 
 .. |nocheck| unicode:: U+2610 .. NO_CHECKMARK 
 
-BulletArm
-==========
+BulletArm Simulator
+=====================
 
 This is the main package for the BulletArm library. It contains the PyBullet simulation environments, robots, and task definitions.
 The simulation workspace consists of a robot arm mounted on the floor of the simulation environment, a workspace where objects are 
@@ -24,7 +23,7 @@ for the task such as the robot arm, the size of the workspace, the physics mode,
 ----
 
 Tasks
-=================
+-----------------
 Our set of tasks are seperated into two categories based on the action space: open-loop control and closed-loop control.
 Future work is planned to allow all tasks to use either control-type but for now the below table shows current avaliable
 control type for each task.
@@ -98,7 +97,7 @@ control type for each task.
 ----
 
 EnvFactory & EnvRunner
-=======================
+-----------------------
 Interaction with BulletArm is done through the *EnvFactory* and *EnvRunner* classes. 
 The *EnvFactory* is the entry point and creates the *environment* specified by the *configuration* passed as input. The *EnvFactory*
 can create either a single environment (SingleRunner) or multiple environments (MultiRunner) to be run in parallel.
@@ -106,13 +105,13 @@ The *EnvRunner* provides the API which interacts with the environment. This API 
 RL setup popularized by OpenAI Gym.
 
 EnvFactory
------------
+~~~~~~~~~~~
 
 .. automodule:: bulletarm.env_factory
   :members:
 
 EnvRunner
-----------
+~~~~~~~~~~
 .. autoclass:: bulletarm.runner.MultiRunner
   :members:
 
@@ -122,7 +121,7 @@ EnvRunner
 ----
 
 Configuration Parameters
-==========================
+--------------------------
 
 A task in BulletArm is defined as the combination of the environment and the configuration
 passed to that environemnt. The environment details the high level details for the task i.e.
@@ -182,7 +181,7 @@ We briefly detail the various config parameters below but additional information
 ----
 
 Robots
-===========
+-----------
 Different robotic arms can lead to drastically different policies due to the differing kinematics between arms. We
 provide four robotic arms: KUKA IIWA, Frane Emika Panda, Universal Robots UR5 with a parallel jaw gripper, and 
 Universal Robots UR5 with Robotiq 2F-85 gripper. To add a new manipulator see the `tutorial <https://github.com/ColinKohler/BulletArm/blob/main/tutorials/new_robot.py>`_. 

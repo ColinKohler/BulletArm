@@ -15,7 +15,7 @@ Helping Hands lab. The majority of these environments entail a robotic arm armed
 paralel jaw gripper executing a series of manipulation based tasks.
 
 Package Reference
-============================================
+--------------------------------------------
 
 The package is structured into two subpackages:
 
@@ -26,8 +26,26 @@ To get started, we provide a number of `tutorials <https://github.com/ColinKohle
 `introcutory tutorial <https://github.com/ColinKohler/BulletArm/blob/main/tutorials/run_task.py>`_ demonstrating how to run existing task and 
 more advanced `tutorial <https://github.com/ColinKohler/BulletArm/blob/main/tutorials/new_task.py>`_ how to create a new task.
 
+.. toctree::
+  :glob:
+  :maxdepth: 1
+  :caption: Package Reference
+  :hidden:
+
+  self
+  api/getting_started
+  api/bulletarm
+  api/bulletarm_baselines
+  api/tasks
+  api/contributions
+
+Contribute
+---------------
+We hope that other researchers will help us extend this package by adding new tasks, robots, etc.
+If you wish to contribute, please see :ref:`Contributions` for additional details.
+
 Cite Us
-============================================
+--------------------------------------------
 The development of this package was part of the work done in our ISRR 22 paper. Please,
 cite us if you use this code in your own work::
 
@@ -44,7 +62,7 @@ cite us if you use this code in your own work::
 
 
 Indices and tables
-==================
+------------------
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`

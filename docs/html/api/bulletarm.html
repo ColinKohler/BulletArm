@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BulletArm &mdash; BulletArm 1.0.0 documentation</title>
+  <title>BulletArm Simulator &mdash; BulletArm 1.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -19,7 +19,9 @@
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="BulletArm Baselines" href="bulletarm_baselines.html" />
+    <link rel="prev" title="Getting Started" href="getting_started.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -37,19 +39,52 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">BulletArm</a></li>
-<li><a class="reference internal" href="#tasks">Tasks</a></li>
-<li><a class="reference internal" href="#envfactory-envrunner">EnvFactory &amp; EnvRunner</a><ul>
-<li><a class="reference internal" href="#module-bulletarm.env_factory">EnvFactory</a></li>
-<li><a class="reference internal" href="#envrunner">EnvRunner</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Package Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">BulletArm Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#block-stacking-demo">Block Stacking Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#tutorials">Tutorials</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#configuration-parameters">Configuration Parameters</a></li>
-<li><a class="reference internal" href="#robots">Robots</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">BulletArm Simulator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#tasks">Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#envfactory-envrunner">EnvFactory &amp; EnvRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-parameters">Configuration Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#robots">Robots</a></li>
 </ul>
-</div>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bulletarm_baselines.html">BulletArm Baselines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm_baselines.html#test">Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm_baselines.html#test-2">Test 2</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tasks.html">Benchmark Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-reaching">Block Reaching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-pushing">Block Pushing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-pulling">Block Pulling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-picking">Block Picking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-stacking">Block Stacking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-in-bowl">Block In Bowl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#house-building-1">House Building 1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#house-building-2">House Building 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#house-building-3">House Building 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#house-building-4">House Building 4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#improvise-house-building-2">Improvise House Building 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#improvise-house-building-3">Improvise House Building 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#bin-packing">Bin Packing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#bottle-arrangement">Bottle Arrangement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#box-palletizing">Box Palletizing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#covid-test">Covid Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#corner-picking">Corner Picking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#drawer-opening">Drawer Opening</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#object-grasping">Object Grasping</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributions.html">Contributions</a></li>
+</ul>
+
         </div>
       </div>
     </nav>
@@ -64,7 +99,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>BulletArm</li>
+      <li>BulletArm Simulator</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/api/bulletarm.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -74,8 +109,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <span class="target" id="module-bulletarm"></span><section id="bulletarm">
-<h1>BulletArm<a class="headerlink" href="#bulletarm" title="Permalink to this heading"></a></h1>
+  <span class="target" id="module-bulletarm"></span><section id="bulletarm-simulator">
+<h1>BulletArm Simulator<a class="headerlink" href="#bulletarm-simulator" title="Permalink to this heading"></a></h1>
 <p>This is the main package for the BulletArm library. It contains the PyBullet simulation environments, robots, and task definitions.
 The simulation workspace consists of a robot arm mounted on the floor of the simulation environment, a workspace where objects are
 generated, and sensor(s). There are three key terms within BulletArm: <em>Enviornment</em>, <em>Configuration</em>, and <em>Episode</em>. An <em>environment</em>
@@ -89,10 +124,9 @@ for the task such as the robot arm, the size of the workspace, the physics mode,
 <p><span class="caption-text">The simulation environment containing a robot arm, a camera, and a workspace.</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
-</section>
 <hr class="docutils" />
 <section id="tasks">
-<h1>Tasks<a class="headerlink" href="#tasks" title="Permalink to this heading"></a></h1>
+<h2>Tasks<a class="headerlink" href="#tasks" title="Permalink to this heading"></a></h2>
 <p>Our set of tasks are seperated into two categories based on the action space: open-loop control and closed-loop control.
 Future work is planned to allow all tasks to use either control-type but for now the below table shows current avaliable
 control type for each task.</p>
@@ -190,14 +224,14 @@ control type for each task.</p>
 </section>
 <hr class="docutils" />
 <section id="envfactory-envrunner">
-<h1>EnvFactory &amp; EnvRunner<a class="headerlink" href="#envfactory-envrunner" title="Permalink to this heading"></a></h1>
+<h2>EnvFactory &amp; EnvRunner<a class="headerlink" href="#envfactory-envrunner" title="Permalink to this heading"></a></h2>
 <p>Interaction with BulletArm is done through the <em>EnvFactory</em> and <em>EnvRunner</em> classes.
 The <em>EnvFactory</em> is the entry point and creates the <em>environment</em> specified by the <em>configuration</em> passed as input. The <em>EnvFactory</em>
 can create either a single environment (SingleRunner) or multiple environments (MultiRunner) to be run in parallel.
 The <em>EnvRunner</em> provides the API which interacts with the environment. This API is modeled after the typical agent-environment
 RL setup popularized by OpenAI Gym.</p>
 <section id="module-bulletarm.env_factory">
-<span id="envfactory"></span><h2>EnvFactory<a class="headerlink" href="#module-bulletarm.env_factory" title="Permalink to this heading"></a></h2>
+<span id="envfactory"></span><h3>EnvFactory<a class="headerlink" href="#module-bulletarm.env_factory" title="Permalink to this heading"></a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="bulletarm.env_factory.createEnvs">
 <span class="sig-name descname"><span class="pre">createEnvs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_processes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planner_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/env_factory.html#createEnvs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.env_factory.createEnvs" title="Permalink to this definition"></a></dt>
@@ -283,7 +317,7 @@ number of envs each in their own seperate process.</p>
 
 </section>
 <section id="envrunner">
-<h2>EnvRunner<a class="headerlink" href="#envrunner" title="Permalink to this heading"></a></h2>
+<h3>EnvRunner<a class="headerlink" href="#envrunner" title="Permalink to this heading"></a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="bulletarm.runner.MultiRunner">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultiRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_fns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planner_fns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner" title="Permalink to this definition"></a></dt>
@@ -560,7 +594,7 @@ number of envs each in their own seperate process.</p>
 </section>
 <hr class="docutils" />
 <section id="configuration-parameters">
-<h1>Configuration Parameters<a class="headerlink" href="#configuration-parameters" title="Permalink to this heading"></a></h1>
+<h2>Configuration Parameters<a class="headerlink" href="#configuration-parameters" title="Permalink to this heading"></a></h2>
 <p>A task in BulletArm is defined as the combination of the environment and the configuration
 passed to that environemnt. The environment details the high level details for the task i.e.
 the initial state, goal state, invalid states, etc. The configuration contains lower level details which
@@ -637,7 +671,7 @@ and its top-down rotation (r).</p></td>
 </section>
 <hr class="docutils" />
 <section id="robots">
-<h1>Robots<a class="headerlink" href="#robots" title="Permalink to this heading"></a></h1>
+<h2>Robots<a class="headerlink" href="#robots" title="Permalink to this heading"></a></h2>
 <p>Different robotic arms can lead to drastically different policies due to the differing kinematics between arms. We
 provide four robotic arms: KUKA IIWA, Frane Emika Panda, Universal Robots UR5 with a parallel jaw gripper, and
 Universal Robots UR5 with Robotiq 2F-85 gripper. To add a new manipulator see the <a class="reference external" href="https://github.com/ColinKohler/BulletArm/blob/main/tutorials/new_robot.py">tutorial</a>.</p>
@@ -648,11 +682,15 @@ Universal Robots UR5 with Robotiq 2F-85 gripper. To add a new manipulator see th
 </figcaption>
 </figure>
 </section>
+</section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="getting_started.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="bulletarm_baselines.html" class="btn btn-neutral float-right" title="BulletArm Baselines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

@@ -1,3 +1,5 @@
+..
+
 .. module:: bulletarm.envs.close_loop_envs.close_loop_block_picking
 .. module:: bulletarm.envs.close_loop_envs.close_loop_block_reaching
 .. module:: bulletarm.envs.close_loop_envs.close_loop_block_pushing
@@ -34,6 +36,8 @@ Block Reaching
 .. autoclass:: bulletarm.envs.close_loop_envs.close_loop_block_reaching.CloseLoopBlockReachingEnv
   :no-members:
 
+----
+
 Block Pushing
 ---------------
 
@@ -43,6 +47,8 @@ Block Pushing
 
 .. autoclass:: bulletarm.envs.close_loop_envs.close_loop_block_pushing.CloseLoopBlockPushingEnv
   :no-members:
+
+----
 
 Block Pulling
 ---------------
@@ -54,6 +60,8 @@ Block Pulling
 .. autoclass:: bulletarm.envs.close_loop_envs.close_loop_block_pulling.CloseLoopBlockPullingEnv
   :no-members:
 
+----
+
 Block Picking
 ---------------
 
@@ -63,6 +71,8 @@ Block Picking
 
 .. autoclass:: bulletarm.envs.close_loop_envs.close_loop_block_picking.CloseLoopBlockPickingEnv
   :no-members:
+
+----
 
 Block Stacking
 ---------------
@@ -77,6 +87,8 @@ Block Stacking
 .. autoclass:: bulletarm.envs.close_loop_envs.close_loop_block_stacking.CloseLoopBlockStackingEnv
   :no-members:
 
+----
+
 Block In Bowl
 ---------------
 
@@ -86,6 +98,8 @@ Block In Bowl
 
 .. autoclass:: bulletarm.envs.close_loop_envs.close_loop_block_in_bowl.CloseLoopBlockInBowlEnv
   :no-members:
+
+----
 
 House Building 1
 -----------------
@@ -100,6 +114,8 @@ House Building 1
 .. autoclass:: bulletarm.envs.close_loop_envs.close_loop_house_building_1.CloseLoopHouseBuilding1Env
   :no-members:
 
+----
+
 House Building 2
 -----------------
 
@@ -109,6 +125,8 @@ House Building 2
 
 .. autoclass:: bulletarm.envs.block_structure_envs.house_building_2_env.HouseBuilding2Env
   :no-members:
+
+----
 
 House Building 3
 -----------------
@@ -120,6 +138,8 @@ House Building 3
 .. autoclass:: bulletarm.envs.block_structure_envs.house_building_3_env.HouseBuilding3Env
   :no-members:
 
+----
+
 House Building 4
 -----------------
 
@@ -129,6 +149,8 @@ House Building 4
 
 .. autoclass:: bulletarm.envs.block_structure_envs.house_building_4_env.HouseBuilding4Env
   :no-members:
+
+----
 
 Improvise House Building 2
 ---------------------------
@@ -140,6 +162,8 @@ Improvise House Building 2
 .. autoclass:: bulletarm.envs.block_structure_envs.improvise_house_building_2_env.ImproviseHouseBuilding2Env
   :no-members:
 
+----
+
 Improvise House Building 3
 ---------------------------
 
@@ -149,6 +173,8 @@ Improvise House Building 3
 
 .. autoclass:: bulletarm.envs.block_structure_envs.improvise_house_building_3_env.ImproviseHouseBuilding3Env
   :no-members:
+
+----
 
 Bin Packing
 ------------------
@@ -160,6 +186,8 @@ Bin Packing
 .. autoclass:: bulletarm.envs.realistic_envs.block_bin_packing_env.BlockBinPackingEnv
   :no-members:
 
+----
+
 Bottle Arrangement
 -------------------
 
@@ -169,6 +197,8 @@ Bottle Arrangement
 
 .. autoclass:: bulletarm.envs.realistic_envs.bottle_tray_env.BottleTrayEnv
   :no-members:
+
+----
 
 Box Palletizing
 ----------------
@@ -180,6 +210,8 @@ Box Palletizing
 .. autoclass:: bulletarm.envs.realistic_envs.box_palletizing_env.BoxPalletizingEnv
   :no-members:
 
+----
+
 Covid Test
 --------------
 
@@ -189,6 +221,8 @@ Covid Test
 
 .. autoclass:: bulletarm.envs.realistic_envs.covid_test_env.CovidTestEnv
   :no-members:
+
+----
 
 Corner Picking
 ---------------
@@ -200,6 +234,8 @@ Corner Picking
 .. autoclass:: bulletarm.envs.close_loop_envs.close_loop_block_picking_corner.CloseLoopBlockPickingCornerEnv
   :no-members:
 
+----
+
 Drawer Opening
 ---------------
 
@@ -209,6 +245,8 @@ Drawer Opening
 
 .. autoclass:: bulletarm.envs.close_loop_envs.close_loop_drawer_opening.CloseLoopDrawerOpeningEnv
   :no-members:
+
+----
 
 Object Grasping
 ----------------
