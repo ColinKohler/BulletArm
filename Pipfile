@@ -19,6 +19,9 @@ scikit-learn = "*"
 sphinxcontrib-napoleon = "*"
 sphinx-rtd-theme = "*"
 tqdm = "*"
+more-itertools = "*"
+seaborn = "*"
+pymeshlab = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.7"

@@ -11,9 +11,3 @@ class BlockPickingPlanner(BlockStructureBasePlanner):
 
   def getNextAction(self):
     return self.pickTallestObjOnTop()
-
-  def getStepsLeft(self):
-    if not self.env.isSimValid():
-      return 100
-    step_left = self.env.num_obj - self.env.obj_grasped
-    return step_left

@@ -345,6 +345,20 @@ class BaseEnv:
           return False
     return True
 
+  def isObjectInWorkspace(self, obj):
+    if self._isObjectHeld(obj):
+      return True
+
+    p = obj.getPosition()
+    if self.workspace_check == 'point':
+      if not self._isPointInWorkspace(p):
+        return False
+    else:
+      if not self._isObjectWithinWorkspace(obj):
+        return False
+
+    return True
+
   def wait(self, iteration):
     [pb.stepSimulation() for _ in range(iteration)]
 
