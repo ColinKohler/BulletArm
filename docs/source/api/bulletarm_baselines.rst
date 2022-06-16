@@ -3,10 +3,15 @@
 BulletArm Baselines
 ====================
 
-This subpackage implements the various baseline algorithms we provide as part of the benchmark. 
+This subpackage implements a collection of state-of-the-art baseline algorithms to benchmark new methods against. 
+The algorithms provided cover a wide range of state and action spaces for either open-loop control or close-loop 
+control. Additionally, we provide a number of logging and plotting utilities for ease of use.
 
-Test
------
+Open-Loop Benchmarks
+---------------------
 
-Test 2
--------
+Close-Loop Benchmarks
+----------------------
+
+Logging & Plotting Utilities
+-----------------------------

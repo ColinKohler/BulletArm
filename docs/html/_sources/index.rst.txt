@@ -8,7 +8,7 @@
 BulletArm Documentation
 ============================================
 
-**BulletArm** is a PyBullet based package for robotics maipulation research.
+**BulletArm** is a PyBullet based benchmark and learning-environment for robotic manipulation research.
 
 This package contains various simulated robotics environments used for research in the 
 Helping Hands lab. The majority of these environments entail a robotic arm armed with a
@@ -17,14 +17,10 @@ paralel jaw gripper executing a series of manipulation based tasks.
 Package Reference
 --------------------------------------------
 
-The package is structured into two subpackages:
-
-* :doc:`bulletarm <api/bulletarm>` contains the PyBullet environments, tasks, and robots.
-* :doc:`bulletarm_baselines <api/bulletarm_baselines>` implements several baseline algorithms alongside logging and plotting tools.
-
-To get started, we provide a number of `tutorials <https://github.com/ColinKohler/BulletArm/tree/main/tutorials>`_ including an 
-`introcutory tutorial <https://github.com/ColinKohler/BulletArm/blob/main/tutorials/run_task.py>`_ demonstrating how to run existing task and 
-more advanced `tutorial <https://github.com/ColinKohler/BulletArm/blob/main/tutorials/new_task.py>`_ how to create a new task.
+* :doc:`Getting Started: <api/getting_started>` Helpful introductory material including installation instructions, examples, and tutorials.
+* :doc:`BulletArm Simulator: <api/bulletarm>` Robotic simulator including the PyBullet environments, robots, tasks, and more.
+* :doc:`BulletArm Baselines: <api/bulletarm_baselines>` A collection of state-of-the-art baseline algorithms to benchmark new methods against.
+* :doc:`Benchmark Tasks: <api/tasks>` The core set of tasks used for benchmarking methods. 
 
 .. toctree::
   :glob:
@@ -60,9 +56,7 @@ cite us if you use this code in your own work::
     copyright = {arXiv.org perpetual, non-exclusive license}
   }
 
-
 Indices and tables
 ------------------
 * :ref:`genindex`
 * :ref:`modindex`
-* :ref:`search`

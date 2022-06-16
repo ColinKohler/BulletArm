@@ -113,12 +113,55 @@
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading"></a></h1>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clone the BulletArm Repo</span>
+git clone https://github.com/ColinKohler/BulletArm.git <span class="o">&amp;&amp;</span> <span class="nb">cd</span> BulletArm
+
+<span class="c1"># Install dependencies</span>
+pip install -r requirements.txt
+
+<span class="c1"># Install BulletArm either using Pip</span>
+pip install .
+<span class="c1"># OR by adding it to your PYTHONPATH</span>
+<span class="nb">export</span> <span class="nv">PYTHONPATH</span><span class="o">=</span>/path/to/BulletArm/:<span class="nv">$PYTHONPATH</span>
+</pre></div>
+</div>
 </section>
 <section id="block-stacking-demo">
 <h2>Block Stacking Demo<a class="headerlink" href="#block-stacking-demo" title="Permalink to this heading"></a></h2>
+<p>In order to test your installation, we recommend running the block stacking demo to ensure everything is in working order.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python tutorials/block_stacking_demo.py
+</pre></div>
+</div>
+<p>Below we go over the code within the demo and briefly describe the important details.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1"># The env_factory provides the entry point to BulletArm</span>
+<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">bulletarm</span> <span class="kn">import</span> <span class="n">env_factory</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="k">def</span> <span class="nf">runDemo</span><span class="p">():</span>
+<span class="linenos"> 5</span>  <span class="n">env_config</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;render&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+<span class="linenos"> 6</span>  <span class="c1"># The env_factory creates the desired number of PyBullet simulations to run in</span>
+<span class="linenos"> 7</span>  <span class="c1"># parallel. The task that is created depends on the environment name and the</span>
+<span class="linenos"> 8</span>  <span class="c1"># task config passed as input.</span>
+<span class="linenos"> 9</span>  <span class="n">env</span> <span class="o">=</span> <span class="n">env_factory</span><span class="o">.</span><span class="n">createEnvs</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;block_stacking&#39;</span><span class="p">,</span> <span class="n">env_config</span><span class="p">)</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span>  <span class="c1"># Start the task by resetting the simulation environment.</span>
+<span class="linenos">12</span>  <span class="n">obs</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="linenos">13</span>  <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="linenos">14</span>  <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+<span class="linenos">15</span>    <span class="c1"># We get the next action using the planner associated with the block stacking</span>
+<span class="linenos">16</span>    <span class="c1"># task and execute it.</span>
+<span class="linenos">17</span>    <span class="n">action</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">getNextAction</span><span class="p">()</span>
+<span class="linenos">18</span>    <span class="n">obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+<span class="linenos">19</span>  <span class="n">env</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
 </section>
 <section id="tutorials">
 <h2>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this heading"></a></h2>
+<p>We provide a number of <a class="reference external" href="https://github.com/ColinKohler/BulletArm/tree/main/tutorials">tutorials</a> including an
+<a class="reference external" href="https://github.com/ColinKohler/BulletArm/blob/main/tutorials/train_dummy_agent.py">introcutory tutorial</a> demonstrating how to collect data
+for training of a RL agent. Examples on how to extend PyBullet for either
+<a class="reference external" href="https://github.com/ColinKohler/BulletArm/blob/main/tutorials/creating_a_new_task.py">creating new tasks</a> or
+<a class="reference external" href="https://github.com/ColinKohler/BulletArm/blob/main/tutorials/creating_a_new_robot.py">creating new robots</a> are also included.</p>
 </section>
 </section>
 
