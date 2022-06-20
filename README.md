@@ -1,5 +1,5 @@
 # BulletArm
-**[Documentation](https://colinkohler.github.io/BulletArm/html/index.html)** | **[Paper](https://arxiv.org/abs/2205.14292)** | **[License](https://github.com/ColinKohler/BulletArm/blob/main/LICENSE)**
+**[Documentation](https://colinkohler.github.io/BulletArm/)** | **[Paper](https://arxiv.org/abs/2205.14292)** | **[License](https://github.com/ColinKohler/BulletArm/blob/main/LICENSE)**
 
 **BulletArm** is a benchmark and learning-environment for robotic manipulation. BulletArm provides a set of standardized 
 benchmark tasks in simulation alongside a collection of baseline algorithms.
@@ -120,7 +120,7 @@ See [bulletarm_baselines/equi_rl/utils/parameters.py](bulletarm_baselines/equi_r
 <a name="contributions"></a>
 ## Contributions
 We hope that other researchers will help us extend this package by adding new tasks, robots, etc. Please see the 
-[Contributions section](https://colinkohler.github.io/BulletArm/html/api/contributions.html) of the documentation for additional details.
+[Contributions section](https://colinkohler.github.io/BulletArm/api/contributions.html) of the documentation for additional details.
 
 <a name="cite"></a>
 ## Cite
