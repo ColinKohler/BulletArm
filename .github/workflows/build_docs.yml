@@ -17,7 +17,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           python-version: 3.7
-          environment-file: devtools/conda-envs/docs_env.yaml
+          environment-file: envs/docs_env.yaml
           auto-update-conda: false
           auto-activate-base: false
           show-channel-urls: true
