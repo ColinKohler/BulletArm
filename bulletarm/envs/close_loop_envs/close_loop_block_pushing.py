@@ -20,10 +20,8 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
     super().__init__(config)
     self.goal_pos = self.workspace.mean(1)[:2]
     self.goal_id = None
-    # self.goal_grid_size_half = 10
-    # self.goal_size = self.goal_grid_size_half*2 * self.heightmap_resolution
-    self.goal_size = 0.09
-    self.goal_grid_size_half = round(self.goal_size / self.heightmap_resolution / 2)
+    self.goal_grid_size_half = 11
+    self.goal_size = self.goal_grid_size_half * 2 * self.obs_size_m / self.heightmap_size
 
   def getGoalPixel(self, gripper_pos=None):
     if gripper_pos is None:
