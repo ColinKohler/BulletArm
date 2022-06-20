@@ -1,5 +1,0 @@
-job-name:
-  runs-on: 'ubuntu-latest'
-  steps:
-    - uses: actions/checkout@v2
-    - uses: cascode-labs/build-sphinx-action/action.yml@v0

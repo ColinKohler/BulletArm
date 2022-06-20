@@ -1,27 +1,33 @@
-# This is a basic workflow to help you get started with Actions
-
 name: build_docs
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  sphinx_docs_to_gh_pages:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    name: sphinx_docs_to_gh_pages
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-      - uses: cascode-labs/build-sphinx-action/action.yml@v0
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: make_conda_env
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: 3.7
+          environment-file: devtools/conda-envs/docs_env.yaml
+          auto-update-conda: false
+          auto-activate-base: false
+          show-channel-urls: true
+      - name: install
+        shell: bash -l {0}
+        run: |
+          python setup.py install
+      - name: build_docs_action
+        uses: uibcdf/action-sphinx-docs-to-gh-pages@v1.0-beta.2
+        with:
+          branch: main
+          dir_docs: docs
+          sphinxopts: ''
