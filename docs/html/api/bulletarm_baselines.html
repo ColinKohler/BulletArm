@@ -117,9 +117,103 @@ The algorithms provided cover a wide range of state and action spaces for either
 control. Additionally, we provide a number of logging and plotting utilities for ease of use.</p>
 <section id="open-loop-benchmarks">
 <h2>Open-Loop Benchmarks<a class="headerlink" href="#open-loop-benchmarks" title="Permalink to this heading"></a></h2>
+<section id="prerequisite">
+<h3>Prerequisite<a class="headerlink" href="#prerequisite" title="Permalink to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Install <a class="reference external" href="https://pytorch.org/">PyTorch</a> (Recommended: pytorch==1.7.0, torchvision==0.8.1)</p></li>
+<li><p>(Optional, required for 6D benchmark) Install <a class="reference external" href="https://github.com/cupy/cupy">CuPy</a></p></li>
+<li><p>Install other required packages</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -r baseline_requirement.txt
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>Goto the baseline directory</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> helping_hands_rl_envs/helping_hands_rl_baselines/fc_dqn/scripts
+</pre></div>
+</div>
+</section>
+<section id="open-loop-2d-benchmarks">
+<h3>Open-Loop 2D Benchmarks<a class="headerlink" href="#open-loop-2d-benchmarks" title="Permalink to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python main.py  --algorithm<span class="o">=[</span>algorithm<span class="o">]</span> --architecture<span class="o">=[</span>architecture<span class="o">]</span> --action_sequence<span class="o">=</span>xyp --random_orientation<span class="o">=</span>f --env<span class="o">=[</span>env<span class="o">]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Select <code class="code docutils literal notranslate"><span class="pre">[algorithm]</span></code> from: <code class="code docutils literal notranslate"><span class="pre">sdqfd</span></code> (recommended), <code class="code docutils literal notranslate"><span class="pre">dqfd</span></code>, <code class="code docutils literal notranslate"><span class="pre">adet</span></code>, <code class="code docutils literal notranslate"><span class="pre">dqn</span></code></p></li>
+<li><p>Select <code class="code docutils literal notranslate"><span class="pre">[architecture]</span></code> from: <code class="code docutils literal notranslate"><span class="pre">equi_fcn</span></code> (recommended), <code class="code docutils literal notranslate"><span class="pre">cnn_fcn</span></code></p></li>
+<li><p>Add <code class="code docutils literal notranslate"><span class="pre">--fill_buffer_deconstruct</span></code> to use deconstruction planner for gathering expert data.</p></li>
+</ul>
+</section>
+<section id="open-loop-3d-benchmarks">
+<h3>Open-Loop 3D Benchmarks<a class="headerlink" href="#open-loop-3d-benchmarks" title="Permalink to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python main.py --algorithm<span class="o">=[</span>algorithm<span class="o">]</span> --architecture<span class="o">=[</span>architecture<span class="o">]</span> --env<span class="o">=[</span>env<span class="o">]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Select <code class="code docutils literal notranslate"><span class="pre">[algorithm]</span></code> from: <code class="code docutils literal notranslate"><span class="pre">sdqfd</span></code> (recommended), <code class="code docutils literal notranslate"><span class="pre">dqfd</span></code>, <code class="code docutils literal notranslate"><span class="pre">adet</span></code>, <code class="code docutils literal notranslate"><span class="pre">dqn</span></code></p></li>
+<li><p>Select <code class="code docutils literal notranslate"><span class="pre">[architecture]</span></code> from: <code class="code docutils literal notranslate"><span class="pre">equi_asr</span></code> (recommended), <code class="code docutils literal notranslate"><span class="pre">cnn_asr</span></code>, <code class="code docutils literal notranslate"><span class="pre">equi_fcn</span></code>, <code class="code docutils literal notranslate"><span class="pre">cnn_fcn</span></code>, <code class="code docutils literal notranslate"><span class="pre">rot_fcn</span></code></p></li>
+<li><p>Add <code class="code docutils literal notranslate"><span class="pre">--fill_buffer_deconstruct</span></code> to use deconstruction planner for gathering expert data.</p></li>
+</ul>
+</section>
+<section id="open-loop-6d-benchmarks">
+<h3>Open-Loop 6D Benchmarks<a class="headerlink" href="#open-loop-6d-benchmarks" title="Permalink to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python main.py  --algorithm<span class="o">=[</span>algorithm<span class="o">]</span> --architecture<span class="o">=[</span>architecture<span class="o">]</span> --action_sequence<span class="o">=</span>xyzrrrp --patch_size<span class="o">=[</span>patch_size<span class="o">]</span> --env<span class="o">=[</span>env<span class="o">]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Select <code class="code docutils literal notranslate"><span class="pre">[algorithm]</span></code> from: <code class="code docutils literal notranslate"><span class="pre">sdqfd</span></code> (recommended), <code class="code docutils literal notranslate"><span class="pre">dqfd</span></code>, <code class="code docutils literal notranslate"><span class="pre">adet</span></code>, <code class="code docutils literal notranslate"><span class="pre">dqn</span></code></p></li>
+<li><p>Select <code class="code docutils literal notranslate"><span class="pre">[architecture]</span></code> from: <code class="code docutils literal notranslate"><span class="pre">equi_deictic_asr</span></code> (recommended), <code class="code docutils literal notranslate"><span class="pre">cnn_asr</span></code></p></li>
+<li><p>Set <code class="code docutils literal notranslate"><span class="pre">[patch_size]</span></code> to be <code class="code docutils literal notranslate"><span class="pre">40</span></code> (recommended, required for <cite>bumpy_box_palletizing</cite> environment) or <code class="code docutils literal notranslate"><span class="pre">24</span></code></p></li>
+<li><p>Add <code class="code docutils literal notranslate"><span class="pre">--fill_buffer_deconstruct</span></code> to use deconstruction planner for gathering expert data.</p></li>
+</ul>
+</section>
+<section id="additional-training-arguments">
+<h3>Additional Training Arguments<a class="headerlink" href="#additional-training-arguments" title="Permalink to this heading"></a></h3>
+<p>See <a class="reference external" href="https://github.com/ColinKohler/BulletArm/blob/main/bulletarm_baselines/fc_dqn/utils/parameters.py">bulletarm_baselines/fc_dqn/utils/parameters.py</a></p>
+</section>
 </section>
 <section id="close-loop-benchmarks">
 <h2>Close-Loop Benchmarks<a class="headerlink" href="#close-loop-benchmarks" title="Permalink to this heading"></a></h2>
+<section id="id1">
+<h3>Prerequisite<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Install <a class="reference external" href="https://pytorch.org/">PyTorch</a> (Recommended: pytorch==1.7.0, torchvision==0.8.1)</p></li>
+<li><p>Install other required packages</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -r baseline_requirement.txt
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Goto the baseline directory</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> helping_hands_rl_envs/helping_hands_rl_baselines/equi_rl/scripts
+</pre></div>
+</div>
+</section>
+<section id="close-loop-3d-benchmarks">
+<h3>Close-Loop 3D Benchmarks<a class="headerlink" href="#close-loop-3d-benchmarks" title="Permalink to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python main.py --algorithm<span class="o">=[</span>algorithm<span class="o">]</span> --action_sequence<span class="o">=</span>pxyz --random_orientation<span class="o">=</span>f --env<span class="o">=[</span>env<span class="o">]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Select <code class="code docutils literal notranslate"><span class="pre">[algorithm]</span></code> from: <code class="code docutils literal notranslate"><span class="pre">sac</span></code>, <code class="code docutils literal notranslate"><span class="pre">sacfd</span></code>, <code class="code docutils literal notranslate"><span class="pre">equi_sac</span></code>, <code class="code docutils literal notranslate"><span class="pre">equi_sacfd</span></code>, <code class="code docutils literal notranslate"><span class="pre">ferm_sac</span></code>, <code class="code docutils literal notranslate"><span class="pre">ferm_sacfd</span></code>, <code class="code docutils literal notranslate"><span class="pre">rad_sac</span></code>, <code class="code docutils literal notranslate"><span class="pre">rad_sacfd</span></code>, <code class="code docutils literal notranslate"><span class="pre">drq_sac</span></code>, <code class="code docutils literal notranslate"><span class="pre">drq_sacfd</span></code></p></li>
+</ul>
+</section>
+<section id="close-loop-4d-benchmarks">
+<h3>Close-Loop 4D Benchmarks<a class="headerlink" href="#close-loop-4d-benchmarks" title="Permalink to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python main.py --algorithm<span class="o">=[</span>algorithm<span class="o">]</span> --env<span class="o">=[</span>env<span class="o">]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Select <cite>[algorithm]</cite> from: <code class="code docutils literal notranslate"><span class="pre">sac</span></code>, <code class="code docutils literal notranslate"><span class="pre">sacfd</span></code>, <code class="code docutils literal notranslate"><span class="pre">equi_sac</span></code>, <code class="code docutils literal notranslate"><span class="pre">equi_sacfd</span></code>, <code class="code docutils literal notranslate"><span class="pre">ferm_sac</span></code>, <code class="code docutils literal notranslate"><span class="pre">ferm_sacfd</span></code>, <code class="code docutils literal notranslate"><span class="pre">rad_sac</span></code>, <code class="code docutils literal notranslate"><span class="pre">rad_sacfd</span></code>, <code class="code docutils literal notranslate"><span class="pre">drq_sac</span></code>, <code class="code docutils literal notranslate"><span class="pre">drq_sacfd</span></code></p></li>
+<li><p>To use PER and data augmentation buffer, add <code class="code docutils literal notranslate"><span class="pre">--buffer=per_expert_aug</span></code></p></li>
+</ul>
+</section>
+<section id="id3">
+<h3>Additional Training Arguments<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<p>See <a class="reference external" href="https://github.com/ColinKohler/BulletArm/blob/main/bulletarm_baselines/equi_rl/utils/parameters.py">bulletarm_baselines/equi_rl/utils/parameters.py</a></p>
+</section>
 </section>
 <section id="logging-plotting-utilities">
 <h2>Logging &amp; Plotting Utilities<a class="headerlink" href="#logging-plotting-utilities" title="Permalink to this heading"></a></h2>
