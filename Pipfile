@@ -19,6 +19,8 @@ scikit-learn = "*"
 sphinxcontrib-napoleon = "*"
 sphinx-rtd-theme = "*"
 tqdm = "*"
+more-itertools = "*"
+seaborn = "*"
 
 [requires]
 python_version = "3.8"

@@ -7,6 +7,8 @@ This subpackage implements a collection of state-of-the-art baseline algorithms 
 The algorithms provided cover a wide range of state and action spaces for either open-loop control or close-loop 
 control. Additionally, we provide a number of logging and plotting utilities for ease of use.
 
+----
+
 Open-Loop Benchmarks
 ---------------------
 
@@ -64,6 +66,8 @@ Additional Training Arguments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 See `bulletarm_baselines/fc_dqn/utils/parameters.py <https://github.com/ColinKohler/BulletArm/blob/main/bulletarm_baselines/fc_dqn/utils/parameters.py>`_
 
+----
+
 Close-Loop Benchmarks
 ----------------------
 
@@ -105,5 +109,19 @@ Additional Training Arguments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 See `bulletarm_baselines/equi_rl/utils/parameters.py <https://github.com/ColinKohler/BulletArm/blob/main/bulletarm_baselines/equi_rl/utils/parameters.py>`_
 
+----
+
 Logging & Plotting Utilities
 -----------------------------
+We include a standard logger and plotter alongside the baselines. 
+
+Logger
+~~~~~~~
+.. automodule:: bulletarm_baselines.logger.logger
+  :members:
+
+Plotter
+~~~~~~~~
+.. automodule:: bulletarm_baselines.logger.plotter
+  :members:
+
