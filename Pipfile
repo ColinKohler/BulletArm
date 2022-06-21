@@ -21,6 +21,9 @@ sphinx-rtd-theme = "*"
 tqdm = "*"
 more-itertools = "*"
 seaborn = "*"
+torch = "*"
+torchvision = "*"
+torchaudio = "*"
 
 [requires]
 python_version = "3.8"
