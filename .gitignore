@@ -1,5 +1,6 @@
 # User
 docs/html
+docs/doctrees
 Pipfile.lock
 
 # Byte-compiled / optimized / DLL files
