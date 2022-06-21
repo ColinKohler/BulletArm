@@ -34,7 +34,6 @@ on any of the existing tasks or novel tasks which they create.
 Package Reference
 --------------------------------------------
 
-* :doc:`Overview: <api/overview>` Overview of the BulletArm package.
 * :doc:`Getting Started: <api/getting_started>` Helpful introductory material including installation instructions, examples, and tutorials.
 * :doc:`BulletArm Simulator: <api/bulletarm>` Robotic simulator including the PyBullet environments, robots, tasks, and more.
 * :doc:`BulletArm Baselines: <api/bulletarm_baselines>` A collection of state-of-the-art baseline algorithms to benchmark new methods against.
@@ -47,7 +46,6 @@ Package Reference
   :hidden:
 
   self
-  api/overview
   api/getting_started
   api/bulletarm
   api/bulletarm_baselines
