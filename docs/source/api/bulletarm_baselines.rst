@@ -113,7 +113,16 @@ See `bulletarm_baselines/equi_rl/utils/parameters.py <https://github.com/ColinKo
 
 Logging & Plotting Utilities
 -----------------------------
-We include a standard logger and plotter alongside the baselines. 
+To assist with debugging new algorithms, we include the logging and plotting tools which we use for the baselines. The logger wraps Tensorboard
+and provides numerous functions to log various details of the training process. An example of the information the logger displays can be seen below.
+In addition to the default data, any additional data can be added as desired using the :code:`updateScalars()` function. The plotter is currently in
+its infancy but provides a easy way to plot and compare different algorithms when using the provided logger.
+
+.. figure:: ../images/logger_ex.png
+  :figwidth: 600px
+  :align: center
+  
+  An example run showing the default information captured by the logger.
 
 Logger
 ~~~~~~~

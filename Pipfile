@@ -24,6 +24,7 @@ seaborn = "*"
 torch = "*"
 torchvision = "*"
 torchaudio = "*"
+tensorboard = "*"
 
 [requires]
 python_version = "3.8"
