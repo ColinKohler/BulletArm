@@ -5,27 +5,17 @@
 benchmark tasks in simulation alongside a collection of baseline algorithms.
 
 ## Table of Contents
-1. [Dependencies](#dependencies)
+1. [Announcements](#anouncements)
 2. [Installation](#install)
-3. [Benchmarks](#benchmarks)
+3. [Getting Started](#getting_started)
 4. [Contributions](#contributions)
 5. [Cite](#cite)
 
-<a name="dependencies"></a>
-## Dependencies
+<a name="announcements"></a>
+## Announcements
 
-The library is based on Python>=3.7
-
-```
-attrdict
-matplotlib
-GitPython
-numpy>=1.19.5
-pybullet>=2.7.1
-scikit-image>=0.14.2
-scipy>=1.2.1
-tqdm
-```
+### TBD
+- <b>Version 1.0.0 is live!</b>
 
 <a name="install"></a>
 ## Install
@@ -50,72 +40,9 @@ tqdm
     ```
     python tutorials/block_stacking_demo.py
     ```
-<a name="benchmarks"></a>
-## Benchmarks
-### Open-Loop Benchmarks
-#### Prerequisite
-1. Install [PyTorch](https://pytorch.org/) (Recommended: pytorch==1.7.0, torchvision==0.8.1)
-1. (Optional, required for 6D benchmark) Install [CuPy](https://github.com/cupy/cupy)
-1. Install other required packages
-    ```
-    pip install -r baseline_requirement.txt
-    ```
-1. Goto the baseline directory
-    ```
-    cd helping_hands_rl_envs/helping_hands_rl_baselines/fc_dqn/scripts
-    ```
-#### Open-Loop 3D Benchmark
-```
-python main.py --algorithm=[algorithm] --architecture=[architecture] --env=[env]
-```
-- Select `[algorithm]` from: `sdqfd` (recommended), `dqfd`, `adet`, `dqn`
-- Select `[architecture]` from: `equi_asr` (recommended), `cnn_asr`, `equi_fcn`, `cnn_fcn`, `rot_fcn`
-- Add `--fill_buffer_deconstruct` to use deconstruction planner for gathering expert data.
-#### Open-Loop 2D Benchmark
-```
-python main.py  --algorithm=[algorithm] --architecture=[architecture] --action_sequence=xyp --random_orientation=f --env=[env]
-```
-- Select `[algorithm]` from: `sdqfd` (recommended), `dqfd`, `adet`, `dqn`
-- Select `[architecture]` from: `equi_fcn` (recommended), `cnn_fcn`
-- Add `--fill_buffer_deconstruct` to use deconstruction planner for gathering expert data.
-#### Open-Loop 6D Benchmark
-```
-python main.py  --algorithm=[algorithm] --architecture=[architecture] --action_sequence=xyzrrrp --patch_size=[patch_size] --env=[env]
-```
-- Select `[algorithm]` from: `sdqfd` (recommended), `dqfd`, `adet`, `dqn`
-- Select `[architecture]` from: `equi_deictic_asr` (recommended), `cnn_asr`
-- Set `[patch_size]` to be `40` (required for `bumpy_box_palletizing` environment) or `24`
-- Add `--fill_buffer_deconstruct` to use deconstruction planner for gathering expert data.
 
-#### Additional Training Arguments
-See [bulletarm_baselines/fc_dqn/utils/parameters.py](bulletarm_baselines/fc_dqn/utils/parameters.py)
-
-### Close-Loop Benchmarks
-#### Prerequisite
-1. Install [PyTorch](https://pytorch.org/) (Recommended: pytorch==1.7.0, torchvision==0.8.1)
-1. (Optional, required for 6D benchmark) Install [CuPy](https://github.com/cupy/cupy)
-1. Install other required packages
-    ```
-    pip install -r baseline_requirement.txt
-    ```
-1. Goto the baseline directory
-    ```
-    cd helping_hands_rl_envs/helping_hands_rl_baselines/equi_rl/scripts
-    ```
-#### Close-Loop 4D Benchmark
-```
-python main.py --algorithm=[algorithm] --env=[env]
-```
-- Select `[algorithm]` from: `sac`, `sacfd`, `equi_sac`, `equi_sacfd`, `ferm_sac`, `ferm_sacfd`, `rad_sac`, `rad_sacfd`, `drq_sac`, `drq_sacfd`
-- To use PER and data augmentation buffer, add `--buffer=per_expert_aug`
-#### Close-Loop 3D Benchmark
-```
-python main.py --algorithm=[algorithm] --action_sequence=pxyz --random_orientation=f --env=[env]
-```
-- Select `[algorithm]` from: `sac`, `sacfd`, `equi_sac`, `equi_sacfd`, `ferm_sac`, `ferm_sacfd`, `rad_sac`, `rad_sacfd`, `drq_sac`, `drq_sacfd`
-
-#### Additional Training Arguments
-See [bulletarm_baselines/equi_rl/utils/parameters.py](bulletarm_baselines/equi_rl/utils/parameters.py)
+<a name="getting_started"></a>
+## Getting Started
 
 <a name="contributions"></a>
 ## Contributions
