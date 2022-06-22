@@ -5,11 +5,17 @@
 benchmark tasks in simulation alongside a collection of baseline algorithms.
 
 ## Table of Contents
-1. [Dependencies](#dependencies)
-2. [Installation](#install)
-3. [Benchmarks](#benchmarks)
+1. [Announcements](#anouncements)
+2. [Dependencies](#dependencies)
+3. [Installation](#install)
 4. [Contributions](#contributions)
 5. [Cite](#cite)
+
+<a name="announcements"></a>
+## Announcements
+
+### TBD
+- <b>Version 1.0.0 is live!</b>
 
 <a name="dependencies"></a>
 ## Dependencies
