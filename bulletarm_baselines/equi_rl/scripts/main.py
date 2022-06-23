@@ -160,11 +160,10 @@ def train():
             plan_actions = planner_envs.getNextAction()
             planner_actions_star_idx, planner_actions_star = agent.getActionFromPlan(plan_actions)
             states_, obs_, rewards, dones = planner_envs.step(planner_actions_star, auto_reset=True)
-            steps_lefts = planner_envs.getStepLeft()
             for i in range(planner_num_process):
                 transition = ExpertTransition(states[i].numpy(), obs[i].numpy(), planner_actions_star_idx[i].numpy(),
                                               rewards[i].numpy(), states_[i].numpy(), obs_[i].numpy(), dones[i].numpy(),
-                                              steps_lefts[i].numpy(), np.array(1))
+                                              np.array(100), np.array(1))
                 if obs_type == 'pixel':
                     transition = normalizeTransition(transition)
                 replay_buffer.add(transition)
@@ -228,7 +227,6 @@ def train():
                 train_step(agent, replay_buffer, logger, p_beta_schedule)
 
         states_, obs_, rewards, dones = envs.stepWait()
-        steps_lefts = envs.getStepLeft()
 
         done_idxes = torch.nonzero(dones).squeeze(1)
         if done_idxes.shape[0] != 0:
@@ -241,7 +239,7 @@ def train():
             for i in range(num_processes):
                 transition = ExpertTransition(states[i].numpy(), obs[i].numpy(), actions_star_idx[i].numpy(),
                                               rewards[i].numpy(), states_[i].numpy(), obs_[i].numpy(), dones[i].numpy(),
-                                              steps_lefts[i].numpy(), np.array(is_expert))
+                                              np.array(100), np.array(is_expert))
                 if obs_type == 'pixel':
                     transition = normalizeTransition(transition)
                 replay_buffer.add(transition)
