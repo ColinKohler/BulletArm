@@ -471,7 +471,25 @@ class BaseEnv:
 
   def _generateShapes(self, shape_type=0, num_shapes=1, scale=None, pos=None, rot=None,
                            min_distance=None, padding=None, random_orientation=False, z_scale=1, model_id=1):
-    ''''''
+    ''' Generate objects within the workspace.
+
+    Generate a number of objects specified by the shape type within the workspace.
+
+    Args:
+      shape_type (int): The shape to generate. Defaults to 0.
+      num_shapes (int): The number of objects to generate. Deafults to 1.
+      scale (double): The scale for the entire object. Defaults to None.
+      pos (list[double]): Generate object at specified position. Defalts to None.
+      rot (list[double]): Generate object at specified orientation. Defaults to None,
+      min_distance (double): Minimum distance objects must be from other objects. Defaults to None.
+      padding (double): Distance from edge of workspace that objects can be generated in. Defaults to None.
+      random_orientation (bool): Generates objects with a random orientation if True. Defaults to False.
+      z_scale (double): The scale for the objects Z axis. Defaults to 1.
+      model_id (int): Used to specify the specific object within a class of object shapes. Defaults to 1.
+
+    Returns:
+      list[int] : PyBullet IDs for the generated objects
+    '''
     # if padding is not set, use the default padding
     if padding is None:
       padding = self._getDefaultBoarderPadding(shape_type)

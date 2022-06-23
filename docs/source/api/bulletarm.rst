@@ -26,82 +26,83 @@ Tasks
 -----------------
 Our set of tasks are seperated into two categories based on the action space: open-loop control and closed-loop control.
 Future work is planned to allow all tasks to use either control-type but for now the below table shows current avaliable
-control type for each task.
+control type for each task. For each avaliable task, the name required by the :code:`EnvFactory` to initalize that task
+is also shown.
 
 .. list-table::
-  :widths: 25 25 25
+  :widths: 25 25 25 
   :header-rows: 1
   :align: center
 
   * - Task
-    - Open-Loop Control
-    - Closed-Loop Control
+    - Open-Loop
+    - Closed-Loop
   * - :ref:`Block Reaching` 
     - |nocheck| 
-    - |check| 
+    - |check| :code:`close_loop_block_reaching`
   * - :ref:`Block Pushing` 
     - |nocheck| 
-    - |check| 
+    - |check| :code:`close_loop_block_pushing`
   * - :ref:`Block Pulling` 
     - |nocheck| 
-    - |check| 
+    - |check| :code:`close_loop_block_pulling`
   * - :ref:`Block Picking` 
-    - |check| 
-    - |check| 
+    - |check| :code:`block_picking`
+    - |check| :code:`close_loop_block_picking`
   * - :ref:`Block Stacking` 
-    - |check| 
-    - |check| 
+    - |check| :code:`block_stacking`
+    - |check| :code:`close_loop_block_stacking`
   * - :ref:`Block In Bowl` 
     - |nocheck| 
-    - |check| 
+    - |check| :code:`close_loop_block_in_bowl`
   * - :ref:`House Building 1` 
-    - |check| 
-    - |check| 
+    - |check| :code:`house_building_1` 
+    - |check| :code:`close_loop_house_building_1`
   * - :ref:`House Building 2` 
-    - |check| 
+    - |check| :code:`house_building_2`
     - |nocheck| 
   * - :ref:`House Building 3` 
-    - |check| 
+    - |check| :code:`house_building_3`
     - |nocheck| 
   * - :ref:`House Building 4` 
-    - |check| 
+    - |check| :code:`house_building_4`
     - |nocheck| 
   * - :ref:`Improvise House Building 2` 
-    - |check| 
+    - |check| :code:`improvise_house_building_2`
     - |nocheck| 
   * - :ref:`Improvise House Building 3` 
-    - |check| 
+    - |check| :code:`improvise_house_building_3`
     - |nocheck| 
   * - :ref:`Bin Packing` 
-    - |check| 
+    - |check| :code:`block_bin_packing` 
     - |nocheck| 
   * - :ref:`Bottle Arrangement` 
-    - |check| 
+    - |check| :code:`bottle_tray` 
     - |nocheck| 
   * - :ref:`Box Palletizing` 
-    - |check| 
+    - |check| :code:`box_palletizing`
     - |nocheck| 
   * - :ref:`Covid Test`
-    - |check| 
+    - |check| :code:`covid_test` 
     - |nocheck| 
   * - :ref:`Corner Picking`
     - |nocheck| 
-    - |check| 
+    - |check| :code:`close_loop_block_picking_corner`
   * - :ref:`Drawer Opening`
     - |nocheck| 
-    - |check| 
+    - |check| :code:`close_loop_drawer_opening` 
   * - :ref:`Object Grasping`
-    - |check| 
-    - |check| 
+    - |check| :code:`clutter_picking` 
+    - |check| :code:`close_loop_clutter_picking` 
 
 ----
 
 EnvFactory & EnvRunner
 -----------------------
-Interaction with BulletArm is done through the *EnvFactory* and *EnvRunner* classes. 
-The *EnvFactory* is the entry point and creates the *environment* specified by the *configuration* passed as input. The *EnvFactory*
+Interaction with BulletArm is done through the :code:`EnvFactory` and :code:`EnvRunner` classes. 
+The :code:`EnvFactory` is the entry point and creates the *environment* specified by the *configuration* passed as input. The :code:`EnvFactory`
 can create either a single environment (SingleRunner) or multiple environments (MultiRunner) to be run in parallel.
-The *EnvRunner* provides the API which interacts with the environment. This API is modeled after the typical agent-environment
+The :code:`EnvRunner` provides the API which interacts with the environment. This API is modeled after the typical agent-environment
 RL setup popularized by OpenAI Gym.
 
 EnvFactory
@@ -184,10 +185,50 @@ Robots
 -----------
 Different robotic arms can lead to drastically different policies due to the differing kinematics between arms. We
 provide four robotic arms: KUKA IIWA, Frane Emika Panda, Universal Robots UR5 with a parallel jaw gripper, and 
-Universal Robots UR5 with Robotiq 2F-85 gripper. To add a new manipulator see the `tutorial <https://github.com/ColinKohler/BulletArm/blob/main/tutorials/new_robot.py>`_. 
+Universal Robots UR5 with Robotiq 2F-85 gripper. To add a new manipulator see the `new robot tutorial <https://github.com/ColinKohler/BulletArm/blob/main/tutorials/new_robot.py>`_. 
 
 .. figure:: ../images/robots.png
   :figwidth: 600px
   :align: center
   
   Currently supported robotic arms.
+
+----
+
+Objects
+--------
+
+We provide a number of objects to use out-of-the-box when creating new tasks. The list of avaliable objects can be 
+seen below. Objects are generating within the workspace by using the :code:`_generateShapes` function in the base
+enviornment. Objects are identified by their ID which is located in :code:`bulletarm/pybullet/utils/constants.py`.
+To add a new object see the `new object tutorial <https://github.com/ColinKohler/BulletArm/blob/main/tutorials/new_object.py>`_.
+
+.. list-table::
+  :widths: 5
+  :header-rows: 1
+  :align: center
+
+  * - Object
+  * - Cube
+  * - Sphere
+  * - Cylinder 
+  * - Cone 
+  * - Brick
+  * - Triangle 
+  * - Roof
+  * - Teapot
+  * - Teapot Lid 
+  * - Cup
+  * - Bowl
+  * - Plate
+  * - Spoon
+  * - Bottle
+  * - Box
+  * - Pallet
+  * - Test Tube
+  * - Swab
+  * - Flat Block
+  * - Random Household 200
+  * - Grasp Net 
+
+.. autofunction:: bulletarm.envs.base_env.BaseEnv._generateShapes

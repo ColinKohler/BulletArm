@@ -67,7 +67,7 @@ PLANNERS = {
   'random_block_picking': BlockPickingPlanner,
   'random_block_picking_clutter': BlockPickingPlanner,
   'random_household_picking': BlockPickingPlanner,
-  'random_household_picking_clutter': BlockPickingPlanner,
+  'clutter_picking': BlockPickingPlanner,
   'bottle_tray': BottleTrayPlanner,
   'box_palletizing': BoxPalletizingPlanner,
   'bumpy_box_palletizing': BoxPalletizingPlanner,

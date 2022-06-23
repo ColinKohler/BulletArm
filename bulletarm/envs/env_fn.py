@@ -112,7 +112,7 @@ CREATE_ENV_FNS = {
   'random_block_picking': createRandomBlockPickingEnv,
   'random_household_picking': createRandomHouseholdPickingEnv,
   'random_block_picking_clutter': createRandomBlockPickingClutterEnv,
-  'random_household_picking_clutter': createRandomHouseholdPickingClutterEnv,
+  'clutter_picking': createRandomHouseholdPickingClutterEnv,
   'bottle_tray': createBottleTrayEnv,
   'box_palletizing': createBoxPalletizingEnv,
   'bumpy_box_palletizing': createBumpyBoxPalletizingEnv,
