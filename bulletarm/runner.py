@@ -63,6 +63,8 @@ def worker(remote, parent_remote, env_fn, planner_fn=None):
           remote.send(planner.getNextAction())
         else:
           raise ValueError('Attempting to use a planner which was not initialized.')
+      elif cmd == 'get_num_obj':
+        remote.send(env.num_obj)
       elif cmd == 'save':
         env.saveState()
       elif cmd == 'restore':
@@ -321,18 +323,27 @@ class MultiRunner(object):
     repo = git.Repo(bulletarm.__path__[0])
     return repo.head.object.hexsha
 
-  def gatherDeconstructTransitions(self, planner_episode, num_objects):
+  def getNumObj(self):
+    '''
+    Get the number of objects in the environment
+    Returns: int: number of objects
+    '''
+    self.remotes[0].send(('get_num_obj', None))
+    num_obj = self.remotes[0].recv()
+    return num_obj
+
+  def gatherDeconstructTransitions(self, planner_episode):
     '''
     Gather deconstruction transitions and reverse them for construction
 
     Args:
       - planner_episode: The number of expert episodes to gather
-      - num_objects: Number of objects in the environment
 
     Returns: list of transitions. Each transition is in the form of
     ((state, in_hand, obs), action, reward, done, (next_state, next_in_hand, next_obs))
     '''
     num_processes = self.num_processes
+    num_objects = self.getNumObj()
     def states_valid(states_list):
       if len(states_list) < 2:
         return False

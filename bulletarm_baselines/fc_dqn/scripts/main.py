@@ -24,7 +24,7 @@ from bulletarm_baselines.fc_dqn.utils.env_wrapper import EnvWrapper
 
 from bulletarm_baselines.fc_dqn.utils.parameters import *
 from bulletarm_baselines.fc_dqn.utils.torch_utils import augmentBuffer, augmentBufferD4
-from bulletarm_baselines.fc_dqn.scripts.fill_buffer_deconstruct import fillDeconstruct
+from bulletarm_baselines.fc_dqn.scripts.fill_buffer_deconstruct import fillDeconstructUsingRunner
 
 
 ExpertTransition = collections.namedtuple('ExpertTransition', 'state obs action reward next_state next_obs done step_left expert')
@@ -139,7 +139,7 @@ def train():
 
     if planner_episode > 0 and not load_sub:
         if fill_buffer_deconstruct:
-            fillDeconstruct(agent, replay_buffer)
+            fillDeconstructUsingRunner(agent, replay_buffer)
         else:
             planner_envs = envs
             planner_num_process = num_processes
