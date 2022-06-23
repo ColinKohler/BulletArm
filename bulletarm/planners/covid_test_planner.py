@@ -1,15 +1,10 @@
 import numpy as np
-from scipy import ndimage
 import numpy.random as npr
-import matplotlib.pyplot as plt
 import random
 import pybullet as pb
 
-from bulletarm.planners.base_planner import BasePlanner
 from bulletarm.planners.block_structure_base_planner import BlockStructureBasePlanner
 from bulletarm.pybullet.utils import constants
-
-import matplotlib.pyplot as plt
 
 class CovidTestPlanner(BlockStructureBasePlanner):
   def __init__(self, env, config):

@@ -1,7 +1,6 @@
 import numpy as np
 from scipy import ndimage
 import numpy.random as npr
-import matplotlib.pyplot as plt
 import skimage.transform as sk_transform
 
 from bulletarm.planners.base_planner import BasePlanner

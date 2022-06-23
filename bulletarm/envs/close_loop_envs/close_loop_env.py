@@ -437,31 +437,3 @@ class CloseLoopEnv(BaseEnv):
       self.wait(100)
       return super()._checkStack(objects)
     return False
-
-if __name__ == '__main__':
-  import matplotlib.pyplot as plt
-  workspace = np.asarray([[0.2, 0.8],
-                          [-0.3, 0.3],
-                          [0, 0.25]])
-  env_config = {'workspace': workspace, 'max_steps': 10, 'obs_size': 128, 'render': True, 'fast_mode': True,
-                'seed': 2, 'action_sequence': 'pxyzr', 'num_objects': 6, 'random_orientation': False,
-                'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'kuka',
-                'object_init_space_check': 'point', 'physics_mode': 'fast', 'object_scale_range': (1, 1)}
-  planner_config = {'random_orientation': True}
-  env = CloseLoopEnv(env_config)
-  s, obs = env.reset()
-
-  fig, axs = plt.subplots(4, 5, figsize=(25, 20))
-  for i in range(20):
-    action = [-1, 0, 0, -0.01, 0]
-    obs, reward, done = env.step(action)
-    axs[i//5, i%5].imshow(obs[1][0], vmax=0.3)
-  fig.show()
-
-  while True:
-    action = [-1, 0, 0, -0.01, 0]
-    obs, reward, done = env.step(action)
-    plt.imshow(obs[2][0], vmax=0.3)
-    plt.colorbar()
-    plt.show()
-
