@@ -60,5 +60,5 @@ class EnvWrapper:
     def getEmptyInHand(self):
         return torch.tensor(self.envs.getEmptyInHand()).float()
 
-    def gatherDeconstructTransitions(self, planner_episode, num_objects):
-        return self.envs.gatherDeconstructTransitions(planner_episode, num_objects)
+    def gatherDeconstructTransitions(self, planner_episode):
+        return self.envs.gatherDeconstructTransitions(planner_episode)

@@ -24,7 +24,7 @@ from bulletarm_baselines.fc_dqn.utils.env_wrapper import EnvWrapper
 
 from bulletarm_baselines.fc_dqn.utils.parameters import *
 from bulletarm_baselines.fc_dqn.utils.torch_utils import augmentBuffer, augmentBufferD4
-from bulletarm_baselines.fc_dqn.scripts.fill_buffer_deconstruct import fillDeconstruct
+from bulletarm_baselines.fc_dqn.scripts.fill_buffer_deconstruct import fillDeconstructUsingRunner
 
 
 ExpertTransition = collections.namedtuple('ExpertTransition', 'state obs action reward next_state next_obs done step_left expert')
@@ -139,7 +139,7 @@ def train():
 
     if planner_episode > 0 and not load_sub:
         if fill_buffer_deconstruct:
-            fillDeconstruct(agent, replay_buffer)
+            fillDeconstructUsingRunner(agent, replay_buffer)
         else:
             planner_envs = envs
             planner_num_process = num_processes
@@ -154,12 +154,11 @@ def train():
                 planner_actions_star_idx, planner_actions_star = agent.getActionFromPlan(plan_actions)
                 planner_actions_star = torch.cat((planner_actions_star, states.unsqueeze(1)), dim=1)
                 states_, in_hands_, obs_, rewards, dones = planner_envs.step(planner_actions_star, auto_reset=True)
-                steps_lefts = planner_envs.getStepLeft()
                 buffer_obs = getCurrentObs(in_hands, obs)
                 buffer_obs_ = getCurrentObs(in_hands_, obs_)
                 for i in range(planner_num_process):
                   transition = ExpertTransition(states[i], buffer_obs[i], planner_actions_star_idx[i], rewards[i], states_[i],
-                                                buffer_obs_[i], dones[i], steps_lefts[i], torch.tensor(1))
+                                                buffer_obs_[i], dones[i], torch.tensor(100), torch.tensor(1))
                   local_transitions[i].append(transition)
                 states = copy.copy(states_)
                 obs = copy.copy(obs_)
@@ -222,7 +221,6 @@ def train():
                 train_step(agent, replay_buffer, logger)
 
         states_, in_hands_, obs_, rewards, dones = envs.stepWait()
-        steps_lefts = envs.getStepLeft()
 
         done_idxes = torch.nonzero(dones).squeeze(1)
         if done_idxes.shape[0] != 0:
@@ -237,7 +235,7 @@ def train():
         for i in range(num_processes):
             replay_buffer.add(
                 ExpertTransition(states[i], buffer_obs[i], actions_star_idx[i], rewards[i], states_[i],
-                                 buffer_obs_[i], dones[i], steps_lefts[i], torch.tensor(is_expert))
+                                 buffer_obs_[i], dones[i], torch.tensor(100), torch.tensor(is_expert))
             )
         logger.logStep(rewards.numpy(), dones.numpy())
 
