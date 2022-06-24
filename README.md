@@ -14,7 +14,7 @@ benchmark tasks in simulation alongside a collection of baseline algorithms.
 <a name="announcements"></a>
 ## Announcements
 
-### TBD
+### June 24, 2022
 - <b>Version 1.0.0 is live!</b>
 
 <a name="install"></a>
