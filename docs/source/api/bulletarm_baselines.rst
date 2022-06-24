@@ -22,7 +22,7 @@ Prerequisite
 
 .. code-block:: bash
 
-  pip install -r baseline_requirement.txt
+  pip install -r baseline_requirements.txt
     
 4. Goto the baseline directory
 
@@ -78,7 +78,7 @@ Prerequisite
 
 .. code-block:: bash
 
-    pip install -r baseline_requirement.txt
+    pip install -r baseline_requirements.txt
 
 3. Goto the baseline directory
 
