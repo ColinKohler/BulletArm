@@ -9,6 +9,7 @@ BulletArm Documentation
 ============================================
 
 **BulletArm** is a PyBullet based benchmark and learning-environment for robotic manipulation research.
+The development of this package was part of the work done in our `ISRR 22 paper <https://arxiv.org/abs/2205.14292>`_.
 
 This package is mainly comprised of two sub-packages: the :doc:`BulletArm Simulator <api/bulletarm>` and 
 the :doc:`BulletArm Baselines <api/bulletarm_baselines>`. The simulator provides numerous tools to enable
