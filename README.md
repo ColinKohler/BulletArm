@@ -43,6 +43,8 @@ benchmark tasks in simulation alongside a collection of baseline algorithms.
 
 <a name="getting_started"></a>
 ## Getting Started
+To get started with BulletArm please see the [Getting Started section](https://colinkohler.github.io/BulletArm/api/getting_started.html) of
+the documentation.
 
 <a name="contributions"></a>
 ## Contributions
