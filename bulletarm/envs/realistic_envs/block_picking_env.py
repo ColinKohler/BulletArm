@@ -28,7 +28,6 @@ class BlockPickingEnv(BaseEnv):
       (constants.PICK_PRIMATIVE, o, None)
       for o in self.objects
     ]
-    self.planner_waypoints.insert(npr.randint(len(self.planner_waypoints)), (constants.PICK_PRIMATIVE, constants.RANDOM, None))
 
     self.obj_grasped = 0
     return self._getObservation()

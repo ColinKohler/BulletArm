@@ -1,19 +1,5 @@
 from bulletarm.envs.multi_task_env import createMultiTaskEnv
 
-from bulletarm.envs.block_structure_envs.block_stacking_env import createBlockStackingEnv
-from bulletarm.envs.block_structure_envs.brick_stacking_env import createBrickStackingEnv
-from bulletarm.envs.block_structure_envs.pyramid_stacking_env import createPyramidStackingEnv
-from bulletarm.envs.block_structure_envs.house_building_1_env import createHouseBuilding1Env
-from bulletarm.envs.block_structure_envs.house_building_2_env import createHouseBuilding2Env
-from bulletarm.envs.block_structure_envs.house_building_3_env import createHouseBuilding3Env
-from bulletarm.envs.block_structure_envs.house_building_4_env import createHouseBuilding4Env
-from bulletarm.envs.block_structure_envs.house_building_5_env import createHouseBuilding5Env
-from bulletarm.envs.block_structure_envs.house_building_x_env import createHouseBuildingXEnv
-from bulletarm.envs.block_structure_envs.improvise_house_building_2_env import createImproviseHouseBuilding2Env
-from bulletarm.envs.block_structure_envs.improvise_house_building_3_env import createImproviseHouseBuilding3Env
-from bulletarm.envs.block_structure_envs.improvise_house_building_discrete_env import createImproviseHouseBuildingDiscreteEnv
-from bulletarm.envs.block_structure_envs.improvise_house_building_random_env import createImproviseHouseBuildingRandomEnv
-
 from bulletarm.envs.deconstruct_envs.block_stacking_deconstruct_env import createBlockStackingDeconstructEnv
 from bulletarm.envs.deconstruct_envs.house_building_1_deconstruct_env import createHouseBuilding1DeconstructEnv
 from bulletarm.envs.deconstruct_envs.house_building_2_deconstruct_env import createHouseBuilding2DeconstructEnv
@@ -24,7 +10,6 @@ from bulletarm.envs.deconstruct_envs.improvise_house_building_2_deconstruct_env 
 from bulletarm.envs.deconstruct_envs.improvise_house_building_3_deconstruct_env import createImproviseHouseBuilding3DeconstructEnv
 from bulletarm.envs.deconstruct_envs.improvise_house_building_discrete_deconstruct_env import createImproviseHouseBuildingDiscreteDeconstructEnv
 from bulletarm.envs.deconstruct_envs.improvise_house_building_random_deconstruct_env import createImproviseHouseBuildingRandomDeconstructEnv
-
 
 from bulletarm.envs.realistic_envs.object_grasping import createObjectGrasping
 from bulletarm.envs.realistic_envs.block_picking_env import createBlockPickingEnv
@@ -55,33 +40,27 @@ from bulletarm.envs.ramp_envs.ramp_improvise_house_building_3_deconstruct_env im
 from bulletarm.envs.bumpy_envs.bumpy_box_palletizing_env import createBumpyBoxPalletizingEnv
 from bulletarm.envs.bumpy_envs.bumpy_house_building_4_env import createBumpyHouseBuilding4Env
 
-from bulletarm.envs.close_loop_envs.close_loop_block_picking import createCloseLoopBlockPickingEnv
-from bulletarm.envs.close_loop_envs.close_loop_block_reaching import createCloseLoopBlockReachingEnv
-from bulletarm.envs.close_loop_envs.close_loop_block_stacking import createCloseLoopBlockStackingEnv
-from bulletarm.envs.close_loop_envs.close_loop_block_pulling import createCloseLoopBlockPullingEnv
-from bulletarm.envs.close_loop_envs.close_loop_house_building_1 import createCloseLoopHouseBuilding1Env
-from bulletarm.envs.close_loop_envs.close_loop_block_picking_corner import createCloseLoopBlockPickingCornerEnv
-from bulletarm.envs.close_loop_envs.close_loop_drawer_opening import createCloseLoopDrawerOpeningEnv
-from bulletarm.envs.close_loop_envs.close_loop_household_picking import createCloseLoopHouseholdPickingEnv
-from bulletarm.envs.close_loop_envs.close_loop_household_picking_cluttered import createCloseLoopHouseholdPickingClutteredEnv
-from bulletarm.envs.close_loop_envs.close_loop_block_pushing import createCloseLoopBlockPushingEnv
-from bulletarm.envs.close_loop_envs.close_loop_block_in_bowl import createCloseLoopBlockInBowlEnv
+from bulltetarm.envs.close_loop_envs import *
+from bulletarm.envs.block_structure_envs import *
+
+def createEnv(env):
+  return lambda config: env(config)
 
 CREATE_ENV_FNS = {
   'block_picking' : createBlockPickingEnv,
-  'block_stacking' : createBlockStackingEnv,
-  'brick_stacking' : createBrickStackingEnv,
-  'pyramid_stacking' : createPyramidStackingEnv,
-  'house_building_1' : createHouseBuilding1Env,
-  'house_building_2' : createHouseBuilding2Env,
-  'house_building_3' : createHouseBuilding3Env,
-  'house_building_4' : createHouseBuilding4Env,
-  'house_building_5' : createHouseBuilding5Env,
-  'house_buliding_x' : createHouseBuildingXEnv,
-  'improvise_house_building_2' : createImproviseHouseBuilding2Env,
-  'improvise_house_building_3' : createImproviseHouseBuilding3Env,
-  'improvise_house_building_discrete' : createImproviseHouseBuildingDiscreteEnv,
-  'improvise_house_building_random' : createImproviseHouseBuildingRandomEnv,
+  'block_stacking' : createEnv(BlockStackingEnv),
+  'brick_stacking' : createEnv(BrickStackingEnv),
+  'pyramid_stacking' : createEnv(PyramidStackingEnv),
+  'house_building_1' : createEnv(HouseBuilding1Env),
+  'house_building_2' : createEnv(HouseBuilding2Env),
+  'house_building_3' : createEnv(HouseBuilding3Env),
+  'house_building_4' : createEnv(HouseBuilding4Env),
+  'house_building_5' : createEnv(HouseBuilding5Env),
+  'house_buliding_x' : createEnv(HouseBuildingXEnv),
+  'improvise_house_building_2' : createEnv(ImproviseHouseBuilding2Env),
+  'improvise_house_building_3' : createEnv(ImproviseHouseBuilding3Env),
+  'improvise_house_building_discrete' : createEnv(ImproviseHouseBuildingDiscreteEnv),
+  'improvise_house_building_random' : createEnv(ImproviseHouseBuildingRandomEnv),
   'block_stacking_deconstruct': createBlockStackingDeconstructEnv,
   'house_building_1_deconstruct' : createHouseBuilding1DeconstructEnv,
   'house_building_2_deconstruct' : createHouseBuilding2DeconstructEnv,
@@ -118,15 +97,15 @@ CREATE_ENV_FNS = {
   'bumpy_box_palletizing': createBumpyBoxPalletizingEnv,
   'bumpy_house_building_4': createBumpyHouseBuilding4Env,
   'covid_test': createCovidTestEnv,
-  'close_loop_block_picking': createCloseLoopBlockPickingEnv,
-  'close_loop_block_reaching': createCloseLoopBlockReachingEnv,
-  'close_loop_block_stacking': createCloseLoopBlockStackingEnv,
-  'close_loop_block_pulling': createCloseLoopBlockPullingEnv,
-  'close_loop_house_building_1': createCloseLoopHouseBuilding1Env,
-  'close_loop_block_picking_corner': createCloseLoopBlockPickingCornerEnv,
-  'close_loop_drawer_opening': createCloseLoopDrawerOpeningEnv,
-  'close_loop_household_picking': createCloseLoopHouseholdPickingEnv,
-  'close_loop_clutter_picking': createCloseLoopHouseholdPickingClutteredEnv,
-  'close_loop_block_pushing': createCloseLoopBlockPushingEnv,
-  'close_loop_block_in_bowl': createCloseLoopBlockInBowlEnv,
+  'close_loop_block_picking': createEnv(CloseLoopBlockPickingEnv),
+  'close_loop_block_reaching': createEnv(CloseLoopBlockReachingEnv),
+  'close_loop_block_stacking': createEnv(CloseLoopBlockStackingEnv),
+  'close_loop_block_pulling': createEnv(CloseLoopBlockPullingEnv),
+  'close_loop_house_building_1': createEnv(CloseLoopHouseBuilding1Env),
+  'close_loop_block_picking_corner': createEnv(CloseLoopBlockPickingCornerEnv),
+  'close_loop_drawer_opening': createEnv(CloseLoopDrawerOpeningEnv),
+  'close_loop_household_picking': createEnv(CloseLoopHouseholdPickingEnv),
+  'close_loop_clutter_picking': createEnv(CloseLoopHouseholdPickingClutteredEnv),
+  'close_loop_block_pushing': createEnv(CloseLoopBlockPushingEnv),
+  'close_loop_block_in_bowl': createEnv(CloseLoopBlockInBowlEnv),
 }
