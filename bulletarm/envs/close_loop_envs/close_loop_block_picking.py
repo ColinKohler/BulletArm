@@ -35,6 +35,3 @@ class CloseLoopBlockPickingEnv(CloseLoopEnv):
   def _checkTermination(self):
     gripper_z = self.robot._getEndEffectorPosition()[-1]
     return self.robot.holding_obj == self.objects[-1] and gripper_z > 0.15
-
-def createCloseLoopBlockPickingEnv(config):
-  return CloseLoopBlockPickingEnv(config)

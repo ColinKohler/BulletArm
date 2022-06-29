@@ -56,9 +56,6 @@ class BlockPickingEnv(BaseEnv):
     state, in_hand, obs = super(BlockPickingEnv, self)._getObservation()
     return 0, np.zeros_like(in_hand), obs
 
-def createBlockPickingEnv(config):
-  return BlockPickingEnv(config)
-
 if __name__ == '__main__':
   import matplotlib.pyplot as plt
   workspace = np.asarray([[0.25, 0.65],

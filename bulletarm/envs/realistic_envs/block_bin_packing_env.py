@@ -108,9 +108,6 @@ class BlockBinPackingEnv(BaseEnv):
     else:
       return self.box_size[-1]
 
-def createBlockBinPackingEnv(config):
-  return BlockBinPackingEnv(config)
-
 if __name__ == '__main__':
   workspace = np.asarray([[0.2, 0.8],
                           [-0.3, 0.3],

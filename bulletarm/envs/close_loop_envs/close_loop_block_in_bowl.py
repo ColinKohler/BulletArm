@@ -53,6 +53,3 @@ class CloseLoopBlockInBowlEnv(CloseLoopEnv):
           self.workspace[2][0] < p[2] < self.workspace[2][1]:
         return False
     return True
-
-def createCloseLoopBlockInBowlEnv(config):
-  return CloseLoopBlockInBowlEnv(config)

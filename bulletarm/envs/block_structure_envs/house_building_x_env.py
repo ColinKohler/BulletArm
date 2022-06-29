@@ -94,6 +94,3 @@ class HouseBuildingXEnv(BaseEnv):
       return self._checkObjUpright(roofs[0]) and super(HouseBuildingXEnv, self).isSimValid()
     else:
       return super(HouseBuildingXEnv, self).isSimValid()
-
-def createHouseBuildingXEnv(config):
-  return HouseBuildingXEnv(config)

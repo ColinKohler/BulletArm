@@ -16,6 +16,3 @@ class RampHouseBuilding2DeconstructEnv(RampDeconstructEnv, HouseBuilding2Deconst
 
   def isSimValid(self):
     return RampDeconstructEnv.isSimValid(self)
-
-def createRampHouseBuilding2DeconstructEnv(config):
-  return RampHouseBuilding2DeconstructEnv(config)

@@ -59,6 +59,3 @@ class HouseBuilding3Env(BaseEnv):
   def isSimValid(self):
     roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
     return self._checkObjUpright(roofs[0]) and super(HouseBuilding3Env, self).isSimValid()
-
-def createHouseBuilding3Env(config):
-  return HouseBuilding3Env(config)

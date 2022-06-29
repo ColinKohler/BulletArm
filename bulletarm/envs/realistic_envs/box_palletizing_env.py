@@ -190,9 +190,6 @@ class BoxPalletizingEnv(BaseEnv):
     pb.changeDynamics(box.object_id, -1, linearDamping=0.04, angularDamping=0.04, restitution=0,
                       contactStiffness=3000, contactDamping=100)
 
-def createBoxPalletizingEnv(config):
-  return BoxPalletizingEnv(config)
-
 if __name__ == '__main__':
   workspace = np.asarray([[0.2, 0.8],
                           [-0.3, 0.3],

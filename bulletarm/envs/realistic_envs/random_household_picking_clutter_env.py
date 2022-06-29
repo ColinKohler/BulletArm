@@ -175,6 +175,3 @@ class RandomHouseholdPickingClutterEnv(BaseEnv):
   def _getObservation(self, action=None):
     state, in_hand, obs = super(RandomHouseholdPickingClutterEnv, self)._getObservation()
     return 0, np.zeros_like(in_hand), obs
-
-def createRandomHouseholdPickingClutterEnv(config):
-  return RandomHouseholdPickingClutterEnv(config)

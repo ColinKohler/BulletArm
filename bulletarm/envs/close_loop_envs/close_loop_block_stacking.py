@@ -42,6 +42,3 @@ class CloseLoopBlockStackingEnv(CloseLoopEnv):
 
   def _checkTermination(self):
     return not self._isHolding() and self._checkStack(self.objects)
-
-def createCloseLoopBlockStackingEnv(config):
-  return CloseLoopBlockStackingEnv(config)

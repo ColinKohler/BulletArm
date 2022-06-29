@@ -70,9 +70,6 @@ class BumpyHouseBuilding4Env(HouseBuilding4Env, BumpyBase):
            self._checkInBetween(roofs[0], level2_blocks[0], level2_blocks[1]) and \
            self._checkInBetween(bricks[0], level2_blocks[0], level2_blocks[1])
 
-def createBumpyHouseBuilding4Env(config):
-  return BumpyHouseBuilding4Env(config)
-
 if __name__ == '__main__':
   workspace = np.asarray([[0.3, 0.7],
                           [-0.2, 0.2],

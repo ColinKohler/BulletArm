@@ -54,6 +54,3 @@ class CloseLoopDrawerOpeningEnv(CloseLoopEnv):
     obj_poses.append(handle_pos + handle_rot)
 
     return np.array(obj_poses)
-
-def createCloseLoopDrawerOpeningEnv(config):
-  return CloseLoopDrawerOpeningEnv(config)

@@ -42,6 +42,3 @@ class RampHouseBuilding3Env(RampBaseEnv):
         self._checkInBetween(roofs[0], blocks[0], blocks[1]):
       return True
     return False
-
-def createRampHouseBuilding3Env(config):
-  return RampHouseBuilding3Env(config)

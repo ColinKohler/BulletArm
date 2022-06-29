@@ -48,6 +48,3 @@ class ImproviseHouseBuildingDiscreteEnv(BaseEnv):
   def isSimValid(self):
     roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
     return self._checkObjUpright(roofs[0]) and super(ImproviseHouseBuildingDiscreteEnv, self).isSimValid()
-
-def createImproviseHouseBuildingDiscreteEnv(config):
-  return ImproviseHouseBuildingDiscreteEnv(config)

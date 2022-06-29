@@ -45,6 +45,3 @@ class HouseBuilding2DeconstructEnv(DeconstructEnv):
   def isSimValid(self):
     roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
     return self._checkObjUpright(roofs[0]) and super(HouseBuilding2DeconstructEnv, self).isSimValid()
-
-def createHouseBuilding2DeconstructEnv(config):
-  return HouseBuilding2DeconstructEnv(config)

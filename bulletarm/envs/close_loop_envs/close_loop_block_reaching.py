@@ -27,6 +27,3 @@ class CloseLoopBlockReachingEnv(CloseLoopEnv):
     gripper_pos = self.robot._getEndEffectorPosition()
     obj_pos = self.objects[0].getPosition()
     return np.linalg.norm(np.array(gripper_pos) - np.array(obj_pos)) < 0.03
-
-def createCloseLoopBlockReachingEnv(config):
-  return CloseLoopBlockReachingEnv(config)

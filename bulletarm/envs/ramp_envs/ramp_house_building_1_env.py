@@ -27,6 +27,3 @@ class RampHouseBuilding1Env(RampBaseEnv):
     blocks = list(filter(lambda x: self.object_types[x] == constants.CUBE, self.objects))
     triangles = list(filter(lambda x: self.object_types[x] == constants.TRIANGLE, self.objects))
     return self._checkStack(blocks+triangles) and self._checkObjUpright(triangles[0])
-
-def createRampHouseBuilding1Env(config):
-  return RampHouseBuilding1Env(config)

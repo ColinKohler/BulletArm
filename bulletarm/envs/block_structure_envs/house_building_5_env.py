@@ -81,6 +81,3 @@ class HouseBuilding5Env(BaseEnv):
       if not self._checkObjUpright(cylinder):
         return False
     return super(HouseBuilding5Env, self).isSimValid()
-
-def createHouseBuilding5Env(config):
-  return HouseBuilding5Env(config)

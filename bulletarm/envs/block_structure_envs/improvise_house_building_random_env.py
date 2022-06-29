@@ -62,6 +62,3 @@ class ImproviseHouseBuildingRandomEnv(BaseEnv):
   def isSimValid(self):
     roofs = list(filter(lambda x: self.object_types[x] == constants.ROOF, self.objects))
     return self._checkObjUpright(roofs[0]) and super(ImproviseHouseBuildingRandomEnv, self).isSimValid()
-
-def createImproviseHouseBuildingRandomEnv(config):
-  return ImproviseHouseBuildingRandomEnv(config)

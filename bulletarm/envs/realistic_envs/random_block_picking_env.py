@@ -1,4 +1,4 @@
-import numpy as np
+mport numpy as np
 from bulletarm.envs.base_env import BaseEnv
 from bulletarm.pybullet.utils import constants
 from bulletarm.pybullet.utils.constants import NoValidPositionException
@@ -62,6 +62,3 @@ class RandomBlockPickingEnv(BaseEnv):
   def _getObservation(self, action=None):
     state, in_hand, obs = super(RandomBlockPickingEnv, self)._getObservation()
     return 0, np.zeros_like(in_hand), obs
-
-def createRandomBlockPickingEnv(config):
-  return RandomBlockPickingEnv(config)

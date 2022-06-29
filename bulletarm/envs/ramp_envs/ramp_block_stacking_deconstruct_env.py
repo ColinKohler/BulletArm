@@ -13,7 +13,3 @@ class RampBlockStackingDeconstructEnv(RampDeconstructEnv, BlockStackingDeconstru
   def checkStructure(self):
     ''''''
     return BlockStackingDeconstructEnv.checkStructure(self)
-
-
-def createRampBlockStackingDeconstructEnv(config):
-  return RampBlockStackingDeconstructEnv(config)

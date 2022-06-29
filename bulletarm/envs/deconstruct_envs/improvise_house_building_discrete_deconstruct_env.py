@@ -101,6 +101,3 @@ class ImproviseHouseBuildingDiscreteEnv(DeconstructEnv):
       if dist < self.terminate_min_dist:
         return False
     return True
-
-def createImproviseHouseBuildingDiscreteDeconstructEnv(config):
-  return ImproviseHouseBuildingDiscreteEnv(config)

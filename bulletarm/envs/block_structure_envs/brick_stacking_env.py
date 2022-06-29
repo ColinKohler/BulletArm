@@ -33,6 +33,3 @@ class BrickStackingEnv(BaseEnv):
     blocks = list(filter(lambda x: self.object_types[x] == constants.CUBE, self.objects))
     bricks = list(filter(lambda x: self.object_types[x] == constants.BRICK, self.objects))
     return all([self._checkOnTop(bricks[0], b) for b in blocks])
-
-def createBrickStackingEnv(config):
-  return BrickStackingEnv(config)

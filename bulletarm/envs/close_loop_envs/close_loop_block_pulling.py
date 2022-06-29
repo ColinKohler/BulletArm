@@ -52,6 +52,3 @@ class CloseLoopBlockPullingEnv(CloseLoopEnv):
 
   def _checkTermination(self):
     return self.objects[0].isTouching(self.objects[1])
-
-def createCloseLoopBlockPullingEnv(config):
-  return CloseLoopBlockPullingEnv(config)

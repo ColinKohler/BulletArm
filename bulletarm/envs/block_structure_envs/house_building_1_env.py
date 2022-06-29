@@ -44,6 +44,3 @@ class HouseBuilding1Env(BaseEnv):
   def isSimValid(self):
     triangles = list(filter(lambda x: self.object_types[x] == constants.TRIANGLE, self.objects))
     return self._checkObjUpright(triangles[0]) and super(HouseBuilding1Env, self).isSimValid()
-
-def createHouseBuilding1Env(config):
-  return HouseBuilding1Env(config)

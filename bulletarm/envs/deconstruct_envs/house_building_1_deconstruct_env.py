@@ -33,7 +33,3 @@ class HouseBuilding1DeconstructEnv(DeconstructEnv):
   def isSimValid(self):
     triangles = list(filter(lambda x: self.object_types[x] == constants.TRIANGLE, self.objects))
     return self._checkObjUpright(triangles[0]) and DeconstructEnv.isSimValid(self)
-
-
-def createHouseBuilding1DeconstructEnv(config):
-  return HouseBuilding1DeconstructEnv(config)

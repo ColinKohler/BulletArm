@@ -70,6 +70,3 @@ class HouseBuildingXDeconstructEnv(DeconstructEnv):
       return self._checkObjUpright(roofs[0]) and super(HouseBuildingXDeconstructEnv, self).isSimValid()
     else:
       return super(HouseBuildingXDeconstructEnv, self).isSimValid()
-
-def createHouseBuildingXDeconstructEnv(config):
-  return HouseBuildingXDeconstructEnv(config)

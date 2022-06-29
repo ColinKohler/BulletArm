@@ -347,11 +347,6 @@ class CovidTestEnv(BaseEnv):
         swabs.append(obj)
     return swabs
 
-
-def createCovidTestEnv(config):
-  return CovidTestEnv(config)
-
-
 if __name__ == '__main__':
   object_init_space = np.asarray([[0.3, 0.7],
                           [-0.4, 0.4],

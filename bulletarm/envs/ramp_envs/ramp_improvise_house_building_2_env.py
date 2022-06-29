@@ -38,6 +38,3 @@ class RampImproviseHouseBuilding2Env(RampBaseEnv):
     if self._checkOnTop(random_blocks[0], roofs[0]) and self._checkOnTop(random_blocks[1], roofs[0]):
       return True
     return False
-
-def createRampImproviseHouseBuilding2Env(config):
-  return RampImproviseHouseBuilding2Env(config)

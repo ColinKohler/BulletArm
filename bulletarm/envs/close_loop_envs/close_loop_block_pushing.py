@@ -92,6 +92,3 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
           self.workspace[2][0] < p[2] < self.workspace[2][1]:
         return False
     return True
-
-def createCloseLoopBlockPushingEnv(config):
-  return CloseLoopBlockPushingEnv(config)

@@ -43,6 +43,3 @@ class RampHouseBuilding4Env(RampBaseEnv):
            self._checkInBetween(bricks[0], level1_blocks[0], level1_blocks[1]) and \
            self._checkInBetween(roofs[0], level2_blocks[0], level2_blocks[1]) and \
            self._checkInBetween(bricks[0], level2_blocks[0], level2_blocks[1])
-
-def createRampHouseBuilding4Env(config):
-  return RampHouseBuilding4Env(config)

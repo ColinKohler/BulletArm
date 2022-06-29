@@ -143,6 +143,3 @@ class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
           self.workspace[2][0] < p[2] < self.workspace[2][1]:
         return False
     return True
-
-def createCloseLoopHouseholdPickingClutteredEnv(config):
-  return CloseLoopHouseholdPickingClutteredEnv(config)

@@ -30,6 +30,3 @@ class BlockStackingDeconstructEnv(DeconstructEnv):
       self.generateStructureShape((pos[0], pos[1], i * self.max_block_size + self.max_block_size / 2), rot,
                                   constants.CUBE)
     self.wait(50)
-
-def createBlockStackingDeconstructEnv(config):
-  return BlockStackingDeconstructEnv(config)

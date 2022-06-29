@@ -108,9 +108,6 @@ class BottleTrayEnv(BaseEnv):
   def getObjsOutsideBox(self):
     return list(filter(lambda obj: not self.isObjInBox(obj), self.objects))
 
-def createBottleTrayEnv(config):
-  return BottleTrayEnv(config)
-
 if __name__ == '__main__':
   workspace = np.asarray([[0.2, 0.8],
                           [-0.3, 0.3],

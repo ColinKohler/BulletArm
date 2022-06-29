@@ -24,6 +24,3 @@ class RampBlockStackingEnv(RampBaseEnv):
   def _checkTermination(self):
     ''''''
     return self._checkStack()
-
-def createRampBlockStackingEnv(config):
-  return RampBlockStackingEnv(config)

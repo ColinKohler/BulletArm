@@ -43,6 +43,3 @@ class BlockStackingEnv(BaseEnv):
   def _checkTermination(self):
     ''''''
     return self._checkStack()
-
-def createBlockStackingEnv(config):
-  return BlockStackingEnv(config)

@@ -63,6 +63,3 @@ class CloseLoopBlockPickingCornerEnv(CloseLoopEnv):
 
       obj_poses.append(pos + rot)
     return np.array(obj_poses)
-
-def createCloseLoopBlockPickingCornerEnv(config):
-  return CloseLoopBlockPickingCornerEnv(config)

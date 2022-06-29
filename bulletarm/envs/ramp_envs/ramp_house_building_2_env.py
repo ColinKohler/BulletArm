@@ -28,6 +28,3 @@ class RampHouseBuilding2Env(RampBaseEnv):
     if self._checkOnTop(blocks[0], roofs[0]) and self._checkOnTop(blocks[1], roofs[0]):
       return True
     return False
-
-def createRampHouseBuilding2Env(config):
-  return RampHouseBuilding2Env(config)
