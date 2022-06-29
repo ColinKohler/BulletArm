@@ -1,0 +1,33 @@
+name: build_docs
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  sphinx_docs_to_gh_pages:
+    runs-on: ubuntu-latest
+    name: sphinx_docs_to_gh_pages
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: make_conda_env
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: 3.7
+          environment-file: docs/env.yaml
+          auto-update-conda: false
+          auto-activate-base: false
+          show-channel-urls: true
+      - name: install
+        shell: bash -l {0}
+        run: |
+          python setup.py install
+      - name: build_docs_action
+        uses: uibcdf/action-sphinx-docs-to-gh-pages@v1.0-beta.2
+        with:
+          branch: main
+          dir_docs: docs/source
+          sphinxopts: ''

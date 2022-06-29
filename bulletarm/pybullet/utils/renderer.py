@@ -1,9 +1,7 @@
 import pybullet as pb
 import numpy as np
 import scipy
-from sklearn.impute import SimpleImputer
 from bulletarm.pybullet.utils.sensor import Sensor
-import skimage.transform as sk_transform
 from bulletarm.pybullet.utils import transformations
 
 class Renderer(object):

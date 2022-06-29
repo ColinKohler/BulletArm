@@ -21,7 +21,10 @@ sphinx-rtd-theme = "*"
 tqdm = "*"
 more-itertools = "*"
 seaborn = "*"
-pymeshlab = "*"
+torch = "*"
+torchvision = "*"
+torchaudio = "*"
+tensorboard = "*"
 
 [requires]
 python_version = "3.7"

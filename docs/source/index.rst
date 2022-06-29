@@ -8,23 +8,37 @@
 BulletArm Documentation
 ============================================
 
-**BulletArm** is a PyBullet based package for robotics maipulation research.
+**BulletArm** is a PyBullet based benchmark and learning-environment for robotic manipulation research.
+The development of this package was part of the work done in our `ISRR 22 paper <https://arxiv.org/abs/2205.14292>`_.
 
-This package contains various simulated robotics environments used for research in the 
-Helping Hands lab. The majority of these environments entail a robotic arm armed with a
-paralel jaw gripper executing a series of manipulation based tasks.
+This package is mainly comprised of two sub-packages: the :doc:`BulletArm Simulator <api/bulletarm>` and 
+the :doc:`BulletArm Baselines <api/bulletarm_baselines>`. The simulator provides numerous tools to enable
+rapid development of robotic manipulation environments for use in robotic learning. It provides a number 
+of environemnts, robots, planners, and tasks out-of-the-box. Additionally, BulletArm was designed with
+an emphasis on extensibility, allowing users to easily create new enviornments, tasks, and robots as needed.
+We aim to maintain and improve this package adding new features over time and hope to encourage the community
+to assist with this by adding any interesting tasks they might design.
 
+Through the combination of these tasks with the provided baselines, we present a comprehensive benchmark for
+use in either open-loop or closed-loop control. This benchmark consists of 19 different manipulation tasks 
+of varying difficuly, ranging from simple reaching and picking tasks to more realistic tasks such as bin packing
+and pallet stacking. These tasks can be seen below (for more information see :doc:`Benchmark Tasks <api/tasks>`).
+We provide state-of-the-art baseline algorithms allowing users to compare their algorithms to our previous work 
+on any of the existing tasks or novel tasks which they create.
+
+.. figure:: images/tasks.png
+  :figwidth: 600px
+  :align: center
+
+  Benchmark Tasks.
+  
 Package Reference
 --------------------------------------------
 
-The package is structured into two subpackages:
-
-* :doc:`bulletarm <api/bulletarm>` contains the PyBullet environments, tasks, and robots.
-* :doc:`bulletarm_baselines <api/bulletarm_baselines>` implements several baseline algorithms alongside logging and plotting tools.
-
-To get started, we provide a number of `tutorials <https://github.com/ColinKohler/BulletArm/tree/main/tutorials>`_ including an 
-`introcutory tutorial <https://github.com/ColinKohler/BulletArm/blob/main/tutorials/run_task.py>`_ demonstrating how to run existing task and 
-more advanced `tutorial <https://github.com/ColinKohler/BulletArm/blob/main/tutorials/new_task.py>`_ how to create a new task.
+* :doc:`Getting Started: <api/getting_started>` Helpful introductory material including installation instructions, examples, and tutorials.
+* :doc:`BulletArm Simulator: <api/bulletarm>` Robotic simulator including the PyBullet environments, robots, tasks, and more.
+* :doc:`BulletArm Baselines: <api/bulletarm_baselines>` A collection of state-of-the-art baseline algorithms to benchmark new methods against.
+* :doc:`Benchmark Tasks: <api/tasks>` The core set of tasks used for benchmarking methods. 
 
 .. toctree::
   :glob:
@@ -60,9 +74,7 @@ cite us if you use this code in your own work::
     copyright = {arXiv.org perpetual, non-exclusive license}
   }
 
-
 Indices and tables
 ------------------
 * :ref:`genindex`
 * :ref:`modindex`
-* :ref:`search`
