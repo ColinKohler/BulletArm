@@ -7,7 +7,7 @@ from itertools import combinations
 from bulletarm.envs.deconstruct_envs.deconstruct_env import DeconstructEnv
 from bulletarm.pybullet.utils import constants
 
-class ImproviseHouseBuildingDiscreteEnv(DeconstructEnv):
+class ImproviseHouseBuildingDiscreteDeconstructEnv(DeconstructEnv):
   ''''''
   def __init__(self, config):
     # env specific parameters
@@ -18,7 +18,7 @@ class ImproviseHouseBuildingDiscreteEnv(DeconstructEnv):
     if 'max_steps' not in config:
       config['max_steps'] = 10
     config['check_random_obj_valid'] = True
-    super(ImproviseHouseBuildingDiscreteEnv, self).__init__(config)
+    super().__init__(config)
     self.terminate_min_dist = 2.7*self.min_block_size
 
   def checkStructure(self):

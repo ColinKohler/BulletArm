@@ -1,4 +1,4 @@
-mport numpy as np
+import numpy as np
 from bulletarm.envs.base_env import BaseEnv
 from bulletarm.pybullet.utils import constants
 from bulletarm.pybullet.utils.constants import NoValidPositionException

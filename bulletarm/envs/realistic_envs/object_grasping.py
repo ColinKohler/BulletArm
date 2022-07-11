@@ -10,7 +10,7 @@ from bulletarm.pybullet.equipments.tray import Tray
 from scipy.ndimage.interpolation import rotate
 import pybullet as pb
 
-class ObjectGrasping(BaseEnv):
+class ObjectGraspingEnv(BaseEnv):
     '''Open loop object grasping task.
 
     The robot needs to pick up and object in a cluttered scene containing N random objects.
@@ -30,7 +30,7 @@ class ObjectGrasping(BaseEnv):
         config['adjust_gripper_after_lift'] = True
         config['min_object_distance'] = 0.
         config['min_boarder_padding'] = 0.15
-        super(ObjectGrasping, self).__init__(config)
+        super().__init__(config)
         self.object_init_z = 0.1
         self.obj_grasped = 0
         self.tray = Tray()

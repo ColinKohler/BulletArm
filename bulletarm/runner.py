@@ -186,18 +186,17 @@ class MultiRunner(object):
     else:
       obs, rewards, dones, metadata = res
 
-    states, hand_obs, obs = zip(*obs)
+    stacked_obs = list()
+    for o in zip(*obs):
+      stacked_obs.append(np.stack(o).astype(float))
 
-    states = np.stack(states).astype(float)
-    hand_obs = np.stack(hand_obs)
-    obs = np.stack(obs)
     rewards = np.stack(rewards)
     dones = np.stack(dones).astype(np.float32)
 
     if metadata:
-      return (states, hand_obs, obs), rewards, dones, metadata
+      return stacked_obs, rewards, dones, metadata
     else:
-      return (states, hand_obs, obs), rewards, dones
+      return stacked_obs, rewards, dones
 
   def reset(self):
     '''
@@ -210,13 +209,11 @@ class MultiRunner(object):
       remote.send(('reset', None))
 
     obs = [remote.recv() for remote in self.remotes]
-    states, hand_obs, obs = zip(*obs)
+    stacked_obs = list()
+    for o in zip(*obs):
+      stacked_obs.append(np.stack(o).astype(float))
 
-    states = np.stack(states).astype(float)
-    hand_obs = np.stack(hand_obs)
-    obs = np.stack(obs)
-
-    return (states, hand_obs, obs)
+    return stacked_obs
 
   def reset_envs(self, env_nums):
     '''
@@ -233,13 +230,11 @@ class MultiRunner(object):
       self.remotes[env_num].send(('reset', None))
 
     obs = [self.remotes[env_num].recv() for env_num in env_nums]
-    states, hand_obs, obs = zip(*obs)
+    stacked_obs = list()
+    for o in zip(*obs):
+      stacked_obs.append(np.stack(o).astype(float))
 
-    states = np.stack(states).astype(float)
-    hand_obs = np.stack(hand_obs)
-    obs = np.stack(obs)
-
-    return (states, hand_obs, obs)
+    return stacked_obs
 
   def close(self):
     '''
