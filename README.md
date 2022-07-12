@@ -1,4 +1,10 @@
-<img src="docs/source/images/bullet_arm_logo_2.png">
+<img 
+  style="display: block; 
+         margin-left: auto;
+         margin-right: auto;
+         width: 90%"
+  src="docs/source/images/bullet_arm_logo_2.png">
+</img>
 
 ----
 
