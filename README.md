@@ -1,4 +1,4 @@
-<img src="docs/source/images/bullet_arm_logo.png">
+<img src="docs/source/images/bullet_arm_logo_2.png">
 
 ----
 
