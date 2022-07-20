@@ -32,6 +32,23 @@ class Sensor(object):
 
     return np.abs(depth - np.max(depth)).reshape(size, size)
 
+  def getRGBImg(self, size):
+    image_arr = pb.getCameraImage(width=size, height=size,
+                                  viewMatrix=self.view_matrix,
+                                  projectionMatrix=self.proj_matrix,
+                                  renderer=pb.ER_TINY_RENDERER)
+    rgb_img = np.moveaxis(image_arr[2][:, :, :3], 2, 0) / 255
+    return rgb_img
+
+  def getDepthImg(self, size):
+    image_arr = pb.getCameraImage(width=size, height=size,
+                                  viewMatrix=self.view_matrix,
+                                  projectionMatrix=self.proj_matrix,
+                                  renderer=pb.ER_TINY_RENDERER)
+    depth_img = np.array(image_arr[3])
+    depth = self.far * self.near / (self.far - (self.far - self.near) * depth_img)
+    return depth.reshape(size, size)
+
   def getPointCloud(self, size, to_numpy=True):
     image_arr = pb.getCameraImage(width=size, height=size,
                                   viewMatrix=self.view_matrix,
