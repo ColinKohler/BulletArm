@@ -52,9 +52,6 @@ class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
           y = (np.random.rand() - 0.5) * 0.3
           y += self.workspace[1].mean()
           randpos = [x, y, 0.20]
-          # obj = self._generateShapes(constants.RANDOM_HOUSEHOLD, 1, random_orientation=self.random_orientation,
-          #                            pos=[randpos], padding=self.min_boarder_padding,
-          #                            min_distance=self.min_object_distance, model_id=-1)
           obj = self._generateShapes(constants.RANDOM_HOUSEHOLD200, 1,
                                      random_orientation=self.random_orientation,
                                      pos=[randpos], padding=0.1,
