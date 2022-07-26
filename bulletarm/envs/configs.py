@@ -80,6 +80,8 @@ DEFAULT_CONFIG = {
   'view_scale': 1.5,
   # The type of observation. Choices: 'pixel', 'vec'
   'obs_type': 'pixel',
+  # if true, use a white plane; if false, use the default white/blue grid plane from pybullet
+  'white_plane': False,
 
   ## Deprecated parameters ##
   'pos_candidate': None,

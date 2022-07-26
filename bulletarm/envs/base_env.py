@@ -175,6 +175,7 @@ class BaseEnv:
     self.pick_top_down_approach = config['pick_top_down_approach']
     self.place_top_down_approach = config['place_top_down_approach']
     self.half_rotation = config['half_rotation']
+    self.white_plane = config['white_plane']
 
     self.robot.adjust_gripper_after_lift = config['adjust_gripper_after_lift']
     if config['robot'] == 'kuka':
@@ -202,7 +203,10 @@ class BaseEnv:
     pb.setGravity(0, 0, -10)
 
     # TODO: These might have to be in the config depending on how they effect the solver_residual_threshold
-    self.table_id = pb.loadURDF('plane.urdf', [0,0,0])
+    if self.white_plane:
+      self.table_id = pb.loadURDF(os.path.join(constants.URDF_PATH, 'white_plane.urdf'), [0,0,0])
+    else:
+      self.table_id = pb.loadURDF('plane.urdf', [0, 0, 0])
     pb.changeDynamics(self.table_id, -1, linearDamping=0.04, angularDamping=0.04, restitution=0, contactStiffness=3000, contactDamping=100)
 
     # Load the UR5 and set it to the home positions
