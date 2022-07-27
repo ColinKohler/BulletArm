@@ -176,6 +176,7 @@ class BaseEnv:
     self.place_top_down_approach = config['place_top_down_approach']
     self.half_rotation = config['half_rotation']
     self.white_plane = config['white_plane']
+    self.black_workspace = config['black_workspace']
 
     self.robot.adjust_gripper_after_lift = config['adjust_gripper_after_lift']
     if config['robot'] == 'kuka':
@@ -208,6 +209,13 @@ class BaseEnv:
     else:
       self.table_id = pb.loadURDF('plane.urdf', [0, 0, 0])
     pb.changeDynamics(self.table_id, -1, linearDamping=0.04, angularDamping=0.04, restitution=0, contactStiffness=3000, contactDamping=100)
+
+    if self.black_workspace:
+      ws_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[self.workspace_size/2, self.workspace_size/2, 0.001], rgbaColor=[0.2, 0.2, 0.2, 1])
+      ws_id = pb.createMultiBody(baseMass=0,
+                                 baseVisualShapeIndex=ws_visual,
+                                 basePosition=[self.workspace[0].mean(), self.workspace[1].mean(), 0],
+                                 baseOrientation=[0, 0, 0, 1])
 
     # Load the UR5 and set it to the home positions
     self.robot.initialize()

@@ -82,6 +82,8 @@ DEFAULT_CONFIG = {
   'obs_type': 'pixel',
   # if true, use a white plane; if false, use the default white/blue grid plane from pybullet
   'white_plane': False,
+  # if true, add a black visual shape to cover the workspace
+  'black_workspace': False,
 
   ## Deprecated parameters ##
   'pos_candidate': None,
