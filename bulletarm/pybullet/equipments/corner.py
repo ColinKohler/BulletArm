@@ -13,11 +13,11 @@ class Corner:
     bottom_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[size[1]/2, size[1]/2, 0.001], rgbaColor=[1, 1, 1, 1])
     bottom_collision = pb.createCollisionShape(pb.GEOM_BOX, halfExtents=[size[1]/2, size[1]/2, 0.001])
 
-    front_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[0.01, size[1]/2, size[2]/2], rgbaColor=[1, 1, 1, 1])
-    front_collision = pb.createCollisionShape(pb.GEOM_BOX, halfExtents=[0.01, size[1]/2, size[2]/2])
+    front_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[0.0125, size[1]/2, size[2]/2], rgbaColor=[1, 1, 1, 1])
+    front_collision = pb.createCollisionShape(pb.GEOM_BOX, halfExtents=[0.0125, size[1]/2, size[2]/2])
 
-    left_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[size[0]/2, 0.01, size[2] / 2], rgbaColor=[1, 1, 1, 1])
-    left_collision = pb.createCollisionShape(pb.GEOM_BOX, halfExtents=[size[0]/2, 0.01, size[2] / 2])
+    left_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[size[0]/2, 0.0125, size[2] / 2], rgbaColor=[1, 1, 1, 1])
+    left_collision = pb.createCollisionShape(pb.GEOM_BOX, halfExtents=[size[0]/2, 0.0125, size[2] / 2])
 
     obj_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[0.005, 0.005, 0.005], rgbaColor=[1, 0, 0, 0])
     obj_collision = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[0, 0, 0], rgbaColor=[1, 0, 0, 1])
@@ -38,7 +38,7 @@ class Corner:
                                  linkVisualShapeIndices=[front_visual, left_visual, obj_visual, pull_visual, press_visual],
                                  linkPositions=[[-size[0]/2, 0, size[2]/2],
                                                 [0, -size[1]/2, size[2]/2],
-                                                [-(size[0]/2 - 0.04), -(size[0]/2 - 0.04), 0.03],
+                                                [-(size[0]/2 - 0.0425), -(size[0]/2 - 0.0425), 0.03],
                                                 [0.06, 0.06, 0.03],
                                                 [-(size[0]/2 - 0.07), -(size[0]/2 - 0.07), 0.03]],
                                  linkOrientations=[[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1]],

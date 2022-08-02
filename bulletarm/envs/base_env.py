@@ -201,9 +201,7 @@ class BaseEnv:
     pb.setTimeStep(self._timestep)
     pb.setGravity(0, 0, -10)
 
-    # TODO: These might have to be in the config depending on how they effect the solver_residual_threshold
     self.table_id = pb.loadURDF('plane.urdf', [0,0,0])
-    pb.changeDynamics(self.table_id, -1, linearDamping=0.04, angularDamping=0.04, restitution=0, contactStiffness=3000, contactDamping=100)
 
     # Load the UR5 and set it to the home positions
     self.robot.initialize()
@@ -450,7 +448,7 @@ class BaseEnv:
 
   def _getDefaultBoarderPadding(self, shape_type):
     if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK,
-                      constants.RANDOM_HOUSEHOLD, constants.BOTTLE, constants.TEST_TUBE, constants.SWAB):
+                      constants.RANDOM_HOUSEHOLD, constants.BOTTLE, constants.TEST_TUBE, constants.SWAB, constants.SQUARE_PEG):
       padding = self.max_block_size * 2.4
     elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON, constants.BOX,
                         constants.FLAT_BLOCK):
@@ -465,7 +463,7 @@ class BaseEnv:
 
   def _getDefaultMinDistance(self, shape_type):
     if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK,
-                      constants.BOTTLE, constants.TEST_TUBE, constants.SWAB):
+                      constants.BOTTLE, constants.TEST_TUBE, constants.SWAB, constants.SQUARE_PEG):
       min_distance = self.max_block_size * 2.4
     elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON, constants.BOX,
                         constants.FLAT_BLOCK):
@@ -484,7 +482,7 @@ class BaseEnv:
     return [o.getXYPosition() for o in self.objects]
 
   def _generateShapes(self, shape_type=0, num_shapes=1, scale=None, pos=None, rot=None,
-                           min_distance=None, padding=None, random_orientation=False, z_scale=1, model_id=1):
+                           min_distance=None, padding=None, random_orientation=False, z_scale=1, model_id=1, wait=True):
     ''' Generate objects within the workspace.
 
     Generate a number of objects specified by the shape type within the workspace.
@@ -537,7 +535,6 @@ class BaseEnv:
     else:
       orientations = rot
 
-
     for position, orientation in zip(valid_positions, orientations):
       if not scale:
         scale = npr.choice(np.arange(self.block_scale_range[0], self.block_scale_range[1]+0.01, 0.02))
@@ -580,7 +577,8 @@ class BaseEnv:
         handle = pb_obj_generation.generateRandomHouseHoldObj200(position, orientation, scale, model_id)
       elif shape_type == constants.GRASP_NET_OBJ:
         handle = pb_obj_generation.generateGraspNetObject(position, orientation, scale, model_id)
-
+      elif shape_type == constants.SQUARE_PEG:
+        handle = pb_obj_generation.generateSquarePeg(position, orientation, scale)
       else:
         raise NotImplementedError
 
@@ -592,7 +590,8 @@ class BaseEnv:
     for h in shape_handles:
       self.object_types[h] = shape_type
 
-    self.wait(50)
+    if wait:
+      self.wait(50)
     return shape_handles
 
   def getObjects(self):

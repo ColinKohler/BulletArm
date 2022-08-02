@@ -13,7 +13,7 @@ from bulletarm.pybullet.utils import transformations
 
 class RampDeconstructPlanner(BlockStructureBasePlanner):
   def __init__(self, env, config):
-    super(RampDeconstructPlanner, self).__init__(env, config)
+    super().__init__(env, config)
     self.objs_to_remove = []
 
   def getStepsLeft(self):

@@ -6,7 +6,6 @@ from bulletarm.pybullet.utils.renderer import Renderer
 from bulletarm.pybullet.utils.ortho_sensor import OrthographicSensor
 from bulletarm.pybullet.utils.sensor import Sensor
 from bulletarm.pybullet.equipments.tray import Tray
-from scipy.ndimage import rotate
 
 
 class CloseLoopEnv(BaseEnv):
@@ -100,13 +99,6 @@ class CloseLoopEnv(BaseEnv):
     if self.action_sequence.count('r') == 1:
       current_rot[0] = 0
       current_rot[1] = 0
-
-    # bTg = transformations.euler_matrix(0, 0, current_rot[-1])
-    # bTg[:3, 3] = current_pos
-    # gTt = np.eye(4)
-    # gTt[:3, 3] = [x, y, z]
-    # bTt = bTg.dot(gTt)
-    # pos = bTt[:3, 3]
 
     pos = np.array(current_pos) + np.array([x, y, z])
     rot = np.array(current_rot) + np.array(rot)
@@ -217,7 +209,7 @@ class CloseLoopEnv(BaseEnv):
       heightmap = self.heightmap
       # draw gripper if view is centered at the gripper
       if self.view_type.find('camera_center_xy') > -1:
-        gripper_img = self.getGripperImg()
+        gripper_img = self.robot.getGripperImg(self.heightmap_size, self.workspace_size, self.obs_size_m)
         if self.view_type.find('height') > -1:
           gripper_pos = self.robot._getEndEffectorPosition()
           heightmap[gripper_img == 1] = gripper_pos[2]
@@ -234,8 +226,6 @@ class CloseLoopEnv(BaseEnv):
   def simulate(self, action):
     p, dx, dy, dz, r = self._decodeAction(action)
     dtheta = r[2]
-    # pos = list(self.robot._getEndEffectorPosition())
-    # gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
     pos = self.simulate_pos
     gripper_rz = self.simulate_rot[2]
     pos[0] += dx
@@ -247,15 +237,12 @@ class CloseLoopEnv(BaseEnv):
     gripper_rz += dtheta
     self.simulate_pos = pos
     self.simulate_rot = [0, 0, gripper_rz]
-    # obs = self.renderer.getTopDownDepth(self.obs_size_m, self.heightmap_size, pos, 0)
     obs = self._getHeightmap(gripper_pos=self.simulate_pos, gripper_rz=gripper_rz)
-    gripper_img = self.getGripperImg(p, gripper_rz)
+    gripper_img = self.robot.getGripperImg(self.heightmap_size, self.workspace_size, self.obs_size_m, p, gripper_rz)
     if self.view_type.find('height') > -1:
       obs[gripper_img == 1] = self.simulate_pos[2]
     else:
       obs[gripper_img == 1] = 0
-    # gripper_img = gripper_img.reshape([1, self.heightmap_size, self.heightmap_size])
-    # obs[gripper_img==1] = 0
     obs = obs.reshape([1, self.heightmap_size, self.heightmap_size])
 
     return self._isHolding(), None, obs
@@ -268,33 +255,7 @@ class CloseLoopEnv(BaseEnv):
     # pos = list(self.robot._getEndEffectorPosition())
     return not self._isHolding() and self.simulate_pos[2] > self.simulate_z_threshold
 
-  def getGripperImg(self, gripper_state=None, gripper_rz=None):
-    if gripper_state is None:
-      gripper_state = self.robot.getGripperOpenRatio()
-    if gripper_rz is None:
-      gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
-    im = np.zeros((self.heightmap_size, self.heightmap_size))
-    gripper_half_size = 5 * self.workspace_size / self.obs_size_m
-    gripper_half_size = round(gripper_half_size/128*self.heightmap_size)
-    if self.robot_type in ['panda', 'ur5', 'ur5_robotiq']:
-      gripper_max_open = 42 * self.workspace_size / self.obs_size_m
-    elif self.robot_type == 'kuka':
-      gripper_max_open = 45 * self.workspace_size / self.obs_size_m
-    else:
-      raise NotImplementedError
-    d = int(gripper_max_open/128*self.heightmap_size * gripper_state)
-    anchor = self.heightmap_size//2
-    im[int(anchor - d // 2 - gripper_half_size):int(anchor - d // 2 + gripper_half_size), int(anchor - gripper_half_size):int(anchor + gripper_half_size)] = 1
-    im[int(anchor + d // 2 - gripper_half_size):int(anchor + d // 2 + gripper_half_size), int(anchor - gripper_half_size):int(anchor + gripper_half_size)] = 1
-    im = rotate(im, np.rad2deg(gripper_rz), reshape=False, order=0)
-    return im
-
   def _getHeightmap(self, gripper_pos=None, gripper_rz=None):
-    gripper_z_offset = 0.04 # panda
-    if self.robot_type == 'kuka':
-      gripper_z_offset = 0.12
-    elif self.robot_type == 'ur5':
-      gripper_z_offset = 0.06
     if gripper_pos is None:
       gripper_pos = self.robot._getEndEffectorPosition()
     if gripper_rz is None:
@@ -310,7 +271,7 @@ class CloseLoopEnv(BaseEnv):
 
     elif self.view_type == 'camera_center_xyzr':
       # xyz centered, alighed
-      gripper_pos[2] += gripper_z_offset
+      gripper_pos[2] += self.robot.gripper_z_offset
       target_pos = [gripper_pos[0], gripper_pos[1], 0]
       T = transformations.euler_matrix(0, 0, gripper_rz)
       cam_up_vector = T.dot(np.array([-1, 0, 0, 1]))[:3]
@@ -333,7 +294,7 @@ class CloseLoopEnv(BaseEnv):
       return depth
     elif self.view_type in ['camera_center_xyz', 'camera_center_xyz_height']:
       # xyz centered, gripper will be visible
-      gripper_pos[2] += gripper_z_offset
+      gripper_pos[2] += self.robot.gripper_z_offset
       target_pos = [gripper_pos[0], gripper_pos[1], 0]
       cam_up_vector = [-1, 0, 0]
       self.sensor.setCamMatrix(gripper_pos, cam_up_vector, target_pos)
@@ -345,7 +306,7 @@ class CloseLoopEnv(BaseEnv):
       return depth
     elif self.view_type in ['pers_center_xyz']:
       # xyz centered, gripper will be visible
-      gripper_pos[2] += gripper_z_offset
+      gripper_pos[2] += self.robot.gripper_z_offset
       target_pos = [gripper_pos[0], gripper_pos[1], 0]
       cam_up_vector = [-1, 0, 0]
       self.pers_sensor.setCamMatrix(gripper_pos, cam_up_vector, target_pos)
@@ -365,7 +326,7 @@ class CloseLoopEnv(BaseEnv):
         depth = heightmap
       return depth
     elif self.view_type in ['camera_center_z', 'camera_center_z_height']:
-      gripper_pos[2] += gripper_z_offset
+      gripper_pos[2] += self.robot.gripper_z_offset
       cam_pos = [self.workspace[0].mean(), self.workspace[1].mean(), gripper_pos[2]]
       target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
       cam_up_vector = [-1, 0, 0]

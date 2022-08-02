@@ -43,6 +43,7 @@ class RobotBase:
 
     self.position_gain = 0.02
     self.adjust_gripper_after_lift = False
+    self.force_history = list()
 
   def saveState(self):
     '''
@@ -317,6 +318,11 @@ class RobotBase:
       n_it = 0
       while not np.allclose(joint_pos, target_pose, atol=1e-3) and n_it < max_it:
         pb.stepSimulation()
+
+        # Get force information
+        force, moment = self.getWristForce()
+        self.force_history.append(np.concatenate((force, moment)))
+
         n_it += 1
         # Check to see if the arm can't move any close to the desired joint position
         if len(past_joint_pos) == 5 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=1e-3):

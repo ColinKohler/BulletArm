@@ -4,6 +4,7 @@ import math
 import numpy as np
 import numpy.random as npr
 from collections import deque
+from scipy.ndimage import rotate
 
 import pybullet as pb
 import pybullet_data
@@ -27,6 +28,7 @@ class Kuka(RobotBase):
     self.max_force = 200.
     self.end_effector_index = 14
     self.gripper_index = 7
+    self.gripper_z_offset = 0.12
 
     # lower limits for null space
     self.ll = [-.967, -2, -2.96, 0.19, -2.96, -2.09, -3.05]
@@ -52,15 +54,21 @@ class Kuka(RobotBase):
     self.gripper_joint_limit = [0, 0.2]
     self.adjust_gripper_offset = 0.01
 
+    self.urdf_filepath = os.path.join(constants.URDF_PATH, 'kuka/kuka_with_gripper2.sdf')
+
   def initialize(self):
     ''''''
-    ur5_urdf_filepath = os.path.join(constants.URDF_PATH, 'kuka/kuka_with_gripper2.sdf')
-    self.id = pb.loadSDF(ur5_urdf_filepath)[0]
+    self.id = pb.loadSDF(self.urdf_filepath)[0]
     pb.resetBasePositionAndOrientation(self.id, [-0.2,0,0], [0,0,0,1])
 
     # self.is_holding = False
     self.gripper_closed = False
     self.holding_obj = None
+    self.force_history = list()
+
+    pb.enableJointForceTorqueSensor(self.id, 9)
+    pb.enableJointForceTorqueSensor(self.id, 10)
+
     self.num_joints = pb.getNumJoints(self.id)
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
     self.openGripper()
@@ -76,6 +84,8 @@ class Kuka(RobotBase):
   def reset(self):
     self.gripper_closed = False
     self.holding_obj = None
+    self.force_history = list()
+
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
     self.moveToJ(self.home_positions_joint)
     self.openGripper()
@@ -162,6 +172,36 @@ class Kuka(RobotBase):
 
   def gripperHasForce(self):
     return pb.getJointState(self.id, 8)[3] >= 2 or pb.getJointState(self.id, 11)[3] <= -2
+
+  def getWristForce(self):
+    self.wrist_index = 7
+    wrist_force = np.array(list(pb.getJointState(self.id, self.wrist_index)[2][:3]))
+    wrist_moment = np.array(list(pb.getJointState(self.id, self.wrist_index)[2][3:]))
+
+    return wrist_force, wrist_moment
+
+  def getFingerForce(self):
+    finger_a_force = pb.getJointState(self.id, 8)[2]
+    finger_b_force = pb.getJointState(self.id, 11)[2]
+
+    return finger_a_force, finger_b_force
+
+  def getGripperImg(self, img_size, workspace_size, obs_size_m):
+    gripper_state = self.getGripperOpenRatio()
+    gripper_rz = pb.getEulerFromQuaternion(self._getEndEffectorRotation())[2]
+
+    im = np.zeros((img_size, img_size))
+    gripper_half_size = 4 * workspace_size / obs_size_m
+    gripper_half_size = round(gripper_half_size / 128 * img_size)
+    gripper_max_open = 35 * workspace_size / obs_size_m
+
+    anchor = img_size // 2
+    d = int(gripper_max_open / 128 * img_size * gripper_state)
+    im[int(anchor - d // 2 - gripper_half_size):int(anchor - d // 2 + gripper_half_size), int(anchor - gripper_half_size):int(anchor + gripper_half_size)] = 1
+    im[int(anchor + d // 2 - gripper_half_size):int(anchor + d // 2 + gripper_half_size), int(anchor - gripper_half_size):int(anchor + gripper_half_size)] = 1
+    im = rotate(im, np.rad2deg(gripper_rz), reshape=False, order=0)
+
+    return im
 
   def _calculateIK(self, pos, rot):
     return pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot, jointDamping=self.jd)[:7]
