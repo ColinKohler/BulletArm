@@ -2,12 +2,12 @@ import pybullet as pb
 import numpy as np
 import numpy.random as npr
 
-from helping_hands_rl_envs.pybullet.utils import constants
-from helping_hands_rl_envs.envs.close_loop_envs.close_loop_env import CloseLoopEnv
-from helping_hands_rl_envs.pybullet.utils import transformations
-import helping_hands_rl_envs.pybullet.utils.object_generation as pb_obj_generation
-from helping_hands_rl_envs.pybullet.equipments.square_peg_hole import SquarePegHole
-from helping_hands_rl_envs.planners.close_loop_peg_insertion_planner import CloseLoopPegInsertionPlanner
+from bulletarm.pybullet.utils import constants
+from bulletarm.envs.close_loop_envs.close_loop_env import CloseLoopEnv
+from bulletarm.pybullet.utils import transformations
+import bulletarm.pybullet.utils.object_generation as pb_obj_generation
+from bulletarm.pybullet.equipments.square_peg_hole import SquarePegHole
+from bulletarm.planners.close_loop_peg_insertion_planner import CloseLoopPegInsertionPlanner
 
 class CloseLoopPegInsertionEnv(CloseLoopEnv):
   def __init__(self, config):
@@ -78,28 +78,3 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     end_effector_pos[2] -= 0.03
 
     return np.allclose(peg_pos, end_effector_pos, atol=1e-2)
-
-def createCloseLoopPegInsertionEnv(config):
-  return CloseLoopPegInsertionEnv(config)
-
-if __name__ == '__main__':
-  import matplotlib.pyplot as plt
-  import more_itertools
-  workspace = np.asarray([[0.25, 0.65],
-                          [-0.2, 0.2],
-                          [0.01, 0.25]])
-  env_config = {'workspace': workspace, 'max_steps': 100, 'obs_size': 128, 'render': True, 'fast_mode': True,
-                'seed': None, 'action_sequence': 'pxyzr', 'num_objects': 1, 'random_orientation': True,
-                'reward_type': 'step_left', 'simulate_grasp': True, 'perfect_grasp': False, 'robot': 'panda',
-                'object_init_space_check': 'point', 'physics_mode': 'fast', 'object_scale_range': (1, 1), 'hard_reset_freq': 1000,
-                'view_type': 'camera_center_xyz'}
-  planner_config = {'random_orientation': False, 'dpos': 0.05, 'drot': np.pi/8, 'rand_point': False}
-  env = CloseLoopPegInsertionEnv(env_config)
-  planner = CloseLoopPegInsertionPlanner(env, planner_config)
-
-  for _ in range(100):
-    obs = env.reset()
-    done = False
-    while not done:
-      action = planner.getNextAction()
-      obs, reward, done = env.step(action)

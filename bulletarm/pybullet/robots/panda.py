@@ -1,8 +1,9 @@
 import os
+import numpy as np
 import pybullet as pb
+from scipy.ndimage import rotate
 from bulletarm.pybullet.utils import constants
 from bulletarm.pybullet.robots.robot_base import RobotBase
-
 
 class Panda(RobotBase):
   '''
@@ -18,6 +19,7 @@ class Panda(RobotBase):
     self.wrist_index = 8
     self.finger_a_index = 10
     self.finger_b_index = 12
+    self.end_effector_index = 13
     self.gripper_z_offset = 0.08
     self.gripper_joint_limit = [0, 0.04]
 

@@ -1,5 +1,5 @@
 import numpy as np
-from helping_hands_rl_envs.envs.close_loop_envs.close_loop_household_picking_cluttered import CloseLoopHouseholdPickingClutteredEnv
+from bulletarm.envs.close_loop_envs.close_loop_household_picking_cluttered import CloseLoopHouseholdPickingClutteredEnv
 
 class ForceHouseholdPickingClutteredEnv(CloseLoopHouseholdPickingClutteredEnv):
   def __init__(self, config):
@@ -11,6 +11,3 @@ class ForceHouseholdPickingClutteredEnv(CloseLoopHouseholdPickingClutteredEnv):
     force = np.array(self.robot.force_history)
 
     return state, hand_obs, obs, force
-
-def createForceHouseholdPickingClutteredEnv(config):
-  return ForceHouseholdPickingClutteredEnv(config)

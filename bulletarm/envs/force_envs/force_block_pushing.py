@@ -1,5 +1,5 @@
 import numpy as np
-from helping_hands_rl_envs.envs.close_loop_envs.close_loop_block_pushing import CloseLoopBlockPushingEnv
+from bulletarm.envs.close_loop_envs.close_loop_block_pushing import CloseLoopBlockPushingEnv
 
 class ForceBlockPushingEnv(CloseLoopBlockPushingEnv):
   def __init__(self, config):
@@ -11,6 +11,3 @@ class ForceBlockPushingEnv(CloseLoopBlockPushingEnv):
     force = np.array(self.robot.force_history)
 
     return state, hand_obs, obs, force
-
-def createForceBlockPushingEnv(config):
-  return ForceBlockPushingEnv(config)

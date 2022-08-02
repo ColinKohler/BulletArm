@@ -39,7 +39,8 @@ class CloseLoopBlockPickingCornerEnv(CloseLoopEnv):
     self.robot.moveTo([self.workspace[0].mean(), self.workspace[1].mean(), 0.2], transformations.quaternion_from_euler(0, 0, 0))
     pos, rot_q = self.corner.getObjPose()
 
-    self._generateShapes(constants.CUBE, 1, pos=[pos], rot=[rot_q])
+    self.cube = self._generateShapes(constants.CUBE, 1, pos=[pos], rot=[rot_q])[0]
+    pb.changeDynamics(self.cube.object_id, -1, lateralFriction=0.75, mass=0.2)
     return self._getObservation()
 
   def _getValidOrientation(self, random_orientation):

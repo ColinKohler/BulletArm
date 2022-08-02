@@ -49,7 +49,7 @@ class CloseLoopBlockPickingCornerPlanner(CloseLoopPlanner):
     post_pull_pos = self.env.corner.getPullPose()[0]
     post_pull_pos[2] = 0.1
 
-    pre_pick_pos = object_pos[0], object_pos[1], 0.1
+    pre_pick_pos = object_pos[0], object_pos[1], 0.12
     if self.stage == 0:
       # moving to pre press
       self.stage = 1

@@ -48,7 +48,7 @@ class Corner:
                                  linkJointTypes=[pb.JOINT_FIXED, pb.JOINT_FIXED, pb.JOINT_FIXED, pb.JOINT_FIXED, pb.JOINT_FIXED],
                                  linkJointAxis=[[0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1]]
     )
-    pb.changeDynamics(self.id, -1, lateralFriction=0.001)
+    pb.changeDynamics(self.id, -1, lateralFriction=0.1)
 
   def reset(self, pos=(0,0,0), rot=(0,0,0,1)):
     pb.resetBasePositionAndOrientation(self.id, pos, rot)
