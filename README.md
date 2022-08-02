@@ -1,4 +1,13 @@
-# BulletArm
+<img 
+  style="display: block; 
+         margin-left: auto;
+         margin-right: auto;
+         width: 90%"
+  src="docs/source/images/bullet_arm_logo_2.png">
+</img>
+
+----
+
 **[Documentation](https://colinkohler.github.io/BulletArm/)** | **[Paper](https://arxiv.org/abs/2205.14292)** | **[License](https://github.com/ColinKohler/BulletArm/blob/main/LICENSE)**
 
 **BulletArm** is a benchmark and learning-environment for robotic manipulation. BulletArm provides a set of standardized 

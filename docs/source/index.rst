@@ -5,8 +5,8 @@
 
 :github_url: https://github.com/ColinKohler/BulletArm
 
-BulletArm Documentation
-============================================
+.. image:: images/bullet_arm_logo.png
+
 
 **BulletArm** is a PyBullet based benchmark and learning-environment for robotic manipulation research.
 The development of this package was part of the work done in our `ISRR 22 paper <https://arxiv.org/abs/2205.14292>`_.
@@ -46,7 +46,7 @@ Package Reference
   :caption: Package Reference
   :hidden:
 
-  self
+  BulletArm <self>
   api/getting_started
   api/bulletarm
   api/bulletarm_baselines
