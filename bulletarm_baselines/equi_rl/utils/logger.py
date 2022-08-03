@@ -3,7 +3,8 @@ import time
 import datetime
 import math
 import numpy as np
-import matplotlib as mpl
+:mport matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from collections import namedtuple
 from more_itertools import windowed
