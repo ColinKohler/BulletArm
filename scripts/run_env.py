@@ -21,39 +21,16 @@ def run(task, robot):
     obs, reward, done = env.step(action)
     s, in_hand, obs, force = obs
 
-    force1 = uniform_filter1d(np.clip(force, -20, 20) / 20, size=256, axis=0)[-256:]
-
     fig, ax = plt.subplots(nrows=1, ncols=1)
-    ax.plot(force1[:,0], label='Fx')
-    ax.plot(force1[:,1], label='Fy')
-    ax.plot(force1[:,2], label='Fz')
-    ax.plot(force1[:,3], label='Mx')
-    ax.plot(force1[:,4], label='My')
-    ax.plot(force1[:,5], label='Mz')
+    ax.plot(force[1:,0], label='Fx')
+    ax.plot(force[1:,1], label='Fy')
+    ax.plot(force[1:,2], label='Fz')
+    ax.plot(force[1:,3], label='Mx')
+    ax.plot(force[1:,4], label='My')
+    ax.plot(force[1:,5], label='Mz')
 
     plt.legend()
     plt.show()
-
-  #force1 = uniform_filter1d(force, size=256, axis=0)
-  #force2 = uniform_filter1d(np.clip(force, -20, 20) / 20, size=256, axis=0)
-
-  #fig, ax = plt.subplots(nrows=1, ncols=2)
-  #ax[0].plot(force1[:,0], label='Fx')
-  #ax[0].plot(force1[:,1], label='Fy')
-  #ax[0].plot(force1[:,2], label='Fz')
-  #ax[0].plot(force1[:,3], label='Mx')
-  #ax[0].plot(force1[:,4], label='My')
-  #ax[0].plot(force1[:,5], label='Mz')
-
-  #ax[1].plot(force2[:,0], label='Fx')
-  #ax[1].plot(force2[:,1], label='Fy')
-  #ax[1].plot(force2[:,2], label='Fz')
-  #ax[1].plot(force2[:,3], label='Mx')
-  #ax[1].plot(force2[:,4], label='My')
-  #ax[1].plot(force2[:,5], label='My')
-
-  #plt.legend()
-  #plt.show()
 
   env.close()
 
