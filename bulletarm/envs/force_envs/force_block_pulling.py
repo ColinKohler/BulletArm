@@ -15,4 +15,4 @@ class ForceBlockPullingEnv(CloseLoopBlockPullingEnv):
     force = np.clip(force, -20, 20) / 20
     force = uniform_filter1d(force, size=256, axis=0)
 
-    return state, hand_obs, obs, force[-64:]
+    return state, hand_obs, obs, force[-128:]

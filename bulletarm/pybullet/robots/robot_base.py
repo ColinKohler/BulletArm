@@ -321,7 +321,9 @@ class RobotBase:
 
         # Get force information
         force, moment = self.getWristForce()
-        self.force_history.append(np.concatenate((force, moment)))
+        if self.step % 1 == 0:
+          self.force_history.append(np.concatenate((force, moment)))
+        self.step += 1
 
         n_it += 1
         # Check to see if the arm can't move any close to the desired joint position
