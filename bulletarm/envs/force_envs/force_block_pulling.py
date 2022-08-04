@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.random as npr
 from scipy.ndimage import uniform_filter1d
 
 from bulletarm.envs.close_loop_envs.close_loop_block_pulling import CloseLoopBlockPullingEnv
@@ -12,7 +13,9 @@ class ForceBlockPullingEnv(CloseLoopBlockPullingEnv):
     state, hand_obs, obs = super()._getObservation(action=action)
     force = np.array(self.robot.force_history)
 
-    force = np.clip(force, -20, 20) / 20
-    force = uniform_filter1d(force, size=256, axis=0)
+    max_force = 10
+    force = np.clip(uniform_filter1d(force, size=32, axis=0), -max_force, max_force) / max_force
 
-    return state, hand_obs, obs, force[-128:]
+    #obs += npr.normal(scale=5e-2, size=obs.shape)
+
+    return state, hand_obs, obs, force[-64:]

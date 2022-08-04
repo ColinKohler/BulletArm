@@ -10,4 +10,7 @@ class ForceBlockPickingCornerEnv(CloseLoopBlockPickingCornerEnv):
     state, hand_obs, obs = super()._getObservation(action=action)
     force = np.array(self.robot.force_history)
 
-    return state, hand_obs, obs, force
+    #force = uniform_filter1d(force, size=256, axis=0)
+    #force = np.clip(force, -20, 20) / 20
+
+    return state, hand_obs, obs, force#force[-64:]

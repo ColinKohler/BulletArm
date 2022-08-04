@@ -7,30 +7,73 @@ from bulletarm import env_factory
 
 def run(task, robot):
   if 'close_loop' in task or 'force' in task:
-    env_config = {'robot' : robot, 'render' : True, 'action_sequence' : 'pxyzr', 'view_type': 'camera_center_xyz', 'physics_mode' : 'force'}
-    planner_config = {'dpos': 0.05, 'drot': np.pi/4}
+    env_config = {'robot' : robot, 'render' : True, 'action_sequence' : 'pxyzr', 'view_type': 'camera_center_xyz', 'physics_mode' : 'force', 'max_steps' : 100}
+    planner_config = {'dpos': 0.01, 'drot': np.pi/8}
   else:
     env_config = {'robot' : robot, 'render' : True}
     planner_config = None
   env = env_factory.createEnvs(0, task, env_config, planner_config)
 
-  obs = env.reset()
+  s, in_hand, obs, force = env.reset()
   done = False
+  action_his_len = [force.shape[0]]
   while not done:
     action = env.getNextAction()
     obs, reward, done = env.step(action)
     s, in_hand, obs, force = obs
+    action_his_len.append(force.shape[0])
 
-    fig, ax = plt.subplots(nrows=1, ncols=1)
-    ax.plot(force[1:,0], label='Fx')
-    ax.plot(force[1:,1], label='Fy')
-    ax.plot(force[1:,2], label='Fz')
-    ax.plot(force[1:,3], label='Mx')
-    ax.plot(force[1:,4], label='My')
-    ax.plot(force[1:,5], label='Mz')
-
+    plt.plot(force[:,0], label='Fx')
+    plt.plot(force[:,1], label='Fy')
+    plt.plot(force[:,2], label='Fz')
+    plt.plot(force[:,3], label='Mx')
+    plt.plot(force[:,4], label='My')
+    plt.plot(force[:,5], label='Mz')
     plt.legend()
     plt.show()
+
+    #plt.imshow(obs.squeeze(), cmap='gray'); plt.show()
+
+  #max_force = 10
+  #smooth_force = np.clip(force, -max_force, max_force) / max_force
+  #smooth_force_1 = np.clip(uniform_filter1d(force, size=32, axis=0), -max_force, max_force) / max_force
+  #smooth_force_2 = np.clip(uniform_filter1d(force, size=64, axis=0), -max_force, max_force) / max_force
+
+  #print(np.diff(action_his_len))
+
+  #fig, ax = plt.subplots(nrows=3, ncols=1, sharex=True)
+
+  #ax[0].title.set_text('Clip [-10, 10]')
+  #ax[0].plot(smooth_force[:,0], label='Fx')
+  #ax[0].plot(smooth_force[:,1], label='Fy')
+  #ax[0].plot(smooth_force[:,2], label='Fz')
+  #ax[0].plot(smooth_force[:,3], label='Mx')
+  #ax[0].plot(smooth_force[:,4], label='My')
+  #ax[0].plot(smooth_force[:,5], label='Mz')
+
+  #ax[1].title.set_text('Smoothing N=16, Clip [-10, 10]')
+  #ax[1].plot(smooth_force_1[:,0], label='Fx')
+  #ax[1].plot(smooth_force_1[:,1], label='Fy')
+  #ax[1].plot(smooth_force_1[:,2], label='Fz')
+  #ax[1].plot(smooth_force_1[:,3], label='Mx')
+  #ax[1].plot(smooth_force_1[:,4], label='My')
+  #ax[1].plot(smooth_force_1[:,5], label='Mz')
+
+  #ax[2].title.set_text('Smoothing N=32, Clip [-10, 10]')
+  #ax[2].plot(smooth_force_2[:,0], label='Fx')
+  #ax[2].plot(smooth_force_2[:,1], label='Fy')
+  #ax[2].plot(smooth_force_2[:,2], label='Fz')
+  #ax[2].plot(smooth_force_2[:,3], label='Mx')
+  #ax[2].plot(smooth_force_2[:,4], label='My')
+  #ax[2].plot(smooth_force_2[:,5], label='Mz')
+
+  #for i in range(3):
+  #  for a in action_his_len:
+  #    ax[i].axvline(x=a, color='black', linestyle='--')
+
+  #plt.legend()
+  #plt.subplot_tool()
+  #plt.show()
 
   env.close()
 
