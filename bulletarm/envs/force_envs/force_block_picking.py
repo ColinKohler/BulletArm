@@ -1,4 +1,6 @@
 import numpy as np
+from scipy.ndimage import uniform_filter1d
+
 from bulletarm.envs.close_loop_envs.close_loop_block_picking import CloseLoopBlockPickingEnv
 
 class ForceBlockPickingEnv(CloseLoopBlockPickingEnv):
