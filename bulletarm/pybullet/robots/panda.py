@@ -1,4 +1,5 @@
 import os
+import math
 import numpy as np
 import pybullet as pb
 from scipy.ndimage import rotate
@@ -206,14 +207,14 @@ class Panda(RobotBase):
     gripper_rz = pb.getEulerFromQuaternion(self._getEndEffectorRotation())[2]
 
     im = np.zeros((img_size, img_size))
-    gripper_half_width = 2
-    gripper_half_length = 2
-    gripper_max_open = 28
+    gripper_half_size = 2 * workspace_size / obs_size_m
+    gripper_half_size = math.ceil(gripper_half_size / 128 * img_size)
+    gripper_max_open = 28 * workspace_size / obs_size_m
 
     anchor = (img_size // 2)
-    d = int(gripper_max_open * np.round(gripper_state, 2))
-    im[int(anchor - d // 2 - gripper_half_length):int(anchor - d // 2 + gripper_half_length), int(anchor - gripper_half_width):int(anchor + gripper_half_width)] = 1
-    im[int(anchor + d // 2 - gripper_half_length):int(anchor + d // 2 + gripper_half_length), int(anchor - gripper_half_width):int(anchor + gripper_half_width)] = 1
+    d = int(gripper_max_open / 128 * img_size * gripper_state)
+    im[int(anchor - d // 2 - gripper_half_size):int(anchor - d // 2 + gripper_half_size), int(anchor - gripper_half_size):int(anchor + gripper_half_size)] = 1
+    im[int(anchor + d // 2 - gripper_half_size):int(anchor + d // 2 + gripper_half_size), int(anchor - gripper_half_size):int(anchor + gripper_half_size)] = 1
     im = rotate(im, np.rad2deg(gripper_rz), reshape=False, mode='nearest', order=0)
 
     return im
