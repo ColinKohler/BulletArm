@@ -323,7 +323,7 @@ class RobotBase:
         # Get force information
         if self.zero_force is not None:
           force, moment = self.getWristForce()
-          if self.step % 1 == 0:
+          if self.step > 10:
             self.force_history.append(np.concatenate((force, moment)) - self.zero_force)
           self.step += 1
 
