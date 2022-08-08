@@ -58,6 +58,7 @@ PLANNERS = {
   'close_loop_household_pushing':CloseLoopHouseholdPushingPlanner,
   'close_loop_block_pushing':CloseLoopBlockPushingPlanner,
   'close_loop_block_in_bowl':CloseLoopBlockInBowlPlanner,
+  'close_loop__peg_insertion' : CloseLoopPegInsertionPlanner,
   'force_block_picking' : CloseLoopBlockPickingPlanner,
   'force_block_reaching' : CloseLoopBlockPickingPlanner,
   'force_block_pulling' : CloseLoopBlockPullingPlanner,
