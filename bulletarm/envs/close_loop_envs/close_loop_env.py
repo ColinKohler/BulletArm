@@ -118,7 +118,7 @@ class CloseLoopEnv(BaseEnv):
     valid = self.isSimValid()
     if valid:
       done = self._checkTermination()
-      reward = 1.0 if done else 0.0
+      reward = self._getReward()
     else:
       done = True
       reward = 0
@@ -129,6 +129,12 @@ class CloseLoopEnv(BaseEnv):
     self.simulate_pos = pos
     self.simulate_rot = rot
     return obs, reward, done
+
+  def _getReward(self):
+    if self._checkTermination():
+      return 1
+    else:
+      return 0
 
   def setRobotHoldingObj(self):
     self.robot.holding_obj = self.robot.getPickedObj(self.objects)

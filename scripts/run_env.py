@@ -19,7 +19,6 @@ def run(task, robot):
   action_his_len = [force.shape[0]]
   while not done:
     action = env.getNextAction()
-    action[1] += 0.01
     obs, reward, done = env.step(action)
     s, in_hand, obs, force = obs
     action_his_len.append(force.shape[0])
@@ -36,6 +35,7 @@ def run(task, robot):
 
     #plt.imshow(obs.squeeze(), cmap='gray'); plt.show()
 
+  print(reward)
   max_force = 100
   smooth_force = np.clip(force, -max_force, max_force) / max_force
   smooth_force_1 = np.clip(uniform_filter1d(force, size=64, axis=0), -max_force, max_force) / max_force
