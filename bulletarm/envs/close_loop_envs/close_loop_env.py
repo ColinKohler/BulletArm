@@ -1,5 +1,7 @@
 import pybullet as pb
 import numpy as np
+import numpy.random as npr
+
 from bulletarm.envs.base_env import BaseEnv
 from bulletarm.pybullet.utils import transformations
 from bulletarm.pybullet.utils.renderer import Renderer
@@ -208,6 +210,7 @@ class CloseLoopEnv(BaseEnv):
     if self.obs_type == 'pixel':
       self.heightmap = self._getHeightmap()
       heightmap = self.heightmap
+      #heightmap += np.clip(npr.normal(scale=1e-2, size=heightmap.shape), 0, 100)
       # draw gripper if view is centered at the gripper
       if self.view_type.find('camera_center_xy') > -1:
         gripper_img = self.robot.getGripperImg(self.heightmap_size, self.workspace_size, self.obs_size_m)

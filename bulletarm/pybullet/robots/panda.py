@@ -207,9 +207,9 @@ class Panda(RobotBase):
     gripper_rz = pb.getEulerFromQuaternion(self._getEndEffectorRotation())[2]
 
     im = np.zeros((img_size, img_size))
-    gripper_half_size = 2 * workspace_size / obs_size_m
+    gripper_half_size = 4 * workspace_size / obs_size_m
     gripper_half_size = math.ceil(gripper_half_size / 128 * img_size)
-    gripper_max_open = 28 * workspace_size / obs_size_m
+    gripper_max_open = 36 * workspace_size / obs_size_m
 
     anchor = (img_size // 2)
     d = int(gripper_max_open / 128 * img_size * gripper_state)

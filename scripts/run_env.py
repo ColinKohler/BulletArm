@@ -7,7 +7,7 @@ from bulletarm import env_factory
 
 def run(task, robot):
   if 'close_loop' in task or 'force' in task:
-    env_config = {'robot' : robot, 'render' : True, 'action_sequence' : 'pxyzr', 'view_type': 'camera_center_xyz', 'physics_mode' : 'force', 'max_steps' : 100, 'obs_size' : 32}
+    env_config = {'robot' : robot, 'render' : True, 'action_sequence' : 'pxyzr', 'view_type': 'camera_center_xyz', 'physics_mode' : 'force', 'max_steps' : 50, 'obs_size' : 64}
     planner_config = {'dpos': 0.05, 'drot': np.pi/4}
   else:
     env_config = {'robot' : robot, 'render' : True}
@@ -19,6 +19,7 @@ def run(task, robot):
   action_his_len = [force.shape[0]]
   while not done:
     action = env.getNextAction()
+    action[1] += 0.01
     obs, reward, done = env.step(action)
     s, in_hand, obs, force = obs
     action_his_len.append(force.shape[0])
@@ -33,9 +34,9 @@ def run(task, robot):
     #plt.legend()
     #plt.show()
 
-    plt.imshow(obs.squeeze(), cmap='gray'); plt.show()
+    #plt.imshow(obs.squeeze(), cmap='gray'); plt.show()
 
-  max_force = 10
+  max_force = 100
   smooth_force = np.clip(force, -max_force, max_force) / max_force
   smooth_force_1 = np.clip(uniform_filter1d(force, size=64, axis=0), -max_force, max_force) / max_force
   smooth_force_2 = np.tanh(uniform_filter1d(force, size=64, axis=0))
@@ -52,7 +53,7 @@ def run(task, robot):
   ax[0].plot(smooth_force[:,4], label='My')
   ax[0].plot(smooth_force[:,5], label='Mz')
 
-  ax[1].title.set_text('Smoothing N=32, Clip [-{}, {}]'.format(max_force, max_force))
+  ax[1].title.set_text('Smoothing N=64, Clip [-{}, {}]'.format(max_force, max_force))
   ax[1].plot(smooth_force_1[:,0], label='Fx')
   ax[1].plot(smooth_force_1[:,1], label='Fy')
   ax[1].plot(smooth_force_1[:,2], label='Fz')
@@ -60,7 +61,7 @@ def run(task, robot):
   ax[1].plot(smooth_force_1[:,4], label='My')
   ax[1].plot(smooth_force_1[:,5], label='Mz')
 
-  ax[2].title.set_text('Smoothing N=64, Clip [-{}, {}]'.format(max_force, max_force))
+  ax[2].title.set_text('Smoothing N=64, tanh'.format(max_force, max_force))
   ax[2].plot(smooth_force_2[:,0], label='Fx')
   ax[2].plot(smooth_force_2[:,1], label='Fy')
   ax[2].plot(smooth_force_2[:,2], label='Fz')

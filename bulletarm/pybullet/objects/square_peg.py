@@ -12,7 +12,7 @@ from bulletarm.pybullet.utils import constants
 
 class SquarePeg(PybulletObject):
   def __init__(self, pos, rot, scale):
-    root_dir = os.path.dirname(helping_hands_rl_envs.__file__)
+    root_dir = os.path.dirname(bulletarm.__file__)
     urdf_filepath = os.path.join(root_dir, constants.OBJECTS_PATH, 'square_peg.urdf')
     object_id = pb.loadURDF(urdf_filepath, basePosition=pos, baseOrientation=rot, globalScaling=scale)
     super().__init__(constants.SQUARE_PEG, object_id)

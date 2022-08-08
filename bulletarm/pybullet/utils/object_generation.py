@@ -15,6 +15,7 @@ from bulletarm.pybullet.objects.random_brick import RandomBrick
 from bulletarm.pybullet.objects.cup import Cup
 from bulletarm.pybullet.objects.bowl import Bowl
 from bulletarm.pybullet.objects.plate import Plate
+from bulletarm.pybullet.objects.square_peg import SquarePeg
 from bulletarm.pybullet.objects.test_tube import TestTube
 from bulletarm.pybullet.objects.swab import Swab
 from bulletarm.pybullet.objects.random_block import RandomBlock
@@ -35,6 +36,9 @@ def generateBrick(pos, rot, scale):
 
 def generateCylinder(pos, rot, scale):
   return Cylinder(pos, rot, scale)
+
+def generateSquarePeg(pos, rot, scale):
+  return SquarePeg(pos, rot, scale)
 
 def generateTriangle(pos, rot, scale):
   return Triangle(pos, rot, scale)
