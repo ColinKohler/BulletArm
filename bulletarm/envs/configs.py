@@ -84,6 +84,8 @@ DEFAULT_CONFIG = {
   'white_plane': False,
   # if true, add a black visual shape to cover the workspace
   'black_workspace': False,
+  # if true, make the plane transparent
+  'trans_plane': False,
 
   ## Deprecated parameters ##
   'pos_candidate': None,

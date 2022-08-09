@@ -177,6 +177,7 @@ class BaseEnv:
     self.half_rotation = config['half_rotation']
     self.white_plane = config['white_plane']
     self.black_workspace = config['black_workspace']
+    self.trans_plane = config['trans_plane']
 
     self.robot.adjust_gripper_after_lift = config['adjust_gripper_after_lift']
     if config['robot'] == 'kuka':
@@ -208,6 +209,8 @@ class BaseEnv:
       self.table_id = pb.loadURDF(os.path.join(constants.URDF_PATH, 'white_plane.urdf'), [0,0,0])
     else:
       self.table_id = pb.loadURDF('plane.urdf', [0, 0, 0])
+    if self.trans_plane:
+      pb.changeVisualShape(self.table_id, -1, rgbaColor=[0, 0, 0, 0])
     pb.changeDynamics(self.table_id, -1, linearDamping=0.04, angularDamping=0.04, restitution=0, contactStiffness=3000, contactDamping=100)
 
     if self.black_workspace:
