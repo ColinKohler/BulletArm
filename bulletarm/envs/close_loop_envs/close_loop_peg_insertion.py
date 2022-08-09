@@ -30,23 +30,24 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
 
   def reset(self):
     self.resetPybulletWorkspace()
-    self.robot.moveTo([self.workspace[0].mean(), self.workspace[1].mean(), 0.2], transformations.quaternion_from_euler(0, 0, 0))
+    self.robot.moveTo([self.workspace[0].mean(), self.workspace[1].mean(), 0.3], transformations.quaternion_from_euler(0, 0, 0))
 
     self.resetPegHole()
     self.peg = self._generateShapes(
       constants.SQUARE_PEG,
-      pos=[[self.workspace[0].mean()-0.005, self.workspace[1].mean(), 0.17]],
+      pos=[[self.workspace[0].mean(), self.workspace[1].mean(), 0.27]],
       rot=[[0,0,0,1]],
-      scale=0.12,#self.peg_scale_range[0],
+      scale=0.11,#self.peg_scale_range[0],
       wait=False
     )[0]
+    pb.changeDynamics(self.peg.object_id, -1, lateralFriction=0.75, mass=0.2)
 
     self.robot.closeGripper()
     self.setRobotHoldingObj()
 
     for _ in range(2):
       pb.stepSimulation()
-    self.peg.resetPose([self.workspace[0].mean()-0.005, self.workspace[1].mean(), 0.17], [0,0,0,1])
+    self.peg.resetPose([self.workspace[0].mean(), self.workspace[1].mean(), 0.27], [0,0,0,1])
 
     return self._getObservation()
 
@@ -77,4 +78,4 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     end_effector_pos = self.robot._getEndEffectorPosition()
     end_effector_pos[2] -= 0.03
 
-    return np.allclose(peg_pos, end_effector_pos, atol=1e-2)
+    return np.allclose(peg_pos, end_effector_pos, atol=5e-1)

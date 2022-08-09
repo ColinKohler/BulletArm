@@ -14,5 +14,6 @@ class ForcePegInsertionEnv(CloseLoopPegInsertionEnv):
 
     max_force = 30
     force = np.clip(uniform_filter1d(force, size=64, axis=0), -max_force, max_force) / max_force
+    #force = np.tanh(1e-1 * uniform_filter1d(force, size=64, axis=0))
 
     return state, hand_obs, obs, force[-256:]

@@ -7,39 +7,44 @@ from bulletarm import env_factory
 
 def run(task, robot):
   if 'close_loop' in task or 'force' in task:
-    env_config = {'robot' : robot, 'render' : True, 'action_sequence' : 'pxyzr', 'view_type': 'camera_center_xyz', 'physics_mode' : 'force', 'max_steps' : 50, 'obs_size' : 64}
-    planner_config = {'dpos': 0.05, 'drot': np.pi/4}
+    env_config = {'robot' : robot, 'render' : True, 'action_sequence' : 'pxyzr', 'view_type': 'camera_center_xyz', 'physics_mode' : 'force', 'max_steps' : 50, 'obs_size' : 128}
+    planner_config = {'dpos': 0.025, 'drot': np.pi/8}
   else:
     env_config = {'robot' : robot, 'render' : True}
     planner_config = None
   env = env_factory.createEnvs(0, task, env_config, planner_config)
 
-  s, in_hand, obs, force = env.reset()
-  done = False
-  action_his_len = [force.shape[0]]
-  while not done:
-    action = env.getNextAction()
-    obs, reward, done = env.step(action)
-    s, in_hand, obs, force = obs
-    action_his_len.append(force.shape[0])
+  s = 0
+  for _ in range(20):
+    s, in_hand, obs, force = env.reset()
+    done = False
+    action_his_len = [force.shape[0]]
+    while not done:
+      action = env.getNextAction()
+      obs, reward, done = env.step(action)
+      s, in_hand, obs, force = obs
+      action_his_len.append(force.shape[0])
 
-    #plt.plot(force[:,0], label='Fx')
-    #plt.plot(force[:,1], label='Fy')
-    #plt.plot(force[:,2], label='Fz')
-    #plt.plot(force[:,3], label='Mx')
-    #plt.plot(force[:,4], label='My')
-    #plt.plot(force[:,5], label='Mz')
-    #plt.ylim(-1,1)
-    #plt.legend()
-    #plt.show()
+      fig, ax = plt.subplots(nrows=1, ncols=2)
+      ax[0].imshow(obs.squeeze(), cmap='gray')
+      ax[1].plot(force[:,0], label='Fx')
+      ax[1].plot(force[:,1], label='Fy')
+      ax[1].plot(force[:,2], label='Fz')
+      ax[1].plot(force[:,3], label='Mx')
+      ax[1].plot(force[:,4], label='My')
+      ax[1].plot(force[:,5], label='Mz')
+      ax[1].set_ylim(-1,1)
+      plt.legend()
+      plt.show()
 
-    #plt.imshow(obs.squeeze(), cmap='gray'); plt.show()
+    print(reward)
+    s += reward
 
-  print(reward)
-  max_force = 100
+  print(s)
+  max_force = 30
   smooth_force = np.clip(force, -max_force, max_force) / max_force
   smooth_force_1 = np.clip(uniform_filter1d(force, size=64, axis=0), -max_force, max_force) / max_force
-  smooth_force_2 = np.tanh(uniform_filter1d(force, size=64, axis=0))
+  smooth_force_2 = np.tanh(uniform_filter1d(force * 0.1, size=64, axis=0))
 
   print(np.diff(action_his_len))
 
