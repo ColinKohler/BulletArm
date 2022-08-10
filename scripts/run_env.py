@@ -7,7 +7,7 @@ from bulletarm import env_factory
 
 def run(task, robot):
   if 'close_loop' in task or 'force' in task:
-    env_config = {'robot' : robot, 'render' : True, 'action_sequence' : 'pxyzr', 'view_type': 'camera_center_xyz', 'physics_mode' : 'force', 'max_steps' : 50, 'obs_size' : 128}
+    env_config = {'robot' : robot, 'render' : True, 'action_sequence' : 'pxyzr', 'view_type': 'render_center', 'physics_mode' : 'force', 'max_steps' : 50, 'obs_size' : 128}
     planner_config = {'dpos': 0.025, 'drot': np.pi/8}
   else:
     env_config = {'robot' : robot, 'render' : True}
