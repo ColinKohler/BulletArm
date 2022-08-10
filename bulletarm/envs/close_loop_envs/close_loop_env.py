@@ -7,7 +7,7 @@ from bulletarm.pybullet.utils.ortho_sensor import OrthographicSensor
 from bulletarm.pybullet.utils.sensor import Sensor
 from bulletarm.pybullet.equipments.tray import Tray
 from scipy.ndimage import rotate
-
+import cv2
 
 class CloseLoopEnv(BaseEnv):
   def __init__(self, config):
@@ -40,7 +40,7 @@ class CloseLoopEnv(BaseEnv):
                               'camera_center_z', 'camera_center_z_height', 'pers_center_xyz', 'camera_side',
                               'camera_side_rgbd', 'camera_side_height', 'camera_side_offset', 'camera_side_offset_rgbd',
                               'camera_side_offset_height', 'camera_side_1', 'camera_side_1_rgbd', 'camera_side_1_height',
-                              'camera_side_rgbd_15', 'camera_side_rgbd_30', 'camera_side_rgbd_60']
+                              'camera_side_rgbd_15', 'camera_side_rgbd_30', 'camera_side_rgbd_60', 'camera_side_rgbd_undis']
     self.view_scale = config['view_scale']
     self.robot_type = config['robot']
     if config['robot'] == 'kuka':
@@ -385,7 +385,7 @@ class CloseLoopEnv(BaseEnv):
       else:
         depth = heightmap
       return depth
-    elif self.view_type in ['camera_side', 'camera_side_rgbd', 'camera_side_height']:
+    elif self.view_type in ['camera_side', 'camera_side_rgbd', 'camera_side_height', 'camera_side_rgbd_undis']:
       cam_pos = [1, self.workspace[1].mean(), 0.6]
       target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
       cam_up_vector = [-1, 0, 0]
@@ -398,6 +398,19 @@ class CloseLoopEnv(BaseEnv):
         rgb_img = self.sensor.getRGBImg(self.heightmap_size)
         depth_img = self.sensor.getDepthImg(self.heightmap_size).reshape(1, self.heightmap_size, self.heightmap_size)
         depth = np.concatenate([rgb_img, depth_img])
+      elif self.view_type == 'camera_side_rgbd_undis':
+        rgb_img = self.sensor.getRGBImg(self.heightmap_size)
+        depth_img = self.sensor.getDepthImg(self.heightmap_size).reshape(1, self.heightmap_size, self.heightmap_size)
+        depth = np.concatenate([rgb_img, depth_img])
+        # matrix = np.array([[  1.9539,   0.5081, -30.0484],
+        #                    [  0.    ,   3.0726, -48.8548],
+        #                    [ -0.    ,   0.0161,   1.    ]])
+
+        matrix = np.array([[1.5853, 0.5081, -18.4355],
+                           [0., 2.5887, -33.6935],
+                           [-0., 0.0161, 1.]])
+        depth = cv2.warpPerspective(np.moveaxis(depth, 0, 2), matrix, (64, 64))
+        depth = np.moveaxis(depth, 2, 0)
       else:
         depth = self.sensor.getHeightmap(self.heightmap_size)
       return depth
