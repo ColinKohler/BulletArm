@@ -402,14 +402,18 @@ class CloseLoopEnv(BaseEnv):
         rgb_img = self.sensor.getRGBImg(self.heightmap_size)
         depth_img = self.sensor.getDepthImg(self.heightmap_size).reshape(1, self.heightmap_size, self.heightmap_size)
         depth = np.concatenate([rgb_img, depth_img])
-        # matrix = np.array([[  1.9539,   0.5081, -30.0484],
-        #                    [  0.    ,   3.0726, -48.8548],
-        #                    [ -0.    ,   0.0161,   1.    ]])
-
-        matrix = np.array([[1.5853, 0.5081, -18.4355],
-                           [0., 2.5887, -33.6935],
-                           [-0., 0.0161, 1.]])
-        depth = cv2.warpPerspective(np.moveaxis(depth, 0, 2), matrix, (64, 64))
+        if self.heightmap_size == 64:
+          matrix = np.array([[1.5853, 0.5081, -18.4355],
+                             [0., 2.5887, -33.6935],
+                             [-0., 0.0161, 1.]])
+          depth = cv2.warpPerspective(np.moveaxis(depth, 0, 2), matrix, (64, 64))
+        elif self.heightmap_size == 76:
+          matrix = np.array([[  1.9938,   0.5882, -37.7647],
+                             [ -0.    ,   3.2229, -59.7678],
+                             [ -0.    ,   0.0155,   1.    ]])
+          depth = cv2.warpPerspective(np.moveaxis(depth, 0, 2), matrix, (76, 76))
+        else:
+          raise NotImplementedError
         depth = np.moveaxis(depth, 2, 0)
       else:
         depth = self.sensor.getHeightmap(self.heightmap_size)
