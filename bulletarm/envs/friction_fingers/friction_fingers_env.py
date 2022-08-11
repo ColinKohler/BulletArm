@@ -10,6 +10,9 @@ from bulletarm.pybullet.utils.sensor import Sensor
 
 class FrictionFingersEnv(BaseEnv):
   def __init__(self, config):
+    # Only allow the robot with the Yale openhand VF gripper
+    config['robot'] = 'kuka'
+
     super().__init__(config)
 
     self.renderer = None

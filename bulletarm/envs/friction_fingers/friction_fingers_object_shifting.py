@@ -24,3 +24,12 @@ class FrictionFingersObjectShiftingEnv(FrictionFingersEnv):
 
   def _checkTermination(self):
     return False
+
+if __name__ == '__main__':
+  config = {}
+  env = FrictionFingersObjectShiftingEnv()
+  obs = env.reset()
+
+  done = False
+  while not done:
+    pass
