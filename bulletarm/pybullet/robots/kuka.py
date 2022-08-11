@@ -64,7 +64,6 @@ class Kuka(RobotBase):
     # self.is_holding = False
     self.gripper_closed = False
     self.holding_obj = None
-    self.force_history = list()
 
     pb.enableJointForceTorqueSensor(self.id, 9)
     pb.enableJointForceTorqueSensor(self.id, 10)
@@ -81,14 +80,26 @@ class Kuka(RobotBase):
         self.arm_joint_names.append(str(joint_info[1]))
         self.arm_joint_indices.append(i)
 
+    # Zero force out
+    self.force_history = list()
+    pb.stepSimulation()
+    force, moment = self.getWristForce()
+    self.zero_force = np.concatenate((force, moment))
+
   def reset(self):
     self.gripper_closed = False
     self.holding_obj = None
-    self.force_history = list()
 
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
     self.moveToJ(self.home_positions_joint)
     self.openGripper()
+
+    # Zero force out
+    self.force_history = list()
+    pb.stepSimulation()
+    force, moment = self.getWristForce()
+    self.zero_force = np.concatenate((force, moment))
+
 
   def controlGripper(self, open_ratio, max_it=100):
     p1, p2 = self._getGripperJointPosition()

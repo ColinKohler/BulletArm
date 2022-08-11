@@ -37,7 +37,6 @@ class Panda(RobotBase):
 
     self.gripper_closed = False
     self.holding_obj = None
-    self.step = 0
 
     self.num_joints = pb.getNumJoints(self.id)
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
@@ -79,7 +78,6 @@ class Panda(RobotBase):
   def reset(self):
     self.gripper_closed = False
     self.holding_obj = None
-    self.step = 0
 
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
     self.moveToJ(self.home_positions_joint[:self.num_dofs])

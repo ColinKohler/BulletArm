@@ -598,7 +598,7 @@
         <pose frame=''>0 0 0 0 0 0 </pose>
         <geometry>
           <mesh>
-            <scale>0 0 0 </scale>
+            <scale>1 1 1 </scale>
             <uri>meshes/finger_base_left.stl</uri>
           </mesh>
         </geometry>
@@ -660,7 +660,7 @@
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
-            <scale>0 0 0 </scale>
+            <scale>1 1 1 </scale>
             <uri>meshes/finger_tip_left.stl</uri>
           </mesh>
         </geometry>
@@ -773,7 +773,7 @@
         <pose frame=''>0 0 0 0 0 0 </pose>
         <geometry>
           <mesh>
-            <scale>0 0 0 </scale>
+            <scale>1 1 1 </scale>
             <uri>meshes/finger_base_right.stl</uri>
           </mesh>
         </geometry>
@@ -835,7 +835,7 @@
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
-            <scale>0 0 0 </scale>
+            <scale>1 1 1 </scale>
             <uri>meshes/finger_tip_right.stl</uri>
           </mesh>
         </geometry>
