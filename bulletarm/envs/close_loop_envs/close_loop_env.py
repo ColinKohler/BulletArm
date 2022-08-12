@@ -40,7 +40,8 @@ class CloseLoopEnv(BaseEnv):
                               'camera_center_z', 'camera_center_z_height', 'pers_center_xyz', 'camera_side',
                               'camera_side_rgbd', 'camera_side_height', 'camera_side_offset', 'camera_side_offset_rgbd',
                               'camera_side_offset_height', 'camera_side_1', 'camera_side_1_rgbd', 'camera_side_1_height',
-                              'camera_side_rgbd_15', 'camera_side_rgbd_30', 'camera_side_rgbd_60', 'camera_side_rgbd_undis']
+                              'camera_side_rgbd_15', 'camera_side_rgbd_30', 'camera_side_rgbd_60', 'camera_side_rgbd_undis',
+                              'camera_side_rgbd_60_undis']
     self.view_scale = config['view_scale']
     self.robot_type = config['robot']
     if config['robot'] == 'kuka':
@@ -418,7 +419,7 @@ class CloseLoopEnv(BaseEnv):
       else:
         depth = self.sensor.getHeightmap(self.heightmap_size)
       return depth
-    elif self.view_type in ['camera_side_rgbd_15', 'camera_side_rgbd_30', 'camera_side_rgbd_60']:
+    elif self.view_type in ['camera_side_rgbd_15', 'camera_side_rgbd_30', 'camera_side_rgbd_60', 'camera_side_rgbd_60_undis']:
       target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
       dist = 0.81
       if self.view_type == 'camera_side_rgbd_15':
@@ -437,6 +438,20 @@ class CloseLoopEnv(BaseEnv):
       rgb_img = self.sensor.getRGBImg(self.heightmap_size)
       depth_img = self.sensor.getDepthImg(self.heightmap_size).reshape(1, self.heightmap_size, self.heightmap_size)
       depth = np.concatenate([rgb_img, depth_img])
+      if self.view_type == 'camera_side_rgbd_60_undis':
+        if self.heightmap_size == 64:
+          matrix = np.array([[  1.3096,   0.2665,  -9.7538],
+                             [  0.    ,   1.7944, -15.6472],
+                             [  0.    ,   0.0085,   1.    ]])
+          depth = cv2.warpPerspective(np.moveaxis(depth, 0, 2), matrix, (64, 64))
+        elif self.heightmap_size == 76:
+          matrix = np.array([[1.6047, 0.3214, -22.9767],
+                             [-0., 2.1691, -29.9302],
+                             [-0., 0.0085, 1.]])
+          depth = cv2.warpPerspective(np.moveaxis(depth, 0, 2), matrix, (76, 76))
+        else:
+          raise NotImplementedError
+        depth = np.moveaxis(depth, 2, 0)
       return depth
     elif self.view_type in ['camera_side_1', 'camera_side_1_rgbd', 'camera_side_1_height']:
       cam_pos = [1, self.workspace[1].mean(), 1]
