@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bulletarm.runner &mdash; BulletArm 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> BulletArm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">BulletArm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/getting_started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/getting_started.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/getting_started.html#block-stacking-demo">Block Stacking Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/getting_started.html#tutorials">Tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/bulletarm.html">BulletArm Simulator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/bulletarm.html#tasks">Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/bulletarm.html#envfactory-envrunner">EnvFactory &amp; EnvRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/bulletarm.html#configuration-parameters">Configuration Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/bulletarm.html#robots">Robots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/bulletarm.html#objects">Objects</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/bulletarm_baselines.html">BulletArm Baselines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/bulletarm_baselines.html#open-loop-benchmarks">Open-Loop Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/bulletarm_baselines.html#close-loop-benchmarks">Close-Loop Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/bulletarm_baselines.html#logging-plotting-utilities">Logging &amp; Plotting Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/tasks.html">Benchmark Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tasks.html#block-reaching">Block Reaching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tasks.html#block-pushing">Block Pushing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tasks.html#block-pulling">Block Pulling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tasks.html#block-picking">Block Picking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tasks.html#block-stacking">Block Stacking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tasks.html#block-in-bowl">Block In Bowl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tasks.html#house-building-1">House Building 1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tasks.html#house-building-2">House Building 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tasks.html#house-building-3">House Building 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tasks.html#house-building-4">House Building 4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tasks.html#improvise-house-building-2">Improvise House Building 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tasks.html#improvise-house-building-3">Improvise House Building 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tasks.html#bin-packing">Bin Packing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tasks.html#bottle-arrangement">Bottle Arrangement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tasks.html#box-palletizing">Box Palletizing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tasks.html#covid-test">Covid Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tasks.html#corner-picking">Corner Picking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tasks.html#drawer-opening">Drawer Opening</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/tasks.html#object-grasping">Object Grasping</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/contributions.html">Contributions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">BulletArm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>bulletarm.runner</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for bulletarm.runner</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">.. moduleauthor: Colin Kohler &lt;github.com/ColinKohler&gt;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Process</span><span class="p">,</span> <span class="n">Pipe</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">git</span>
+<span class="kn">import</span> <span class="nn">bulletarm</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">def</span> <span class="nf">worker</span><span class="p">(</span><span class="n">remote</span><span class="p">,</span> <span class="n">parent_remote</span><span class="p">,</span> <span class="n">env_fn</span><span class="p">,</span> <span class="n">planner_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+  <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">  Worker function which interacts with the environment over the remove connection</span>
+
+<span class="sd">  Args:</span>
+<span class="sd">    remote (multiprocessing.Connection): Worker remote connection</span>
+<span class="sd">    parent_remote (multiprocessing.Connection): MultiRunner remote connection</span>
+<span class="sd">    env_fn (function): Creates a environment</span>
+<span class="sd">    planner_fn (function): Creates the planner for the environment</span>
+<span class="sd">  &#39;&#39;&#39;</span>
+  <span class="n">parent_remote</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+  <span class="n">env</span> <span class="o">=</span> <span class="n">env_fn</span><span class="p">()</span>
+  <span class="k">if</span> <span class="n">planner_fn</span><span class="p">:</span>
+    <span class="n">planner</span> <span class="o">=</span> <span class="n">planner_fn</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+  <span class="k">else</span><span class="p">:</span>
+    <span class="n">planner</span> <span class="o">=</span> <span class="kc">None</span>
+
+  <span class="k">try</span><span class="p">:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+      <span class="n">cmd</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span>
+      <span class="k">if</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;step&#39;</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;simulate&#39;</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;can_simulate&#39;</span><span class="p">:</span>
+        <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">canSimulate</span><span class="p">())</span>
+      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;reset_sim&#39;</span><span class="p">:</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">resetSimPose</span><span class="p">()</span>
+      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;step_auto_reset&#39;</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">done</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
+          <span class="c1"># get observation after reset (res index 0), the rest stays the same</span>
+          <span class="n">res</span> <span class="o">=</span> <span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">(),</span> <span class="o">*</span><span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;reset&#39;</span><span class="p">:</span>
+        <span class="n">obs</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;get_spaces&#39;</span><span class="p">:</span>
+        <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="n">env</span><span class="o">.</span><span class="n">obs_shape</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">action_shape</span><span class="p">))</span>
+      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;get_empty_in_hand&#39;</span><span class="p">:</span>
+        <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">getEmptyInHand</span><span class="p">())</span>
+      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;get_env_id&#39;</span><span class="p">:</span>
+        <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">active_env_id</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;get_next_action&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">planner</span><span class="p">:</span>
+          <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">planner</span><span class="o">.</span><span class="n">getNextAction</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+          <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Attempting to use a planner which was not initialized.&#39;</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;get_num_obj&#39;</span><span class="p">:</span>
+        <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">num_obj</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;save&#39;</span><span class="p">:</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">saveState</span><span class="p">()</span>
+      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;restore&#39;</span><span class="p">:</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">restoreState</span><span class="p">()</span>
+      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;save_to_file&#39;</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">saveEnvToFile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;load_from_file&#39;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+          <span class="n">path</span> <span class="o">=</span> <span class="n">data</span>
+          <span class="n">env</span><span class="o">.</span><span class="n">loadEnvFromFile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+          <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;MultiRunner worker load failed: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+          <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+          <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+      <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;close&#39;</span><span class="p">:</span>
+        <span class="n">remote</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">break</span>
+      <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">NotImplementerError</span>
+  <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;MultiRunner worker: caught keyboard interrupt&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MultiRunner"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner">[docs]</a><span class="k">class</span> <span class="nc">MultiRunner</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+  <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">  Runner which runs mulitple environemnts in parallel in subprocesses and communicates with them via pipe.</span>
+
+<span class="sd">  Args:</span>
+<span class="sd">    env_fns (list[function]): Env creation functions</span>
+<span class="sd">    planner_fns (list[function]): Planner creation functions</span>
+<span class="sd">  &#39;&#39;&#39;</span>
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env_fns</span><span class="p">,</span> <span class="n">planner_fns</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">waiting</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">closed</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">num_envs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">env_fns</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_remotes</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">Pipe</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_envs</span><span class="p">)])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">processes</span> <span class="o">=</span> <span class="p">[</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">worker_remote</span><span class="p">,</span> <span class="n">remote</span><span class="p">,</span> <span class="n">env_fn</span><span class="p">,</span> <span class="n">planner_fn</span><span class="p">))</span>
+                      <span class="k">for</span> <span class="p">(</span><span class="n">worker_remote</span><span class="p">,</span> <span class="n">remote</span><span class="p">,</span> <span class="n">env_fn</span><span class="p">,</span> <span class="n">planner_fn</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">worker_remotes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">,</span> <span class="n">env_fns</span><span class="p">,</span> <span class="n">planner_fns</span><span class="p">)]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">num_processes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processes</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">process</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">processes</span><span class="p">:</span>
+      <span class="n">process</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
+      <span class="n">process</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_remotes</span><span class="p">:</span>
+      <span class="n">remote</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<div class="viewcode-block" id="MultiRunner.step"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.step">[docs]</a>  <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">auto_reset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Step the environments synchronously.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      actions (numpy.array): Actions to take in each environment</span>
+<span class="sd">      auto_reset (bool): Reset environments automatically after an episode ends</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      (numpy.array, numpy.array, numpy.array): (observations, rewards, done flags)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">stepAsync</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="n">auto_reset</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepWait</span><span class="p">()</span></div>
+
+  <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">remote</span><span class="p">,</span> <span class="n">action</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;simulate&#39;</span><span class="p">,</span> <span class="n">action</span><span class="p">))</span>
+
+    <span class="n">obs</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">]</span>
+    <span class="n">states</span><span class="p">,</span> <span class="n">hand_obs</span><span class="p">,</span> <span class="n">obs</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">obs</span><span class="p">)</span>
+
+    <span class="n">states</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">states</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">hand_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">hand_obs</span><span class="p">)</span>
+    <span class="n">obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
+    <span class="n">rewards</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">states</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">dones</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">states</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">hand_obs</span><span class="p">,</span> <span class="n">obs</span><span class="p">),</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">dones</span>
+
+  <span class="k">def</span> <span class="nf">canSimulate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
+      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;can_simulate&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+    <span class="n">flag</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">]</span>
+    <span class="n">flag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">flag</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">flag</span>
+
+  <span class="k">def</span> <span class="nf">resetSimPose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
+      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;reset_sim&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+
+<div class="viewcode-block" id="MultiRunner.stepAsync"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.stepAsync">[docs]</a>  <span class="k">def</span> <span class="nf">stepAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">auto_reset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Step each environment in a async fashion.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      actions (numpy.array): Actions to take in each environment</span>
+<span class="sd">      auto_reset (bool): Reset environments automatically after an episode ends</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">remote</span><span class="p">,</span> <span class="n">action</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+      <span class="k">if</span> <span class="n">auto_reset</span><span class="p">:</span>
+        <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;step_auto_reset&#39;</span><span class="p">,</span> <span class="n">action</span><span class="p">))</span>
+      <span class="k">else</span><span class="p">:</span>
+        <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;step&#39;</span><span class="p">,</span> <span class="n">action</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">waiting</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="MultiRunner.stepWait"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.stepWait">[docs]</a>  <span class="k">def</span> <span class="nf">stepWait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Wait until each environment has completed its next step.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      (numpy.array, numpy.array, numpy.array): (observations, rewards, done flags)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">waiting</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">results</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+      <span class="n">metadata</span> <span class="o">=</span> <span class="kc">None</span>
+      <span class="n">obs</span><span class="p">,</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">dones</span> <span class="o">=</span> <span class="n">res</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">obs</span><span class="p">,</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">dones</span><span class="p">,</span> <span class="n">metadata</span> <span class="o">=</span> <span class="n">res</span>
+
+    <span class="n">states</span><span class="p">,</span> <span class="n">hand_obs</span><span class="p">,</span> <span class="n">obs</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">obs</span><span class="p">)</span>
+
+    <span class="n">states</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">states</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">hand_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">hand_obs</span><span class="p">)</span>
+    <span class="n">obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
+    <span class="n">rewards</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">rewards</span><span class="p">)</span>
+    <span class="n">dones</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">dones</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">metadata</span><span class="p">:</span>
+      <span class="k">return</span> <span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">hand_obs</span><span class="p">,</span> <span class="n">obs</span><span class="p">),</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">dones</span><span class="p">,</span> <span class="n">metadata</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">return</span> <span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">hand_obs</span><span class="p">,</span> <span class="n">obs</span><span class="p">),</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">dones</span></div>
+
+<div class="viewcode-block" id="MultiRunner.reset"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.reset">[docs]</a>  <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Reset each environment.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      numpy.array: Observations</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
+      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;reset&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+
+    <span class="n">obs</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">]</span>
+    <span class="n">states</span><span class="p">,</span> <span class="n">hand_obs</span><span class="p">,</span> <span class="n">obs</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">obs</span><span class="p">)</span>
+
+    <span class="n">states</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">states</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">hand_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">hand_obs</span><span class="p">)</span>
+    <span class="n">obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">hand_obs</span><span class="p">,</span> <span class="n">obs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultiRunner.reset_envs"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.reset_envs">[docs]</a>  <span class="k">def</span> <span class="nf">reset_envs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env_nums</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Resets the specified environments.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      env_nums (list[int]): The environments to be reset</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      numpy.array: Observations</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">for</span> <span class="n">env_num</span> <span class="ow">in</span> <span class="n">env_nums</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">[</span><span class="n">env_num</span><span class="p">]</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;reset&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+
+    <span class="n">obs</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">[</span><span class="n">env_num</span><span class="p">]</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">env_num</span> <span class="ow">in</span> <span class="n">env_nums</span><span class="p">]</span>
+    <span class="n">states</span><span class="p">,</span> <span class="n">hand_obs</span><span class="p">,</span> <span class="n">obs</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">obs</span><span class="p">)</span>
+
+    <span class="n">states</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">states</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">hand_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">hand_obs</span><span class="p">)</span>
+    <span class="n">obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">hand_obs</span><span class="p">,</span> <span class="n">obs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultiRunner.close"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.close">[docs]</a>  <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Close all worker processes.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">closed</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">waiting</span><span class="p">:</span>
+      <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">]</span>
+    <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;close&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">]</span>
+    <span class="p">[</span><span class="n">process</span><span class="o">.</span><span class="n">join</span><span class="p">()</span> <span class="k">for</span> <span class="n">process</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">processes</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="MultiRunner.save"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.save">[docs]</a>  <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Locally saves the current state of the environments.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
+      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;save&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MultiRunner.restore"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.restore">[docs]</a>  <span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Restores the locally saved state of the environments.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
+      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;restore&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MultiRunner.saveToFile"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.saveToFile">[docs]</a>  <span class="k">def</span> <span class="nf">saveToFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Saves the current state of the environments to file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      path (str): The path to save the enviornment states to</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">remote</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">):</span>
+      <span class="n">p</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+      <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;save_to_file&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))))</span></div>
+
+<div class="viewcode-block" id="MultiRunner.loadFromFile"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.loadFromFile">[docs]</a>  <span class="k">def</span> <span class="nf">loadFromFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Loads the state of the environments from a file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      path (str): The path to the environment states to load</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      bool: Flag indicating if the loading succeeded for all environments</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">remote</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">):</span>
+      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;load_from_file&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MultiRunner.getNextAction"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.getNextAction">[docs]</a>  <span class="k">def</span> <span class="nf">getNextAction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get the next action from the planner for each environment.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      numpy.array: Actions</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
+      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;get_next_action&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+    <span class="n">action</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">]</span>
+    <span class="n">action</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">action</span></div>
+
+<div class="viewcode-block" id="MultiRunner.getEmptyInHand"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.getEmptyInHand">[docs]</a>  <span class="k">def</span> <span class="nf">getEmptyInHand</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">:</span>
+      <span class="n">remote</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;get_empty_in_hand&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+    <span class="n">hand_obs</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="k">for</span> <span class="n">remote</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">]</span>
+    <span class="n">hand_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">hand_obs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">hand_obs</span></div>
+
+<div class="viewcode-block" id="MultiRunner.getEnvGitHash"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.getEnvGitHash">[docs]</a>  <span class="nd">@staticmethod</span>
+  <span class="k">def</span> <span class="nf">getEnvGitHash</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">repo</span> <span class="o">=</span> <span class="n">git</span><span class="o">.</span><span class="n">Repo</span><span class="p">(</span><span class="n">bulletarm</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">repo</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">hexsha</span></div>
+
+<div class="viewcode-block" id="MultiRunner.getNumObj"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.getNumObj">[docs]</a>  <span class="k">def</span> <span class="nf">getNumObj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get the number of objects in the environment</span>
+<span class="sd">    Returns: int: number of objects</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="s1">&#39;get_num_obj&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+    <span class="n">num_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">remotes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">num_obj</span></div>
+
+<div class="viewcode-block" id="MultiRunner.gatherDeconstructTransitions"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.MultiRunner.gatherDeconstructTransitions">[docs]</a>  <span class="k">def</span> <span class="nf">gatherDeconstructTransitions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">planner_episode</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Gather deconstruction transitions and reverse them for construction</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      - planner_episode: The number of expert episodes to gather</span>
+
+<span class="sd">    Returns: list of transitions. Each transition is in the form of</span>
+<span class="sd">    ((state, in_hand, obs), action, reward, done, (next_state, next_in_hand, next_obs))</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">num_processes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_processes</span>
+    <span class="n">num_objects</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getNumObj</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">states_valid</span><span class="p">(</span><span class="n">states_list</span><span class="p">):</span>
+      <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">states_list</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+      <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">states_list</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">states_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">states_list</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+          <span class="k">return</span> <span class="kc">False</span>
+      <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">rewards_valid</span><span class="p">(</span><span class="n">reward_list</span><span class="p">):</span>
+      <span class="k">if</span> <span class="n">reward_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+      <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">reward_list</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">reward_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+          <span class="k">return</span> <span class="kc">False</span>
+      <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">getCurrentObs</span><span class="p">(</span><span class="n">in_hand</span><span class="p">,</span> <span class="n">obs</span><span class="p">):</span>
+      <span class="n">obss</span> <span class="o">=</span> <span class="p">[]</span>
+      <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">obs</span><span class="p">):</span>
+        <span class="n">obss</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">o</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(),</span> <span class="n">in_hand</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()))</span>
+      <span class="k">return</span> <span class="n">obss</span>
+
+    <span class="n">states</span><span class="p">,</span> <span class="n">in_hands</span><span class="p">,</span> <span class="n">obs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">step_times</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_processes</span><span class="p">)]</span>
+    <span class="n">local_state</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_processes</span><span class="p">)]</span>
+    <span class="n">local_obs</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_processes</span><span class="p">)]</span>
+    <span class="n">local_action</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_processes</span><span class="p">)]</span>
+    <span class="n">local_reward</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_processes</span><span class="p">)]</span>
+
+    <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">planner_episode</span><span class="p">)</span>
+
+    <span class="n">transitions</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="n">total</span> <span class="o">&lt;</span> <span class="n">planner_episode</span><span class="p">:</span>
+      <span class="n">plan_actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getNextAction</span><span class="p">()</span>
+      <span class="n">actions_star</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">plan_actions</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+      <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+      <span class="p">(</span><span class="n">states_</span><span class="p">,</span> <span class="n">in_hands_</span><span class="p">,</span> <span class="n">obs_</span><span class="p">),</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">dones</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">actions_star</span><span class="p">,</span> <span class="n">auto_reset</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+      <span class="n">dones</span><span class="p">[</span><span class="n">states</span> <span class="o">+</span> <span class="n">states_</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+      <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span>
+      <span class="n">step_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+      <span class="n">buffer_obs</span> <span class="o">=</span> <span class="n">getCurrentObs</span><span class="p">(</span><span class="n">in_hands_</span><span class="p">,</span> <span class="n">obs</span><span class="p">)</span>
+      <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_processes</span><span class="p">):</span>
+        <span class="n">local_state</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">states</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">local_obs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">buffer_obs</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">local_action</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plan_actions</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">local_reward</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rewards</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+      <span class="n">steps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">steps</span><span class="p">))</span>
+
+      <span class="n">done_idxes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">dones</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+      <span class="k">if</span> <span class="n">done_idxes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">empty_in_hands</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getEmptyInHand</span><span class="p">()</span>
+
+        <span class="n">buffer_obs_</span> <span class="o">=</span> <span class="n">getCurrentObs</span><span class="p">(</span><span class="n">empty_in_hands</span><span class="p">,</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">obs_</span><span class="p">))</span>
+        <span class="n">reset_states_</span><span class="p">,</span> <span class="n">reset_in_hands_</span><span class="p">,</span> <span class="n">reset_obs_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_envs</span><span class="p">(</span><span class="n">done_idxes</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">done_idxes</span><span class="p">):</span>
+          <span class="n">local_obs</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">buffer_obs_</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+          <span class="n">local_state</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">states_</span><span class="p">[</span><span class="n">idx</span><span class="p">]))</span>
+          <span class="k">if</span> <span class="p">(</span><span class="n">num_objects</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">steps</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">num_objects</span><span class="o">*</span><span class="mi">2</span> <span class="ow">and</span> <span class="n">states_valid</span><span class="p">(</span><span class="n">local_state</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span> <span class="ow">and</span> <span class="n">rewards_valid</span><span class="p">(</span><span class="n">local_reward</span><span class="p">[</span><span class="n">idx</span><span class="p">]):</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">local_reward</span><span class="p">[</span><span class="n">idx</span><span class="p">])):</span>
+              <span class="n">obs</span> <span class="o">=</span> <span class="n">local_obs</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+              <span class="n">next_obs</span> <span class="o">=</span> <span class="n">local_obs</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+              <span class="n">transitions</span><span class="o">.</span><span class="n">append</span><span class="p">(((</span><span class="n">local_state</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">obs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">obs</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="c1"># (state, in_hand, obs)</span>
+                                  <span class="n">local_action</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">j</span><span class="p">],</span> <span class="c1"># action</span>
+                                  <span class="n">local_reward</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">j</span><span class="p">],</span> <span class="c1"># reward</span>
+                                  <span class="n">j</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="c1"># done</span>
+                                  <span class="p">(</span><span class="n">local_state</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">j</span><span class="p">],</span> <span class="n">next_obs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">next_obs</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span> <span class="c1"># (next_state, next_in_hand, next_obs)</span>
+
+          <span class="n">states_</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">reset_states_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+          <span class="n">obs_</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">reset_obs_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+          <span class="n">total</span> <span class="o">+=</span> <span class="mi">1</span>
+          <span class="n">steps</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+          <span class="n">local_state</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+          <span class="n">local_obs</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+          <span class="n">local_action</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+          <span class="n">local_reward</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+      <span class="n">pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span>
+        <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">, SR: </span><span class="si">{:.3f}</span><span class="s1">, step time: </span><span class="si">{:.2f}</span><span class="s1">; avg step time: </span><span class="si">{:.2f}</span><span class="s1">&#39;</span>
+          <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">total</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">/</span><span class="n">total</span> <span class="k">if</span> <span class="n">total</span> <span class="o">!=</span><span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">step_times</span><span class="p">))</span>
+      <span class="p">)</span>
+      <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">done_idxes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+      <span class="n">states</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">states_</span><span class="p">)</span>
+      <span class="n">obs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">obs_</span><span class="p">)</span>
+    <span class="n">pbar</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">transitions</span></div></div>
+
+<div class="viewcode-block" id="SingleRunner"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.SingleRunner">[docs]</a><span class="k">class</span> <span class="nc">SingleRunner</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+  <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">  RL environment runner which runs a single environment.</span>
+
+<span class="sd">  Args:</span>
+<span class="sd">    env (BaseEnv): Environment</span>
+<span class="sd">    planner (BasePlanner): Planner</span>
+<span class="sd">  &#39;&#39;&#39;</span>
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">planner</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">env</span> <span class="o">=</span> <span class="n">env</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">planner</span> <span class="o">=</span> <span class="n">planner</span>
+
+<div class="viewcode-block" id="SingleRunner.step"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.SingleRunner.step">[docs]</a>  <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">auto_reset</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Step the environment.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      action (numpy.array): Action to take in the environment</span>
+<span class="sd">      auto_reset (bool): Reset the environment after an episode ends</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      (numpy.array, numpy.array, numpy.array): (observations, rewards, done flags)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+      <span class="n">metadata</span> <span class="o">=</span> <span class="kc">None</span>
+      <span class="n">obs</span><span class="p">,</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">dones</span> <span class="o">=</span> <span class="n">results</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">obs</span><span class="p">,</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">dones</span><span class="p">,</span> <span class="n">metadata</span> <span class="o">=</span> <span class="n">results</span>
+    <span class="n">states</span><span class="p">,</span> <span class="n">hand_obs</span><span class="p">,</span> <span class="n">obs</span> <span class="o">=</span> <span class="n">obs</span>
+
+    <span class="k">if</span> <span class="n">metadata</span><span class="p">:</span>
+      <span class="k">return</span> <span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">hand_obs</span><span class="p">,</span> <span class="n">obs</span><span class="p">),</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">dones</span><span class="p">,</span> <span class="n">metadata</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">return</span> <span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">hand_obs</span><span class="p">,</span> <span class="n">obs</span><span class="p">),</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">dones</span></div>
+
+<div class="viewcode-block" id="SingleRunner.reset"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.SingleRunner.reset">[docs]</a>  <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Reset the environment.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      numpy.array: Observation</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SingleRunner.save"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.SingleRunner.save">[docs]</a>  <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Locally saves the current state of the environment.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SingleRunner.restore"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.SingleRunner.restore">[docs]</a>  <span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Restores the locally saved state of the environment.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">restore</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SingleRunner.saveToFile"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.SingleRunner.saveToFile">[docs]</a>  <span class="k">def</span> <span class="nf">saveToFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Saves the current state of the environment to file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      path (str): The path to save the enviornment state to</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">saveToFile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SingleRunner.loadFromFile"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.SingleRunner.loadFromFile">[docs]</a>  <span class="k">def</span> <span class="nf">loadFromFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Loads the state of the environment from a file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      path (str): The path to the environment state to load</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      bool: Flag indicating if the loading succeeded</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">loadFromFile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SingleRunner.getNextAction"><a class="viewcode-back" href="../../api/bulletarm.html#bulletarm.runner.SingleRunner.getNextAction">[docs]</a>  <span class="k">def</span> <span class="nf">getNextAction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner</span><span class="p">:</span>
+      <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">planner</span><span class="o">.</span><span class="n">getNextAction</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Attempting to use a planner which was not initialized.&#39;</span><span class="p">)</span></div>
+
+  <span class="nd">@staticmethod</span>
+  <span class="k">def</span> <span class="nf">getEnvGitHash</span><span class="p">():</span>
+    <span class="n">repo</span> <span class="o">=</span> <span class="n">git</span><span class="o">.</span><span class="n">Repo</span><span class="p">(</span><span class="n">bulletarm</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">repo</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">hexsha</span>
+
+  <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Colin Kohler, Dian Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

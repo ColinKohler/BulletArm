@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Getting Started &mdash; BulletArm 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="BulletArm Simulator" href="bulletarm.html" />
+    <link rel="prev" title="Package Reference" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> BulletArm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Package Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">BulletArm</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#block-stacking-demo">Block Stacking Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tutorials">Tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bulletarm.html">BulletArm Simulator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm.html#tasks">Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm.html#envfactory-envrunner">EnvFactory &amp; EnvRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm.html#configuration-parameters">Configuration Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm.html#robots">Robots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm.html#objects">Objects</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bulletarm_baselines.html">BulletArm Baselines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm_baselines.html#open-loop-benchmarks">Open-Loop Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm_baselines.html#close-loop-benchmarks">Close-Loop Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm_baselines.html#logging-plotting-utilities">Logging &amp; Plotting Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tasks.html">Benchmark Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-reaching">Block Reaching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-pushing">Block Pushing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-pulling">Block Pulling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-picking">Block Picking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-stacking">Block Stacking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-in-bowl">Block In Bowl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#house-building-1">House Building 1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#house-building-2">House Building 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#house-building-3">House Building 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#house-building-4">House Building 4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#improvise-house-building-2">Improvise House Building 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#improvise-house-building-3">Improvise House Building 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#bin-packing">Bin Packing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#bottle-arrangement">Bottle Arrangement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#box-palletizing">Box Palletizing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#covid-test">Covid Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#corner-picking">Corner Picking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#drawer-opening">Drawer Opening</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#object-grasping">Object Grasping</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributions.html">Contributions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">BulletArm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Getting Started</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/getting_started.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading"></a></h1>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clone the BulletArm Repo</span>
+git clone https://github.com/ColinKohler/BulletArm.git <span class="o">&amp;&amp;</span> <span class="nb">cd</span> BulletArm
+
+<span class="c1"># Install dependencies</span>
+pip install -r requirements.txt
+
+<span class="c1"># Install BulletArm either using Pip</span>
+pip install .
+<span class="c1"># OR by adding it to your PYTHONPATH</span>
+<span class="nb">export</span> <span class="nv">PYTHONPATH</span><span class="o">=</span>/path/to/BulletArm/:<span class="nv">$PYTHONPATH</span>
+</pre></div>
+</div>
+</section>
+<section id="block-stacking-demo">
+<h2>Block Stacking Demo<a class="headerlink" href="#block-stacking-demo" title="Permalink to this heading"></a></h2>
+<p>In order to test your installation, we recommend running the block stacking demo to ensure everything is in working order.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python tutorials/block_stacking_demo.py
+</pre></div>
+</div>
+<p>Below we go over the code within the demo and briefly describe the important details.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1"># The env_factory provides the entry point to BulletArm</span>
+<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">bulletarm</span> <span class="kn">import</span> <span class="n">env_factory</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="k">def</span> <span class="nf">runDemo</span><span class="p">():</span>
+<span class="linenos"> 5</span>  <span class="n">env_config</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;render&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+<span class="linenos"> 6</span>  <span class="c1"># The env_factory creates the desired number of PyBullet simulations to run in</span>
+<span class="linenos"> 7</span>  <span class="c1"># parallel. The task that is created depends on the environment name and the</span>
+<span class="linenos"> 8</span>  <span class="c1"># task config passed as input.</span>
+<span class="linenos"> 9</span>  <span class="n">env</span> <span class="o">=</span> <span class="n">env_factory</span><span class="o">.</span><span class="n">createEnvs</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;block_stacking&#39;</span><span class="p">,</span> <span class="n">env_config</span><span class="p">)</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span>  <span class="c1"># Start the task by resetting the simulation environment.</span>
+<span class="linenos">12</span>  <span class="n">obs</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="linenos">13</span>  <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="linenos">14</span>  <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+<span class="linenos">15</span>    <span class="c1"># We get the next action using the planner associated with the block stacking</span>
+<span class="linenos">16</span>    <span class="c1"># task and execute it.</span>
+<span class="linenos">17</span>    <span class="n">action</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">getNextAction</span><span class="p">()</span>
+<span class="linenos">18</span>    <span class="n">obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+<span class="linenos">19</span>  <span class="n">env</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="tutorials">
+<h2>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this heading"></a></h2>
+<p>We provide a number of <a class="reference external" href="https://github.com/ColinKohler/BulletArm/tree/main/tutorials">tutorials</a> including an
+<a class="reference external" href="https://github.com/ColinKohler/BulletArm/blob/main/tutorials/train_dummy_agent.py">introcutory tutorial</a> demonstrating how to collect data
+for training of a RL agent. Examples on how to extend PyBullet for either
+<a class="reference external" href="https://github.com/ColinKohler/BulletArm/blob/main/tutorials/creating_a_new_task.py">creating new tasks</a> or
+<a class="reference external" href="https://github.com/ColinKohler/BulletArm/blob/main/tutorials/creating_a_new_robot.py">creating new robots</a> are also included.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="Package Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="bulletarm.html" class="btn btn-neutral float-right" title="BulletArm Simulator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Colin Kohler, Dian Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

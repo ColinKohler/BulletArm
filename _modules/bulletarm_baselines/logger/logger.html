@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bulletarm_baselines.logger.logger &mdash; BulletArm 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> BulletArm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">BulletArm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/getting_started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/getting_started.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/getting_started.html#block-stacking-demo">Block Stacking Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/getting_started.html#tutorials">Tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/bulletarm.html">BulletArm Simulator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/bulletarm.html#tasks">Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/bulletarm.html#envfactory-envrunner">EnvFactory &amp; EnvRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/bulletarm.html#configuration-parameters">Configuration Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/bulletarm.html#robots">Robots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/bulletarm.html#objects">Objects</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/bulletarm_baselines.html">BulletArm Baselines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/bulletarm_baselines.html#open-loop-benchmarks">Open-Loop Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/bulletarm_baselines.html#close-loop-benchmarks">Close-Loop Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/bulletarm_baselines.html#logging-plotting-utilities">Logging &amp; Plotting Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/tasks.html">Benchmark Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/tasks.html#block-reaching">Block Reaching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/tasks.html#block-pushing">Block Pushing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/tasks.html#block-pulling">Block Pulling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/tasks.html#block-picking">Block Picking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/tasks.html#block-stacking">Block Stacking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/tasks.html#block-in-bowl">Block In Bowl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/tasks.html#house-building-1">House Building 1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/tasks.html#house-building-2">House Building 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/tasks.html#house-building-3">House Building 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/tasks.html#house-building-4">House Building 4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/tasks.html#improvise-house-building-2">Improvise House Building 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/tasks.html#improvise-house-building-3">Improvise House Building 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/tasks.html#bin-packing">Bin Packing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/tasks.html#bottle-arrangement">Bottle Arrangement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/tasks.html#box-palletizing">Box Palletizing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/tasks.html#covid-test">Covid Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/tasks.html#corner-picking">Corner Picking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/tasks.html#drawer-opening">Drawer Opening</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/tasks.html#object-grasping">Object Grasping</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/contributions.html">Contributions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">BulletArm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>bulletarm_baselines.logger.logger</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for bulletarm_baselines.logger.logger</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">.. moduleauthor: Colin Kohler &lt;github.com/ColinKohler&gt;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">torch.utils.tensorboard</span> <span class="kn">import</span> <span class="n">SummaryWriter</span>
+
+<div class="viewcode-block" id="Logger"><a class="viewcode-back" href="../../../api/bulletarm_baselines.html#bulletarm_baselines.logger.logger.Logger">[docs]</a><span class="k">class</span> <span class="nc">Logger</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+  <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">  Logger class. Writes log data to tensorboard.</span>
+
+<span class="sd">  Args:</span>
+<span class="sd">    results_path (str): Path to save log files to</span>
+<span class="sd">    num_eval_eps (int): Number of episodes in a evaluation iteration</span>
+<span class="sd">    hyperparameters (dict): Hyperparameters to log. Defaults to None</span>
+<span class="sd">  &#39;&#39;&#39;</span>
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results_path</span><span class="p">,</span> <span class="n">checkpoint_interval</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">num_eval_eps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">hyperparameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">results_path</span> <span class="o">=</span> <span class="n">results_path</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">writer</span> <span class="o">=</span> <span class="n">SummaryWriter</span><span class="p">(</span><span class="n">results_path</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">checkpoint_interval</span> <span class="o">=</span> <span class="n">checkpoint_interval</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">log_counter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">scalar_logs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="c1"># Training</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">num_eps</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">num_training_steps</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">training_eps_rewards</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">loss</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">current_episode_rewards</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># Evaluation</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">num_eval_episodes</span> <span class="o">=</span> <span class="n">num_eval_eps</span> <span class="c1"># TODO: Dunno if I want this here</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">num_eval_intervals</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">eval_eps_rewards</span> <span class="o">=</span> <span class="p">[[]]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">eval_eps_dis_rewards</span> <span class="o">=</span> <span class="p">[[]]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">eval_mean_values</span> <span class="o">=</span> <span class="p">[[]]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">eval_eps_lens</span> <span class="o">=</span> <span class="p">[[]]</span>
+
+    <span class="c1"># sub folders for saving the models and checkpoint</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">models_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results_path</span><span class="p">,</span> <span class="s1">&#39;models&#39;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">checkpoint_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results_path</span><span class="p">,</span> <span class="s1">&#39;checkpoint&#39;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">models_dir</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">checkpoint_dir</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">hyperparameters</span><span class="p">:</span>
+      <span class="n">hp_table</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="sa">f</span><span class="s1">&#39;| </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1"> | </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1"> |&#39;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">hyperparameters</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+      <span class="p">]</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">add_text</span><span class="p">(</span>
+        <span class="s1">&#39;Hyperparameters&#39;</span><span class="p">,</span> <span class="s1">&#39;| Parameter | Value |</span><span class="se">\n</span><span class="s1">|-------|-------|</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">hp_table</span><span class="p">)</span>
+      <span class="p">)</span>
+
+  <span class="c1"># TODO: I don&#39;t use this atm so tihs is untested.</span>
+<div class="viewcode-block" id="Logger.logStep"><a class="viewcode-back" href="../../../api/bulletarm_baselines.html#bulletarm_baselines.logger.logger.Logger.logStep">[docs]</a>  <span class="k">def</span> <span class="nf">logStep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">done_masks</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Log episode step.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      rewards (list[float]): List of rewards</span>
+<span class="sd">      done_masks (list[int]):</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_episode_rewards</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">current_episode_rewards</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">rewards</span><span class="p">]</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_episode_rewards</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">rewards</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_episode_rewards</span><span class="p">):</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Length of rewards different than was previously logged.&quot;</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rewards</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">num_eps</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">done_masks</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">rewards</span><span class="p">,</span> <span class="n">done_masks</span><span class="p">)):</span>
+      <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">training_eps_rewards</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_episode_rewards</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">reward</span><span class="p">)</span>
+      <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_episode_rewards</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">reward</span></div>
+
+<div class="viewcode-block" id="Logger.logTrainingEpisode"><a class="viewcode-back" href="../../../api/bulletarm_baselines.html#bulletarm_baselines.logger.logger.Logger.logTrainingEpisode">[docs]</a>  <span class="k">def</span> <span class="nf">logTrainingEpisode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rewards</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Log a episode.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      rewards (list[float]: Rewards for the entire episode</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rewards</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">num_eps</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">training_eps_rewards</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">rewards</span><span class="p">))</span></div>
+
+  <span class="k">def</span> <span class="nf">logEvalInterval</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">num_eval_intervals</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">eval_eps_rewards</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">eval_eps_dis_rewards</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">eval_mean_values</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">eval_eps_lens</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+
+<div class="viewcode-block" id="Logger.logEvalEpisode"><a class="viewcode-back" href="../../../api/bulletarm_baselines.html#bulletarm_baselines.logger.logger.Logger.logEvalEpisode">[docs]</a>  <span class="k">def</span> <span class="nf">logEvalEpisode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">discounted_return</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Log a evaluation episode.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      rewards (list[float]: Rewards for the episode</span>
+<span class="sd">      values (list[float]): Values for the episode</span>
+<span class="sd">      discounted_return (list[float]): Discounted return of the episode</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">eval_eps_rewards</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">num_eval_intervals</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">rewards</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">eval_eps_lens</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">num_eval_intervals</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rewards</span><span class="p">)))</span>
+    <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">eval_mean_values</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">num_eval_intervals</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">values</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">discounted_return</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">eval_eps_dis_rewards</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">num_eval_intervals</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">discounted_return</span><span class="p">)</span></div>
+
+  <span class="k">def</span> <span class="nf">logTrainingStep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loss</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;&#39;&#39;&#39;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">num_training_steps</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">tuple</span><span class="p">:</span>
+      <span class="n">loss</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;loss</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">):</span> <span class="n">loss</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">loss</span><span class="p">))}</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">float</span><span class="p">:</span>
+      <span class="n">loss</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="n">loss</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">loss</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+      <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+      <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Logger.writeLog"><a class="viewcode-back" href="../../../api/bulletarm_baselines.html#bulletarm_baselines.logger.logger.Logger.writeLog">[docs]</a>  <span class="k">def</span> <span class="nf">writeLog</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Write the logdir to the tensorboard summary writer. Calling this too often can</span>
+<span class="sd">    slow down training.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># the eval list index at self.num_eval_intervals might be being updated, so log the eval list indexed</span>
+    <span class="c1"># at self.num_eval_intervals-1</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_eval_intervals</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="s1">&#39;1.Evaluate/1.Reward&#39;</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">getAvg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eval_eps_rewards</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">num_eval_intervals</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">n</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_eval_episodes</span><span class="p">),</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">num_eval_intervals</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="s1">&#39;1.Evaluate/2.Mean_value&#39;</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">getAvg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eval_mean_values</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">num_eval_intervals</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">n</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_eval_episodes</span><span class="p">),</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">num_eval_intervals</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="s1">&#39;1.Evaluate/3.Eps_len&#39;</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">getAvg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eval_eps_lens</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">num_eval_intervals</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">n</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_eval_episodes</span><span class="p">),</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">num_eval_intervals</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># TODO: Do we want to allow custom windows here?</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="s1">&#39;1.Evaluate/4.Learning_curve&#39;</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">getAvg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">training_eps_rewards</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+                           <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">training_eps_rewards</span><span class="p">))</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="s1">&#39;2.Data/1.Num_eps&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_eps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_counter</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="s1">&#39;2.Data/2.Num_steps&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_counter</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="s1">&#39;2.Data/3.Training_steps&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_training_steps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_counter</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="s1">&#39;2.Data/4.Training_steps_per_eps_step_ratio&#39;</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">num_training_steps</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span><span class="p">),</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">log_counter</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="p">:</span>
+      <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="s1">&#39;3.Loss/</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">_loss&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span> <span class="n">v</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_counter</span><span class="p">)</span>
+
+    <span class="c1"># TODO: I have not needed to test this yet. Can&#39;t imagine it doesn&#39;t work but still...</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scalar_logs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_counter</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_training_steps</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_training_steps</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">checkpoint_interval</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">exportData</span><span class="p">()</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">log_counter</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+  <span class="k">def</span> <span class="nf">getSaveState</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="s1">&#39;num_steps&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span><span class="p">,</span>
+      <span class="s1">&#39;num_eps&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_eps</span><span class="p">,</span>
+      <span class="s1">&#39;num_training_steps&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_training_steps</span><span class="p">,</span>
+      <span class="s1">&#39;training_eps_rewards&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">training_eps_rewards</span><span class="p">,</span>
+      <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="p">,</span>
+      <span class="s1">&#39;num_eval_intervals&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_eval_intervals</span><span class="p">,</span>
+      <span class="s1">&#39;eval_eps_rewards&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_eps_rewards</span><span class="p">,</span>
+      <span class="s1">&#39;eval_eps_dis_rewards&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_eps_dis_rewards</span><span class="p">,</span>
+      <span class="s1">&#39;eval_mean_values&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_mean_values</span><span class="p">,</span>
+      <span class="s1">&#39;eval_eps_lens&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_eps_lens</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">state</span>
+
+<div class="viewcode-block" id="Logger.exportData"><a class="viewcode-back" href="../../../api/bulletarm_baselines.html#bulletarm_baselines.logger.logger.Logger.exportData">[docs]</a>  <span class="k">def</span> <span class="nf">exportData</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Export log data as a pickle</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      filepath (str): The filepath to save the exported data to</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">getSaveState</span><span class="p">(),</span>
+      <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results_path</span><span class="p">,</span> <span class="s1">&#39;log_data.pkl&#39;</span><span class="p">),</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span>
+    <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Logger.getScalars"><a class="viewcode-back" href="../../../api/bulletarm_baselines.html#bulletarm_baselines.logger.logger.Logger.getScalars">[docs]</a>  <span class="k">def</span> <span class="nf">getScalars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get data from the scalar log dict.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      keys (str | list[str]): Key or list of keys to get from the scalar log dict</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      Object | Dict: Single object when single key is passed or dict containing objects from</span>
+<span class="sd">        all keys</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+      <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scalar_logs</span><span class="p">[</span><span class="n">keys</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+      <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">scalar_logs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">raise</span> <span class="ne">TypeError</span></div>
+
+<div class="viewcode-block" id="Logger.updateScalars"><a class="viewcode-back" href="../../../api/bulletarm_baselines.html#bulletarm_baselines.logger.logger.Logger.updateScalars">[docs]</a>  <span class="k">def</span> <span class="nf">updateScalars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Update the scalar log dict with new values.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      key (str | dict): Either key to update to the given value or a collection of key-value</span>
+<span class="sd">        pairs to update</span>
+<span class="sd">      value (Object): Value to update the key to in the log dir. Defaults to None</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">scalar_logs</span><span class="p">[</span><span class="n">keys</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">scalar_logs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">raise</span> <span class="ne">TypeError</span></div>
+
+<div class="viewcode-block" id="Logger.getAvg"><a class="viewcode-back" href="../../../api/bulletarm_baselines.html#bulletarm_baselines.logger.logger.Logger.getAvg">[docs]</a>  <span class="k">def</span> <span class="nf">getAvg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Numpy mean wrapper to handle empty lists.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      l (list[float]): The list</span>
+<span class="sd">      n (int): Number of trail elements to average over. Defaults to entire list.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      float: List average</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">avg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="o">-</span><span class="n">n</span><span class="p">:])</span> <span class="k">if</span> <span class="n">l</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">avg</span></div>
+
+<div class="viewcode-block" id="Logger.saveParameters"><a class="viewcode-back" href="../../../api/bulletarm_baselines.html#bulletarm_baselines.logger.logger.Logger.saveParameters">[docs]</a>  <span class="k">def</span> <span class="nf">saveParameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Save the parameters as a json file</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      parameters: parameter dict to save</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">class</span> <span class="nc">NumpyEncoder</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="p">):</span>
+      <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+          <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results_path</span><span class="p">,</span> <span class="s2">&quot;parameters.json&quot;</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+      <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">NumpyEncoder</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Logger.saveCheckPoint"><a class="viewcode-back" href="../../../api/bulletarm_baselines.html#bulletarm_baselines.logger.logger.Logger.saveCheckPoint">[docs]</a>  <span class="k">def</span> <span class="nf">saveCheckPoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent_save_state</span><span class="p">,</span> <span class="n">buffer_save_state</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Save the checkpoint</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      agent_save_state (dict): the agent&#39;s save state for checkpointing</span>
+<span class="sd">      buffer_save_state (dict): the buffer&#39;s save state for checkpointing</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">checkpoint</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="s1">&#39;agent&#39;</span><span class="p">:</span> <span class="n">agent_save_state</span><span class="p">,</span>
+      <span class="s1">&#39;buffer_state&#39;</span><span class="p">:</span> <span class="n">buffer_save_state</span><span class="p">,</span>
+      <span class="s1">&#39;logger&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSaveState</span><span class="p">(),</span>
+      <span class="s1">&#39;torch_rng_state&#39;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">get_rng_state</span><span class="p">(),</span>
+      <span class="s1">&#39;torch_cuda_rng_state&#39;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_rng_state</span><span class="p">(),</span>
+      <span class="s1">&#39;np_rng_state&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">checkpoint_dir</span><span class="p">,</span> <span class="s1">&#39;checkpoint.pt&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Logger.loadCheckPoint"><a class="viewcode-back" href="../../../api/bulletarm_baselines.html#bulletarm_baselines.logger.logger.Logger.loadCheckPoint">[docs]</a>  <span class="k">def</span> <span class="nf">loadCheckPoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checkpoint_dir</span><span class="p">,</span> <span class="n">agent_load_func</span><span class="p">,</span> <span class="n">buffer_load_func</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Load the checkpoint</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      checkpoint_dir: the directory of the checkpoint to load</span>
+<span class="sd">      agent_load_func (func): the agent&#39;s loading checkpoint function. agent_load_func must take a dict as input to</span>
+<span class="sd">        load the agent&#39;s checkpoint</span>
+<span class="sd">      buffer_load_func (func): the buffer&#39;s loading checkpoint function. buffer_load_func must take a dict as input to</span>
+<span class="sd">        load the buffer&#39;s checkpoint</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;loading checkpoint&#39;</span><span class="p">)</span>
+
+    <span class="n">checkpoint</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">checkpoint_dir</span><span class="p">,</span> <span class="s1">&#39;checkpoint.pt&#39;</span><span class="p">))</span>
+
+    <span class="n">agent_load_func</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;agent&#39;</span><span class="p">])</span>
+    <span class="n">buffer_load_func</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;buffer_state&#39;</span><span class="p">])</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span> <span class="o">=</span> <span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;logger&#39;</span><span class="p">][</span><span class="s1">&#39;num_steps&#39;</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">num_eps</span> <span class="o">=</span> <span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;logger&#39;</span><span class="p">][</span><span class="s1">&#39;num_eps&#39;</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">num_training_steps</span> <span class="o">=</span> <span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;logger&#39;</span><span class="p">][</span><span class="s1">&#39;num_training_steps&#39;</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">training_eps_rewards</span> <span class="o">=</span> <span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;logger&#39;</span><span class="p">][</span><span class="s1">&#39;training_eps_rewards&#39;</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">loss</span> <span class="o">=</span> <span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;logger&#39;</span><span class="p">][</span><span class="s1">&#39;loss&#39;</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">num_eval_intervals</span> <span class="o">=</span> <span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;logger&#39;</span><span class="p">][</span><span class="s1">&#39;num_eval_intervals&#39;</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">eval_eps_rewards</span> <span class="o">=</span> <span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;logger&#39;</span><span class="p">][</span><span class="s1">&#39;eval_eps_rewards&#39;</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">eval_eps_dis_rewards</span> <span class="o">=</span> <span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;logger&#39;</span><span class="p">][</span><span class="s1">&#39;eval_eps_dis_rewards&#39;</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">eval_mean_values</span> <span class="o">=</span> <span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;logger&#39;</span><span class="p">][</span><span class="s1">&#39;eval_mean_values&#39;</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">eval_eps_lens</span> <span class="o">=</span> <span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;logger&#39;</span><span class="p">][</span><span class="s1">&#39;eval_eps_lens&#39;</span><span class="p">]</span>
+
+    <span class="n">torch</span><span class="o">.</span><span class="n">set_rng_state</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;torch_rng_state&#39;</span><span class="p">])</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_rng_state</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;torch_cuda_rng_state&#39;</span><span class="p">])</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;np_rng_state&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Logger.getCurrentLoss"><a class="viewcode-back" href="../../../api/bulletarm_baselines.html#bulletarm_baselines.logger.logger.Logger.getCurrentLoss">[docs]</a>  <span class="k">def</span> <span class="nf">getCurrentLoss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculate the average loss of previous n steps</span>
+<span class="sd">    Args:</span>
+<span class="sd">      n: the number of previous training steps to calculate the average loss</span>
+<span class="sd">    Returns:</span>
+<span class="sd">      the average loss value</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">avg_losses</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+      <span class="n">avg_losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getAvg</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">avg_losses</span><span class="p">)</span></div></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Colin Kohler, Dian Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

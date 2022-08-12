@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BulletArm Baselines &mdash; BulletArm 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Benchmark Tasks" href="tasks.html" />
+    <link rel="prev" title="BulletArm Simulator" href="bulletarm.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> BulletArm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Package Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">BulletArm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#block-stacking-demo">Block Stacking Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#tutorials">Tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bulletarm.html">BulletArm Simulator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm.html#tasks">Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm.html#envfactory-envrunner">EnvFactory &amp; EnvRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm.html#configuration-parameters">Configuration Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm.html#robots">Robots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm.html#objects">Objects</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">BulletArm Baselines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#open-loop-benchmarks">Open-Loop Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#close-loop-benchmarks">Close-Loop Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#logging-plotting-utilities">Logging &amp; Plotting Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tasks.html">Benchmark Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-reaching">Block Reaching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-pushing">Block Pushing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-pulling">Block Pulling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-picking">Block Picking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-stacking">Block Stacking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-in-bowl">Block In Bowl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#house-building-1">House Building 1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#house-building-2">House Building 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#house-building-3">House Building 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#house-building-4">House Building 4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#improvise-house-building-2">Improvise House Building 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#improvise-house-building-3">Improvise House Building 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#bin-packing">Bin Packing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#bottle-arrangement">Bottle Arrangement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#box-palletizing">Box Palletizing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#covid-test">Covid Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#corner-picking">Corner Picking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#drawer-opening">Drawer Opening</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#object-grasping">Object Grasping</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributions.html">Contributions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">BulletArm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>BulletArm Baselines</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/bulletarm_baselines.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="module-bulletarm_baselines"></span><section id="bulletarm-baselines">
+<h1>BulletArm Baselines<a class="headerlink" href="#bulletarm-baselines" title="Permalink to this heading"></a></h1>
+<p>This subpackage implements a collection of state-of-the-art baseline algorithms to benchmark new methods against.
+The algorithms provided cover a wide range of state and action spaces for either open-loop control or close-loop
+control. Additionally, we provide a number of logging and plotting utilities for ease of use.</p>
+<hr class="docutils" />
+<section id="open-loop-benchmarks">
+<h2>Open-Loop Benchmarks<a class="headerlink" href="#open-loop-benchmarks" title="Permalink to this heading"></a></h2>
+<section id="prerequisite">
+<h3>Prerequisite<a class="headerlink" href="#prerequisite" title="Permalink to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Install <a class="reference external" href="https://pytorch.org/">PyTorch</a> (Recommended: pytorch==1.7.0, torchvision==0.8.1)</p></li>
+<li><p>(Optional, required for 6D benchmark) Install <a class="reference external" href="https://github.com/cupy/cupy">CuPy</a></p></li>
+<li><p>Install other required packages</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -r baseline_requirements.txt
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>Goto the baseline directory</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> helping_hands_rl_envs/helping_hands_rl_baselines/fc_dqn/scripts
+</pre></div>
+</div>
+</section>
+<section id="open-loop-2d-benchmarks">
+<h3>Open-Loop 2D Benchmarks<a class="headerlink" href="#open-loop-2d-benchmarks" title="Permalink to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python main.py  --algorithm<span class="o">=[</span>algorithm<span class="o">]</span> --architecture<span class="o">=[</span>architecture<span class="o">]</span> --action_sequence<span class="o">=</span>xyp --random_orientation<span class="o">=</span>f --env<span class="o">=[</span>env<span class="o">]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Select <code class="code docutils literal notranslate"><span class="pre">[algorithm]</span></code> from: <code class="code docutils literal notranslate"><span class="pre">sdqfd</span></code> (recommended), <code class="code docutils literal notranslate"><span class="pre">dqfd</span></code>, <code class="code docutils literal notranslate"><span class="pre">adet</span></code>, <code class="code docutils literal notranslate"><span class="pre">dqn</span></code></p></li>
+<li><p>Select <code class="code docutils literal notranslate"><span class="pre">[architecture]</span></code> from: <code class="code docutils literal notranslate"><span class="pre">equi_fcn</span></code> (recommended), <code class="code docutils literal notranslate"><span class="pre">cnn_fcn</span></code></p></li>
+<li><p>Add <code class="code docutils literal notranslate"><span class="pre">--fill_buffer_deconstruct</span></code> to use deconstruction planner for gathering expert data.</p></li>
+</ul>
+</section>
+<section id="open-loop-3d-benchmarks">
+<h3>Open-Loop 3D Benchmarks<a class="headerlink" href="#open-loop-3d-benchmarks" title="Permalink to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python main.py --algorithm<span class="o">=[</span>algorithm<span class="o">]</span> --architecture<span class="o">=[</span>architecture<span class="o">]</span> --env<span class="o">=[</span>env<span class="o">]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Select <code class="code docutils literal notranslate"><span class="pre">[algorithm]</span></code> from: <code class="code docutils literal notranslate"><span class="pre">sdqfd</span></code> (recommended), <code class="code docutils literal notranslate"><span class="pre">dqfd</span></code>, <code class="code docutils literal notranslate"><span class="pre">adet</span></code>, <code class="code docutils literal notranslate"><span class="pre">dqn</span></code></p></li>
+<li><p>Select <code class="code docutils literal notranslate"><span class="pre">[architecture]</span></code> from: <code class="code docutils literal notranslate"><span class="pre">equi_asr</span></code> (recommended), <code class="code docutils literal notranslate"><span class="pre">cnn_asr</span></code>, <code class="code docutils literal notranslate"><span class="pre">equi_fcn</span></code>, <code class="code docutils literal notranslate"><span class="pre">cnn_fcn</span></code>, <code class="code docutils literal notranslate"><span class="pre">rot_fcn</span></code></p></li>
+<li><p>Add <code class="code docutils literal notranslate"><span class="pre">--fill_buffer_deconstruct</span></code> to use deconstruction planner for gathering expert data.</p></li>
+</ul>
+</section>
+<section id="open-loop-6d-benchmarks">
+<h3>Open-Loop 6D Benchmarks<a class="headerlink" href="#open-loop-6d-benchmarks" title="Permalink to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python main.py  --algorithm<span class="o">=[</span>algorithm<span class="o">]</span> --architecture<span class="o">=[</span>architecture<span class="o">]</span> --action_sequence<span class="o">=</span>xyzrrrp --patch_size<span class="o">=[</span>patch_size<span class="o">]</span> --env<span class="o">=[</span>env<span class="o">]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Select <code class="code docutils literal notranslate"><span class="pre">[algorithm]</span></code> from: <code class="code docutils literal notranslate"><span class="pre">sdqfd</span></code> (recommended), <code class="code docutils literal notranslate"><span class="pre">dqfd</span></code>, <code class="code docutils literal notranslate"><span class="pre">adet</span></code>, <code class="code docutils literal notranslate"><span class="pre">dqn</span></code></p></li>
+<li><p>Select <code class="code docutils literal notranslate"><span class="pre">[architecture]</span></code> from: <code class="code docutils literal notranslate"><span class="pre">equi_deictic_asr</span></code> (recommended), <code class="code docutils literal notranslate"><span class="pre">cnn_asr</span></code></p></li>
+<li><p>Set <code class="code docutils literal notranslate"><span class="pre">[patch_size]</span></code> to be <code class="code docutils literal notranslate"><span class="pre">40</span></code> (recommended, required for <cite>bumpy_box_palletizing</cite> environment) or <code class="code docutils literal notranslate"><span class="pre">24</span></code></p></li>
+<li><p>Add <code class="code docutils literal notranslate"><span class="pre">--fill_buffer_deconstruct</span></code> to use deconstruction planner for gathering expert data.</p></li>
+</ul>
+</section>
+<section id="additional-training-arguments">
+<h3>Additional Training Arguments<a class="headerlink" href="#additional-training-arguments" title="Permalink to this heading"></a></h3>
+<p>See <a class="reference external" href="https://github.com/ColinKohler/BulletArm/blob/main/bulletarm_baselines/fc_dqn/utils/parameters.py">bulletarm_baselines/fc_dqn/utils/parameters.py</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="close-loop-benchmarks">
+<h2>Close-Loop Benchmarks<a class="headerlink" href="#close-loop-benchmarks" title="Permalink to this heading"></a></h2>
+<section id="id1">
+<h3>Prerequisite<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Install <a class="reference external" href="https://pytorch.org/">PyTorch</a> (Recommended: pytorch==1.7.0, torchvision==0.8.1)</p></li>
+<li><p>Install other required packages</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -r baseline_requirements.txt
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Goto the baseline directory</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> helping_hands_rl_envs/helping_hands_rl_baselines/equi_rl/scripts
+</pre></div>
+</div>
+</section>
+<section id="close-loop-3d-benchmarks">
+<h3>Close-Loop 3D Benchmarks<a class="headerlink" href="#close-loop-3d-benchmarks" title="Permalink to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python main.py --algorithm<span class="o">=[</span>algorithm<span class="o">]</span> --action_sequence<span class="o">=</span>pxyz --random_orientation<span class="o">=</span>f --env<span class="o">=[</span>env<span class="o">]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Select <code class="code docutils literal notranslate"><span class="pre">[algorithm]</span></code> from: <code class="code docutils literal notranslate"><span class="pre">sac</span></code>, <code class="code docutils literal notranslate"><span class="pre">sacfd</span></code>, <code class="code docutils literal notranslate"><span class="pre">equi_sac</span></code>, <code class="code docutils literal notranslate"><span class="pre">equi_sacfd</span></code>, <code class="code docutils literal notranslate"><span class="pre">ferm_sac</span></code>, <code class="code docutils literal notranslate"><span class="pre">ferm_sacfd</span></code>, <code class="code docutils literal notranslate"><span class="pre">rad_sac</span></code>, <code class="code docutils literal notranslate"><span class="pre">rad_sacfd</span></code>, <code class="code docutils literal notranslate"><span class="pre">drq_sac</span></code>, <code class="code docutils literal notranslate"><span class="pre">drq_sacfd</span></code></p></li>
+</ul>
+</section>
+<section id="close-loop-4d-benchmarks">
+<h3>Close-Loop 4D Benchmarks<a class="headerlink" href="#close-loop-4d-benchmarks" title="Permalink to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python main.py --algorithm<span class="o">=[</span>algorithm<span class="o">]</span> --env<span class="o">=[</span>env<span class="o">]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Select <cite>[algorithm]</cite> from: <code class="code docutils literal notranslate"><span class="pre">sac</span></code>, <code class="code docutils literal notranslate"><span class="pre">sacfd</span></code>, <code class="code docutils literal notranslate"><span class="pre">equi_sac</span></code>, <code class="code docutils literal notranslate"><span class="pre">equi_sacfd</span></code>, <code class="code docutils literal notranslate"><span class="pre">ferm_sac</span></code>, <code class="code docutils literal notranslate"><span class="pre">ferm_sacfd</span></code>, <code class="code docutils literal notranslate"><span class="pre">rad_sac</span></code>, <code class="code docutils literal notranslate"><span class="pre">rad_sacfd</span></code>, <code class="code docutils literal notranslate"><span class="pre">drq_sac</span></code>, <code class="code docutils literal notranslate"><span class="pre">drq_sacfd</span></code></p></li>
+<li><p>To use PER and data augmentation buffer, add <code class="code docutils literal notranslate"><span class="pre">--buffer=per_expert_aug</span></code></p></li>
+</ul>
+</section>
+<section id="id3">
+<h3>Additional Training Arguments<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<p>See <a class="reference external" href="https://github.com/ColinKohler/BulletArm/blob/main/bulletarm_baselines/equi_rl/utils/parameters.py">bulletarm_baselines/equi_rl/utils/parameters.py</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="logging-plotting-utilities">
+<h2>Logging &amp; Plotting Utilities<a class="headerlink" href="#logging-plotting-utilities" title="Permalink to this heading"></a></h2>
+<p>To assist with debugging new algorithms, we include the logging and plotting tools which we use for the baselines. The logger wraps Tensorboard
+and provides numerous functions to log various details of the training process. An example of the information the logger displays can be seen below.
+In addition to the default data, any additional data can be added as desired using the <code class="code docutils literal notranslate"><span class="pre">updateScalars()</span></code> function. The plotter is currently in
+its infancy but provides a easy way to plot and compare different algorithms when using the provided logger.</p>
+<figure class="align-center" id="id4" style="width: 600px">
+<img alt="../_images/logger_ex.png" src="../_images/logger_ex.png" />
+<figcaption>
+<p><span class="caption-text">An example run showing the default information captured by the logger.</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<section id="module-bulletarm_baselines.logger.logger">
+<span id="logger"></span><h3>Logger<a class="headerlink" href="#module-bulletarm_baselines.logger.logger" title="Permalink to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm_baselines.logger.logger.Logger">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkpoint_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_eval_eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hyperparameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm_baselines/logger/logger.html#Logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm_baselines.logger.logger.Logger" title="Permalink to this definition"></a></dt>
+<dd><p>Logger class. Writes log data to tensorboard.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>results_path</strong> (<em>str</em>) – Path to save log files to</p></li>
+<li><p><strong>num_eval_eps</strong> (<em>int</em>) – Number of episodes in a evaluation iteration</p></li>
+<li><p><strong>hyperparameters</strong> (<em>dict</em>) – Hyperparameters to log. Defaults to None</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm_baselines.logger.logger.Logger.exportData">
+<span class="sig-name descname"><span class="pre">exportData</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm_baselines/logger/logger.html#Logger.exportData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm_baselines.logger.logger.Logger.exportData" title="Permalink to this definition"></a></dt>
+<dd><p>Export log data as a pickle</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – The filepath to save the exported data to</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm_baselines.logger.logger.Logger.getAvg">
+<span class="sig-name descname"><span class="pre">getAvg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm_baselines/logger/logger.html#Logger.getAvg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm_baselines.logger.logger.Logger.getAvg" title="Permalink to this definition"></a></dt>
+<dd><p>Numpy mean wrapper to handle empty lists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>l</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – The list</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – Number of trail elements to average over. Defaults to entire list.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List average</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm_baselines.logger.logger.Logger.getCurrentLoss">
+<span class="sig-name descname"><span class="pre">getCurrentLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm_baselines/logger/logger.html#Logger.getCurrentLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm_baselines.logger.logger.Logger.getCurrentLoss" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the average loss of previous n steps
+:param n: the number of previous training steps to calculate the average loss</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the average loss value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm_baselines.logger.logger.Logger.getScalars">
+<span class="sig-name descname"><span class="pre">getScalars</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm_baselines/logger/logger.html#Logger.getScalars"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm_baselines.logger.logger.Logger.getScalars" title="Permalink to this definition"></a></dt>
+<dd><p>Get data from the scalar log dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>keys</strong> (<em>str</em><em> | </em><em>list</em><em>[</em><em>str</em><em>]</em>) – Key or list of keys to get from the scalar log dict</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Single object when single key is passed or dict containing objects from</dt><dd><p>all keys</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Object | Dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm_baselines.logger.logger.Logger.loadCheckPoint">
+<span class="sig-name descname"><span class="pre">loadCheckPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">checkpoint_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_load_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_load_func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm_baselines/logger/logger.html#Logger.loadCheckPoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm_baselines.logger.logger.Logger.loadCheckPoint" title="Permalink to this definition"></a></dt>
+<dd><p>Load the checkpoint</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>checkpoint_dir</strong> – the directory of the checkpoint to load</p></li>
+<li><p><strong>agent_load_func</strong> (<em>func</em>) – the agent’s loading checkpoint function. agent_load_func must take a dict as input to
+load the agent’s checkpoint</p></li>
+<li><p><strong>buffer_load_func</strong> (<em>func</em>) – the buffer’s loading checkpoint function. buffer_load_func must take a dict as input to
+load the buffer’s checkpoint</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm_baselines.logger.logger.Logger.logEvalEpisode">
+<span class="sig-name descname"><span class="pre">logEvalEpisode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rewards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discounted_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm_baselines/logger/logger.html#Logger.logEvalEpisode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm_baselines.logger.logger.Logger.logEvalEpisode" title="Permalink to this definition"></a></dt>
+<dd><p>Log a evaluation episode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>list</strong><strong>[</strong><strong>float</strong><strong>]</strong> (<em>rewards</em>) – Rewards for the episode</p></li>
+<li><p><strong>values</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – Values for the episode</p></li>
+<li><p><strong>discounted_return</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – Discounted return of the episode</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm_baselines.logger.logger.Logger.logStep">
+<span class="sig-name descname"><span class="pre">logStep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rewards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">done_masks</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm_baselines/logger/logger.html#Logger.logStep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm_baselines.logger.logger.Logger.logStep" title="Permalink to this definition"></a></dt>
+<dd><p>Log episode step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rewards</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – List of rewards</p></li>
+<li><p><strong>done_masks</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm_baselines.logger.logger.Logger.logTrainingEpisode">
+<span class="sig-name descname"><span class="pre">logTrainingEpisode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rewards</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm_baselines/logger/logger.html#Logger.logTrainingEpisode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm_baselines.logger.logger.Logger.logTrainingEpisode" title="Permalink to this definition"></a></dt>
+<dd><p>Log a episode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>list</strong><strong>[</strong><strong>float</strong><strong>]</strong> (<em>rewards</em>) – Rewards for the entire episode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm_baselines.logger.logger.Logger.saveCheckPoint">
+<span class="sig-name descname"><span class="pre">saveCheckPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent_save_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_save_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm_baselines/logger/logger.html#Logger.saveCheckPoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm_baselines.logger.logger.Logger.saveCheckPoint" title="Permalink to this definition"></a></dt>
+<dd><p>Save the checkpoint</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>agent_save_state</strong> (<em>dict</em>) – the agent’s save state for checkpointing</p></li>
+<li><p><strong>buffer_save_state</strong> (<em>dict</em>) – the buffer’s save state for checkpointing</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm_baselines.logger.logger.Logger.saveParameters">
+<span class="sig-name descname"><span class="pre">saveParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm_baselines/logger/logger.html#Logger.saveParameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm_baselines.logger.logger.Logger.saveParameters" title="Permalink to this definition"></a></dt>
+<dd><p>Save the parameters as a json file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>parameters</strong> – parameter dict to save</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm_baselines.logger.logger.Logger.updateScalars">
+<span class="sig-name descname"><span class="pre">updateScalars</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm_baselines/logger/logger.html#Logger.updateScalars"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm_baselines.logger.logger.Logger.updateScalars" title="Permalink to this definition"></a></dt>
+<dd><p>Update the scalar log dict with new values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em><em> | </em><em>dict</em>) – Either key to update to the given value or a collection of key-value
+pairs to update</p></li>
+<li><p><strong>value</strong> (<em>Object</em>) – Value to update the key to in the log dir. Defaults to None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm_baselines.logger.logger.Logger.writeLog">
+<span class="sig-name descname"><span class="pre">writeLog</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm_baselines/logger/logger.html#Logger.writeLog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm_baselines.logger.logger.Logger.writeLog" title="Permalink to this definition"></a></dt>
+<dd><p>Write the logdir to the tensorboard summary writer. Calling this too often can
+slow down training.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bulletarm_baselines.logger.plotter">
+<span id="plotter"></span><h3>Plotter<a class="headerlink" href="#module-bulletarm_baselines.logger.plotter" title="Permalink to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm_baselines.logger.plotter.Plotter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Plotter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_filepaths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_names</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm_baselines/logger/plotter.html#Plotter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm_baselines.logger.plotter.Plotter" title="Permalink to this definition"></a></dt>
+<dd><p>Plotting utility.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm_baselines.logger.plotter.Plotter.loadLogs">
+<span class="sig-name descname"><span class="pre">loadLogs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepaths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm_baselines/logger/plotter.html#Plotter.loadLogs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm_baselines.logger.plotter.Plotter.loadLogs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm_baselines.logger.plotter.Plotter.plotLearningCurve">
+<span class="sig-name descname"><span class="pre">plotLearningCurve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm_baselines/logger/plotter.html#Plotter.plotLearningCurve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm_baselines.logger.plotter.Plotter.plotLearningCurve" title="Permalink to this definition"></a></dt>
+<dd><p>Plot the learning curve for the given episode rewards.</p>
+<p>Args:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm_baselines.logger.plotter.Plotter.plotLearningCurves">
+<span class="sig-name descname"><span class="pre">plotLearningCurves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm_baselines/logger/plotter.html#Plotter.plotLearningCurves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm_baselines.logger.plotter.Plotter.plotLearningCurves" title="Permalink to this definition"></a></dt>
+<dd><p>Plot mulitple learning curves on a single plot.</p>
+<p>Args:</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="bulletarm.html" class="btn btn-neutral float-left" title="BulletArm Simulator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tasks.html" class="btn btn-neutral float-right" title="Benchmark Tasks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Colin Kohler, Dian Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

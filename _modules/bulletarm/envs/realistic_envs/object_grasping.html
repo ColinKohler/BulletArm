@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bulletarm.envs.realistic_envs.object_grasping &mdash; BulletArm 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> BulletArm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">BulletArm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/getting_started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/getting_started.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/getting_started.html#block-stacking-demo">Block Stacking Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/getting_started.html#tutorials">Tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/bulletarm.html">BulletArm Simulator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/bulletarm.html#tasks">Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/bulletarm.html#envfactory-envrunner">EnvFactory &amp; EnvRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/bulletarm.html#configuration-parameters">Configuration Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/bulletarm.html#robots">Robots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/bulletarm.html#objects">Objects</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/bulletarm_baselines.html">BulletArm Baselines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/bulletarm_baselines.html#open-loop-benchmarks">Open-Loop Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/bulletarm_baselines.html#close-loop-benchmarks">Close-Loop Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/bulletarm_baselines.html#logging-plotting-utilities">Logging &amp; Plotting Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/tasks.html">Benchmark Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tasks.html#block-reaching">Block Reaching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tasks.html#block-pushing">Block Pushing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tasks.html#block-pulling">Block Pulling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tasks.html#block-picking">Block Picking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tasks.html#block-stacking">Block Stacking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tasks.html#block-in-bowl">Block In Bowl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tasks.html#house-building-1">House Building 1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tasks.html#house-building-2">House Building 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tasks.html#house-building-3">House Building 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tasks.html#house-building-4">House Building 4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tasks.html#improvise-house-building-2">Improvise House Building 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tasks.html#improvise-house-building-3">Improvise House Building 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tasks.html#bin-packing">Bin Packing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tasks.html#bottle-arrangement">Bottle Arrangement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tasks.html#box-palletizing">Box Palletizing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tasks.html#covid-test">Covid Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tasks.html#corner-picking">Corner Picking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tasks.html#drawer-opening">Drawer Opening</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/tasks.html#object-grasping">Object Grasping</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/contributions.html">Contributions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">BulletArm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>bulletarm.envs.realistic_envs.object_grasping</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for bulletarm.envs.realistic_envs.object_grasping</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">bulletarm</span>
+<span class="kn">from</span> <span class="nn">bulletarm.envs.base_env</span> <span class="kn">import</span> <span class="n">BaseEnv</span>
+<span class="kn">from</span> <span class="nn">bulletarm.pybullet.utils</span> <span class="kn">import</span> <span class="n">constants</span>
+<span class="kn">from</span> <span class="nn">bulletarm.pybullet.utils.constants</span> <span class="kn">import</span> <span class="n">NoValidPositionException</span>
+<span class="kn">from</span> <span class="nn">bulletarm.pybullet.equipments.tray</span> <span class="kn">import</span> <span class="n">Tray</span>
+<span class="kn">from</span> <span class="nn">scipy.ndimage.interpolation</span> <span class="kn">import</span> <span class="n">rotate</span>
+<span class="kn">import</span> <span class="nn">pybullet</span> <span class="k">as</span> <span class="nn">pb</span>
+
+<div class="viewcode-block" id="ObjectGrasping"><a class="viewcode-back" href="../../../../api/tasks.html#bulletarm.envs.realistic_envs.object_grasping.ObjectGrasping">[docs]</a><span class="k">class</span> <span class="nc">ObjectGrasping</span><span class="p">(</span><span class="n">BaseEnv</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Open loop object grasping task.</span>
+
+<span class="sd">    The robot needs to pick up and object in a cluttered scene containing N random objects.</span>
+<span class="sd">    The number of blocks N is set by the config.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (dict): Intialization arguments for the env</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="c1"># env specific parameters</span>
+        <span class="k">if</span> <span class="s1">&#39;object_scale_range&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+            <span class="n">config</span><span class="p">[</span><span class="s1">&#39;object_scale_range&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;num_objects&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+            <span class="n">config</span><span class="p">[</span><span class="s1">&#39;num_objects&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">15</span>
+        <span class="k">if</span> <span class="s1">&#39;max_steps&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+            <span class="n">config</span><span class="p">[</span><span class="s1">&#39;max_steps&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">30</span>
+        <span class="n">config</span><span class="p">[</span><span class="s1">&#39;adjust_gripper_after_lift&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">config</span><span class="p">[</span><span class="s1">&#39;min_object_distance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="n">config</span><span class="p">[</span><span class="s1">&#39;min_boarder_padding&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.15</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ObjectGrasping</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object_init_z</span> <span class="o">=</span> <span class="mf">0.1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj_grasped</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tray</span> <span class="o">=</span> <span class="n">Tray</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exhibit_env_obj</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># self.exhibit_env_obj = True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bin_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workspace_size</span> <span class="o">-</span> <span class="mf">0.1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gripper_depth</span> <span class="o">=</span> <span class="mf">0.04</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gripper_clearance</span> <span class="o">=</span> <span class="mf">0.01</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tray</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">pos</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="mi">0</span><span class="p">],</span>
+                             <span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_size</span> <span class="o">+</span> <span class="mf">0.03</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_size</span> <span class="o">+</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_decodeAction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    decode input action base on self.action_sequence</span>
+<span class="sd">    Args:</span>
+<span class="sd">      action: action tensor</span>
+
+<span class="sd">    Returns: motion_primative, x, y, z, rot</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+        <span class="n">primative_idx</span><span class="p">,</span> <span class="n">x_idx</span><span class="p">,</span> <span class="n">y_idx</span><span class="p">,</span> <span class="n">z_idx</span><span class="p">,</span> <span class="n">rot_idx</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">action_sequence</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">a</span><span class="p">),</span>
+                                                          <span class="p">[</span><span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">])</span>
+        <span class="n">motion_primative</span> <span class="o">=</span> <span class="n">action</span><span class="p">[</span><span class="n">primative_idx</span><span class="p">]</span> <span class="k">if</span> <span class="n">primative_idx</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">action_sequence</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">rz</span> <span class="o">=</span> <span class="n">action</span><span class="p">[</span><span class="n">rot_idx</span><span class="p">]</span> <span class="k">if</span> <span class="n">rot_idx</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span>
+            <span class="n">ry</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">rx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">action</span><span class="p">[</span><span class="n">x_idx</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">action</span><span class="p">[</span><span class="n">y_idx</span><span class="p">]</span>
+        <span class="c1"># x += (self.workspace[0, 0] + self.workspace[0, 1]) / 2</span>
+        <span class="c1"># y += (self.workspace[1, 0] + self.workspace[1, 1]) / 2</span>
+        <span class="k">if</span> <span class="n">z_idx</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">action</span><span class="p">[</span><span class="n">z_idx</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPatch_z</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">rz</span><span class="p">)</span>
+
+        <span class="n">rot</span> <span class="o">=</span> <span class="p">(</span><span class="n">rx</span><span class="p">,</span> <span class="n">ry</span><span class="p">,</span> <span class="n">rz</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">motion_primative</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">rot</span>
+
+    <span class="k">def</span> <span class="nf">_getPixelsFromPos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="n">row_pixel</span><span class="p">,</span> <span class="n">col_pixel</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_getPixelsFromPos</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">row_pixel</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">row_pixel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">heightmap_size</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_hand_size</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">row_pixel</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">row_pixel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_hand_size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">col_pixel</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">col_pixel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">heightmap_size</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_hand_size</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">col_pixel</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">col_pixel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_hand_size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">row_pixel</span><span class="p">,</span> <span class="n">col_pixel</span>
+
+    <span class="k">def</span> <span class="nf">getPatch_z</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">rz</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get the image patch in heightmap, centered at center_pixel, rotated by rz</span>
+<span class="sd">        :param obs:</span>
+<span class="sd">        :param center_pixel</span>
+<span class="sd">        :param rz:</span>
+<span class="sd">        :return: safe z</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">row_pixel</span><span class="p">,</span> <span class="n">col_pixel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getPixelsFromPos</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="c1"># local_region is as large as ih_img</span>
+        <span class="n">local_region</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">heightmap</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">row_pixel</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_hand_size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">):</span> <span class="nb">int</span><span class="p">(</span><span class="n">row_pixel</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_hand_size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
+                       <span class="nb">int</span><span class="p">(</span><span class="n">col_pixel</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_hand_size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">):</span> <span class="nb">int</span><span class="p">(</span><span class="n">col_pixel</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_hand_size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)]</span>
+        <span class="n">local_region</span> <span class="o">=</span> <span class="n">rotate</span><span class="p">(</span><span class="n">local_region</span><span class="p">,</span> <span class="n">angle</span><span class="o">=-</span><span class="n">rz</span> <span class="o">*</span> <span class="mi">180</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">reshape</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">patch</span> <span class="o">=</span> <span class="n">local_region</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_hand_size</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">16</span><span class="p">):</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_hand_size</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">16</span><span class="p">),</span>
+                <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_hand_size</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">4</span><span class="p">):</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_hand_size</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">z</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">edge</span> <span class="o">=</span> <span class="n">patch</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">edge</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="c1"># safe_z_pos = max(np.mean(patch.flatten()[(-patch).flatten().argsort()[2:12]]) - self.gripper_depth,</span>
+            <span class="c1">#                  np.mean(edge.flatten()[(-edge).flatten().argsort()[:6]]) - 0.005)</span>
+            <span class="n">safe_z_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">patch</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[(</span><span class="o">-</span><span class="n">patch</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">argsort</span><span class="p">()[</span><span class="mi">2</span><span class="p">:</span><span class="mi">12</span><span class="p">]])</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">gripper_depth</span>
+            <span class="n">safe_z_pos</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">safe_z_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">patch</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[(</span><span class="o">-</span><span class="n">patch</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">argsort</span><span class="p">()[</span><span class="mi">2</span><span class="p">:</span><span class="mi">12</span><span class="p">]])</span> <span class="o">+</span> <span class="n">z</span>
+
+        <span class="c1"># use clearance to prevent gripper colliding with ground</span>
+        <span class="n">safe_z_pos</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">safe_z_pos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">gripper_clearance</span><span class="p">)</span>
+        <span class="n">safe_z_pos</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">safe_z_pos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">safe_z_pos</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">safe_z_pos</span>
+
+    <span class="k">def</span> <span class="nf">_checkPerfectGrasp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="n">objects</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="n">pre_obj_grasped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj_grasped</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">takeAction</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+        <span class="c1"># remove obj that above a threshold hight</span>
+        <span class="c1"># for obj in self.objects:</span>
+        <span class="c1">#   if obj.getPosition()[2] &gt; self.pick_pre_offset:</span>
+        <span class="c1">#     # self.objects.remove(obj)</span>
+        <span class="c1">#     # pb.removeBody(obj.object_id)</span>
+        <span class="c1">#     self._removeObject(obj)</span>
+
+        <span class="c1"># for obj in self.objects:</span>
+        <span class="c1">#   if not self._isObjectWithinWorkspace(obj):</span>
+        <span class="c1">#     self._removeObject(obj)</span>
+
+        <span class="n">obs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getObservation</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+        <span class="n">done</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_checkTermination</span><span class="p">()</span>
+        <span class="n">reward</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj_grasped</span> <span class="o">&gt;</span> <span class="n">pre_obj_grasped</span> <span class="k">else</span> <span class="mf">0.0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_episode_steps</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">isSimValid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">getPosition</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_random_obj_valid</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_types</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span> <span class="o">==</span> <span class="n">constants</span><span class="o">.</span><span class="n">RANDOM</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">getPosition</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.35</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isObjectHeld</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">workspace_check</span> <span class="o">==</span> <span class="s1">&#39;point&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isPointInWorkspace</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isObjectWithinWorkspace</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos_candidate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pos_candidate</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.02</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pos_candidate</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.02</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj_grasped</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_obj</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_episode_steps</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isSimValid</span><span class="p">():</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">resetPybulletWorkspace</span><span class="p">()</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">exhibit_env_obj</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_obj</span><span class="p">):</span>
+                            <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.1</span>
+                            <span class="n">x</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+                            <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.1</span>
+                            <span class="n">y</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+                            <span class="n">randpos</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mf">0.40</span><span class="p">]</span>
+                            <span class="c1"># obj = self._generateShapes(constants.RANDOM_HOUSEHOLD, 1, random_orientation=self.random_orientation,</span>
+                            <span class="c1">#                            pos=[randpos], padding=self.min_boarder_padding,</span>
+                            <span class="c1">#                            min_distance=self.min_object_distance, model_id=-1)</span>
+                            <span class="c1"># obj = self._generateShapes(constants.RANDOM_HOUSEHOLD200, 1,</span>
+                            <span class="c1">#                            random_orientation=self.random_orientation,</span>
+                            <span class="c1">#                            pos=[randpos], padding=self.min_boarder_padding,</span>
+                            <span class="c1">#                            min_distance=self.min_object_distance, model_id=-1)</span>
+
+                            <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generateShapes</span><span class="p">(</span><span class="n">constants</span><span class="o">.</span><span class="n">GRASP_NET_OBJ</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>
+                                                       <span class="n">random_orientation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_orientation</span><span class="p">,</span>
+                                                       <span class="n">pos</span><span class="o">=</span><span class="p">[</span><span class="n">randpos</span><span class="p">],</span> <span class="n">padding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">min_boarder_padding</span><span class="p">,</span>
+                                                       <span class="n">min_distance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">min_object_distance</span><span class="p">,</span> <span class="n">model_id</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+                            <span class="n">pb</span><span class="o">.</span><span class="n">changeDynamics</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">object_id</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">lateralFriction</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+                    <span class="c1"># elif True:</span>
+                    <span class="c1"># #create ducks</span>
+                    <span class="c1">#     for i in range(15):</span>
+                    <span class="c1">#         x = (np.random.rand() - 0.5) * 0.1</span>
+                    <span class="c1">#         x += self.workspace[0].mean()</span>
+                    <span class="c1">#         y = (np.random.rand() - 0.5) * 0.1</span>
+                    <span class="c1">#         y += self.workspace[1].mean()</span>
+                    <span class="c1">#         randpos = [x, y, 0.20]</span>
+                    <span class="c1">#         creat_duck(randpos)</span>
+                    <span class="c1">#         self.wait(100)</span>
+                    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">exhibit_env_obj</span><span class="p">:</span>  <span class="c1"># exhibit all random objects in this environment</span>
+                        <span class="c1"># root_dir = os.path.dirname(bulletarm.__file__)</span>
+                        <span class="c1"># urdf_pattern = os.path.join(root_dir, constants.URDF_PATH, &#39;random_household_object_200/*/*/*.obj&#39;)</span>
+                        <span class="c1"># found_object_directories = glob.glob(urdf_pattern)</span>
+                        <span class="c1"># total_num_objects = len(found_object_directories)</span>
+                        <span class="n">root_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">bulletarm</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span>
+                        <span class="n">urdf_pattern</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">URDF_PATH</span><span class="p">,</span> <span class="s1">&#39;GraspNet1B_object/0*/&#39;</span><span class="p">)</span>
+                        <span class="n">found_object_directories</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">urdf_pattern</span><span class="p">)</span>
+                        <span class="n">total_num_objects</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">found_object_directories</span><span class="p">)</span>
+
+                        <span class="n">display_size</span> <span class="o">=</span> <span class="mf">1.5</span>
+                        <span class="n">columns</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">total_num_objects</span><span class="p">))</span>
+                        <span class="n">distance</span> <span class="o">=</span> <span class="n">display_size</span> <span class="o">/</span> <span class="p">(</span><span class="n">columns</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+                        <span class="n">obj_centers</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="n">obj_scales</span> <span class="o">=</span> <span class="p">[]</span>
+
+                        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">total_num_objects</span><span class="p">):</span>
+                            <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">//</span> <span class="n">columns</span><span class="p">)</span> <span class="o">*</span> <span class="n">distance</span>
+                            <span class="n">x</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">+</span> <span class="mf">0.6</span>
+                            <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">%</span> <span class="n">columns</span><span class="p">)</span> <span class="o">*</span> <span class="n">distance</span>
+                            <span class="n">y</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workspace</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">-</span> <span class="n">display_size</span> <span class="o">/</span> <span class="mi">2</span>
+                            <span class="n">display_pos</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mf">0.08</span><span class="p">]</span>
+                            <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generateShapes</span><span class="p">(</span><span class="n">constants</span><span class="o">.</span><span class="n">GRASP_NET_OBJ</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>
+                                                       <span class="n">rot</span><span class="o">=</span><span class="p">[</span><span class="n">pb</span><span class="o">.</span><span class="n">getQuaternionFromEuler</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">4</span><span class="p">])],</span>
+                                                       <span class="n">pos</span><span class="o">=</span><span class="p">[</span><span class="n">display_pos</span><span class="p">],</span> <span class="n">padding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">min_boarder_padding</span><span class="p">,</span>
+                                                       <span class="n">min_distance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">min_object_distance</span><span class="p">,</span> <span class="n">model_id</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+                            <span class="c1"># obj = self._generateShapes(constants.RANDOM_HOUSEHOLD200, 1,</span>
+                            <span class="c1">#                            rot=[pb.getQuaternionFromEuler([0., 0., -np.pi / 4])],</span>
+                            <span class="c1">#                            pos=[display_pos], padding=self.min_boarder_padding,</span>
+                            <span class="c1">#                            min_distance=self.min_object_distance, model_id=i)</span>
+                        <span class="c1">#     obj_centers.append(obj[0].center)</span>
+                        <span class="c1">#     obj_scales.append(obj[0].real_scale)</span>
+                        <span class="c1">#</span>
+                        <span class="c1"># obj_centers = np.array(obj_centers)</span>
+                        <span class="c1"># obj_scales = np.array(obj_scales)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Number of all objects: &#39;</span><span class="p">,</span> <span class="n">total_num_objects</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">NoValidPositionException</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obj_grasped</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="c1"># self.num_in_tray_obj = self.num_obj</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getObservation</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">isObjInBox</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_pos</span><span class="p">,</span> <span class="n">tray_pos</span><span class="p">,</span> <span class="n">tray_size</span><span class="p">):</span>
+        <span class="n">tray_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tray_range</span><span class="p">(</span><span class="n">tray_pos</span><span class="p">,</span> <span class="n">tray_size</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tray_range</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">obj_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">tray_range</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">tray_range</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">obj_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">tray_range</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">tray_range</span><span class="p">(</span><span class="n">tray_pos</span><span class="p">,</span> <span class="n">tray_size</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">tray_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">tray_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">tray_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">tray_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">],</span>
+                         <span class="p">[</span><span class="n">tray_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">tray_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">tray_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">tray_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">]])</span>
+
+    <span class="k">def</span> <span class="nf">InBoxObj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tray_pos</span><span class="p">,</span> <span class="n">tray_size</span><span class="p">):</span>
+        <span class="n">obj_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isObjInBox</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">getPosition</span><span class="p">(),</span> <span class="n">tray_pos</span><span class="p">,</span> <span class="n">tray_size</span><span class="p">):</span>
+                <span class="n">obj_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj_list</span>
+
+    <span class="k">def</span> <span class="nf">_checkTermination</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;&#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="p">:</span>
+            <span class="c1"># if self._isObjectHeld(obj):</span>
+            <span class="c1">#   self.obj_grasped += 1</span>
+            <span class="c1">#   self._removeObject(obj)</span>
+            <span class="c1">#   if self.obj_grasped == self.num_obj:</span>
+            <span class="c1">#     return True</span>
+            <span class="c1">#   return False</span>
+            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">getPosition</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.35</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isObjectHeld</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+                <span class="c1"># ZXP getPos z &gt; threshold is more robust than _isObjectHeld()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">obj_grasped</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_removeObject</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj_grasped</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_obj</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_getObservation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">state</span><span class="p">,</span> <span class="n">in_hand</span><span class="p">,</span> <span class="n">obs</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">ObjectGrasping</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_getObservation</span><span class="p">()</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">in_hand</span><span class="p">),</span> <span class="n">obs</span></div>
+
+
+<span class="k">def</span> <span class="nf">createObjectGrasping</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">ObjectGrasping</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Colin Kohler, Dian Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

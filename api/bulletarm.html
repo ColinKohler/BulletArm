@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BulletArm Simulator &mdash; BulletArm 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="BulletArm Baselines" href="bulletarm_baselines.html" />
+    <link rel="prev" title="Getting Started" href="getting_started.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> BulletArm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Package Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">BulletArm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#block-stacking-demo">Block Stacking Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#tutorials">Tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">BulletArm Simulator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#tasks">Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#envfactory-envrunner">EnvFactory &amp; EnvRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-parameters">Configuration Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#robots">Robots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#objects">Objects</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bulletarm_baselines.html">BulletArm Baselines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm_baselines.html#open-loop-benchmarks">Open-Loop Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm_baselines.html#close-loop-benchmarks">Close-Loop Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm_baselines.html#logging-plotting-utilities">Logging &amp; Plotting Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tasks.html">Benchmark Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-reaching">Block Reaching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-pushing">Block Pushing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-pulling">Block Pulling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-picking">Block Picking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-stacking">Block Stacking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#block-in-bowl">Block In Bowl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#house-building-1">House Building 1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#house-building-2">House Building 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#house-building-3">House Building 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#house-building-4">House Building 4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#improvise-house-building-2">Improvise House Building 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#improvise-house-building-3">Improvise House Building 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#bin-packing">Bin Packing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#bottle-arrangement">Bottle Arrangement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#box-palletizing">Box Palletizing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#covid-test">Covid Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#corner-picking">Corner Picking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#drawer-opening">Drawer Opening</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html#object-grasping">Object Grasping</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributions.html">Contributions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">BulletArm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>BulletArm Simulator</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/bulletarm.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="module-bulletarm"></span><section id="bulletarm-simulator">
+<h1>BulletArm Simulator<a class="headerlink" href="#bulletarm-simulator" title="Permalink to this heading"></a></h1>
+<p>This is the main package for the BulletArm library. It contains the PyBullet simulation environments, robots, and task definitions.
+The simulation workspace consists of a robot arm mounted on the floor of the simulation environment, a workspace where objects are
+generated, and sensor(s). There are three key terms within BulletArm: <em>Enviornment</em>, <em>Configuration</em>, and <em>Episode</em>. An <em>environment</em>
+is an instance ofthe PyBullet simulator in which the robot interacts with objects while trying to solve some task. This include the
+initial environment state, the reward function, and termination requirements. A <em>configuration</em> contains additional specifications
+for the task such as the robot arm, the size of the workspace, the physics mode, etc. A full list of parameters can be found here.
+<em>Episodes</em> are generated by taking actions (steps) within an environment until the episode ends.</p>
+<figure class="align-center" id="id1" style="width: 400px">
+<img alt="../_images/workspace.png" src="../_images/workspace.png" />
+<figcaption>
+<p><span class="caption-text">The simulation environment containing a robot arm, a camera, and a workspace.</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<hr class="docutils" />
+<section id="tasks">
+<h2>Tasks<a class="headerlink" href="#tasks" title="Permalink to this heading"></a></h2>
+<p>Our set of tasks are seperated into two categories based on the action space: open-loop control and closed-loop control.
+Future work is planned to allow all tasks to use either control-type but for now the below table shows current avaliable
+control type for each task. For each avaliable task, the name required by the <code class="code docutils literal notranslate"><span class="pre">EnvFactory</span></code> to initalize that task
+is also shown.</p>
+<table class="colwidths-given docutils align-center">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Task</p></th>
+<th class="head"><p>Open-Loop</p></th>
+<th class="head"><p>Closed-Loop</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="tasks.html#block-reaching"><span class="std std-ref">Block Reaching</span></a></p></td>
+<td><p>☐</p></td>
+<td><p>☑ <code class="code docutils literal notranslate"><span class="pre">close_loop_block_reaching</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="tasks.html#block-pushing"><span class="std std-ref">Block Pushing</span></a></p></td>
+<td><p>☐</p></td>
+<td><p>☑ <code class="code docutils literal notranslate"><span class="pre">close_loop_block_pushing</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="tasks.html#block-pulling"><span class="std std-ref">Block Pulling</span></a></p></td>
+<td><p>☐</p></td>
+<td><p>☑ <code class="code docutils literal notranslate"><span class="pre">close_loop_block_pulling</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="tasks.html#block-picking"><span class="std std-ref">Block Picking</span></a></p></td>
+<td><p>☑ <code class="code docutils literal notranslate"><span class="pre">block_picking</span></code></p></td>
+<td><p>☑ <code class="code docutils literal notranslate"><span class="pre">close_loop_block_picking</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="tasks.html#block-stacking"><span class="std std-ref">Block Stacking</span></a></p></td>
+<td><p>☑ <code class="code docutils literal notranslate"><span class="pre">block_stacking</span></code></p></td>
+<td><p>☑ <code class="code docutils literal notranslate"><span class="pre">close_loop_block_stacking</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="tasks.html#block-in-bowl"><span class="std std-ref">Block In Bowl</span></a></p></td>
+<td><p>☐</p></td>
+<td><p>☑ <code class="code docutils literal notranslate"><span class="pre">close_loop_block_in_bowl</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="tasks.html#house-building-1"><span class="std std-ref">House Building 1</span></a></p></td>
+<td><p>☑ <code class="code docutils literal notranslate"><span class="pre">house_building_1</span></code></p></td>
+<td><p>☑ <code class="code docutils literal notranslate"><span class="pre">close_loop_house_building_1</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="tasks.html#house-building-2"><span class="std std-ref">House Building 2</span></a></p></td>
+<td><p>☑ <code class="code docutils literal notranslate"><span class="pre">house_building_2</span></code></p></td>
+<td><p>☐</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="tasks.html#house-building-3"><span class="std std-ref">House Building 3</span></a></p></td>
+<td><p>☑ <code class="code docutils literal notranslate"><span class="pre">house_building_3</span></code></p></td>
+<td><p>☐</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="tasks.html#house-building-4"><span class="std std-ref">House Building 4</span></a></p></td>
+<td><p>☑ <code class="code docutils literal notranslate"><span class="pre">house_building_4</span></code></p></td>
+<td><p>☐</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="tasks.html#improvise-house-building-2"><span class="std std-ref">Improvise House Building 2</span></a></p></td>
+<td><p>☑ <code class="code docutils literal notranslate"><span class="pre">improvise_house_building_2</span></code></p></td>
+<td><p>☐</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="tasks.html#improvise-house-building-3"><span class="std std-ref">Improvise House Building 3</span></a></p></td>
+<td><p>☑ <code class="code docutils literal notranslate"><span class="pre">improvise_house_building_3</span></code></p></td>
+<td><p>☐</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="tasks.html#bin-packing"><span class="std std-ref">Bin Packing</span></a></p></td>
+<td><p>☑ <code class="code docutils literal notranslate"><span class="pre">block_bin_packing</span></code></p></td>
+<td><p>☐</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="tasks.html#bottle-arrangement"><span class="std std-ref">Bottle Arrangement</span></a></p></td>
+<td><p>☑ <code class="code docutils literal notranslate"><span class="pre">bottle_tray</span></code></p></td>
+<td><p>☐</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="tasks.html#box-palletizing"><span class="std std-ref">Box Palletizing</span></a></p></td>
+<td><p>☑ <code class="code docutils literal notranslate"><span class="pre">box_palletizing</span></code></p></td>
+<td><p>☐</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="tasks.html#covid-test"><span class="std std-ref">Covid Test</span></a></p></td>
+<td><p>☑ <code class="code docutils literal notranslate"><span class="pre">covid_test</span></code></p></td>
+<td><p>☐</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="tasks.html#corner-picking"><span class="std std-ref">Corner Picking</span></a></p></td>
+<td><p>☐</p></td>
+<td><p>☑ <code class="code docutils literal notranslate"><span class="pre">close_loop_block_picking_corner</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="tasks.html#drawer-opening"><span class="std std-ref">Drawer Opening</span></a></p></td>
+<td><p>☐</p></td>
+<td><p>☑ <code class="code docutils literal notranslate"><span class="pre">close_loop_drawer_opening</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="tasks.html#object-grasping"><span class="std std-ref">Object Grasping</span></a></p></td>
+<td><p>☑ <code class="code docutils literal notranslate"><span class="pre">clutter_picking</span></code></p></td>
+<td><p>☑ <code class="code docutils literal notranslate"><span class="pre">close_loop_clutter_picking</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<hr class="docutils" />
+<section id="envfactory-envrunner">
+<h2>EnvFactory &amp; EnvRunner<a class="headerlink" href="#envfactory-envrunner" title="Permalink to this heading"></a></h2>
+<p>Interaction with BulletArm is done through the <code class="code docutils literal notranslate"><span class="pre">EnvFactory</span></code> and <code class="code docutils literal notranslate"><span class="pre">EnvRunner</span></code> classes.
+The <code class="code docutils literal notranslate"><span class="pre">EnvFactory</span></code> is the entry point and creates the <em>environment</em> specified by the <em>configuration</em> passed as input. The <code class="code docutils literal notranslate"><span class="pre">EnvFactory</span></code>
+can create either a single environment (SingleRunner) or multiple environments (MultiRunner) to be run in parallel.
+The <code class="code docutils literal notranslate"><span class="pre">EnvRunner</span></code> provides the API which interacts with the environment. This API is modeled after the typical agent-environment
+RL setup popularized by OpenAI Gym.</p>
+<section id="module-bulletarm.env_factory">
+<span id="envfactory"></span><h3>EnvFactory<a class="headerlink" href="#module-bulletarm.env_factory" title="Permalink to this heading"></a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="bulletarm.env_factory.createEnvs">
+<span class="sig-name descname"><span class="pre">createEnvs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_processes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planner_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/env_factory.html#createEnvs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.env_factory.createEnvs" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper function to create either a single env the the main process or some
+number of envs each in their own seperate process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_processes</strong> (<em>int</em>) – Number of envs to create</p></li>
+<li><p><strong>env_type</strong> (<em>str</em>) – The type of environment to create</p></li>
+<li><p><strong>env_config</strong> (<em>dict</em>) – Intialization arguments for the env</p></li>
+<li><p><strong>planner_config</strong> (<em>dict</em>) – Intialization arguments for the planner</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>SingleRunner or MultiRunner containing the environment</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>EnvRunner</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bulletarm.env_factory.createMultiprocessEnvs">
+<span class="sig-name descname"><span class="pre">createMultiprocessEnvs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_processes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planner_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/env_factory.html#createMultiprocessEnvs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.env_factory.createMultiprocessEnvs" title="Permalink to this definition"></a></dt>
+<dd><p>Create a number of environments on different processes to run in parralel</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_processes</strong> (<em>int</em>) – Number of envs to create</p></li>
+<li><p><strong>env_type</strong> (<em>str</em>) – The type of environment to create</p></li>
+<li><p><strong>env_config</strong> (<em>dict</em>) – Intialization arguments for the env</p></li>
+<li><p><strong>planner_config</strong> (<em>dict</em>) – Intialization arguments for the planner</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>MultiRunner containing all environments</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#bulletarm.runner.MultiRunner" title="bulletarm.runner.MultiRunner">MultiRunner</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bulletarm.env_factory.createSingleProcessEnv">
+<span class="sig-name descname"><span class="pre">createSingleProcessEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planner_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/env_factory.html#createSingleProcessEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.env_factory.createSingleProcessEnv" title="Permalink to this definition"></a></dt>
+<dd><p>Create a single environment</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env_type</strong> (<em>str</em>) – The type of environment to create</p></li>
+<li><p><strong>env_config</strong> (<em>dict</em>) – Intialization arguments for the env</p></li>
+<li><p><strong>planner_config</strong> (<em>dict</em>) – Intialization arguments for the planner</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>SingleRunner containing the environment</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#bulletarm.runner.SingleRunner" title="bulletarm.runner.SingleRunner">SingleRunner</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bulletarm.env_factory.getEnvFn">
+<span class="sig-name descname"><span class="pre">getEnvFn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/env_factory.html#getEnvFn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.env_factory.getEnvFn" title="Permalink to this definition"></a></dt>
+<dd><p>Get the env creation function of the given type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>env_type</strong> (<em>str</em>) – The type of environment to create</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A function which creates the env when run</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>function</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="envrunner">
+<h3>EnvRunner<a class="headerlink" href="#envrunner" title="Permalink to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultiRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_fns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planner_fns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner" title="Permalink to this definition"></a></dt>
+<dd><p>Runner which runs mulitple environemnts in parallel in subprocesses and communicates with them via pipe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env_fns</strong> (<em>list</em><em>[</em><em>function</em><em>]</em>) – Env creation functions</p></li>
+<li><p><strong>planner_fns</strong> (<em>list</em><em>[</em><em>function</em><em>]</em>) – Planner creation functions</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.close" title="Permalink to this definition"></a></dt>
+<dd><p>Close all worker processes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.gatherDeconstructTransitions">
+<span class="sig-name descname"><span class="pre">gatherDeconstructTransitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">planner_episode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.gatherDeconstructTransitions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.gatherDeconstructTransitions" title="Permalink to this definition"></a></dt>
+<dd><p>Gather deconstruction transitions and reverse them for construction</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>planner_episode</strong> (<em>-</em>) – The number of expert episodes to gather</p>
+</dd>
+</dl>
+<p>Returns: list of transitions. Each transition is in the form of
+((state, in_hand, obs), action, reward, done, (next_state, next_in_hand, next_obs))</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.getEmptyInHand">
+<span class="sig-name descname"><span class="pre">getEmptyInHand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.getEmptyInHand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.getEmptyInHand" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.getEnvGitHash">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">getEnvGitHash</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.getEnvGitHash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.getEnvGitHash" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.getNextAction">
+<span class="sig-name descname"><span class="pre">getNextAction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.getNextAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.getNextAction" title="Permalink to this definition"></a></dt>
+<dd><p>Get the next action from the planner for each environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Actions</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.getNumObj">
+<span class="sig-name descname"><span class="pre">getNumObj</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.getNumObj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.getNumObj" title="Permalink to this definition"></a></dt>
+<dd><p>Get the number of objects in the environment
+Returns: int: number of objects</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.loadFromFile">
+<span class="sig-name descname"><span class="pre">loadFromFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.loadFromFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.loadFromFile" title="Permalink to this definition"></a></dt>
+<dd><p>Loads the state of the environments from a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – The path to the environment states to load</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Flag indicating if the loading succeeded for all environments</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Reset each environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Observations</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.reset_envs">
+<span class="sig-name descname"><span class="pre">reset_envs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_nums</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.reset_envs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.reset_envs" title="Permalink to this definition"></a></dt>
+<dd><p>Resets the specified environments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>env_nums</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – The environments to be reset</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Observations</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.restore">
+<span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.restore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.restore" title="Permalink to this definition"></a></dt>
+<dd><p>Restores the locally saved state of the environments.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.save" title="Permalink to this definition"></a></dt>
+<dd><p>Locally saves the current state of the environments.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.saveToFile">
+<span class="sig-name descname"><span class="pre">saveToFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.saveToFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.saveToFile" title="Permalink to this definition"></a></dt>
+<dd><p>Saves the current state of the environments to file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – The path to save the enviornment states to</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.step" title="Permalink to this definition"></a></dt>
+<dd><p>Step the environments synchronously.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>actions</strong> (<em>numpy.array</em>) – Actions to take in each environment</p></li>
+<li><p><strong>auto_reset</strong> (<em>bool</em>) – Reset environments automatically after an episode ends</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(observations, rewards, done flags)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(numpy.array, numpy.array, numpy.array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.stepAsync">
+<span class="sig-name descname"><span class="pre">stepAsync</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.stepAsync"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.stepAsync" title="Permalink to this definition"></a></dt>
+<dd><p>Step each environment in a async fashion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>actions</strong> (<em>numpy.array</em>) – Actions to take in each environment</p></li>
+<li><p><strong>auto_reset</strong> (<em>bool</em>) – Reset environments automatically after an episode ends</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm.runner.MultiRunner.stepWait">
+<span class="sig-name descname"><span class="pre">stepWait</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#MultiRunner.stepWait"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.MultiRunner.stepWait" title="Permalink to this definition"></a></dt>
+<dd><p>Wait until each environment has completed its next step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>(observations, rewards, done flags)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>(numpy.array, numpy.array, numpy.array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.runner.SingleRunner">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SingleRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#SingleRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.SingleRunner" title="Permalink to this definition"></a></dt>
+<dd><p>RL environment runner which runs a single environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env</strong> (<em>BaseEnv</em>) – Environment</p></li>
+<li><p><strong>planner</strong> (<em>BasePlanner</em>) – Planner</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm.runner.SingleRunner.getNextAction">
+<span class="sig-name descname"><span class="pre">getNextAction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#SingleRunner.getNextAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.SingleRunner.getNextAction" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm.runner.SingleRunner.loadFromFile">
+<span class="sig-name descname"><span class="pre">loadFromFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#SingleRunner.loadFromFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.SingleRunner.loadFromFile" title="Permalink to this definition"></a></dt>
+<dd><p>Loads the state of the environment from a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – The path to the environment state to load</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Flag indicating if the loading succeeded</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm.runner.SingleRunner.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#SingleRunner.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.SingleRunner.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Reset the environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Observation</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm.runner.SingleRunner.restore">
+<span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#SingleRunner.restore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.SingleRunner.restore" title="Permalink to this definition"></a></dt>
+<dd><p>Restores the locally saved state of the environment.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm.runner.SingleRunner.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#SingleRunner.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.SingleRunner.save" title="Permalink to this definition"></a></dt>
+<dd><p>Locally saves the current state of the environment.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm.runner.SingleRunner.saveToFile">
+<span class="sig-name descname"><span class="pre">saveToFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#SingleRunner.saveToFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.SingleRunner.saveToFile" title="Permalink to this definition"></a></dt>
+<dd><p>Saves the current state of the environment to file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – The path to save the enviornment state to</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bulletarm.runner.SingleRunner.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/runner.html#SingleRunner.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.runner.SingleRunner.step" title="Permalink to this definition"></a></dt>
+<dd><p>Step the environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>action</strong> (<em>numpy.array</em>) – Action to take in the environment</p></li>
+<li><p><strong>auto_reset</strong> (<em>bool</em>) – Reset the environment after an episode ends</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(observations, rewards, done flags)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(numpy.array, numpy.array, numpy.array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+<hr class="docutils" />
+<section id="configuration-parameters">
+<h2>Configuration Parameters<a class="headerlink" href="#configuration-parameters" title="Permalink to this heading"></a></h2>
+<p>A task in BulletArm is defined as the combination of the environment and the configuration
+passed to that environemnt. The environment details the high level details for the task i.e.
+the initial state, goal state, invalid states, etc. The configuration contains lower level details which
+can add to task variety. The default config can be found <a class="reference external" href="https://github.com/ColinKohler/BulletArm/blob/main/bulletarm/envs/configs.py">here</a>.
+We briefly detail the various config parameters below but additional information can be found in the default config.</p>
+<table class="colwidths-given docutils align-center">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Example</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>render</p></td>
+<td><p>False/True</p></td>
+<td><p>Render the PyBullet GUI or run headless</p></td>
+</tr>
+<tr class="row-odd"><td><p>max_steps</p></td>
+<td><p>10</p></td>
+<td><p>The maximum number of steps per episode.</p></td>
+</tr>
+<tr class="row-even"><td><p>workspace</p></td>
+<td><p>[[0, 0.2], [0, 0.2], [0, 0.2]]</p></td>
+<td><p>The workspace in terms of the range in x, y, and z.</p></td>
+</tr>
+<tr class="row-odd"><td><p>workspace_check</p></td>
+<td><p>point/bounding_box</p></td>
+<td><p>How to determine if a object is within the workspace by either check the COM of the object of the bounding box.</p></td>
+</tr>
+<tr class="row-even"><td><p>robot</p></td>
+<td><p>kuka</p></td>
+<td><p>The type of the robot to use in the simulator.</p></td>
+</tr>
+<tr class="row-odd"><td><p>action_sequence</p></td>
+<td><p>pxyzr</p></td>
+<td><p>The action space the agent will act within. ‘pxyzr’ defines a 5-vector action including the gripper action (p), the position of the gripper (x,y,z),
+and its top-down rotation (r).</p></td>
+</tr>
+<tr class="row-even"><td><p>obs_size</p></td>
+<td><p>128</p></td>
+<td><p>The pixel size of the heightmap.</p></td>
+</tr>
+<tr class="row-odd"><td><p>in_hand_size</p></td>
+<td><p>24</p></td>
+<td><p>The pixel size of the in-hand image.</p></td>
+</tr>
+<tr class="row-even"><td><p>random_orientation</p></td>
+<td><p>True</p></td>
+<td><p>Whether or not to generate objects with a random orientation</p></td>
+</tr>
+<tr class="row-odd"><td><p>object_scale_range</p></td>
+<td><p>[0.6, 0.7]</p></td>
+<td><p>The scale applied to objects in the workspace. Addes variation and helps with generalization.</p></td>
+</tr>
+<tr class="row-even"><td><p>fast_mode</p></td>
+<td><p>False/True</p></td>
+<td><p>If True, teleports the arm when possible to speed up simulation. Bad for more dynamical domains &amp; closed-loop control.</p></td>
+</tr>
+<tr class="row-odd"><td><p>phyics_mode</p></td>
+<td><p>fast, slow</p></td>
+<td><p>The type of physics to use during simulation. Can be run faster with less accurate physics or slower with more accurate physics.</p></td>
+</tr>
+<tr class="row-even"><td><p>num_objects</p></td>
+<td><p>3</p></td>
+<td><p>Specifies the number of objects to generate in domains which have a variable number of objects.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<hr class="docutils" />
+<section id="robots">
+<h2>Robots<a class="headerlink" href="#robots" title="Permalink to this heading"></a></h2>
+<p>Different robotic arms can lead to drastically different policies due to the differing kinematics between arms. We
+provide four robotic arms: KUKA IIWA, Frane Emika Panda, Universal Robots UR5 with a parallel jaw gripper, and
+Universal Robots UR5 with Robotiq 2F-85 gripper. To add a new manipulator see the <a class="reference external" href="https://github.com/ColinKohler/BulletArm/blob/main/tutorials/new_robot.py">new robot tutorial</a>.</p>
+<figure class="align-center" id="id2" style="width: 600px">
+<img alt="../_images/robots.png" src="../_images/robots.png" />
+<figcaption>
+<p><span class="caption-text">Currently supported robotic arms.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<hr class="docutils" />
+<section id="objects">
+<h2>Objects<a class="headerlink" href="#objects" title="Permalink to this heading"></a></h2>
+<p>We provide a number of objects to use out-of-the-box when creating new tasks. The list of avaliable objects can be
+seen below. Objects are generating within the workspace by using the <code class="code docutils literal notranslate"><span class="pre">_generateShapes</span></code> function in the base
+enviornment. Objects are identified by their ID which is located in <code class="code docutils literal notranslate"><span class="pre">bulletarm/pybullet/utils/constants.py</span></code>.
+To add a new object see the <a class="reference external" href="https://github.com/ColinKohler/BulletArm/blob/main/tutorials/new_object.py">new object tutorial</a>.</p>
+<table class="colwidths-given docutils align-center">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Object</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Cube</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sphere</p></td>
+</tr>
+<tr class="row-even"><td><p>Cylinder</p></td>
+</tr>
+<tr class="row-odd"><td><p>Cone</p></td>
+</tr>
+<tr class="row-even"><td><p>Brick</p></td>
+</tr>
+<tr class="row-odd"><td><p>Triangle</p></td>
+</tr>
+<tr class="row-even"><td><p>Roof</p></td>
+</tr>
+<tr class="row-odd"><td><p>Teapot</p></td>
+</tr>
+<tr class="row-even"><td><p>Teapot Lid</p></td>
+</tr>
+<tr class="row-odd"><td><p>Cup</p></td>
+</tr>
+<tr class="row-even"><td><p>Bowl</p></td>
+</tr>
+<tr class="row-odd"><td><p>Plate</p></td>
+</tr>
+<tr class="row-even"><td><p>Spoon</p></td>
+</tr>
+<tr class="row-odd"><td><p>Bottle</p></td>
+</tr>
+<tr class="row-even"><td><p>Box</p></td>
+</tr>
+<tr class="row-odd"><td><p>Pallet</p></td>
+</tr>
+<tr class="row-even"><td><p>Test Tube</p></td>
+</tr>
+<tr class="row-odd"><td><p>Swab</p></td>
+</tr>
+<tr class="row-even"><td><p>Flat Block</p></td>
+</tr>
+<tr class="row-odd"><td><p>Random Household 200</p></td>
+</tr>
+<tr class="row-even"><td><p>Grasp Net</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="bulletarm.envs.base_env.BaseEnv._generateShapes">
+<span class="sig-name descname"><span class="pre">_generateShapes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_shapes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_orientation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bulletarm.envs.base_env.BaseEnv._generateShapes" title="Permalink to this definition"></a></dt>
+<dd><p>Generate objects within the workspace.</p>
+<p>Generate a number of objects specified by the shape type within the workspace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shape_type</strong> (<em>int</em>) – The shape to generate. Defaults to 0.</p></li>
+<li><p><strong>num_shapes</strong> (<em>int</em>) – The number of objects to generate. Deafults to 1.</p></li>
+<li><p><strong>scale</strong> (<em>double</em>) – The scale for the entire object. Defaults to None.</p></li>
+<li><p><strong>pos</strong> (<em>list</em><em>[</em><em>double</em><em>]</em>) – Generate object at specified position. Defalts to None.</p></li>
+<li><p><strong>rot</strong> (<em>list</em><em>[</em><em>double</em><em>]</em>) – Generate object at specified orientation. Defaults to None,</p></li>
+<li><p><strong>min_distance</strong> (<em>double</em>) – Minimum distance objects must be from other objects. Defaults to None.</p></li>
+<li><p><strong>padding</strong> (<em>double</em>) – Distance from edge of workspace that objects can be generated in. Defaults to None.</p></li>
+<li><p><strong>random_orientation</strong> (<em>bool</em>) – Generates objects with a random orientation if True. Defaults to False.</p></li>
+<li><p><strong>z_scale</strong> (<em>double</em>) – The scale for the objects Z axis. Defaults to 1.</p></li>
+<li><p><strong>model_id</strong> (<em>int</em>) – Used to specify the specific object within a class of object shapes. Defaults to 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>PyBullet IDs for the generated objects</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="getting_started.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="bulletarm_baselines.html" class="btn btn-neutral float-right" title="BulletArm Baselines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Colin Kohler, Dian Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

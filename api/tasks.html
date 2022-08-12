@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Benchmark Tasks &mdash; BulletArm 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Contributions" href="contributions.html" />
+    <link rel="prev" title="BulletArm Baselines" href="bulletarm_baselines.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> BulletArm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Package Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">BulletArm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#block-stacking-demo">Block Stacking Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#tutorials">Tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bulletarm.html">BulletArm Simulator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm.html#tasks">Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm.html#envfactory-envrunner">EnvFactory &amp; EnvRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm.html#configuration-parameters">Configuration Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm.html#robots">Robots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm.html#objects">Objects</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bulletarm_baselines.html">BulletArm Baselines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm_baselines.html#open-loop-benchmarks">Open-Loop Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm_baselines.html#close-loop-benchmarks">Close-Loop Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulletarm_baselines.html#logging-plotting-utilities">Logging &amp; Plotting Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Benchmark Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#block-reaching">Block Reaching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#block-pushing">Block Pushing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#block-pulling">Block Pulling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#block-picking">Block Picking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#block-stacking">Block Stacking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#block-in-bowl">Block In Bowl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#house-building-1">House Building 1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#house-building-2">House Building 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#house-building-3">House Building 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#house-building-4">House Building 4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#improvise-house-building-2">Improvise House Building 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#improvise-house-building-3">Improvise House Building 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bin-packing">Bin Packing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bottle-arrangement">Bottle Arrangement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#box-palletizing">Box Palletizing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#covid-test">Covid Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#corner-picking">Corner Picking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#drawer-opening">Drawer Opening</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#object-grasping">Object Grasping</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributions.html">Contributions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">BulletArm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Benchmark Tasks</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/tasks.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="module-bulletarm.envs.close_loop_envs.close_loop_block_picking"></span><span class="target" id="module-bulletarm.envs.close_loop_envs.close_loop_block_reaching"></span><span class="target" id="module-bulletarm.envs.close_loop_envs.close_loop_block_pushing"></span><span class="target" id="module-bulletarm.envs.close_loop_envs.close_loop_block_pulling"></span><span class="target" id="module-bulletarm.envs.close_loop_envs.close_loop_block_stacking"></span><span class="target" id="module-bulletarm.envs.block_structure_envs.block_stacking_env"></span><span class="target" id="module-bulletarm.envs.close_loop_envs.close_loop_block_in_bowl"></span><span class="target" id="module-bulletarm.envs.block_structure_envs.house_building_1_env"></span><span class="target" id="module-bulletarm.envs.close_loop_envs.close_loop_house_building_1"></span><span class="target" id="module-bulletarm.envs.block_structure_envs.house_building_2_env"></span><span class="target" id="module-bulletarm.envs.block_structure_envs.house_building_3_env"></span><span class="target" id="module-bulletarm.envs.block_structure_envs.house_building_4_env"></span><span class="target" id="module-bulletarm.envs.block_structure_envs.improvise_house_building_2_env"></span><span class="target" id="module-bulletarm.envs.block_structure_envs.improvise_house_building_3_env"></span><span class="target" id="module-bulletarm.envs.realistic_envs.block_bin_packing_env"></span><span class="target" id="module-bulletarm.envs.realistic_envs.bottle_tray_env"></span><span class="target" id="module-bulletarm.envs.realistic_envs.box_palletizing_env"></span><span class="target" id="module-bulletarm.envs.realistic_envs.covid_test_env"></span><span class="target" id="module-bulletarm.envs.close_loop_envs.close_loop_block_picking_corner"></span><span class="target" id="module-bulletarm.envs.close_loop_envs.close_loop_drawer_opening"></span><span class="target" id="module-bulletarm.envs.realistic_envs.object_grasping"></span><span class="target" id="module-bulletarm.envs.close_loop_envs.close_loop_household_picking"></span><section id="benchmark-tasks">
+<h1>Benchmark Tasks<a class="headerlink" href="#benchmark-tasks" title="Permalink to this heading"></a></h1>
+<section id="block-reaching">
+<h2>Block Reaching<a class="headerlink" href="#block-reaching" title="Permalink to this heading"></a></h2>
+<figure class="align-left" style="width: 175px">
+<img alt="../_images/reach.png" src="../_images/reach.png" />
+</figure>
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.envs.close_loop_envs.close_loop_block_reaching.CloseLoopBlockReachingEnv">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CloseLoopBlockReachingEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/envs/close_loop_envs/close_loop_block_reaching.html#CloseLoopBlockReachingEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.envs.close_loop_envs.close_loop_block_reaching.CloseLoopBlockReachingEnv" title="Permalink to this definition"></a></dt>
+<dd><p>Close loop block reaching task.</p>
+<p>The robot needs to place the gripper close to a cubic block.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Intialization arguments for the env</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="block-pushing">
+<h2>Block Pushing<a class="headerlink" href="#block-pushing" title="Permalink to this heading"></a></h2>
+<figure class="align-left" style="width: 175px">
+<img alt="../_images/push.png" src="../_images/push.png" />
+</figure>
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.envs.close_loop_envs.close_loop_block_pushing.CloseLoopBlockPushingEnv">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CloseLoopBlockPushingEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/envs/close_loop_envs/close_loop_block_pushing.html#CloseLoopBlockPushingEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.envs.close_loop_envs.close_loop_block_pushing.CloseLoopBlockPushingEnv" title="Permalink to this definition"></a></dt>
+<dd><p>Close loop block pushing task.</p>
+<p>The robot needs to push a block into a goal area.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Intialization arguments for the env</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="block-pulling">
+<h2>Block Pulling<a class="headerlink" href="#block-pulling" title="Permalink to this heading"></a></h2>
+<figure class="align-left" style="width: 175px">
+<img alt="../_images/pull.png" src="../_images/pull.png" />
+</figure>
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.envs.close_loop_envs.close_loop_block_pulling.CloseLoopBlockPullingEnv">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CloseLoopBlockPullingEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/envs/close_loop_envs/close_loop_block_pulling.html#CloseLoopBlockPullingEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.envs.close_loop_envs.close_loop_block_pulling.CloseLoopBlockPullingEnv" title="Permalink to this definition"></a></dt>
+<dd><p>Close loop block pulling task.</p>
+<p>The robot needs to pullone of the two blocks to make contact with the other block.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Intialization arguments for the env</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="block-picking">
+<h2>Block Picking<a class="headerlink" href="#block-picking" title="Permalink to this heading"></a></h2>
+<figure class="align-left" style="width: 175px">
+<img alt="../_images/pick.png" src="../_images/pick.png" />
+</figure>
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.envs.close_loop_envs.close_loop_block_picking.CloseLoopBlockPickingEnv">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CloseLoopBlockPickingEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/envs/close_loop_envs/close_loop_block_picking.html#CloseLoopBlockPickingEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.envs.close_loop_envs.close_loop_block_picking.CloseLoopBlockPickingEnv" title="Permalink to this definition"></a></dt>
+<dd><p>Close loop block picking task.</p>
+<p>The robot needs to pick up all N cubic blocks. The number of blocks N is set by the config.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Intialization arguments for the env</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="block-stacking">
+<h2>Block Stacking<a class="headerlink" href="#block-stacking" title="Permalink to this heading"></a></h2>
+<figure class="align-left" style="width: 175px">
+<img alt="../_images/stack.png" src="../_images/stack.png" />
+</figure>
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.envs.block_structure_envs.block_stacking_env.BlockStackingEnv">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BlockStackingEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/envs/block_structure_envs/block_stacking_env.html#BlockStackingEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.envs.block_structure_envs.block_stacking_env.BlockStackingEnv" title="Permalink to this definition"></a></dt>
+<dd><p>Open loop block stacking task.</p>
+<p>The robot needs to stack all N cubic blocks. The number of blocks N is set by the config.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Intialization arguments for the env</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.envs.close_loop_envs.close_loop_block_stacking.CloseLoopBlockStackingEnv">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CloseLoopBlockStackingEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/envs/close_loop_envs/close_loop_block_stacking.html#CloseLoopBlockStackingEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.envs.close_loop_envs.close_loop_block_stacking.CloseLoopBlockStackingEnv" title="Permalink to this definition"></a></dt>
+<dd><p>Close loop block stacking task.</p>
+<p>The robot needs to stack all N cubic blocks. The number of blocks N is set by the config.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Intialization arguments for the env</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="block-in-bowl">
+<h2>Block In Bowl<a class="headerlink" href="#block-in-bowl" title="Permalink to this heading"></a></h2>
+<figure class="align-left" style="width: 175px">
+<img alt="../_images/bowl.png" src="../_images/bowl.png" />
+</figure>
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.envs.close_loop_envs.close_loop_block_in_bowl.CloseLoopBlockInBowlEnv">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CloseLoopBlockInBowlEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/envs/close_loop_envs/close_loop_block_in_bowl.html#CloseLoopBlockInBowlEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.envs.close_loop_envs.close_loop_block_in_bowl.CloseLoopBlockInBowlEnv" title="Permalink to this definition"></a></dt>
+<dd><p>Close loop block in bowl task.</p>
+<p>The robot needs to pick up a block and place it inside a bowl.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Intialization arguments for the env</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="house-building-1">
+<h2>House Building 1<a class="headerlink" href="#house-building-1" title="Permalink to this heading"></a></h2>
+<figure class="align-left" style="width: 175px">
+<img alt="../_images/4h1.png" src="../_images/4h1.png" />
+</figure>
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.envs.block_structure_envs.house_building_1_env.HouseBuilding1Env">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HouseBuilding1Env</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/envs/block_structure_envs/house_building_1_env.html#HouseBuilding1Env"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.envs.block_structure_envs.house_building_1_env.HouseBuilding1Env" title="Permalink to this definition"></a></dt>
+<dd><p>Open loop house building 1 task.</p>
+<p>The robot needs to first stack N-1 cubic blocks then place a triangle block on top of
+the stack. The number of blocks N is set by the config.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Intialization arguments for the env</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.envs.close_loop_envs.close_loop_house_building_1.CloseLoopHouseBuilding1Env">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CloseLoopHouseBuilding1Env</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/envs/close_loop_envs/close_loop_house_building_1.html#CloseLoopHouseBuilding1Env"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.envs.close_loop_envs.close_loop_house_building_1.CloseLoopHouseBuilding1Env" title="Permalink to this definition"></a></dt>
+<dd><p>Close loop house building 1 task.</p>
+<p>The robot needs to stack N-1 cubic blocks then place a triangle block on top of the stack.
+The number of blocks N is set by the config.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Intialization arguments for the env</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="house-building-2">
+<h2>House Building 2<a class="headerlink" href="#house-building-2" title="Permalink to this heading"></a></h2>
+<figure class="align-left" style="width: 175px">
+<img alt="../_images/h2.png" src="../_images/h2.png" />
+</figure>
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.envs.block_structure_envs.house_building_2_env.HouseBuilding2Env">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HouseBuilding2Env</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/envs/block_structure_envs/house_building_2_env.html#HouseBuilding2Env"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.envs.block_structure_envs.house_building_2_env.HouseBuilding2Env" title="Permalink to this definition"></a></dt>
+<dd><p>Open loop house building 2 task.</p>
+<p>The robot needs to first place two cubic blocks adjacent to each other, then place a roof on top.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Intialization arguments for the env</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="house-building-3">
+<h2>House Building 3<a class="headerlink" href="#house-building-3" title="Permalink to this heading"></a></h2>
+<figure class="align-left" style="width: 175px">
+<img alt="../_images/h3.png" src="../_images/h3.png" />
+</figure>
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.envs.block_structure_envs.house_building_3_env.HouseBuilding3Env">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HouseBuilding3Env</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/envs/block_structure_envs/house_building_3_env.html#HouseBuilding3Env"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.envs.block_structure_envs.house_building_3_env.HouseBuilding3Env" title="Permalink to this definition"></a></dt>
+<dd><p>Open loop house building 3 task.</p>
+<p>The robot needs to: (1) place two cubic blocks adjacent to each other, (2) put a cuboid on
+top of the two cubic bricks, (3) put a roof on top of the cuboid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Intialization arguments for the env</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="house-building-4">
+<h2>House Building 4<a class="headerlink" href="#house-building-4" title="Permalink to this heading"></a></h2>
+<figure class="align-left" style="width: 175px">
+<img alt="../_images/h4.png" src="../_images/h4.png" />
+</figure>
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.envs.block_structure_envs.house_building_4_env.HouseBuilding4Env">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HouseBuilding4Env</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/envs/block_structure_envs/house_building_4_env.html#HouseBuilding4Env"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.envs.block_structure_envs.house_building_4_env.HouseBuilding4Env" title="Permalink to this definition"></a></dt>
+<dd><p>Open loop house building 4 task.</p>
+<p>The robot needs to: (1) place two cubic blocks adjacent to each other, (2) put a cuboid on
+top of the two cubic bricks, (3) put another two cubic blocks on top of the cuboid, (4) put
+a root on top of the structure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Intialization arguments for the env</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="improvise-house-building-2">
+<h2>Improvise House Building 2<a class="headerlink" href="#improvise-house-building-2" title="Permalink to this heading"></a></h2>
+<figure class="align-left" style="width: 175px">
+<img alt="../_images/imh2.png" src="../_images/imh2.png" />
+</figure>
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.envs.block_structure_envs.improvise_house_building_2_env.ImproviseHouseBuilding2Env">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ImproviseHouseBuilding2Env</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/envs/block_structure_envs/improvise_house_building_2_env.html#ImproviseHouseBuilding2Env"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.envs.block_structure_envs.improvise_house_building_2_env.ImproviseHouseBuilding2Env" title="Permalink to this definition"></a></dt>
+<dd><p>Open loop improvise house building 2 task.</p>
+<p>The robot needs to first place two blocks adjacent to each other, then place a roof on top.
+The two base blocks are randomly generated shapes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Intialization arguments for the env</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="improvise-house-building-3">
+<h2>Improvise House Building 3<a class="headerlink" href="#improvise-house-building-3" title="Permalink to this heading"></a></h2>
+<figure class="align-left" style="width: 175px">
+<img alt="../_images/imh3.png" src="../_images/imh3.png" />
+</figure>
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.envs.block_structure_envs.improvise_house_building_3_env.ImproviseHouseBuilding3Env">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ImproviseHouseBuilding3Env</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/envs/block_structure_envs/improvise_house_building_3_env.html#ImproviseHouseBuilding3Env"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.envs.block_structure_envs.improvise_house_building_3_env.ImproviseHouseBuilding3Env" title="Permalink to this definition"></a></dt>
+<dd><p>Open loop improvise house building 3 task.</p>
+<p>The robot needs to: (1) place two blocks adjacent to each other, (2) put a cuboid on
+top of the two cubic bricks, (3) put a roof on top of the cuboid.
+The two base blocks are randomly generated shapes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Intialization arguments for the env</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="bin-packing">
+<h2>Bin Packing<a class="headerlink" href="#bin-packing" title="Permalink to this heading"></a></h2>
+<figure class="align-left" style="width: 175px">
+<img alt="../_images/pack.png" src="../_images/pack.png" />
+</figure>
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.envs.realistic_envs.block_bin_packing_env.BlockBinPackingEnv">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BlockBinPackingEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/envs/realistic_envs/block_bin_packing_env.html#BlockBinPackingEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.envs.realistic_envs.block_bin_packing_env.BlockBinPackingEnv" title="Permalink to this definition"></a></dt>
+<dd><p>Open loop bin packing task.</p>
+<p>The robot needs to pack the N blocks in the workspace inside a bin.
+The number of blocks N is set by the config.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Intialization arguments for the env</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="bottle-arrangement">
+<h2>Bottle Arrangement<a class="headerlink" href="#bottle-arrangement" title="Permalink to this heading"></a></h2>
+<figure class="align-left" style="width: 175px">
+<img alt="../_images/bottle.png" src="../_images/bottle.png" />
+</figure>
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.envs.realistic_envs.bottle_tray_env.BottleTrayEnv">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BottleTrayEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/envs/realistic_envs/bottle_tray_env.html#BottleTrayEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.envs.realistic_envs.bottle_tray_env.BottleTrayEnv" title="Permalink to this definition"></a></dt>
+<dd><p>Open loop bottle arrangement task.</p>
+<p>The robot needs to arrange six bottle in the tray.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Intialization arguments for the env</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="box-palletizing">
+<h2>Box Palletizing<a class="headerlink" href="#box-palletizing" title="Permalink to this heading"></a></h2>
+<figure class="align-left" style="width: 175px">
+<img alt="../_images/box.png" src="../_images/box.png" />
+</figure>
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.envs.realistic_envs.box_palletizing_env.BoxPalletizingEnv">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BoxPalletizingEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/envs/realistic_envs/box_palletizing_env.html#BoxPalletizingEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.envs.realistic_envs.box_palletizing_env.BoxPalletizingEnv" title="Permalink to this definition"></a></dt>
+<dd><p>Open loop box palletizing task.</p>
+<p>The robot needs to palletize N boxes on top of a pallet.
+The number of blocks N is set by the config.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Intialization arguments for the env</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="covid-test">
+<h2>Covid Test<a class="headerlink" href="#covid-test" title="Permalink to this heading"></a></h2>
+<figure class="align-left" style="width: 175px">
+<img alt="../_images/covid.png" src="../_images/covid.png" />
+</figure>
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.envs.realistic_envs.covid_test_env.CovidTestEnv">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CovidTestEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/envs/realistic_envs/covid_test_env.html#CovidTestEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.envs.realistic_envs.covid_test_env.CovidTestEnv" title="Permalink to this definition"></a></dt>
+<dd><p>Open loop covid test task.</p>
+<p>The robot needs to supervise three covid tests and gather the test tubes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Intialization arguments for the env</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="corner-picking">
+<h2>Corner Picking<a class="headerlink" href="#corner-picking" title="Permalink to this heading"></a></h2>
+<figure class="align-left" style="width: 175px">
+<img alt="../_images/corner.png" src="../_images/corner.png" />
+</figure>
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.envs.close_loop_envs.close_loop_block_picking_corner.CloseLoopBlockPickingCornerEnv">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CloseLoopBlockPickingCornerEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/envs/close_loop_envs/close_loop_block_picking_corner.html#CloseLoopBlockPickingCornerEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.envs.close_loop_envs.close_loop_block_picking_corner.CloseLoopBlockPickingCornerEnv" title="Permalink to this definition"></a></dt>
+<dd><p>Close loop corner block picking task.</p>
+<p>The robot needs to slide the block away from the corner and then pick it up.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Intialization arguments for the env</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="drawer-opening">
+<h2>Drawer Opening<a class="headerlink" href="#drawer-opening" title="Permalink to this heading"></a></h2>
+<figure class="align-left" style="width: 175px">
+<img alt="../_images/drawer.png" src="../_images/drawer.png" />
+</figure>
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.envs.close_loop_envs.close_loop_drawer_opening.CloseLoopDrawerOpeningEnv">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CloseLoopDrawerOpeningEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/envs/close_loop_envs/close_loop_drawer_opening.html#CloseLoopDrawerOpeningEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.envs.close_loop_envs.close_loop_drawer_opening.CloseLoopDrawerOpeningEnv" title="Permalink to this definition"></a></dt>
+<dd><p>Close loop drawer opening task.</p>
+<p>The robot needs to pull the handle of the drawer to open it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Intialization arguments for the env</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="object-grasping">
+<h2>Object Grasping<a class="headerlink" href="#object-grasping" title="Permalink to this heading"></a></h2>
+<figure class="align-left" style="width: 175px">
+<img alt="../_images/grasp.png" src="../_images/grasp.png" />
+</figure>
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.envs.realistic_envs.object_grasping.ObjectGrasping">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ObjectGrasping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/envs/realistic_envs/object_grasping.html#ObjectGrasping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.envs.realistic_envs.object_grasping.ObjectGrasping" title="Permalink to this definition"></a></dt>
+<dd><p>Open loop object grasping task.</p>
+<p>The robot needs to pick up and object in a cluttered scene containing N random objects.
+The number of blocks N is set by the config.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Intialization arguments for the env</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bulletarm.envs.close_loop_envs.close_loop_household_picking.CloseLoopHouseholdPickingEnv">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CloseLoopHouseholdPickingEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bulletarm/envs/close_loop_envs/close_loop_household_picking.html#CloseLoopHouseholdPickingEnv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bulletarm.envs.close_loop_envs.close_loop_household_picking.CloseLoopHouseholdPickingEnv" title="Permalink to this definition"></a></dt>
+<dd><p>Close loop object grasping task.</p>
+<p>The robot needs to pick up an object in a cluttered scene containing N random objects.
+The number of blocks N is set by the config.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Intialization arguments for the env</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="bulletarm_baselines.html" class="btn btn-neutral float-left" title="BulletArm Baselines" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="contributions.html" class="btn btn-neutral float-right" title="Contributions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Colin Kohler, Dian Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

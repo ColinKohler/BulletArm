@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Package Reference &mdash; BulletArm 1.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Getting Started" href="api/getting_started.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="#" class="icon icon-home"> BulletArm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Package Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">BulletArm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/getting_started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/getting_started.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/getting_started.html#block-stacking-demo">Block Stacking Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/getting_started.html#tutorials">Tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/bulletarm.html">BulletArm Simulator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/bulletarm.html#tasks">Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/bulletarm.html#envfactory-envrunner">EnvFactory &amp; EnvRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/bulletarm.html#configuration-parameters">Configuration Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/bulletarm.html#robots">Robots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/bulletarm.html#objects">Objects</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/bulletarm_baselines.html">BulletArm Baselines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/bulletarm_baselines.html#open-loop-benchmarks">Open-Loop Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/bulletarm_baselines.html#close-loop-benchmarks">Close-Loop Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/bulletarm_baselines.html#logging-plotting-utilities">Logging &amp; Plotting Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/tasks.html">Benchmark Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#block-reaching">Block Reaching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#block-pushing">Block Pushing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#block-pulling">Block Pulling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#block-picking">Block Picking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#block-stacking">Block Stacking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#block-in-bowl">Block In Bowl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#house-building-1">House Building 1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#house-building-2">House Building 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#house-building-3">House Building 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#house-building-4">House Building 4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#improvise-house-building-2">Improvise House Building 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#improvise-house-building-3">Improvise House Building 3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#bin-packing">Bin Packing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#bottle-arrangement">Bottle Arrangement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#box-palletizing">Box Palletizing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#covid-test">Covid Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#corner-picking">Corner Picking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#drawer-opening">Drawer Opening</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#object-grasping">Object Grasping</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/contributions.html">Contributions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">BulletArm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+      <li>Package Reference</li>
+      <li class="wy-breadcrumbs-aside">
+              <!-- User defined GitHub URL -->
+              <a href="https://github.com/ColinKohler/BulletArm" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <img alt="_images/bullet_arm_logo.png" src="_images/bullet_arm_logo.png" />
+<p><strong>BulletArm</strong> is a PyBullet based benchmark and learning-environment for robotic manipulation research.
+The development of this package was part of the work done in our <a class="reference external" href="https://arxiv.org/abs/2205.14292">ISRR 22 paper</a>.</p>
+<p>This package is mainly comprised of two sub-packages: the <a class="reference internal" href="api/bulletarm.html"><span class="doc">BulletArm Simulator</span></a> and
+the <a class="reference internal" href="api/bulletarm_baselines.html"><span class="doc">BulletArm Baselines</span></a>. The simulator provides numerous tools to enable
+rapid development of robotic manipulation environments for use in robotic learning. It provides a number
+of environemnts, robots, planners, and tasks out-of-the-box. Additionally, BulletArm was designed with
+an emphasis on extensibility, allowing users to easily create new enviornments, tasks, and robots as needed.
+We aim to maintain and improve this package adding new features over time and hope to encourage the community
+to assist with this by adding any interesting tasks they might design.</p>
+<p>Through the combination of these tasks with the provided baselines, we present a comprehensive benchmark for
+use in either open-loop or closed-loop control. This benchmark consists of 19 different manipulation tasks
+of varying difficuly, ranging from simple reaching and picking tasks to more realistic tasks such as bin packing
+and pallet stacking. These tasks can be seen below (for more information see <a class="reference internal" href="api/tasks.html"><span class="doc">Benchmark Tasks</span></a>).
+We provide state-of-the-art baseline algorithms allowing users to compare their algorithms to our previous work
+on any of the existing tasks or novel tasks which they create.</p>
+<figure class="align-center" id="id1" style="width: 600px">
+<img alt="_images/tasks.png" src="_images/tasks.png" />
+<figcaption>
+<p><span class="caption-text">Benchmark Tasks.</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<section id="package-reference">
+<h1>Package Reference<a class="headerlink" href="#package-reference" title="Permalink to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="api/getting_started.html"><span class="doc">Getting Started:</span></a> Helpful introductory material including installation instructions, examples, and tutorials.</p></li>
+<li><p><a class="reference internal" href="api/bulletarm.html"><span class="doc">BulletArm Simulator:</span></a> Robotic simulator including the PyBullet environments, robots, tasks, and more.</p></li>
+<li><p><a class="reference internal" href="api/bulletarm_baselines.html"><span class="doc">BulletArm Baselines:</span></a> A collection of state-of-the-art baseline algorithms to benchmark new methods against.</p></li>
+<li><p><a class="reference internal" href="api/tasks.html"><span class="doc">Benchmark Tasks:</span></a> The core set of tasks used for benchmarking methods.</p></li>
+</ul>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="contribute">
+<h1>Contribute<a class="headerlink" href="#contribute" title="Permalink to this heading"></a></h1>
+<p>We hope that other researchers will help us extend this package by adding new tasks, robots, etc.
+If you wish to contribute, please see <a class="reference internal" href="api/contributions.html#contributions"><span class="std std-ref">Contributions</span></a> for additional details.</p>
+</section>
+<section id="cite-us">
+<h1>Cite Us<a class="headerlink" href="#cite-us" title="Permalink to this heading"></a></h1>
+<p>The development of this package was part of the work done in our ISRR 22 paper. Please,
+cite us if you use this code in your own work:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@misc</span><span class="p">{</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">doi</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mf">10.48550</span><span class="o">/</span><span class="n">arxiv</span><span class="mf">.2205.14292</span><span class="p">,</span>
+  <span class="n">doi</span> <span class="o">=</span> <span class="p">{</span><span class="mf">10.48550</span><span class="o">/</span><span class="n">ARXIV</span><span class="mf">.2205.14292</span><span class="p">},</span>
+  <span class="n">url</span> <span class="o">=</span> <span class="p">{</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">arxiv</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="nb">abs</span><span class="o">/</span><span class="mf">2205.14292</span><span class="p">},</span>
+  <span class="n">author</span> <span class="o">=</span> <span class="p">{</span><span class="n">Wang</span><span class="p">,</span> <span class="n">Dian</span> <span class="ow">and</span> <span class="n">Kohler</span><span class="p">,</span> <span class="n">Colin</span> <span class="ow">and</span> <span class="n">Zhu</span><span class="p">,</span> <span class="n">Xupeng</span> <span class="ow">and</span> <span class="n">Jia</span><span class="p">,</span> <span class="n">Mingxi</span> <span class="ow">and</span> <span class="n">Platt</span><span class="p">,</span> <span class="n">Robert</span><span class="p">},</span>
+  <span class="n">keywords</span> <span class="o">=</span> <span class="p">{</span><span class="n">Robotics</span> <span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">RO</span><span class="p">),</span> <span class="n">FOS</span><span class="p">:</span> <span class="n">Computer</span> <span class="ow">and</span> <span class="n">information</span> <span class="n">sciences</span><span class="p">,</span> <span class="n">FOS</span><span class="p">:</span> <span class="n">Computer</span> <span class="ow">and</span> <span class="n">information</span> <span class="n">sciences</span><span class="p">},</span>
+  <span class="n">title</span> <span class="o">=</span> <span class="p">{</span><span class="n">BulletArm</span><span class="p">:</span> <span class="n">An</span> <span class="n">Open</span><span class="o">-</span><span class="n">Source</span> <span class="n">Robotic</span> <span class="n">Manipulation</span> <span class="n">Benchmark</span> <span class="ow">and</span> <span class="n">Learning</span> <span class="n">Framework</span><span class="p">},</span>
+  <span class="n">publisher</span> <span class="o">=</span> <span class="p">{</span><span class="n">arXiv</span><span class="p">},</span>
+  <span class="n">year</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2022</span><span class="p">},</span>
+  <span class="n">copyright</span> <span class="o">=</span> <span class="p">{</span><span class="n">arXiv</span><span class="o">.</span><span class="n">org</span> <span class="n">perpetual</span><span class="p">,</span> <span class="n">non</span><span class="o">-</span><span class="n">exclusive</span> <span class="n">license</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api/getting_started.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Colin Kohler, Dian Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
