@@ -41,7 +41,7 @@ class CloseLoopEnv(BaseEnv):
                               'camera_side_rgbd', 'camera_side_height', 'camera_side_offset', 'camera_side_offset_rgbd',
                               'camera_side_offset_height', 'camera_side_1', 'camera_side_1_rgbd', 'camera_side_1_height',
                               'camera_side_rgbd_15', 'camera_side_rgbd_30', 'camera_side_rgbd_60', 'camera_side_rgbd_undis',
-                              'camera_side_rgbd_60_undis']
+                              'camera_side_rgbd_60_undis', 'camera_side_rgbd_reflect']
     self.view_scale = config['view_scale']
     self.robot_type = config['robot']
     if config['robot'] == 'kuka':
@@ -386,7 +386,7 @@ class CloseLoopEnv(BaseEnv):
       else:
         depth = heightmap
       return depth
-    elif self.view_type in ['camera_side', 'camera_side_rgbd', 'camera_side_height', 'camera_side_rgbd_undis']:
+    elif self.view_type in ['camera_side', 'camera_side_rgbd', 'camera_side_height', 'camera_side_rgbd_undis', 'camera_side_rgbd_reflect']:
       cam_pos = [1, self.workspace[1].mean(), 0.6]
       target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
       cam_up_vector = [-1, 0, 0]
@@ -399,6 +399,11 @@ class CloseLoopEnv(BaseEnv):
         rgb_img = self.sensor.getRGBImg(self.heightmap_size)
         depth_img = self.sensor.getDepthImg(self.heightmap_size).reshape(1, self.heightmap_size, self.heightmap_size)
         depth = np.concatenate([rgb_img, depth_img])
+      elif self.view_type == 'camera_side_rgbd_reflect':
+        rgb_img = self.sensor.getRGBImg(self.heightmap_size)
+        depth_img = self.sensor.getDepthImg(self.heightmap_size).reshape(1, self.heightmap_size, self.heightmap_size)
+        depth = np.concatenate([rgb_img, depth_img])
+        depth = depth[:, :, ::-1]
       elif self.view_type == 'camera_side_rgbd_undis':
         rgb_img = self.sensor.getRGBImg(self.heightmap_size)
         depth_img = self.sensor.getDepthImg(self.heightmap_size).reshape(1, self.heightmap_size, self.heightmap_size)
