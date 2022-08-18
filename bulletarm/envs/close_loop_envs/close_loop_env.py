@@ -41,7 +41,8 @@ class CloseLoopEnv(BaseEnv):
                               'camera_side_rgbd', 'camera_side_height', 'camera_side_offset', 'camera_side_offset_rgbd',
                               'camera_side_offset_height', 'camera_side_1', 'camera_side_1_rgbd', 'camera_side_1_height',
                               'camera_side_rgbd_15', 'camera_side_rgbd_30', 'camera_side_rgbd_60', 'camera_side_rgbd_undis',
-                              'camera_side_rgbd_60_undis', 'camera_side_rgbd_reflect']
+                              'camera_side_rgbd_60_undis', 'camera_side_rgbd_reflect', 'camera_center_xyz_reflect',
+                              'camera_side_rgbd_random_reflect']
     self.view_scale = config['view_scale']
     self.robot_type = config['robot']
     if config['robot'] == 'kuka':
@@ -334,7 +335,7 @@ class CloseLoopEnv(BaseEnv):
       else:
         depth = heightmap
       return depth
-    elif self.view_type in ['camera_center_xyz', 'camera_center_xyz_height']:
+    elif self.view_type in ['camera_center_xyz', 'camera_center_xyz_height', 'camera_center_xyz_reflect']:
       # xyz centered, gripper will be visible
       gripper_pos[2] += gripper_z_offset
       target_pos = [gripper_pos[0], gripper_pos[1], 0]
@@ -343,6 +344,9 @@ class CloseLoopEnv(BaseEnv):
       heightmap = self.sensor.getHeightmap(self.heightmap_size)
       if self.view_type == 'camera_center_xyz':
         depth = -heightmap + gripper_pos[2]
+      elif self.view_type == 'camera_center_xyz_reflect':
+        depth = -heightmap + gripper_pos[2]
+        depth = depth[:, ::-1]
       else:
         depth = heightmap
       return depth
@@ -386,7 +390,8 @@ class CloseLoopEnv(BaseEnv):
       else:
         depth = heightmap
       return depth
-    elif self.view_type in ['camera_side', 'camera_side_rgbd', 'camera_side_height', 'camera_side_rgbd_undis', 'camera_side_rgbd_reflect']:
+    elif self.view_type in ['camera_side', 'camera_side_rgbd', 'camera_side_height', 'camera_side_rgbd_undis',
+                            'camera_side_rgbd_reflect', 'camera_side_rgbd_random_reflect']:
       cam_pos = [1, self.workspace[1].mean(), 0.6]
       target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
       cam_up_vector = [-1, 0, 0]
@@ -404,6 +409,14 @@ class CloseLoopEnv(BaseEnv):
         depth_img = self.sensor.getDepthImg(self.heightmap_size).reshape(1, self.heightmap_size, self.heightmap_size)
         depth = np.concatenate([rgb_img, depth_img])
         depth = depth[:, :, ::-1]
+      elif self.view_type == 'camera_side_rgbd_random_reflect':
+        rgb_img = self.sensor.getRGBImg(self.heightmap_size)
+        depth_img = self.sensor.getDepthImg(self.heightmap_size).reshape(1, self.heightmap_size, self.heightmap_size)
+        depth = np.concatenate([rgb_img, depth_img])
+        if np.random.random() > 0.5:
+          depth = depth[:, :, ::-1]
+        if np.random.random() > 0.5:
+          depth = depth[:, ::-1, :]
       elif self.view_type == 'camera_side_rgbd_undis':
         rgb_img = self.sensor.getRGBImg(self.heightmap_size)
         depth_img = self.sensor.getDepthImg(self.heightmap_size).reshape(1, self.heightmap_size, self.heightmap_size)
