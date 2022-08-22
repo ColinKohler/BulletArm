@@ -42,7 +42,7 @@ class CloseLoopEnv(BaseEnv):
                               'camera_side_offset_height', 'camera_side_1', 'camera_side_1_rgbd', 'camera_side_1_height',
                               'camera_side_rgbd_15', 'camera_side_rgbd_30', 'camera_side_rgbd_60', 'camera_side_rgbd_undis',
                               'camera_side_rgbd_60_undis', 'camera_side_rgbd_reflect', 'camera_center_xyz_reflect',
-                              'camera_side_rgbd_random_reflect']
+                              'camera_side_rgbd_random_reflect', 'camera_fix_rgbd']
     self.view_scale = config['view_scale']
     self.robot_type = config['robot']
     if config['robot'] == 'kuka':
@@ -383,12 +383,18 @@ class CloseLoopEnv(BaseEnv):
       else:
         depth = heightmap
       return depth
-    elif self.view_type in ['camera_fix', 'camera_fix_height']:
+    elif self.view_type in ['camera_fix', 'camera_fix_height', 'camera_fix_rgbd']:
       heightmap = self.sensor.getHeightmap(self.heightmap_size)
       if self.view_type == 'camera_fix':
         depth = -heightmap + gripper_pos[2]
-      else:
+      elif self.view_type == 'camera_fix_height':
         depth = heightmap
+      elif self.view_type == 'camera_fix_rgbd':
+        rgb_img = self.sensor.getRGBImg(self.heightmap_size)
+        depth_img = self.sensor.getDepthImg(self.heightmap_size).reshape(1, self.heightmap_size, self.heightmap_size)
+        depth = np.concatenate([rgb_img, depth_img])
+      else:
+        raise NotImplementedError
       return depth
     elif self.view_type in ['camera_side', 'camera_side_rgbd', 'camera_side_height', 'camera_side_rgbd_undis',
                             'camera_side_rgbd_reflect', 'camera_side_rgbd_random_reflect']:
