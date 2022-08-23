@@ -3,6 +3,7 @@ import numpy as np
 DEFAULT_CONFIG = {
   # The type of robot to use in the simulator. Currently supports: kuka, panda, ur5, ur5_robotiq
   'robot' : 'kuka',
+  'gripper' : None,
   # Check object out of bound using the COM or the bounding box. Choices: 'point', 'box'
   'workspace_check' : 'point',
   # The pixel size of the in-hand image

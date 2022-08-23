@@ -7,8 +7,9 @@ from bulletarm.pybullet.utils import constants
 from bulletarm.pybullet.robots.robot_base import RobotBase
 
 class Panda(RobotBase):
-  '''
+  ''' Panda robotic arm.
 
+  This class implements robotic functions unique to the UR5 robotic arm.
   '''
   def __init__(self):
     super().__init__()

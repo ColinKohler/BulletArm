@@ -1,74 +1,47 @@
 import os
-import copy
 import math
-import numpy as np
-import numpy.random as npr
-from collections import deque, namedtuple
-from attrdict import AttrDict
-from threading import Thread
-
 import pybullet as pb
-import pybullet_data
 
-import bulletarm
-import time
 from bulletarm.pybullet.robots.robot_base import RobotBase
+from bulletarm.pybullet.robots.grippers.robotiq import Robotiq
+from bulletarm.pybullet.robots.grippers.hydrostatic import Hydrostatic
+from bulletarm.pybullet.robots.grippers.openhand_vf import OpenHandVF
 from bulletarm.pybullet.utils import constants
 
-jointInfo = namedtuple("jointInfo",
-                       ["id", "name", "type", "lowerLimit", "upperLimit", "maxForce", "maxVelocity"])
-jointTypeList = ["REVOLUTE", "PRISMATIC", "SPHERICAL", "PLANAR", "FIXED"]
+COMPATABLE_GRIPPERS = ['robotiq', 'hydrostatic', 'openhand_vf']
 
-class UR5_Robotiq(RobotBase):
+class UR5(RobotBase):
+  ''' UR5 robotic arm.
+
+  This class implements robotic functions unique to the UR5 robotic arm. The gripper to be attached
+  to the arm is specified by the argument.
+
+  Args:
+    gripper (string): The gripper type to be attached to the UR5.
   '''
+  def __init__(self, gripper):
+    super().__init__()
 
-  '''
-  def __init__(self):
-    super(UR5_Robotiq, self).__init__()
-    # Setup arm and gripper variables
-    self.max_forces = [150, 150, 150, 28, 28, 28, 30, 30]
-    self.gripper_close_force = [30] * 2
-    self.gripper_open_force = [30] * 2
-    self.end_effector_index = 12
+    # Setup gripper
+    # NOTE: Might move this to the robot factory
+    if gripper == 'robotiq':
+      self.gripper = Robotiq()
+      self.urdf_filepath = constants.UR5_ROBOTIQ_PATH
+    elif gripper = 'hydrostatic':
+      self.gripper = Hydrostatic()
+      self.urdf_filepath = constants.UR5_HYDROSTATIC_PATH
+    elif gripper = 'openhand_vf':
+      self.gripper = OpenHandVF()
+      self.urdf_filepath = constants.UR5_OPENHAND_VF_PATH
 
-    self.home_positions = [0., 0., -2.137, 1.432, -0.915, -1.591, 0.071, 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]
-    self.home_positions_joint = self.home_positions[1:7]
-
-    self.urdf_filepath = os.path.join(constants.URDF_PATH, 'ur5/ur5.urdf')
-
-    self.gripper_joint_limit = [0, 0.036]
-    self.gripper_joint_names = list()
-    self.gripper_joint_indices = list()
-
-    ###############################################
-    ## fake robotiq 85
-    # the open length of the gripper. 0 is closed, 0.085 is completely opened
-    self.robotiq_open_length_limit = [0, 0.085]
-    # the corresponding robotiq_85_left_knuckle_joint limit
-    self.robotiq_joint_limit = [0.715 - math.asin((self.robotiq_open_length_limit[0] - 0.010) / 0.1143),
-                                0.715 - math.asin((self.robotiq_open_length_limit[1] - 0.010) / 0.1143)]
-
-    self.robotiq_controlJoints = ["robotiq_85_left_knuckle_joint",
-                          "robotiq_85_right_knuckle_joint",
-                          "robotiq_85_left_inner_knuckle_joint",
-                          "robotiq_85_right_inner_knuckle_joint",
-                          "robotiq_85_left_finger_tip_joint",
-                          "robotiq_85_right_finger_tip_joint"]
-    self.robotiq_main_control_joint_name = "robotiq_85_left_inner_knuckle_joint"
-    self.robotiq_mimic_joint_name = [
-      "robotiq_85_right_knuckle_joint",
-      "robotiq_85_left_knuckle_joint",
-      "robotiq_85_right_inner_knuckle_joint",
-      "robotiq_85_left_finger_tip_joint",
-      "robotiq_85_right_finger_tip_joint"
-    ]
-    self.robotiq_mimic_multiplier = [1, 1, 1, 1, -1, -1]
-    self.robotiq_joints = AttrDict()
+    # Setup arm
+    self.end_effector_index = self.gripper.end_effector_index
+    self.max_forces = [150, 150, 150, 28, 28, 28]
+    self.home_positions = [0., 0., -2.137, 1.432, -0.915, -1.591, 0.071, 0.]
 
   def initialize(self):
     ''''''
     self.id = pb.loadURDF(self.urdf_filepath, [0,0,0.1], [0,0,0,1])
-    # self.is_holding = False
     self.gripper_closed = False
     self.holding_obj = None
     self.num_joints = pb.getNumJoints(self.id)
@@ -179,32 +152,8 @@ class UR5_Robotiq(RobotBase):
   def _calculateIK(self, pos, rot):
     return pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)[:-8]
 
-  def _getGripperJointPosition(self):
-    p1 = pb.getJointState(self.id, self.gripper_joint_indices[0])[0]
-    p2 = pb.getJointState(self.id, self.gripper_joint_indices[1])[0]
-    return p1, p2
-
   def _sendPositionCommand(self, commands):
     ''''''
     num_motors = len(self.arm_joint_indices)
     pb.setJointMotorControlArray(self.id, self.arm_joint_indices, pb.POSITION_CONTROL, commands,
                                  [0.]*num_motors, self.max_forces[:-2], [0.02]*num_motors, [1.0]*num_motors)
-
-  def _sendGripperCommand(self, target_pos1, target_pos2):
-    pb.setJointMotorControlArray(self.id, self.gripper_joint_indices, pb.POSITION_CONTROL,
-                                 targetPositions=[target_pos1, target_pos2], forces=self.gripper_open_force,
-                                 positionGains=[self.position_gain]*2, velocityGains=[1.0]*2)
-    # pb.setJointMotorControlArray(self.id, self.gripper_joint_indices, pb.POSITION_CONTROL,
-    #                              targetPositions=[target_pos1, target_pos2], forces=self.gripper_open_force)
-
-  def _setRobotiqPosition(self, pos):
-    percentage = pos/self.gripper_joint_limit[1]
-    target = percentage * (self.robotiq_joint_limit[0]-self.robotiq_joint_limit[1]) + self.robotiq_joint_limit[1]
-    for i, jn in enumerate(self.robotiq_controlJoints):
-      motor = self.robotiq_joints[jn].id
-      pb.resetJointState(self.id, motor, target*self.robotiq_mimic_multiplier[i])
-      pb.setJointMotorControl2(self.id,
-                               motor,
-                               pb.POSITION_CONTROL,
-                               targetPosition=target*self.robotiq_mimic_multiplier[i],
-                               force=100)

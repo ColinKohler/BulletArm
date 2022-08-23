@@ -17,10 +17,7 @@ import bulletarm.pybullet.utils.constants as constants
 from bulletarm.pybullet.utils import transformations
 import bulletarm.envs.configs as env_configs
 
-from bulletarm.pybullet.robots.ur5_simple import UR5_Simple
-from bulletarm.pybullet.robots.ur5_robotiq import UR5_Robotiq
-from bulletarm.pybullet.robots.kuka import Kuka
-from bulletarm.pybullet.robots.panda import Panda
+import bulletarm.pybullet.robots.robot_factory as robot_factory
 from bulletarm.pybullet.utils.sensor import Sensor
 from bulletarm.pybullet.objects.pybullet_object import PybulletObject
 import bulletarm.pybullet.utils.object_generation as pb_obj_generation
@@ -101,16 +98,7 @@ class BaseEnv:
     self._timestep = 1. / 240.
 
     # Setup robot
-    if config['robot'] == 'ur5':
-      self.robot = UR5_Simple()
-    elif config['robot'] == 'ur5_robotiq':
-      self.robot = UR5_Robotiq()
-    elif config['robot'] == 'kuka':
-      self.robot = Kuka()
-    elif config['robot'] == 'panda':
-      self.robot = Panda()
-    else:
-      raise NotImplementedError
+    self.robot = robot_factory.createRobot(config['robot'], config['gripper'])
 
     # Setup physics mode
     if config['physics_mode'] == 'fast':

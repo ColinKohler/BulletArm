@@ -1,11 +1,20 @@
 import os
+from collections import namedtuple
+from attrdict import AttrDict
+
 import bulletarm
+
 class NoValidPositionException(Exception):
   pass
 
 # File paths
 URDF_PATH = os.path.join(os.path.dirname(bulletarm.__file__), 'pybullet/urdf/')
 OBJECTS_PATH = os.path.join(URDF_PATH, 'object')
+KUKA_PATH = os.path.join(URDF_PATH, 'kuka/kuka_with_gripper2.sdf')
+PANDA_PATH = os.path.join(URDF_PATH, 'franka_panda/panda.urdf')
+UR5_ROBOTIQ_PATH = os.path.join(URDF_PATH, 'ur5/ur5_robotiq_85_gripper_fake.urdf')
+UR5_HYDROSTATIC_PATH = os.path.join(URDF_PATH, 'ur5/ur5_hydrostatic.urdf')
+UR5_OPENHAND_VF_PATH = os.path.join(URDF_PATH, 'ur5/ur5_openhand_vf.urdf')
 
 # Shape types
 CUBE = 0
@@ -41,6 +50,11 @@ PICK_PRIMATIVE = 0
 PLACE_PRIMATIVE = 1
 PULL_PRIMATIVE = 2
 PUSH_PRIMATIVE = 3
+
+# Robots
+JointInfo = namedtuple("JointInfo",
+                       ["id", "name", "type", "lower_limit", "upper_limit", "max_force", "max_velocity"])
+JOINT_TYPES = ["REVOLUTE", "PRISMATIC", "SPHERICAL", "PLANAR", "FIXED"]
 
 z_scale_1 = 1
 z_scale_2 = 2
