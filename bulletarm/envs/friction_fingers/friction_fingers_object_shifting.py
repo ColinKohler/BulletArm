@@ -26,8 +26,8 @@ class FrictionFingersObjectShiftingEnv(FrictionFingersEnv):
     return False
 
 if __name__ == '__main__':
-  config = {}
-  env = FrictionFingersObjectShiftingEnv()
+  env_config = {'render' : True, 'seed' : 0}
+  env = FrictionFingersObjectShiftingEnv(env_config)
   obs = env.reset()
 
   done = False

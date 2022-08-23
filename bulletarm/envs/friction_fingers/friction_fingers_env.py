@@ -12,7 +12,12 @@ class FrictionFingersEnv(BaseEnv):
   def __init__(self, config):
     # Only allow the robot with the Yale openhand VF gripper
     config['robot'] = 'kuka'
-
+    config['view_type'] = 'camera_center_xyz'
+    config['view_scale'] = 1.5
+    config['obs_type'] = 'pixel'
+    self.view_type = config['view_type']
+    self.view_scale = config['view_scale']
+    self.obs_type = config['obs_type']
     super().__init__(config)
 
     self.renderer = None
