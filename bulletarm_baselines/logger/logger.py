@@ -20,7 +20,7 @@ class Logger(object):
     num_eval_eps (int): Number of episodes in a evaluation iteration
     hyperparameters (dict): Hyperparameters to log. Defaults to None
   '''
-  def __init__(self, results_path, checkpoint_interval=500, num_eval_eps=100, hyperparameters=None):
+  def __init__(self, results_path, hyperparameters, checkpoint_interval=500, num_eval_eps=100):
     self.results_path = results_path
     self.writer = SummaryWriter(results_path)
     self.checkpoint_interval = checkpoint_interval
@@ -36,12 +36,11 @@ class Logger(object):
     self.current_episode_rewards = None
 
     # Evaluation
-    self.num_eval_episodes = num_eval_eps # TODO: Dunno if I want this here
     self.num_eval_intervals = 0
-    self.eval_eps_rewards = [[]]
-    self.eval_eps_dis_rewards = [[]]
-    self.eval_mean_values = [[]]
-    self.eval_eps_lens = [[]]
+    self.eval_eps_rewards = [list()]
+    self.eval_eps_dis_rewards = [list()]
+    self.eval_mean_values = [list()]
+    self.eval_eps_lens = [list()]
 
     # sub folders for saving the models and checkpoint
     self.models_dir = os.path.join(self.results_path, 'models')
@@ -49,15 +48,16 @@ class Logger(object):
     os.makedirs(self.models_dir)
     os.makedirs(self.checkpoint_dir)
 
-    if hyperparameters:
-      hp_table = [
-        f'| {k} | {v} |' for k, v in hyperparameters.items()
-      ]
-      self.writer.add_text(
-        'Hyperparameters', '| Parameter | Value |\n|-------|-------|\n' + '\n'.join(hp_table)
-      )
+    self.hyperparameters = hyperparameters
+    hp_table = [
+      f'| {k} | {v} |' for k, v in hyperparameters.items()
+    ]
+    self.writer.add_text(
+      'Hyperparameters', '| Parameter | Value |\n|-------|-------|\n' + '\n'.join(hp_table)
+    )
+    #metrics = dict()
+    #self.writer.add_hparams(hyperparameters, metrics)
 
-  # TODO: I don't use this atm so tihs is untested.
   def logStep(self, rewards, done_masks):
     '''
     Log episode step.
@@ -92,32 +92,38 @@ class Logger(object):
 
   def logEvalInterval(self):
     self.num_eval_intervals += 1
-    self.eval_eps_rewards.append([])
-    self.eval_eps_dis_rewards.append([])
-    self.eval_mean_values.append([])
-    self.eval_eps_lens.append([])
+    self.eval_eps_rewards.append(list())
+    self.eval_eps_dis_rewards.append(list())
+    self.eval_mean_values.append(list())
+    self.eval_eps_lens.append(list())
 
-  def logEvalEpisode(self, rewards, values=None, discounted_return=None):
+  def logEvalEpisode(self, rewards, values=None):
     '''
     Log a evaluation episode.
 
     Args:
       rewards (list[float]: Rewards for the episode
       values (list[float]): Values for the episode
-      discounted_return (list[float]): Discounted return of the episode
     '''
     self.eval_eps_rewards[self.num_eval_intervals].append(np.sum(rewards))
     self.eval_eps_lens[self.num_eval_intervals].append(int(len(rewards)))
     if values is not None:
       self.eval_mean_values[self.num_eval_intervals].append(np.mean(values))
-    if discounted_return is not None:
-      self.eval_eps_dis_rewards[self.num_eval_intervals].append(discounted_return)
+    if 'discount' in self.hyperparameters.keys() or 'gamma' in self.hyperparameters.keys():
+      if 'gamma' in self.hyperparameters.keys():
+        gamma = self.hyperparameters['gamma']
+      else:
+        gamma = self.hyperparameters['discount']
+      R = 0
+      for r in reversed(rewards):
+        R = r + gamma * R
+      self.eval_eps_dis_rewards[self.num_eval_intervals].append(R)
 
   def logTrainingStep(self, loss):
     ''''''
     self.num_training_steps += 1
     if type(loss) is list or type(loss) is tuple:
-      loss = {'loss{}'.format(i): loss[i] for i in range(len(loss))}
+      loss = {'loss{}'.format(i): loss[i] for i in range(loss)}
     elif type(loss) is float:
       loss = {'loss': loss}
     for k, v in loss.items():
@@ -131,20 +137,19 @@ class Logger(object):
     Write the logdir to the tensorboard summary writer. Calling this too often can
     slow down training.
     '''
-    # the eval list index at self.num_eval_intervals might be being updated, so log the eval list indexed
-    # at self.num_eval_intervals-1
-    if self.num_eval_intervals > 1:
-      self.writer.add_scalar('1.Evaluate/1.Reward',
-                             self.getAvg(self.eval_eps_rewards[self.num_eval_intervals-1], n=self.num_eval_episodes),
-                             self.num_eval_intervals-1)
-      self.writer.add_scalar('1.Evaluate/2.Mean_value',
-                             self.getAvg(self.eval_mean_values[self.num_eval_intervals-1], n=self.num_eval_episodes),
-                             self.num_eval_intervals-1)
-      self.writer.add_scalar('1.Evaluate/3.Eps_len',
-                            self.getAvg(self.eval_eps_lens[self.num_eval_intervals-1], n=self.num_eval_episodes),
-                            self.num_eval_intervals-1)
-    # TODO: Do we want to allow custom windows here?
-    self.writer.add_scalar('1.Evaluate/4.Learning_curve',
+    self.writer.add_scalar('1.Evaluate/1.Reward',
+                           np.mean(self.eval_eps_rewards[self.num_eval_intervals]) if self.eval_eps_rewards[self.num_eval_intervals] else 0,
+                           self.num_eval_intervals+1)
+    self.writer.add_scalar('1.Evaluate/2.Discounted_rewards',
+                           np.mean(self.eval_eps_dis_rewards[self.num_eval_intervals]) if self.eval_eps_dis_rewards[self.num_eval_intervals] else 0,
+                           self.num_eval_intervals+1)
+    self.writer.add_scalar('1.Evaluate/3.Mean_value',
+                           np.mean(self.eval_mean_values[self.num_eval_intervals]) if self.eval_mean_values[self.num_eval_intervals] else 0,
+                           self.num_eval_intervals+1)
+    self.writer.add_scalar('1.Evaluate/4.Eps_len',
+                          np.mean(self.eval_eps_lens[self.num_eval_intervals]) if self.eval_eps_lens[self.num_eval_intervals] else 0,
+                          self.num_eval_intervals+1)
+    self.writer.add_scalar('1.Evaluate/5.Learning_curve',
                            self.getAvg(self.training_eps_rewards, n=100),
                            len(self.training_eps_rewards))
 
