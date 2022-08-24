@@ -1,4 +1,5 @@
 # User
+scripts/outputs
 docs/html
 docs/doctrees
 Pipfile.lock

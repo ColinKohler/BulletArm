@@ -10,4 +10,7 @@ class ForceHouseholdPickingClutteredEnv(CloseLoopHouseholdPickingClutteredEnv):
     state, hand_obs, obs = super()._getObservation(action=action)
     force = np.array(self.robot.force_history)
 
-    return state, hand_obs, obs, force
+    max_force = 30
+    force = np.clip(force, -max_force, max_force) / max_force
+
+    return state, hand_obs, obs, force[-256:]
