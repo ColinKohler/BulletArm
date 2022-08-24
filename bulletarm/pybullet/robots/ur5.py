@@ -33,127 +33,111 @@ class UR5(RobotBase):
     elif gripper = 'openhand_vf':
       self.gripper = OpenHandVF()
       self.urdf_filepath = constants.UR5_OPENHAND_VF_PATH
+    self.end_effector_index = self.gripper.end_effector_index
 
     # Setup arm
-    self.end_effector_index = self.gripper.end_effector_index
+    self.num_dofs = 6
+    self.wrist_index = 5
     self.max_forces = [150, 150, 150, 28, 28, 28]
     self.home_positions = [0., 0., -2.137, 1.432, -0.915, -1.591, 0.071, 0.]
 
   def initialize(self):
     ''''''
-    self.id = pb.loadURDF(self.urdf_filepath, [0,0,0.1], [0,0,0,1])
-    self.gripper_closed = False
-    self.holding_obj = None
+    self.id = pb.loadURDF(self.urdf_filepath, [0,0,0.1], [0,0,0,1], useFixedBase=True)
+    pb.resetBasePositionAndOrientation(self.id, [-0.1,0,0], [0,0,0,1])
+
+    self.gripper.closed = False
+    self.pre_holding_obj = None
+
+    # Enable force sensors
+    pb.enableJointForceTorqueSensor(self.id, self.wrist_index)
+    self.gripper.enableFingerForceTorqueSensors(self.id)
+
     self.num_joints = pb.getNumJoints(self.id)
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
 
     self.arm_joint_names = list()
     self.arm_joint_indices = list()
-    self.gripper_joint_names = list()
-    self.gripper_joint_indices = list()
     for i in range (self.num_joints):
       joint_info = pb.getJointInfo(self.id, i)
-      if i in range(1, 7):
+      if i in range(1, self.num_dofs+1):
         self.arm_joint_names.append(str(joint_info[1]))
         self.arm_joint_indices.append(i)
-      elif i in range(10, 12):
-        self.gripper_joint_names.append(str(joint_info[1]))
-        self.gripper_joint_indices.append(i)
 
-      elif i in range(14, self.num_joints):
-        info = pb.getJointInfo(self.id, i)
-        jointID = info[0]
-        jointName = info[1].decode("utf-8")
-        jointType = jointTypeList[info[2]]
-        jointLowerLimit = info[8]
-        jointUpperLimit = info[9]
-        jointMaxForce = info[10]
-        jointMaxVelocity = info[11]
-        singleInfo = jointInfo(jointID, jointName, jointType, jointLowerLimit, jointUpperLimit, jointMaxForce,
-                               jointMaxVelocity)
-        self.robotiq_joints[singleInfo.name] = singleInfo
+    # Zero force out
+    self.force_history = list()
+    pb.stepSimulation()
+    force, moment = self.getWristForce()
+    self.zero_force = np.concatenate((force, moment))
+
+    self.openGripper()
 
   def reset(self):
-    self.gripper_closed = False
+    self.gripper.closed = False
     self.holding_obj = None
-    [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
 
-  def getGripperOpenRatio(self):
-    p1, p2 = self._getGripperJointPosition()
-    mean = (p1 + p2)/2
-    ratio = (mean - self.gripper_joint_limit[1]) / (self.gripper_joint_limit[0] - self.gripper_joint_limit[1])
-    return ratio
+    [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
+    self.openGripper()
+
+    # Zero force out
+    self.force_history = list()
+    pb.stepSimulation()
+    force, moment = self.getWristForce()
+    self.zero_force = np.concatenate((force, moment))
+
+  def getWristForce(self):
+    wrist_info = list(pb.getJointState(self.id, self.wrist_index)[2])
+    wrist_force = np.array(wrist_info[:3])
+    wrist_moment = np.array(wrist_info[3:])
+
+    # Transform to world frame
+    wrist_rot = pb.getMatrixFromQuaternion(pb.getLinkState(self.id, self.wrist_index - 1)[5])
+    wrist_rot = np.array(list(wrist_rot)).reshape((3,3))
+    wrist_force = np.dot(wrist_rot, wrist_force)
+    wrist_moment = np.dot(wrist_rot, wrist_moment)
+
+    return wrist_force, wrist_moment
+
+  def getFingerForce(self):
+    self.gripper.getFingerForce(self.id)
 
   def controlGripper(self, open_ratio, max_it=100):
-    p1, p2 = self._getGripperJointPosition()
-    target = open_ratio * (self.gripper_joint_limit[0] - self.gripper_joint_limit[1]) + self.gripper_joint_limit[1]
-    self._sendGripperCommand(target, target)
-    it = 0
-    while abs(target - p1) + abs(target - p2) > 0.001:
-      self._setRobotiqPosition((p1 + p2) / 2)
-      pb.stepSimulation()
-      it += 1
-      p1_, p2_ = self._getGripperJointPosition()
-      if it > max_it or (abs(p1 - p1_) < 0.0001 and abs(p2 - p2_) < 0.0001):
-        return
-      p1 = p1_
-      p2 = p2_
-
-  def closeGripper(self, max_it=100, primative=constants.PICK_PRIMATIVE):
-    ''''''
-    p1, p2 = self._getGripperJointPosition()
-    limit = self.gripper_joint_limit[1]
-    self._sendGripperCommand(limit, limit)
-    # self._sendGripperCloseCommand()
-    self.gripper_closed = True
-    it = 0
-    while (limit-p1) + (limit-p2) > 0.001:
-      self._setRobotiqPosition((p1 + p2) / 2)
-      pb.stepSimulation()
-      it += 1
-      p1_, p2_ = self._getGripperJointPosition()
-      if it > max_it or (abs(p1-p1_)<0.0001 and abs(p2-p2_)<0.0001):
-        mean = (p1+p2)/2 + 0.005
-        self._sendGripperCommand(mean, mean)
-        return False
-      p1 = p1_
-      p2 = p2_
-    return True
-
-  def adjustGripperCommand(self):
-    p1, p2 = self._getGripperJointPosition()
-    mean = (p1 + p2) / 2 + 0.005
-    self._sendGripperCommand(mean, mean)
-
-  def checkGripperClosed(self):
-    limit = self.gripper_joint_limit[1]
-    p1, p2 = self._getGripperJointPosition()
-    if (limit - p1) + (limit - p2) > 0.001:
-      return
-    else:
-      self.holding_obj = None
+    self.gripper.contolGripper(open_ratiom max_it=max_it)
 
   def openGripper(self):
-    ''''''
-    p1, p2 = self._getGripperJointPosition()
-    limit = self.gripper_joint_limit[0]
-    self._sendGripperCommand(limit, limit)
-    self.gripper_closed = False
-    it = 0
-    while p1 > 0.0:
-      self._setRobotiqPosition((p1 + p2) / 2)
-      pb.stepSimulation()
-      it += 1
-      if it > 100:
-        return False
-      p1, p2 = self._getGripperJointPosition()
-    return True
+    return self.gripper.openGripper()
+
+  def closeGripper(self):
+    return self.gripper.closeGripper()
+
+  def getGripperImg(self, img_size, workspace_size, obs_size_m):
+    return self.gripper.getGripperImg(img_size, workspace_size, obs_size_m)
+
+  def adjustGripperCommand(self):
+    self.gripper.adjustGripperCommand()
+
+  def checkGripperClosed(self):
+    return self.gripper.checkGripperClosed()
+
+  def gripperHasForce(self):
+    return self.gripper.hasForce()
 
   def _calculateIK(self, pos, rot):
-    return pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot)[:-8]
+    return pb.calculateInverseKinematics(
+      self.id,
+      self.end_effector_index,
+      pos,
+      targetOrientation=rot)[:self.num_dofs]
 
   def _sendPositionCommand(self, commands):
     ''''''
     num_motors = len(self.arm_joint_indices)
-    pb.setJointMotorControlArray(self.id, self.arm_joint_indices, pb.POSITION_CONTROL, commands,
-                                 [0.]*num_motors, self.max_forces[:-2], [0.02]*num_motors, [1.0]*num_motors)
+    pb.setJointMotorControlArray(
+      self.id,
+      self.arm_joint_indices,
+      pb.POSITION_CONTROL,
+      commands,
+      targetVelocities=[0.] * num_motors,
+      forces=self.max_forces,
+      positionGains=[self.position_gain] * num_motors,
+      velocityGains=[1.0] * num_motors)

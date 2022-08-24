@@ -1,82 +1,66 @@
 import os
-import copy
 import math
-import numpy as np
-import numpy.random as npr
-from collections import deque
+import pybullet as pb
 from scipy.ndimage import rotate
 
-import pybullet as pb
-import pybullet_data
-
-import bulletarm
-from bulletarm.pybullet.utils import constants
 from bulletarm.pybullet.robots.robot_base import RobotBase
-import time
-
-from bulletarm.pybullet.utils import pybullet_util
-from bulletarm.pybullet.utils import object_generation
-from bulletarm.pybullet.utils import transformations
+from bulletarm.pybullet.utils import constants
 
 class Kuka(RobotBase):
-  '''
+  ''' Kuka robotic arm.
 
+  This class implements robotic functions unique to the Kuka robotic arm.
   '''
   def __init__(self):
     super().__init__()
-    self.max_velocity = .35
-    self.max_force = 200.
-    self.end_effector_index = 14
-    self.gripper_index = 7
-    self.gripper_z_offset = 0.12
 
-    # lower limits for null space
-    self.ll = [-.967, -2, -2.96, 0.19, -2.96, -2.09, -3.05]
-    # upper limits for null space
-    self.ul = [.967, 2, 2.96, 2.29, 2.96, 2.09, 3.05]
-    # joint ranges for null space
-    self.jr = [5.8, 4, 5.8, 4, 5.8, 4, 6]
-    # restposes for null space
-    self.rp = [0, 0, 0, 0.5 * math.pi, 0, -math.pi * 0.5 * 0.66, 0]
-    # joint damping coefficents
-    self.jd = [
+    self.urdf_filepath = constants.KUKA_PATH
+
+    # Setup arm
+    self.num_dofs = 7
+    self.max_forces = [200.] * self.num_dofs
+    self.max_velocities = [.35] * self.num_dofs
+
+    self.lower_limits = [-.967, -2, -2.96, 0.19, -2.96, -2.09, -3.05]
+    self.upper_limts = [.967, 2, 2.96, 2.29, 2.96, 2.09, 3.05]
+    self.joint_ranges = [5.8, 4, 5.8, 4, 5.8, 4, 6]
+    self.rest_poses = [0, 0, 0, 0.5 * math.pi, 0, -math.pi * 0.5 * 0.66, 0]
+    self.joint_damping = [
       0.00001, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001,
       0.00001, 0.00001, 0.00001, 0.00001
     ]
-
     self.home_positions = [0.3926, 0., -2.137, 1.432, 0, -1.591, 0.071, 0., 0., 0., 0., 0., 0., 0., 0.]
-    self.home_positions_joint = self.home_positions[:7]
-    # self.home_positions = [
-    #     0.006418, 0.413184, -0.011401, -1.589317, 0.005379, 1.137684, -0.006539, 0.000048,
-    #     -0.299912, 0.000000, -0.000043, 0.299960, 0.000000, -0.000200
-    # ]
 
+    # Setup gripper
+    self.end_effector_index = 14
+    self.wrist_index = 7
+    self.finger_a_index = 8
+    self.finger_b_index = 11
+    self.gripper_z_offset = 0.12
     self.gripper_joint_limit = [0, 0.2]
     self.adjust_gripper_offset = 0.01
 
-    self.urdf_filepath = os.path.join(constants.URDF_PATH, 'kuka/kuka_with_gripper2.sdf')
-
   def initialize(self):
     ''''''
-    self.id = pb.loadSDF(self.urdf_filepath)[0]
-    pb.resetBasePositionAndOrientation(self.id, [-0.2,0,0], [0,0,0,1])
+    self.id = pb.loadSDF(self.urdf_filepath, useFixedBase=True)[0]
+    pb.resetBasePositionAndOrientation(self.id, [-0.1,0,0], [0,0,0,1])
 
-    # self.is_holding = False
     self.gripper_closed = False
     self.holding_obj = None
 
-    pb.enableJointForceTorqueSensor(self.id, 9)
-    pb.enableJointForceTorqueSensor(self.id, 10)
+    # Enable force sensors
+    pb.enableJointForceTorqueSensor(self.id, self.wrist_index)
+    pb.enableJointForceTorqueSensor(self.id, self.finger_a_index)
+    pb.enableJointForceTorqueSensor(self.id, self.finger_b_index)
 
     self.num_joints = pb.getNumJoints(self.id)
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
-    self.openGripper()
 
     self.arm_joint_names = list()
     self.arm_joint_indices = list()
     for i in range (self.num_joints):
       joint_info = pb.getJointInfo(self.id, i)
-      if i in range(7):
+      if i in range(self.num_dofs):
         self.arm_joint_names.append(str(joint_info[1]))
         self.arm_joint_indices.append(i)
 
@@ -86,12 +70,13 @@ class Kuka(RobotBase):
     force, moment = self.getWristForce()
     self.zero_force = np.concatenate((force, moment))
 
+    self.openGripper()
+
   def reset(self):
     self.gripper_closed = False
     self.holding_obj = None
 
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
-    self.moveToJ(self.home_positions_joint)
     self.openGripper()
 
     # Zero force out
@@ -100,6 +85,24 @@ class Kuka(RobotBase):
     force, moment = self.getWristForce()
     self.zero_force = np.concatenate((force, moment))
 
+  def getWristForce(self):
+    wrist_info = list(pb.getJointState(self.id, self.wrist_index)[2])
+    wrist_force = np.array(wrist_info[:3])
+    wrist_moment = np.array(wrist_info[3:])
+
+    # Transform to world frame
+    wrist_rot = pb.getMatrixFromQuaternion(pb.getLinkState(self.id, self.wrist_index - 1)[5])
+    wrist_rot = np.array(list(wrist_rot)).reshape((3,3))
+    wrist_force = np.dot(wrist_rot, wrist_force)
+    wrist_moment = np.dot(wrist_rot, wrist_moment)
+
+    return wrist_force, wrist_moment
+
+  def getFingerForce(self):
+    finger_a_force = pb.getJointState(self.id, 8)[2]
+    finger_b_force = pb.getJointState(self.id, 11)[2]
+
+    return finger_a_force, finger_b_force
 
   def controlGripper(self, open_ratio, max_it=100):
     p1, p2 = self._getGripperJointPosition()
@@ -114,48 +117,6 @@ class Kuka(RobotBase):
         return
       p1 = p1_
       p2 = p2_
-
-  def getGripperOpenRatio(self):
-    p1, p2 = self._getGripperJointPosition()
-    mean = (p1 + p2)/2
-    ratio = (mean - self.gripper_joint_limit[0]) / (self.gripper_joint_limit[1] - self.gripper_joint_limit[0])
-    return ratio
-
-  def closeGripper(self, max_it=100, primative=constants.PICK_PRIMATIVE):
-    ''''''
-    if primative == constants.PULL_PRIMATIVE:
-      force = 20
-    else:
-      force = 2
-    p1, p2 = self._getGripperJointPosition()
-    target = self.gripper_joint_limit[0]
-    self._sendGripperCommand(target, target, force)
-    self.gripper_closed = True
-    it = 0
-    while abs(target-p1) + abs(target-p2) > 0.001:
-      pb.stepSimulation()
-      it += 1
-      p1_, p2_ = self._getGripperJointPosition()
-      if it > max_it or (abs(p1 - p1_) < 0.0001 and abs(p2 - p2_) < 0.0001):
-        # mean = (p1 + p2) / 2 - 0.001
-        # self._sendGripperCommand(mean, mean)
-        return False
-      p1 = p1_
-      p2 = p2_
-    return True
-
-  def adjustGripperCommand(self):
-    p1, p2 = self._getGripperJointPosition()
-    mean = (p1 + p2) / 2 - self.adjust_gripper_offset
-    self._sendGripperCommand(mean, mean)
-
-  def checkGripperClosed(self):
-    limit = self.gripper_joint_limit[1]
-    p1, p2 = self._getGripperJointPosition()
-    if (limit - p1) + (limit - p2) > 0.001:
-      return
-    else:
-      self.holding_obj = None
 
   def openGripper(self):
     ''''''
@@ -181,21 +142,32 @@ class Kuka(RobotBase):
       p2 = p2_
     return True
 
-  def gripperHasForce(self):
-    return pb.getJointState(self.id, 8)[3] >= 2 or pb.getJointState(self.id, 11)[3] <= -2
+  def closeGripper(self, max_it=100, primative=constants.PICK_PRIMATIVE):
+    ''''''
+    if primative == constants.PULL_PRIMATIVE:
+      force = 20
+    else:
+      force = 2
+    p1, p2 = self._getGripperJointPosition()
+    target = self.gripper_joint_limit[0]
+    self._sendGripperCommand(target, target, force)
+    self.gripper_closed = True
+    it = 0
+    while abs(target-p1) + abs(target-p2) > 0.001:
+      pb.stepSimulation()
+      it += 1
+      p1_, p2_ = self._getGripperJointPosition()
+      if it > max_it or (abs(p1 - p1_) < 0.0001 and abs(p2 - p2_) < 0.0001):
+        return False
+      p1 = p1_
+      p2 = p2_
+    return True
 
-  def getWristForce(self):
-    self.wrist_index = 7
-    wrist_force = np.array(list(pb.getJointState(self.id, self.wrist_index)[2][:3]))
-    wrist_moment = np.array(list(pb.getJointState(self.id, self.wrist_index)[2][3:]))
-
-    return wrist_force, wrist_moment
-
-  def getFingerForce(self):
-    finger_a_force = pb.getJointState(self.id, 8)[2]
-    finger_b_force = pb.getJointState(self.id, 11)[2]
-
-    return finger_a_force, finger_b_force
+  def getGripperOpenRatio(self):
+    p1, p2 = self._getGripperJointPosition()
+    mean = (p1 + p2)/2
+    ratio = (mean - self.gripper_joint_limit[0]) / (self.gripper_joint_limit[1] - self.gripper_joint_limit[0])
+    return ratio
 
   def getGripperImg(self, img_size, workspace_size, obs_size_m):
     gripper_state = self.getGripperOpenRatio()
@@ -214,8 +186,30 @@ class Kuka(RobotBase):
 
     return im
 
+  def adjustGripperCommand(self):
+    p1, p2 = self._getGripperJointPosition()
+    mean = (p1 + p2) / 2 - self.adjust_gripper_offset
+    self._sendGripperCommand(mean, mean)
+
+  def checkGripperClosed(self):
+    limit = self.gripper_joint_limit[1]
+    p1, p2 = self._getGripperJointPosition()
+    if (limit - p1) + (limit - p2) > 0.001:
+      return
+    else:
+      self.holding_obj = None
+
+  def gripperHasForce(self):
+    return (pb.getJointState(self.id, self.finger_a_index)[3] >= 2 or
+            pb.getJointState(self.id, self.finger_b_index)[3] <= -2
+
   def _calculateIK(self, pos, rot):
-    return pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot, jointDamping=self.jd)[:7]
+    return pb.calculateInverseKinematics(
+      self.id,
+      self.end_effector_index,
+      pos,
+      targetOrientation=rot,
+      jointDamping=self.joint_damping)[:self.num_dofs]
 
   def _getGripperJointPosition(self):
     p1 = -pb.getJointState(self.id, 8)[0]

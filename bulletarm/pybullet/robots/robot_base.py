@@ -22,8 +22,10 @@ from bulletarm.pybullet.utils import object_generation
 from bulletarm.pybullet.utils import transformations
 
 class RobotBase:
-  '''
-  Base Robot Class.
+  ''' Base robot arm Class.
+
+  This implements all shared methods between the various robots including motion primatives
+  such as pick/place/etc.
   '''
   def __init__(self):
     self.id = None

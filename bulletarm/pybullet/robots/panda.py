@@ -1,35 +1,36 @@
 import os
 import math
-import numpy as np
 import pybullet as pb
 from scipy.ndimage import rotate
-from bulletarm.pybullet.utils import constants
+
 from bulletarm.pybullet.robots.robot_base import RobotBase
+from bulletarm.pybullet.utils import constants
 
 class Panda(RobotBase):
   ''' Panda robotic arm.
 
-  This class implements robotic functions unique to the UR5 robotic arm.
+  This class implements robotic functions unique to the Panda robotic arm.
   '''
   def __init__(self):
     super().__init__()
-    self.home_positions = [-0.60, -0.14, 0.59, -2.40, 0.11, 2.28, -1, 0.0, 0, 0, 0, 0, 0, 0, 0]
-    self.home_positions_joint = self.home_positions[:7]
-    self.max_force = 240
 
+    self.urdf_filepath = constants.PANDA_PATH
+
+    # Setup arm
     self.num_dofs = 7
+    self.max_forces = [240] * self.num_dofs
+    self.lower_limits = [-7]*self.num_dofs
+    self.upper_limits = [7]*self.num_dofs
+    self.joint_ranges = [7]*self.num_dofs
+    self.home_positions = [-0.60, -0.14, 0.59, -2.40, 0.11, 2.28, -1, 0.0, 0, 0, 0, 0, 0, 0, 0]
+
+    # Setup gripper
+    self.end_effector_index = 13
     self.wrist_index = 8
     self.finger_a_index = 10
     self.finger_b_index = 12
-    self.end_effector_index = 13
     self.gripper_z_offset = 0.08
     self.gripper_joint_limit = [0, 0.04]
-
-    self.ll = [-7]*self.num_dofs
-    self.ul = [7]*self.num_dofs
-    self.jr = [7]*self.num_dofs
-
-    self.urdf_filepath = os.path.join(constants.URDF_PATH, 'franka_panda/panda.urdf')
 
   def initialize(self):
     ''''''
@@ -39,13 +40,15 @@ class Panda(RobotBase):
     self.gripper_closed = False
     self.holding_obj = None
 
-    self.num_joints = pb.getNumJoints(self.id)
-    [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
-
+    # Enable force sensors
     pb.enableJointForceTorqueSensor(self.id, self.wrist_index)
     pb.enableJointForceTorqueSensor(self.id, self.finger_a_index)
     pb.enableJointForceTorqueSensor(self.id, self.finger_b_index)
 
+    self.num_joints = pb.getNumJoints(self.id)
+    [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
+
+    # Set constraints on gripper
     c = pb.createConstraint(self.id,
                             self.finger_a_index,
                             self.id,
@@ -59,7 +62,6 @@ class Panda(RobotBase):
     for j in range(pb.getNumJoints(self.id)):
       pb.changeDynamics(self.id, j, linearDamping=0, angularDamping=0)
 
-    self.openGripper()
 
     self.arm_joint_names = list()
     self.arm_joint_indices = list()
@@ -75,19 +77,39 @@ class Panda(RobotBase):
     force, moment = self.getWristForce()
     self.zero_force = np.concatenate((force, moment))
 
+    self.openGripper()
 
   def reset(self):
     self.gripper_closed = False
     self.holding_obj = None
 
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
-    self.moveToJ(self.home_positions_joint[:self.num_dofs])
     self.openGripper()
 
     # Zero force out
     self.force_history = list()
+    pb.stepSimulation()
     force, moment = self.getWristForce()
     self.zero_force = np.concatenate((force, moment))
+
+  def getWristForce(self):
+    wrist_info = list(pb.getJointState(self.id, self.wrist_index)[2])
+    wrist_force = np.array(wrist_info[:3])
+    wrist_moment = np.array(wrist_info[3:])
+
+    # Transform to world frame
+    wrist_rot = pb.getMatrixFromQuaternion(pb.getLinkState(self.id, self.wrist_index - 1)[5])
+    wrist_rot = np.array(list(wrist_rot)).reshape((3,3))
+    wrist_force = np.dot(wrist_rot, wrist_force)
+    wrist_moment = np.dot(wrist_rot, wrist_moment)
+
+    return wrist_force, wrist_moment
+
+  def getFingerForce(self):
+     finger_a_force = np.array(list(pb.getJointState(self.id, self.finger_a_index)[2][:3]))
+     finger_b_force = np.array(list(pb.getJointState(self.id, self.finger_b_index)[2][:3]))
+
+     return finger_a_force, finger_b_force
 
   def controlGripper(self, open_ratio, max_it=100):
     p1, p2 = self._getGripperJointPosition()
@@ -102,46 +124,6 @@ class Panda(RobotBase):
         return
       p1 = p1_
       p2 = p2_
-
-  def getGripperOpenRatio(self):
-    p1, p2 = self._getGripperJointPosition()
-    mean = (p1 + p2) / 2
-    ratio = (mean - self.gripper_joint_limit[0]) / (self.gripper_joint_limit[1] - self.gripper_joint_limit[0])
-    return ratio
-
-  def closeGripper(self, max_it=100, primative=constants.PICK_PRIMATIVE):
-    ''''''
-    if primative == constants.PULL_PRIMATIVE:
-      force = 20
-    else:
-      force = 10
-    p1, p2 = self._getGripperJointPosition()
-    target = self.gripper_joint_limit[0]
-    self._sendGripperCommand(target, target, force)
-    self.gripper_closed = True
-    it = 0
-    while abs(target-p1) + abs(target-p2) > 0.001:
-      pb.stepSimulation()
-      it += 1
-      p1_, p2_ = self._getGripperJointPosition()
-      if it > max_it or (abs(p1 - p1_) < 0.0001 and abs(p2 - p2_) < 0.0001):
-        # mean = (p1 + p2) / 2 - 0.001
-        # self._sendGripperCommand(mean, mean)
-        return False
-      p1 = p1_
-      p2 = p2_
-    return True
-
-  def adjustGripperCommand(self):
-    pass
-
-  def checkGripperClosed(self):
-    limit = self.gripper_joint_limit[1]
-    p1, p2 = self._getGripperJointPosition()
-    if (limit - p1) + (limit - p2) > 0.001:
-      return
-    else:
-      self.holding_obj = None
 
   def openGripper(self):
     ''''''
@@ -167,39 +149,32 @@ class Panda(RobotBase):
       p2 = p2_
     return True
 
-  def gripperHasForce(self):
-    return (pb.getJointState(self.id, self.finger_a_index)[3] >= 2 or
-            pb.getJointState(self.id, self.finger_b_index)[3] <= -2)
+  def closeGripper(self, max_it=100, primative=constants.PICK_PRIMATIVE):
+    ''''''
+    if primative == constants.PULL_PRIMATIVE:
+      force = 20
+    else:
+      force = 10
+    p1, p2 = self._getGripperJointPosition()
+    target = self.gripper_joint_limit[0]
+    self._sendGripperCommand(target, target, force)
+    self.gripper_closed = True
+    it = 0
+    while abs(target-p1) + abs(target-p2) > 0.001:
+      pb.stepSimulation()
+      it += 1
+      p1_, p2_ = self._getGripperJointPosition()
+      if it > max_it or (abs(p1 - p1_) < 0.0001 and abs(p2 - p2_) < 0.0001):
+        return False
+      p1 = p1_
+      p2 = p2_
+    return True
 
-
-  def getWristForce(self):
-    wrist_info = list(pb.getJointState(self.id, self.wrist_index)[2])
-    wrist_force = np.array(wrist_info[:3])
-    wrist_moment = np.array(wrist_info[3:])
-
-    # Transform to world frame
-    wrist_rot = pb.getMatrixFromQuaternion(pb.getLinkState(self.id, self.wrist_index - 1)[5])
-    wrist_rot = np.array(list(wrist_rot)).reshape((3,3))
-    wrist_force = np.dot(wrist_rot, wrist_force)
-    wrist_moment = np.dot(wrist_rot, wrist_moment)
-
-    return wrist_force, wrist_moment
-
-  def getFingerForce(self):
-     finger_a_force = np.array(list(pb.getJointState(self.id, self.finger_a_index)[2][:3]))
-     finger_b_force = np.array(list(pb.getJointState(self.id, self.finger_b_index)[2][:3]))
-
-     return finger_a_force, finger_b_force
-
-  def getPickedObj(self, objects):
-    if not objects:
-      return None
-    for obj in objects:
-      # check the contact force normal to count the horizontal contact points
-      contact_points = pb.getContactPoints(self.id, obj.object_id, self.finger_a_index) + pb.getContactPoints(self.id, obj.object_id, self.finger_b_index)
-      horizontal = list(filter(lambda p: abs(p[7][2]) < 0.2, contact_points))
-      if len(horizontal) >= 2:
-        return obj
+  def getGripperOpenRatio(self):
+    p1, p2 = self._getGripperJointPosition()
+    mean = (p1 + p2) / 2
+    ratio = (mean - self.gripper_joint_limit[0]) / (self.gripper_joint_limit[1] - self.gripper_joint_limit[0])
+    return ratio
 
   def getGripperImg(self, img_size, workspace_size, obs_size_m):
     gripper_state = self.getGripperOpenRatio()
@@ -218,8 +193,40 @@ class Panda(RobotBase):
 
     return im
 
+  def adjustGripperCommand(self):
+    pass
+
+  def checkGripperClosed(self):
+    limit = self.gripper_joint_limit[1]
+    p1, p2 = self._getGripperJointPosition()
+    if (limit - p1) + (limit - p2) > 0.001:
+      return
+    else:
+      self.holding_obj = None
+
+  def gripperHasForce(self):
+    return (pb.getJointState(self.id, self.finger_a_index)[3] >= 2 or
+            pb.getJointState(self.id, self.finger_b_index)[3] <= -2)
+
+  def getPickedObj(self, objects):
+    if not objects:
+      return None
+    for obj in objects:
+      # check the contact force normal to count the horizontal contact points
+      contact_points = pb.getContactPoints(self.id, obj.object_id, self.finger_a_index) + pb.getContactPoints(self.id, obj.object_id, self.finger_b_index)
+      horizontal = list(filter(lambda p: abs(p[7][2]) < 0.2, contact_points))
+      if len(horizontal) >= 2:
+        return obj
+
   def _calculateIK(self, pos, rot):
-    return pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot, self.ll, self.ul, self.jr)[:self.num_dofs]
+    return pb.calculateInverseKinematics(
+      self.id,
+      self.end_effector_index,
+      pos,
+      targetOrientation=rot,
+      lowerLimts=self.lower_limits,
+      upperLimts=self.upper_limits,
+      jointRanges=self.joint_ranges)[:self.num_dofs]
 
   def _getGripperJointPosition(self):
     p1 = pb.getJointState(self.id, self.finger_a_index)[0]
@@ -228,16 +235,20 @@ class Panda(RobotBase):
 
   def _sendPositionCommand(self, commands):
     ''''''
-    num_motors = len(self.arm_joint_indices)
-    pb.setJointMotorControlArray(self.id, self.arm_joint_indices, pb.POSITION_CONTROL, commands,
-                                 targetVelocities=[0.]*num_motors,
-                                 forces=[self.max_force]*num_motors,
-                                 positionGains=[self.position_gain]*num_motors,
-                                 velocityGains=[1.0]*num_motors)
+    pb.setJointMotorControlArray(
+      self.id,
+      self.arm_joint_indices,
+      pb.POSITION_CONTROL,
+      commands
+      targetVelocities=[0.] * num_motors,
+      forces=self.max_forces,
+      positionGains=[self.position_gain] * num_motors,
+      velocityGains=[1.0] * num_motors)
 
   def _sendGripperCommand(self, target_pos1, target_pos2, force=10):
-    pb.setJointMotorControlArray(self.id,
-                                 [self.finger_a_index, self.finger_b_index],
-                                 pb.POSITION_CONTROL,
-                                 [target_pos1, target_pos2],
-                                 forces=[force, force])
+    pb.setJointMotorControlArray(
+      self.id,
+      [self.finger_a_index, self.finger_b_index],
+      pb.POSITION_CONTROL,
+      [target_pos1, target_pos2],
+      forces=[force, force])
