@@ -185,10 +185,26 @@ class Panda(RobotBase):
     return wrist_force, wrist_moment
 
   def getFingerForce(self):
-     finger_a_force = np.array(list(pb.getJointState(self.id, self.finger_a_index)[2][:3]))
-     finger_b_force = np.array(list(pb.getJointState(self.id, self.finger_b_index)[2][:3]))
+    finger_a_info = list(pb.getJointState(self.id, self.finger_a_index)[2])
+    finger_a_force = np.array(finger_a_info[:3])
+    finger_a_moment = np.array(finger_a_info[3:])
 
-     return finger_a_force, finger_b_force
+    finger_b_info = list(pb.getJointState(self.id, self.finger_b_index)[2])
+    finger_b_force = np.array(finger_b_info[:3])
+    finger_b_moment = np.array(finger_b_info[3:])
+
+    # Transform to world frame
+    finger_a_rot = pb.getMatrixFromQuaternion(pb.getLinkState(self.id, self.finger_a_index - 1)[5])
+    finger_a_rot = np.array(list(finger_a_rot)).reshape((3,3))
+    finger_a_force = np.dot(finger_a_rot, finger_a_force)
+    finger_a_moment = np.dot(finger_a_rot, finger_a_moment)
+
+    finger_b_rot = pb.getMatrixFromQuaternion(pb.getLinkState(self.id, self.finger_b_index - 1)[5])
+    finger_b_rot = np.array(list(finger_b_rot)).reshape((3,3))
+    finger_b_force = np.dot(finger_b_rot, finger_b_force)
+    finger_b_moment = np.dot(finger_b_rot, finger_b_moment)
+
+    return finger_a_force, finger_a_moment, finger_b_force, finger_b_moment
 
   def getPickedObj(self, objects):
     if not objects:
