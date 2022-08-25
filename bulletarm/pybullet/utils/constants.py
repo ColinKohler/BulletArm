@@ -1,6 +1,4 @@
 import os
-from collections import namedtuple
-from attrdict import AttrDict
 
 import bulletarm
 
@@ -52,9 +50,6 @@ PULL_PRIMATIVE = 2
 PUSH_PRIMATIVE = 3
 
 # Robots
-JointInfo = namedtuple("JointInfo",
-                       ["id", "name", "type", "lower_limit", "upper_limit", "max_force", "max_velocity"])
-JOINT_TYPES = ["REVOLUTE", "PRISMATIC", "SPHERICAL", "PLANAR", "FIXED"]
 
 z_scale_1 = 1
 z_scale_2 = 2
