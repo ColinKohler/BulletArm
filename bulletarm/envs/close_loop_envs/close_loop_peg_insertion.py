@@ -64,14 +64,8 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     hole_pos, hole_rot = self.peg_hole.getHolePose()
     peg_pos = self.peg.getPosition()
 
-    finger_a_force, finger_b_force = self.robot.getFingerForce()
-    force_weight = 1e-2
-    force_mag = np.sqrt(np.sum(np.array(finger_a_force)**2)) + np.sqrt(np.sum(np.array(finger_b_force)**2))
-    force_pen = -(np.clip(force_mag - 2, 0, 10) / 10.0)
-
     success_reward = 1 if np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < 0.11 else 0
-    #drop_pen = 0 if self._isPegInHand() else -1
-    return success_reward# + force_weight * force_pen
+    return success_reward
 
   def _isPegInHand(self):
     peg_pos = self.peg.getPosition()
