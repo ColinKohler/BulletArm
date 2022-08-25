@@ -7,7 +7,7 @@ from bulletarm import env_factory
 
 def run(task, robot):
   if 'close_loop' in task or 'force' in task:
-    env_config = {'robot' : robot, 'render' : True, 'action_sequence' : 'pxyzr', 'view_type': 'camera_center_xyz', 'physics_mode' : 'force', 'max_steps' : 50, 'obs_size' : 128}
+    env_config = {'robot' : robot, 'render' : True, 'action_sequence' : 'pxyzr', 'view_type': 'render_center', 'physics_mode' : 'force', 'max_steps' : 50, 'obs_size' : 128}
     planner_config = {'dpos': 0.025, 'drot': np.pi/8}
   else:
     env_config = {'robot' : robot, 'render' : True}
@@ -25,17 +25,17 @@ def run(task, robot):
       s, in_hand, obs, force = obs
       action_his_len.append(force.shape[0])
 
-      fig, ax = plt.subplots(nrows=1, ncols=2)
-      ax[0].imshow(obs.squeeze(), cmap='gray')
-      ax[1].plot(force[:,0], label='Fx')
-      ax[1].plot(force[:,1], label='Fy')
-      ax[1].plot(force[:,2], label='Fz')
-      ax[1].plot(force[:,3], label='Mx')
-      ax[1].plot(force[:,4], label='My')
-      ax[1].plot(force[:,5], label='Mz')
-      ax[1].set_ylim(-1,1)
-      plt.legend()
-      plt.show()
+      #fig, ax = plt.subplots(nrows=1, ncols=2)
+      #ax[0].imshow(obs.squeeze(), cmap='gray')
+      #ax[1].plot(force[:,0], label='Fx')
+      #ax[1].plot(force[:,1], label='Fy')
+      #ax[1].plot(force[:,2], label='Fz')
+      #ax[1].plot(force[:,3], label='Mx')
+      #ax[1].plot(force[:,4], label='My')
+      #ax[1].plot(force[:,5], label='Mz')
+      #ax[1].set_ylim(-1,1)
+      #plt.legend()
+      #plt.show()
 
     print(reward)
     s += reward

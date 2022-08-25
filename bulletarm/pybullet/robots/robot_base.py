@@ -317,7 +317,7 @@ class RobotBase:
       joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
       joint_pos = list(zip(*joint_state))[0]
       n_it = 0
-      while not np.allclose(joint_pos, target_pose, atol=1e-3) and n_it < max_it:
+      while not np.allclose(joint_pos, target_pose, atol=1e-4) and n_it < max_it:
         pb.stepSimulation()
 
         # Get force information
@@ -336,7 +336,7 @@ class RobotBase:
     else:
       self._setJointPoses(target_pose)
 
-  def _moveToCartesianPose(self, pos, rot, dynamic=True, pos_th=1e-3, rot_th=1e-3):
+  def _moveToCartesianPose(self, pos, rot, dynamic=True, pos_th=1e-4, rot_th=1e-4):
     '''
     Move the end effector to the desired cartesian pose.
 

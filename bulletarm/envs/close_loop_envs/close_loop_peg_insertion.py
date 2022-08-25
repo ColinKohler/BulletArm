@@ -18,6 +18,15 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     self.peg_hole_rz = 0
     self.peg_hole_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
 
+    # Modify physics to restrict object penetration during contact
+    pb.setPhysicsEngineParameter(
+      numSubSteps=0,
+      numSolverIterations=self.num_solver_iterations,
+      solverResidualThreshold=self.solver_residual_threshold,
+      constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_SI,
+      #contactBreakingThreshold=0.1,
+    )
+
   def resetPegHole(self):
     self.peg_hole_rz = np.random.random_sample() * 2*np.pi - np.pi if self.random_orientation else 0
     self.peg_hole_pos = self._getValidPositions(0.25, 0, [], 1)[0]
@@ -37,10 +46,10 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
       constants.SQUARE_PEG,
       pos=[[self.workspace[0].mean(), self.workspace[1].mean(), 0.27]],
       rot=[[0,0,0,1]],
-      scale=0.11,#self.peg_scale_range[0],
+      scale=0.113,#self.peg_scale_range[0],
       wait=False
     )[0]
-    pb.changeDynamics(self.peg.object_id, -1, lateralFriction=0.75, rollingFriction=1.0, spinningFriction=1.0, mass=0.2)
+    pb.changeDynamics(self.peg.object_id, -1, mass=0.2, contactStiffness=1000000, contactDamping=10000)
 
     self.robot.closeGripper()
     self.setRobotHoldingObj()
