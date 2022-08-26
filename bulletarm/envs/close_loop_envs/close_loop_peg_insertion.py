@@ -12,8 +12,6 @@ from bulletarm.planners.close_loop_peg_insertion_planner import CloseLoopPegInse
 class CloseLoopPegInsertionEnv(CloseLoopEnv):
   def __init__(self, config):
     super().__init__(config)
-    self.peg_scale_range = config['object_scale_range']
-
     self.peg_hole = SquarePegHole()
     self.peg_hole_rz = 0
     self.peg_hole_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
@@ -46,10 +44,15 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
       constants.SQUARE_PEG,
       pos=[[self.workspace[0].mean(), self.workspace[1].mean(), 0.27]],
       rot=[[0,0,0,1]],
-      scale=0.113,#self.peg_scale_range[0],
+      scale=0.115,
       wait=False
     )[0]
-    pb.changeDynamics(self.peg.object_id, -1, mass=0.2, contactStiffness=1000000, contactDamping=10000)
+    pb.changeDynamics(
+      self.peg.object_id,
+      -1,
+      contactStiffness=1000000,
+      contactDamping=10000,
+    )
 
     self.robot.closeGripper()
     self.setRobotHoldingObj()
@@ -59,6 +62,11 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     self.peg.resetPose([self.workspace[0].mean(), self.workspace[1].mean(), 0.27], [0,0,0,1])
 
     return self._getObservation()
+
+  def step(self, action):
+    # Force the gripper to stay closed
+    action[0] = 0.
+    return super().step(action)
 
   def _checkTermination(self):
     if not self._isPegInHand():
@@ -83,4 +91,4 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     end_effector_pos = self.robot._getEndEffectorPosition()
     end_effector_pos[2] -= 0.03
 
-    return np.allclose(peg_pos, end_effector_pos, atol=5e-1) and np.allclose(peg_rot[:2], [0., 0.], atol=0.1)
+    return np.allclose(peg_pos, end_effector_pos, atol=5e-1) and np.allclose(peg_rot[:2], [0., 0.], atol=1e-1)
