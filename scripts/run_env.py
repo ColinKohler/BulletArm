@@ -24,7 +24,7 @@ def run(task, robot):
       s, in_hand, obs, force = obs
       action_his_len.append(force.shape[0])
 
-      print(np.mean(np.abs(force)) > 1e-2)
+      print(np.mean(np.abs(force)))
 
       fig, ax = plt.subplots(nrows=1, ncols=2)
       ax[0].imshow(obs.squeeze(), cmap='gray')
