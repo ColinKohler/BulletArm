@@ -1,5 +1,6 @@
 import os
 import math
+import numpy as np
 import pybullet as pb
 
 from bulletarm.pybullet.robots.robot_base import RobotBase
@@ -39,19 +40,21 @@ class UR5(RobotBase):
     self.num_dofs = 6
     self.wrist_index = 5
     self.max_forces = [150, 150, 150, 28, 28, 28]
-    self.home_positions = [0., 0., -2.137, 1.432, -0.915, -1.591, 0.071, 0.]
+    self.home_positions = [0., 0., -2.137, 1.432, -0.915, -1.591, 0.071, 0.] + self.gripper.home_positions
+    self.gripper_z_offset = 0.08
 
   def initialize(self):
     ''''''
     self.id = pb.loadURDF(self.urdf_filepath, [0,0,0.1], [0,0,0,1], useFixedBase=True)
     pb.resetBasePositionAndOrientation(self.id, [-0.1,0,0], [0,0,0,1])
+    self.gripper.initialize(self.id)
 
     self.gripper.closed = False
     self.pre_holding_obj = None
 
     # Enable force sensors
     pb.enableJointForceTorqueSensor(self.id, self.wrist_index)
-    self.gripper.enableFingerForceTorqueSensors(self.id)
+    self.gripper.enableFingerForceTorqueSensors()
 
     self.num_joints = pb.getNumJoints(self.id)
     [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
@@ -102,7 +105,7 @@ class UR5(RobotBase):
     self.gripper.getFingerForce(self.id)
 
   def controlGripper(self, open_ratio, max_it=100):
-    self.gripper.contolGripper(open_ratio, max_it=max_it)
+    self.gripper.controlGripper(open_ratio, max_it=max_it)
 
   def openGripper(self):
     return self.gripper.openGripper()
