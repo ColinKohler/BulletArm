@@ -3,9 +3,13 @@ import pybullet as pb
 class OpenHandVF(object):
   ''' OpenHand's VF model gripper. '''
   def __init__(self):
-    pass
+    self.end_effector_index = 9
+    self.home_positions = [0., 0.]
 
   def initialize(self, robot_id):
+    self.id = robot_id
+
+  def enableFingerForceTorqueSensors(self):
     pass
 
   def getFingerForce(self):

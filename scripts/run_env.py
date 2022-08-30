@@ -5,9 +5,9 @@ from scipy.ndimage import uniform_filter1d
 
 from bulletarm import env_factory
 
-def run(task, robot):
+def run(task, robot, gripper):
   if 'close_loop' in task or 'force' in task:
-    env_config = {'robot' : robot, 'render' : True, 'action_sequence' : 'pxyzr', 'view_type': 'camera_center_xyz', 'physics_mode' : 'force', 'max_steps' : 50, 'obs_size' : 128}
+    env_config = {'robot' : robot,'gripper' : gripper,'render' : True, 'action_sequence' : 'pxyzr', 'view_type': 'camera_center_xyz', 'physics_mode' : 'force', 'max_steps' : 50, 'obs_size' : 128}
     planner_config = {'dpos': 0.025, 'drot': np.pi/8}
   else:
     env_config = {'robot' : robot, 'render' : True}
@@ -17,6 +17,7 @@ def run(task, robot):
   s = 0
   for _ in range(20):
     s, in_hand, obs, force = env.reset()
+    input()
     done = False
     action_his_len = [force.shape[0]]
     while not done:
@@ -90,6 +91,8 @@ if __name__ == '__main__':
     help='Task to run')
   parser.add_argument('--robot', type=str, default='kuka',
     help='Robot to run')
+  parser.add_argument('--gripper', type=str, default=None,
+    help='Gripper to use')
 
   args = parser.parse_args()
-  run(args.task, args.robot)
+  run(args.task, args.robot, args.gripper)
