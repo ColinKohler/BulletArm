@@ -27,10 +27,10 @@ class UR5(RobotBase):
     if gripper == 'robotiq':
       self.gripper = Robotiq()
       self.urdf_filepath = constants.UR5_ROBOTIQ_PATH
-    elif gripper = 'hydrostatic':
+    elif gripper == 'hydrostatic':
       self.gripper = Hydrostatic()
       self.urdf_filepath = constants.UR5_HYDROSTATIC_PATH
-    elif gripper = 'openhand_vf':
+    elif gripper == 'openhand_vf':
       self.gripper = OpenHandVF()
       self.urdf_filepath = constants.UR5_OPENHAND_VF_PATH
     self.end_effector_index = self.gripper.end_effector_index
@@ -102,7 +102,7 @@ class UR5(RobotBase):
     self.gripper.getFingerForce(self.id)
 
   def controlGripper(self, open_ratio, max_it=100):
-    self.gripper.contolGripper(open_ratiom max_it=max_it)
+    self.gripper.contolGripper(open_ratio, max_it=max_it)
 
   def openGripper(self):
     return self.gripper.openGripper()

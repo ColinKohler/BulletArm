@@ -1,4 +1,4 @@
-from bulletarm.pybullet.robots.ur5 import Ur5
+from bulletarm.pybullet.robots.ur5 import UR5
 from bulletarm.pybullet.robots.kuka import Kuka
 from bulletarm.pybullet.robots.panda import Panda
 

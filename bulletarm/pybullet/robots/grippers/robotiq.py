@@ -15,7 +15,7 @@ JOINT_TYPES = [
 ]
 
 class Robotiq(object):
-  ''' Robotiq 85f grtipper. '''
+  ''' Robotiq 85f gripper. '''
   def __init__(self):
     self.gripper_close_force = [30, 30]
     self.gripper_open_force = [30, 30]

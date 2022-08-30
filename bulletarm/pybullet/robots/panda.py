@@ -1,5 +1,6 @@
 import os
 import math
+import numpy as np
 import pybullet as pb
 from scipy.ndimage import rotate
 
@@ -70,6 +71,7 @@ class Panda(RobotBase):
       if i in range(self.num_dofs):
         self.arm_joint_names.append(str(joint_info[1]))
         self.arm_joint_indices.append(i)
+    self.num_motors = len(self.arm_joint_indices)
 
     # Zero force out
     self.force_history = list()
@@ -224,8 +226,8 @@ class Panda(RobotBase):
       self.end_effector_index,
       pos,
       targetOrientation=rot,
-      lowerLimts=self.lower_limits,
-      upperLimts=self.upper_limits,
+      lowerLimits=self.lower_limits,
+      upperLimits=self.upper_limits,
       jointRanges=self.joint_ranges)[:self.num_dofs]
 
   def _getGripperJointPosition(self):
@@ -239,11 +241,11 @@ class Panda(RobotBase):
       self.id,
       self.arm_joint_indices,
       pb.POSITION_CONTROL,
-      commands
-      targetVelocities=[0.] * num_motors,
+      commands,
+      targetVelocities=[0.] * self.num_motors,
       forces=self.max_forces,
-      positionGains=[self.position_gain] * num_motors,
-      velocityGains=[1.0] * num_motors)
+      positionGains=[self.position_gain] * self.num_motors,
+      velocityGains=[1.0] * self.num_motors)
 
   def _sendGripperCommand(self, target_pos1, target_pos2, force=10):
     pb.setJointMotorControlArray(

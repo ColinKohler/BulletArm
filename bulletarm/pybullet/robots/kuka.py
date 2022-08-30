@@ -1,5 +1,6 @@
 import os
 import math
+import numpy as np
 import pybullet as pb
 from scipy.ndimage import rotate
 
@@ -42,7 +43,7 @@ class Kuka(RobotBase):
 
   def initialize(self):
     ''''''
-    self.id = pb.loadSDF(self.urdf_filepath, useFixedBase=True)[0]
+    self.id = pb.loadSDF(self.urdf_filepath)[0]
     pb.resetBasePositionAndOrientation(self.id, [-0.1,0,0], [0,0,0,1])
 
     self.gripper_closed = False
@@ -63,6 +64,7 @@ class Kuka(RobotBase):
       if i in range(self.num_dofs):
         self.arm_joint_names.append(str(joint_info[1]))
         self.arm_joint_indices.append(i)
+    self.num_motors = len(self.arm_joint_indices)
 
     # Zero force out
     self.force_history = list()
@@ -201,7 +203,7 @@ class Kuka(RobotBase):
 
   def gripperHasForce(self):
     return (pb.getJointState(self.id, self.finger_a_index)[3] >= 2 or
-            pb.getJointState(self.id, self.finger_b_index)[3] <= -2
+            pb.getJointState(self.id, self.finger_b_index)[3] <= -2)
 
   def _calculateIK(self, pos, rot):
     return pb.calculateInverseKinematics(
@@ -218,16 +220,22 @@ class Kuka(RobotBase):
 
   def _sendPositionCommand(self, commands):
     ''''''
-    num_motors = len(self.arm_joint_indices)
-    pb.setJointMotorControlArray(self.id, self.arm_joint_indices, pb.POSITION_CONTROL, commands,
-                                 targetVelocities=[0.]*num_motors,
-                                 forces=[self.max_force]*num_motors,
-                                 positionGains=[self.position_gain]*num_motors,
-                                 velocityGains=[1.0]*num_motors)
+    pb.setJointMotorControlArray(
+      self.id,
+      self.arm_joint_indices,
+      pb.POSITION_CONTROL,
+      commands,
+      targetVelocities=[0.] * self.num_motors,
+      forces=self.max_forces,
+      positionGains=[self.position_gain] * self.num_motors,
+      velocityGains=[1.0] * self.num_motors
+    )
 
   def _sendGripperCommand(self, target_pos1, target_pos2, force=2):
-    pb.setJointMotorControlArray(self.id,
-                                 [8, 11, 10, 13],
-                                 pb.POSITION_CONTROL,
-                                 [-target_pos1, target_pos2, 0, 0],
-                                 forces=[force, force,  force, force])
+    pb.setJointMotorControlArray(
+      self.id,
+      [8, 11, 10, 13],
+      pb.POSITION_CONTROL,
+      [-target_pos1, target_pos2, 0, 0],
+      forces=[force, force,  force, force]
+    )
