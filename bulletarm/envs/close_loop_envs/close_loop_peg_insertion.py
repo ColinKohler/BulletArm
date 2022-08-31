@@ -17,12 +17,14 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     self.peg_hole_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
 
     # Modify physics to restrict object penetration during contact
+    self.num_solver_iterations = 200
+    self.solver_residual_threshold = 1e-7
     pb.setPhysicsEngineParameter(
       numSubSteps=0,
       numSolverIterations=self.num_solver_iterations,
       solverResidualThreshold=self.solver_residual_threshold,
       constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_SI,
-      #contactBreakingThreshold=0.1,
+      contactERP=0.2,
     )
 
   def resetPegHole(self):

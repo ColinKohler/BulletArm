@@ -14,7 +14,8 @@ class Panda(RobotBase):
     super().__init__()
     self.home_positions = [-0.60, -0.14, 0.59, -2.40, 0.11, 2.28, -1, 0.0, 0, 0, 0, 0, 0, 0, 0]
     self.home_positions_joint = self.home_positions[:7]
-    self.max_force = 240
+    self.max_force = 30
+    self.position_gain = 0.2
 
     self.num_dofs = 7
     self.wrist_index = 8
@@ -234,7 +235,7 @@ class Panda(RobotBase):
     return im
 
   def _calculateIK(self, pos, rot):
-    return pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot, self.ll, self.ul, self.jr)[:self.num_dofs]
+    return pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot, self.ll, self.ul, self.jr, maxNumIterations=100, residualThreshold=1e-5)[:self.num_dofs]
 
   def _getGripperJointPosition(self):
     p1 = pb.getJointState(self.id, self.finger_a_index)[0]
