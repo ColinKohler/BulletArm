@@ -24,7 +24,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
       numSolverIterations=self.num_solver_iterations,
       solverResidualThreshold=self.solver_residual_threshold,
       constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_SI,
-      #contactERP=0.2,
+      contactERP=0.2,
     )
 
   def resetPegHole(self):
@@ -46,7 +46,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
       constants.SQUARE_PEG,
       pos=[[self.workspace[0].mean(), self.workspace[1].mean(), 0.27]],
       rot=[[0,0,0,1]],
-      scale=0.115,
+      scale=0.1075,
       wait=False
     )[0]
     pb.changeDynamics(

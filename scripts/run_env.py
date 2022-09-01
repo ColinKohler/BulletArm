@@ -35,7 +35,7 @@ def run(task, robot):
       ax[1].plot(force[:,3], label='Mx')
       ax[1].plot(force[:,4], label='My')
       ax[1].plot(force[:,5], label='Mz')
-      ax[1].set_ylim(-1,1)
+      #ax[1].set_ylim(-1,1)
       plt.legend()
       plt.show()
 

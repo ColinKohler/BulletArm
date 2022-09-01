@@ -14,8 +14,8 @@ class Panda(RobotBase):
     super().__init__()
     self.home_positions = [-0.60, -0.14, 0.59, -2.40, 0.11, 2.28, -1, 0.0, 0, 0, 0, 0, 0, 0, 0]
     self.home_positions_joint = self.home_positions[:7]
-    self.max_force = 240
-    #self.max_force = 50
+    #self.max_force = 240
+    self.max_forces = [150, 150, 150, 30, 30, 30, 30]
     #self.position_gain = 0.2
 
     self.num_dofs = 7
@@ -248,7 +248,7 @@ class Panda(RobotBase):
     num_motors = len(self.arm_joint_indices)
     pb.setJointMotorControlArray(self.id, self.arm_joint_indices, pb.POSITION_CONTROL, commands,
                                  targetVelocities=[0.]*num_motors,
-                                 forces=[self.max_force]*num_motors,
+                                 forces=self.max_forces,
                                  positionGains=[self.position_gain]*num_motors,
                                  velocityGains=[1.0]*num_motors)
 

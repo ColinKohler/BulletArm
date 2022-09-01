@@ -35,7 +35,7 @@ class SquarePegHole(object):
       baseVisualShapeIndex=bottom_visual,
       basePosition=pos,
       baseOrientation=rot,
-      linkMasses=[1, 1, 1, 1, 1],
+      linkMasses=[0.1, 0.1, 0.1, 0.1, 0.1],
       linkCollisionShapeIndices=[face_a_collision, face_b_collision, face_c_collision, face_d_collision, hole_collision],
       linkVisualShapeIndices=[face_a_visual, face_b_visual, face_c_visual, face_d_visual, hole_visual],
       linkPositions=[[0, -3*size[1]/10, 0.05],
@@ -54,9 +54,9 @@ class SquarePegHole(object):
     pb.changeDynamics(
       self.id,
       -1,
-      lateralFriction=1.0,
-      spinningFriction=100.0,
-      rollingFriction=0.0001,
+      #lateralFriction=1.0,
+      #spinningFriction=100.0,
+      #rollingFriction=0.0001,
       contactStiffness=1000000,
       contactDamping=10000,
     )
