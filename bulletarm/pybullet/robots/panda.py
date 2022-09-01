@@ -14,8 +14,9 @@ class Panda(RobotBase):
     super().__init__()
     self.home_positions = [-0.60, -0.14, 0.59, -2.40, 0.11, 2.28, -1, 0.0, 0, 0, 0, 0, 0, 0, 0]
     self.home_positions_joint = self.home_positions[:7]
-    self.max_force = 50
-    self.position_gain = 0.2
+    self.max_force = 240
+    #self.max_force = 50
+    #self.position_gain = 0.2
 
     self.num_dofs = 7
     self.wrist_index = 8
