@@ -54,11 +54,10 @@ class SquarePegHole(object):
     pb.changeDynamics(
       self.id,
       -1,
-      #lateralFriction=1.0,
-      #spinningFriction=100.0,
-      #rollingFriction=0.0001,
-      contactStiffness=1000000,
-      contactDamping=10000,
+      lateralFriction=0.3,
+      rollingFriction=0.0001,
+      #contactStiffness=1000000,
+      #contactDamping=10000,
     )
 
   def reset(self, pos=(0,0,0), rot=(0,0,0,1)):
