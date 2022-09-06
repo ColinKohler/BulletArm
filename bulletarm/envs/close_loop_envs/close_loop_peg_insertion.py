@@ -49,19 +49,33 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
       scale=0.1075,
       wait=False
     )[0]
-    pb.changeDynamics(
-      self.peg.object_id,
-      -1,
-      contactStiffness=1000000,
-      contactDamping=10000,
+    #pb.changeDynamics(
+    #  self.peg.object_id,
+    #  -1,
+    #  contactStiffness=100,
+    #  contactDamping=1,
+    #)
+
+    ee_pose = self.robot._getEndEffectorPose()
+    peg_pose = self.peg.getPose()
+    world_to_ee = pb.invertTransform(ee_pose[0], ee_pose[1])
+    peg_to_ee = pb.multiplyTransforms(world_to_ee[0], world_to_ee[1], peg_pose[0], peg_pose[1])
+    cid = pb.createConstraint(
+      parentBodyUniqueId=self.robot.id,
+      parentLinkIndex=self.robot.end_effector_index,
+      childBodyUniqueId=self.peg.object_id,
+      childLinkIndex=-1,
+      jointType=pb.JOINT_FIXED,
+      jointAxis=(0,0,0),
+      parentFramePosition=peg_to_ee[0],
+      parentFrameOrientation=peg_to_ee[1],
+      childFramePosition=(0,0,0.0),
+      childFrameOrientation=(0,0,0),
     )
+    #pb.changeConstraint(cid, maxForce=50)
 
     self.robot.closeGripper()
     self.setRobotHoldingObj()
-
-    for _ in range(2):
-      pb.stepSimulation()
-    self.peg.resetPose([self.workspace[0].mean(), self.workspace[1].mean(), 0.27], [0,0,0,1])
 
     return self._getObservation()
 

@@ -436,6 +436,16 @@ class RobotBase:
 
     self.holding_obj.resetPose(obj_pos_, obj_rot_)
 
+  def _getEndEffectorPose(self):
+    '''
+    Get the current end effector pose.
+
+    Returns:
+      (numpy.array): The end effector pose.
+    '''
+    state = pb.getLinkState(self.id, self.end_effector_index)
+    return state
+
   def _getEndEffectorPosition(self):
     '''
     Get the current end effector position.
