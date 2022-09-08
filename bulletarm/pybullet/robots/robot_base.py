@@ -313,12 +313,19 @@ class RobotBase:
     '''
     if dynamic:
       t0 = time.time()
+      past_joint_pos = deque(maxlen=20)
       while (time.time() - t0) < 2:
         joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
         joint_pos = np.array(list(zip(*joint_state))[0])
+        past_joint_pos.append(joint_pos)
         target_pose = np.array(target_pose)
         diff = target_pose - joint_pos
         if all(np.abs(diff) < 1e-3):
+          return
+
+        # Check to see if the arm can't move any close to the desired joint position
+        if len(past_joint_pos) == 20 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=1e-3):
+          print('early exit')
           return
 
         norm = np.linalg.norm(diff)
