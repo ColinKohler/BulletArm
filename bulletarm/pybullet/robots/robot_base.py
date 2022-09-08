@@ -325,7 +325,6 @@ class RobotBase:
 
         # Check to see if the arm can't move any close to the desired joint position
         if len(past_joint_pos) == 20 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=1e-3):
-          print('early exit')
           return
 
         norm = np.linalg.norm(diff)
