@@ -69,7 +69,7 @@ class CloseLoopBlockStackingPlanner(CloseLoopPlanner):
         self.current_target = (pre_place_pos, object_rot, constants.PICK_PRIMATIVE)
       elif self.pick_place_stage == 4:
         self.pick_place_stage = 5
-        place_pos = object_pos[0], object_pos[1], object_pos[2] + self.getMaxBlockSize() * 1.2
+        place_pos = object_pos[0], object_pos[1], object_pos[2] + self.getMaxBlockSize() * 0.95
         self.current_target = (place_pos, object_rot, constants.PLACE_PRIMATIVE)
       else:
         self.pick_place_stage = 0

@@ -63,6 +63,7 @@ PLANNERS = {
   'force_block_reaching' : CloseLoopBlockPickingPlanner,
   'force_block_pulling' : CloseLoopBlockPullingPlanner,
   'force_block_pushing' : CloseLoopBlockPushingPlanner,
+  'force_block_stacking' : CloseLoopBlockStackingPlanner,
   'force_block_picking_corner' : CloseLoopBlockPickingCornerPlanner,
   'force_peg_insertion' : CloseLoopPegInsertionPlanner,
   'force_drawer_opening' : CloseLoopDrawerOpeningPlanner,

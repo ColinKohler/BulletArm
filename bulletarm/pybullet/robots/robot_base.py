@@ -312,26 +312,45 @@ class RobotBase:
       max_it (int): Maximum number of iterations the movement can take. Defaults to 10000.
     '''
     if dynamic:
-      self._sendPositionCommand(target_pose)
-      past_joint_pos = deque(maxlen=5)
-      joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
-      joint_pos = list(zip(*joint_state))[0]
-      n_it = 0
-      while not np.allclose(joint_pos, target_pose, atol=1e-4) and n_it < max_it:
+      t0 = time.time()
+      while (time.time() - t0) < 2:
+        joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
+        joint_pos = np.array(list(zip(*joint_state))[0])
+        target_pose = np.array(target_pose)
+        diff = target_pose - joint_pos
+        if all(np.abs(diff) < 1e-3):
+          return
+
+        norm = np.linalg.norm(diff)
+        v = diff / norm if norm > 0 else 0
+        step = joint_pos + v * 0.01
+        self._sendPositionCommand(step)
         pb.stepSimulation()
 
-        # Get force information
         if self.zero_force is not None:
           force, moment = self.getWristForce()
           self.force_history.append(np.concatenate((force, moment)) - self.zero_force)
 
-        n_it += 1
-        # Check to see if the arm can't move any close to the desired joint position
-        if len(past_joint_pos) == 5 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=1e-3):
-          break
-        past_joint_pos.append(joint_pos)
-        joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
-        joint_pos = list(zip(*joint_state))[0]
+      #self._sendPositionCommand(target_pose)
+      #past_joint_pos = deque(maxlen=5)
+      #joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
+      #joint_pos = list(zip(*joint_state))[0]
+      #n_it = 0
+      #while not np.allclose(joint_pos, target_pose, atol=1e-4) and n_it < max_it:
+      #  pb.stepSimulation()
+
+      #  # Get force information
+      #  if self.zero_force is not None:
+      #    force, moment = self.getWristForce()
+      #    self.force_history.append(np.concatenate((force, moment)) - self.zero_force)
+
+      #  n_it += 1
+      #  # Check to see if the arm can't move any close to the desired joint position
+      #  if len(past_joint_pos) == 5 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=1e-3):
+      #    break
+      #  past_joint_pos.append(joint_pos)
+      #  joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
+      #  joint_pos = list(zip(*joint_state))[0]
 
     else:
       self._setJointPoses(target_pose)
@@ -350,7 +369,7 @@ class RobotBase:
 
     close_enough = False
     outer_it = 0
-    max_outer_it = 10
+    max_outer_it = 2#10
     max_inner_it = 100
 
     while not close_enough and outer_it < max_outer_it:

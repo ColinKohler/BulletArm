@@ -16,7 +16,7 @@ class Panda(RobotBase):
     self.home_positions_joint = self.home_positions[:7]
     #self.max_force = 240
     self.max_forces = [150, 150, 150, 30, 30, 30, 30]
-    #self.position_gain = 0.2
+    self.position_gain = 1.0
 
     self.num_dofs = 7
     self.wrist_index = 8
@@ -247,10 +247,11 @@ class Panda(RobotBase):
     ''''''
     num_motors = len(self.arm_joint_indices)
     pb.setJointMotorControlArray(self.id, self.arm_joint_indices, pb.POSITION_CONTROL, commands,
-                                 targetVelocities=[0.]*num_motors,
+                                 #targetVelocities=[0.]*num_motors,
                                  forces=self.max_forces,
                                  positionGains=[self.position_gain]*num_motors,
-                                 velocityGains=[1.0]*num_motors)
+                                 #velocityGains=[1.0]*num_motors)
+                                 )
 
   def _sendGripperCommand(self, target_pos1, target_pos2, force=10):
     pb.setJointMotorControlArray(self.id,
