@@ -14,8 +14,6 @@ class Panda(RobotBase):
     super().__init__()
     self.home_positions = [-0.60, -0.14, 0.59, -2.40, 0.11, 2.28, -1, 0.0, 0, 0, 0, 0, 0, 0, 0]
     self.home_positions_joint = self.home_positions[:7]
-    #self.max_force = 240
-    self.max_forces = [150, 150, 150, 30, 30, 30, 30]
     self.position_gain = 1.0
 
     self.num_dofs = 7
@@ -26,9 +24,12 @@ class Panda(RobotBase):
     self.gripper_z_offset = 0.08
     self.gripper_joint_limit = [0, 0.04]
 
-    self.ll = [-7]*self.num_dofs
-    self.ul = [7]*self.num_dofs
-    self.jr = [7]*self.num_dofs
+    self.max_torque = [87, 87, 87, 87, 12, 12, 12]
+
+    self.ll = [-2.9671, -1.8326, -2.9671, -3.1416, -2.9671, -0.0873, -2.9671]
+    self.ul = [ 2.9671,  1.8326,  2.9671,  0,       2.9671,  3.8223,  2.9671]
+    self.ml = [0, 0, 0, -1.5708, 0, 1.8675, 0]
+    self.jr = [5.9342, 3.6652, 5.9342, 3.141, 5.9342, 3.9096, 5.9342]
 
     self.urdf_filepath = os.path.join(constants.URDF_PATH, 'franka_panda/panda.urdf')
 
@@ -75,7 +76,6 @@ class Panda(RobotBase):
     pb.stepSimulation()
     force, moment = self.getWristForce()
     self.zero_force = np.concatenate((force, moment))
-
 
   def reset(self):
     self.gripper_closed = False
@@ -236,7 +236,19 @@ class Panda(RobotBase):
     return im
 
   def _calculateIK(self, pos, rot):
-    return pb.calculateInverseKinematics(self.id, self.end_effector_index, pos, rot, self.ll, self.ul, self.jr, maxNumIterations=100, residualThreshold=1e-5)[:self.num_dofs]
+    joints = pb.calculateInverseKinematics(
+      bodyUniqueId=self.id,
+      endEffectorLinkIndex=self.end_effector_index,
+      targetPosition=pos,
+      targetOrientation=rot,
+      lowerLimits=self.ll,
+      upperLimits=self.ul,
+      jointRanges=self.jr,
+      restPoses=self.ml,
+      maxNumIterations=100,
+      residualThreshold=1e-6
+    )
+    return joints[:self.num_dofs]
 
   def _getGripperJointPosition(self):
     p1 = pb.getJointState(self.id, self.finger_a_index)[0]
@@ -246,16 +258,20 @@ class Panda(RobotBase):
   def _sendPositionCommand(self, commands):
     ''''''
     num_motors = len(self.arm_joint_indices)
-    pb.setJointMotorControlArray(self.id, self.arm_joint_indices, pb.POSITION_CONTROL, commands,
-                                 #targetVelocities=[0.]*num_motors,
-                                 forces=self.max_forces,
-                                 positionGains=[self.position_gain]*num_motors,
-                                 #velocityGains=[1.0]*num_motors)
-                                 )
+    pb.setJointMotorControlArray(
+      bodyIndex=self.id,
+      jointIndices=self.arm_joint_indices,
+      controlMode=pb.POSITION_CONTROL,
+      targetPositions=commands,
+      forces=self.max_torque,
+      positionGains=[self.position_gain]*num_motors,
+    )
 
   def _sendGripperCommand(self, target_pos1, target_pos2, force=10):
-    pb.setJointMotorControlArray(self.id,
-                                 [self.finger_a_index, self.finger_b_index],
-                                 pb.POSITION_CONTROL,
-                                 [target_pos1, target_pos2],
-                                 forces=[force, force])
+    pb.setJointMotorControlArray(
+      self.id,
+      [self.finger_a_index, self.finger_b_index],
+      pb.POSITION_CONTROL,
+      [target_pos1, target_pos2],
+      forces=[force, force]
+    )

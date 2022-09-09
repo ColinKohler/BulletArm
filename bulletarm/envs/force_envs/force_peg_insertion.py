@@ -1,4 +1,5 @@
 import numpy as np
+from more_itertools import windowed
 from scipy.ndimage import uniform_filter1d
 
 from bulletarm.envs.close_loop_envs.close_loop_peg_insertion import CloseLoopPegInsertionEnv
@@ -11,8 +12,10 @@ class ForcePegInsertionEnv(CloseLoopPegInsertionEnv):
     ''''''
     state, hand_obs, obs = super()._getObservation(action=action)
     force = np.array(self.robot.force_history)
+    if force.shape[0] == 0:
+      force = np.zeros((64, 6))
 
-    max_force = 10#0
+    max_force = 50
     #force = np.clip(uniform_filter1d(force, size=64, axis=0), -max_force, max_force) / max_force
     force = np.clip(force, -max_force, max_force) / max_force
     #force = np.tanh(force)

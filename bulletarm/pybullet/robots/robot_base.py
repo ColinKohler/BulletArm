@@ -42,6 +42,7 @@ class RobotBase:
     }
 
     self.position_gain = 0.02
+    self.speed = 0.05
     self.adjust_gripper_after_lift = False
     self.force_history = list()
     self.zero_force = None
@@ -302,62 +303,39 @@ class RobotBase:
     else:
       self._teleportArmWithObjJointPose(joint_pose)
 
-  def _moveToJointPose(self, target_pose, dynamic=True, max_it=1000):
+  def _moveToJointPose(self, target_pose, dynamic=True):
     '''
     Move the desired joint positions
 
     Args:
       joint_pose (numpy.array): Joint positions for each joint in the manipulator.
       dynamic (bool): Simualte arm dynamics when moving the arm. Defaults to True.
-      max_it (int): Maximum number of iterations the movement can take. Defaults to 10000.
     '''
     if dynamic:
       t0 = time.time()
-      past_joint_pos = deque(maxlen=20)
-      while (time.time() - t0) < 2:
+      past_joint_pos = deque(maxlen=50)
+      while (time.time() - t0) < 1:
         joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
         joint_pos = np.array(list(zip(*joint_state))[0])
         past_joint_pos.append(joint_pos)
         target_pose = np.array(target_pose)
         diff = target_pose - joint_pos
-        if all(np.abs(diff) < 1e-3):
+        if all(np.abs(diff) < 1e-4):
           return
 
         # Check to see if the arm can't move any close to the desired joint position
-        if len(past_joint_pos) == 20 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=1e-3):
+        if len(past_joint_pos) == 50 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=1e-3):
           return
 
+        # Move with constant velocity
         norm = np.linalg.norm(diff)
         v = diff / norm if norm > 0 else 0
-        step = joint_pos + v * 0.01
+        step = joint_pos + v * self.speed
         self._sendPositionCommand(step)
         pb.stepSimulation()
 
-        if self.zero_force is not None:
-          force, moment = self.getWristForce()
-          self.force_history.append(np.concatenate((force, moment)) - self.zero_force)
-
-      #self._sendPositionCommand(target_pose)
-      #past_joint_pos = deque(maxlen=5)
-      #joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
-      #joint_pos = list(zip(*joint_state))[0]
-      #n_it = 0
-      #while not np.allclose(joint_pos, target_pose, atol=1e-4) and n_it < max_it:
-      #  pb.stepSimulation()
-
-      #  # Get force information
-      #  if self.zero_force is not None:
-      #    force, moment = self.getWristForce()
-      #    self.force_history.append(np.concatenate((force, moment)) - self.zero_force)
-
-      #  n_it += 1
-      #  # Check to see if the arm can't move any close to the desired joint position
-      #  if len(past_joint_pos) == 5 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=1e-3):
-      #    break
-      #  past_joint_pos.append(joint_pos)
-      #  joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
-      #  joint_pos = list(zip(*joint_state))[0]
-
+        force, moment = self.getWristForce()
+        self.force_history.append(np.concatenate((force, moment)) - self.zero_force)
     else:
       self._setJointPoses(target_pose)
 
@@ -369,25 +347,9 @@ class RobotBase:
       pos (numpy.array): Desired end-effector position.
       rot (numpy.array): Desired end-effector orientation.
       dynamic (bool): Simualte arm dynamics when moving the arm. Defaults to True.
-      pos_th (float): Positional threshold for ending the movement. Defaults to 1e-3.
-      rot_th (float): Rotational threshold for ending the movement. Defaults to 1e-3.
     '''
-
-    close_enough = False
-    outer_it = 0
-    max_outer_it = 2#10
-    max_inner_it = 100
-
-    while not close_enough and outer_it < max_outer_it:
-      ik_solve = self._calculateIK(pos, rot)
-      self._moveToJointPose(ik_solve, dynamic, max_inner_it)
-
-      ls = pb.getLinkState(self.id, self.end_effector_index)
-      new_pos = list(ls[4])
-      new_rot = list(ls[5])
-      close_enough = np.allclose(np.array(new_pos), pos, atol=pos_th) and \
-                     np.allclose(np.array(new_rot), rot, atol=rot_th)
-      outer_it += 1
+    ik_solve = self._calculateIK(pos, rot)
+    self._moveToJointPose(ik_solve, dynamic)
 
   def _teleportArmWithObj(self, pos, rot):
     '''
