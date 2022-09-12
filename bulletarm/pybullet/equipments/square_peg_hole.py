@@ -54,7 +54,7 @@ class SquarePegHole(object):
     pb.changeDynamics(
       self.id,
       -1,
-      lateralFriction=1.0,
+      lateralFriction=0.3,
       rollingFriction=0.0001,
       contactStiffness=1,
       contactDamping=1,

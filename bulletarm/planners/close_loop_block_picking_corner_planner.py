@@ -34,7 +34,7 @@ class CloseLoopBlockPickingCornerPlanner(CloseLoopPlanner):
       pull_rz += np.pi
 
     pre_press_pos = self.env.corner.getPressPose()[0]
-    pre_press_pos[2] = 0.1
+    pre_press_pos[2] = 0.12
 
     pre_press_rot = [0, 0, pull_rz]
 

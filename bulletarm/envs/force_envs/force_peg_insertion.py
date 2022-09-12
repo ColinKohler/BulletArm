@@ -1,5 +1,4 @@
 import numpy as np
-from more_itertools import windowed
 from scipy.ndimage import uniform_filter1d
 
 from bulletarm.envs.close_loop_envs.close_loop_peg_insertion import CloseLoopPegInsertionEnv
