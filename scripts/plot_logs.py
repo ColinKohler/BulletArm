@@ -4,11 +4,11 @@ from bulletarm_baselines.logger.plotter import Plotter
 
 def plot(lc_smoothing=100, eval_smoothing=5, num_eval=None):
   log_filepaths = [
-    '/home/colin/hdd/workspace/midichlorians/data/peg_insertion/gate_better_physics_64/log_data.pkl',
-    '/home/colin/hdd/workspace/ysalamir/data/peg_insertion/render_center_new_physics_64/log_data.pkl',
+    '/home/colin/hdd/workspace/midichlorians/data/peg_insertion/fixed_peg_new_controller_4/log_data.pkl',
+    '/home/colin/hdd/workspace/ysalamir/data/peg_insertion/fixed_peg_new_controller_2/log_data.pkl',
   ]
   log_names = ['vision+force', 'vision']
-  titles = '64x64 Peg Insertion Depth Rendering'
+  titles = '128x128 Peg Insertion Depth Rendering'
 
   base_dir = 'scripts/outputs/'
 

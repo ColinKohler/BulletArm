@@ -44,7 +44,7 @@ class RobotBase:
     self.position_gain = 0.02
     self.speed = 0.05
     self.adjust_gripper_after_lift = False
-    self.force_history = list()
+    self.force_history = np.zeros((64, 6)).tolist()
     self.zero_force = None
 
   def saveState(self):
