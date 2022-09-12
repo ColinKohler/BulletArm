@@ -18,6 +18,18 @@ def run(task, robot):
   for _ in range(20):
     s, in_hand, obs, force = env.reset()
     #plt.imshow(obs.squeeze(), cmap='gray'); plt.show()
+    fig, ax = plt.subplots(nrows=1, ncols=2)
+    ax[0].imshow(obs.squeeze(), cmap='gray')
+    ax[1].plot(force[:,0], label='Fx')
+    ax[1].plot(force[:,1], label='Fy')
+    ax[1].plot(force[:,2], label='Fz')
+    ax[1].plot(force[:,3], label='Mx')
+    ax[1].plot(force[:,4], label='My')
+    ax[1].plot(force[:,5], label='Mz')
+    ax[1].set_ylim(-1.1,1.1)
+    plt.legend()
+    plt.show()
+
     done = False
     action_his_len = [force.shape[0]]
     while not done:
