@@ -71,6 +71,19 @@ class Panda(RobotBase):
         self.arm_joint_names.append(str(joint_info[1]))
         self.arm_joint_indices.append(i)
 
+    pb.changeDynamics(
+      self.id,
+      self.finger_a_index,
+      lateralFriction=1.0,
+      spinningFriction=0.001,
+    )
+    pb.changeDynamics(
+      self.id,
+      self.finger_b_index,
+      lateralFriction=1.0,
+      spinningFriction=0.001,
+    )
+
     # Zero force out
     self.force_history = np.zeros((64, 6)).tolist()
     pb.stepSimulation()

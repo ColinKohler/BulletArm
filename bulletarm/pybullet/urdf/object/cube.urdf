@@ -3,8 +3,9 @@
   <link name="baseLink">
     <contact>
       <friction_anchor/>
-      <lateral_friction value="1.0"/>
-      <rolling_friction value="0.0"/>
+      <lateral_friction value="0.5"/>
+      <rolling_friction value="0.0001"/>
+      <inertia_scalling value="3.0"/>
     </contact>
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
