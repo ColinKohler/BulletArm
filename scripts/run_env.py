@@ -8,8 +8,8 @@ from bulletarm import env_factory
 def run(task, robot):
   workspace = np.array([[0.25, 0.65], [-0.2, 0.2], [0.01, 0.25]])
   if 'close_loop' in task or 'force' in task:
-    env_config = {'robot' : robot, 'render' : True, 'action_sequence' : 'pxyzr', 'workspace' : workspace, 'view_type': 'render_center', 'physics_mode' : 'force', 'max_steps' : 50, 'obs_size' : 32}
-    planner_config = {'dpos': 0.025, 'drot': np.pi/8}
+    env_config = {'robot' : robot, 'render' : True, 'action_sequence' : 'pxyzr', 'workspace' : workspace, 'view_type': 'render_center', 'physics_mode' : 'force', 'max_steps' : 50, 'obs_size' : 128}
+    planner_config = {'dpos': 0.05, 'drot': np.pi/4}
   else:
     env_config = {'robot' : robot, 'render' : True}
     planner_config = None
@@ -17,19 +17,6 @@ def run(task, robot):
 
   for _ in range(20):
     s, in_hand, obs, force = env.reset()
-    #plt.imshow(obs.squeeze(), cmap='gray'); plt.show()
-    fig, ax = plt.subplots(nrows=1, ncols=2)
-    ax[0].imshow(obs.squeeze(), cmap='gray')
-    ax[1].plot(force[:,0], label='Fx')
-    ax[1].plot(force[:,1], label='Fy')
-    ax[1].plot(force[:,2], label='Fz')
-    ax[1].plot(force[:,3], label='Mx')
-    ax[1].plot(force[:,4], label='My')
-    ax[1].plot(force[:,5], label='Mz')
-    ax[1].set_ylim(-1.1,1.1)
-    plt.legend()
-    plt.show()
-
     done = False
     action_his_len = [force.shape[0]]
     while not done:
@@ -38,19 +25,19 @@ def run(task, robot):
       s, in_hand, obs, force = obs
       action_his_len.append(force.shape[0])
 
-      print(np.mean(np.abs(force)))
+      #print(np.mean(np.abs(force)))
 
-      fig, ax = plt.subplots(nrows=1, ncols=2)
-      ax[0].imshow(obs.squeeze(), cmap='gray')
-      ax[1].plot(force[:,0], label='Fx')
-      ax[1].plot(force[:,1], label='Fy')
-      ax[1].plot(force[:,2], label='Fz')
-      ax[1].plot(force[:,3], label='Mx')
-      ax[1].plot(force[:,4], label='My')
-      ax[1].plot(force[:,5], label='Mz')
-      ax[1].set_ylim(-1.1,1.1)
-      plt.legend()
-      plt.show()
+      #fig, ax = plt.subplots(nrows=1, ncols=2)
+      #ax[0].imshow(obs.squeeze(), cmap='gray')
+      #ax[1].plot(force[:,0], label='Fx')
+      #ax[1].plot(force[:,1], label='Fy')
+      #ax[1].plot(force[:,2], label='Fz')
+      #ax[1].plot(force[:,3], label='Mx')
+      #ax[1].plot(force[:,4], label='My')
+      #ax[1].plot(force[:,5], label='Mz')
+      #ax[1].set_ylim(-1.1,1.1)
+      #plt.legend()
+      #plt.show()
 
     print(reward)
 
