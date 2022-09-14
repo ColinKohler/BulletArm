@@ -314,13 +314,14 @@ class RobotBase:
     if dynamic:
       t0 = time.time()
       past_joint_pos = deque(maxlen=50)
+      i = 0
       while (time.time() - t0) < 1:
         joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
         joint_pos = np.array(list(zip(*joint_state))[0])
         past_joint_pos.append(joint_pos)
         target_pose = np.array(target_pose)
         diff = target_pose - joint_pos
-        if all(np.abs(diff) < 1e-4):
+        if all(np.abs(diff) < 1e-3):
           return
 
         # Check to see if the arm can't move any close to the desired joint position
@@ -334,8 +335,10 @@ class RobotBase:
         self._sendPositionCommand(step)
         pb.stepSimulation()
 
-        force, moment = self.getWristForce()
-        self.force_history.append(np.concatenate((force, moment)) - self.zero_force)
+        if i % 10 == 0:
+          force, moment = self.getWristForce()
+          self.force_history.append(np.concatenate((force, moment)) - self.zero_force)
+        i += 1
     else:
       self._setJointPoses(target_pose)
 
