@@ -336,8 +336,10 @@ class RobotBase:
         pb.stepSimulation()
 
         if i % 10 == 0:
-          force, moment = self.getWristForce()
-          self.force_history.append(np.concatenate((force, moment)) - self.zero_force)
+          wrist_force, wrist_moment = self.getWristForce()
+          finger_1_force, finger_1_moment, finger_2_force, finger_2_moment = self.getFingerForce()
+          force = np.concatenate((wrist_force, wrist_moment, finger_1_force, finger_1_moment, finger_2_force, finger_2_moment))
+          self.force_history.append(force - self.zero_force)
         i += 1
     else:
       self._setJointPoses(target_pose)
