@@ -4,8 +4,8 @@ from bulletarm_baselines.logger.plotter import Plotter
 
 def plot(lc_smoothing=100, eval_smoothing=5, num_eval=None):
   log_filepaths = [
-    '/home/colin/hdd/workspace/midichlorians/data/peg_insertion/fixed_peg_new_controller_4/log_data.pkl',
-    '/home/colin/hdd/workspace/ysalamir/data/peg_insertion/fixed_peg_new_controller_2/log_data.pkl',
+    '/home/colin/hdd/workspace/midichlorians/data/block_picking/new_controller_16/log_data.pkl',
+    '/home/colin/hdd/workspace/ysalamir/data/block_picking/new_controller_16/log_data.pkl',
   ]
   log_names = ['vision+force', 'vision']
   titles = '128x128 Peg Insertion Depth Rendering'

@@ -85,7 +85,7 @@ class Panda(RobotBase):
     )
 
     # Zero force out
-    self.force_history = np.zeros((64, 6)).tolist()
+    self.force_history = np.zeros((72, 6)).tolist()
     pb.stepSimulation()
     force, moment = self.getWristForce()
     self.zero_force = np.concatenate((force, moment))
@@ -99,7 +99,7 @@ class Panda(RobotBase):
     self.openGripper()
 
     # Zero force out
-    self.force_history = np.zeros((64, 6)).tolist()
+    self.force_history = np.zeros((72, 6)).tolist()
     force, moment = self.getWristForce()
     self.zero_force = np.concatenate((force, moment))
 
