@@ -18,4 +18,10 @@ class FlatBlock(PybulletObject):
                             baseOrientation=rot,
                             )
     pb.changeVisualShape(object_id, -1, rgbaColor=[0, 0, 1, 1])
+    pb.changeDynamics(
+      object_id,
+      -1,
+      lateralFriction=0.3,
+      rollingFriction=0.0001,
+    )
     super(FlatBlock, self).__init__(constants.FLAT_BLOCK, object_id)
