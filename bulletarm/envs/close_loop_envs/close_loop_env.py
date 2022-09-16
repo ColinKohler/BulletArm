@@ -42,7 +42,8 @@ class CloseLoopEnv(BaseEnv):
                               'camera_side_offset_height', 'camera_side_1', 'camera_side_1_rgbd', 'camera_side_1_height',
                               'camera_side_rgbd_15', 'camera_side_rgbd_30', 'camera_side_rgbd_60', 'camera_side_rgbd_undis',
                               'camera_side_rgbd_60_undis', 'camera_side_rgbd_reflect', 'camera_center_xyz_reflect',
-                              'camera_side_rgbd_random_reflect', 'camera_fix_rgbd', 'render_center_side']
+                              'camera_side_rgbd_random_reflect', 'camera_fix_rgbd', 'render_center_side', 'camera_side_rgbd_75',
+                              'camera_side_rgbd_90', 'camera_side_rgbd_45']
     self.view_scale = config['view_scale']
     self.robot_type = config['robot']
     if config['robot'] == 'kuka':
@@ -455,13 +456,20 @@ class CloseLoopEnv(BaseEnv):
       else:
         depth = self.sensor.getHeightmap(self.heightmap_size)
       return depth
-    elif self.view_type in ['camera_side_rgbd_15', 'camera_side_rgbd_30', 'camera_side_rgbd_60', 'camera_side_rgbd_60_undis']:
+    elif self.view_type in ['camera_side_rgbd_15', 'camera_side_rgbd_30', 'camera_side_rgbd_60', 'camera_side_rgbd_60_undis',
+                            'camera_side_rgbd_75', 'camera_side_rgbd_90', 'camera_side_rgbd_45']:
       target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
       dist = 0.81
       if self.view_type == 'camera_side_rgbd_15':
         angle = np.deg2rad(15)
       elif self.view_type == 'camera_side_rgbd_30':
         angle = np.deg2rad(30)
+      elif self.view_type == 'camera_side_rgbd_75':
+        angle = np.deg2rad(75)
+      elif self.view_type == 'camera_side_rgbd_90':
+        angle = np.deg2rad(90)
+      elif self.view_type == 'camera_side_rgbd_45':
+        angle = np.deg2rad(45)
       else:
         angle = np.deg2rad(60)
       dz = np.sin(angle) * dist

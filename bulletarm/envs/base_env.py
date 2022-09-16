@@ -178,6 +178,9 @@ class BaseEnv:
     self.white_plane = config['white_plane']
     self.black_workspace = config['black_workspace']
     self.trans_plane = config['trans_plane']
+    self.trans_robot = config['trans_robot']
+    if self.trans_robot and config['robot'] != 'kuka':
+      raise NotImplementedError
 
     self.robot.adjust_gripper_after_lift = config['adjust_gripper_after_lift']
     if config['robot'] == 'kuka':
@@ -222,7 +225,10 @@ class BaseEnv:
 
     # Load the UR5 and set it to the home positions
     self.robot.initialize()
-
+    if self.trans_robot:
+      for i in range(-1, 9):
+        pb.changeVisualShape(self.robot.id, i, rgbaColor=[1, 1, 1, 0])
+      pb.changeVisualShape(self.robot.id, 11, rgbaColor=[1, 1, 1, 0])
     # Reset episode vars
     self.objects = list()
     self.object_types = {}

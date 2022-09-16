@@ -86,6 +86,8 @@ DEFAULT_CONFIG = {
   'black_workspace': False,
   # if true, make the plane transparent
   'trans_plane': False,
+  # if true, make the robot transparent
+  'trans_robot': False,
 
   ## Deprecated parameters ##
   'pos_candidate': None,
