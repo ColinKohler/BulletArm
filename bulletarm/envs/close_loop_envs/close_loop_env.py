@@ -42,7 +42,7 @@ class CloseLoopEnv(BaseEnv):
                               'camera_side_offset_height', 'camera_side_1', 'camera_side_1_rgbd', 'camera_side_1_height',
                               'camera_side_rgbd_15', 'camera_side_rgbd_30', 'camera_side_rgbd_60', 'camera_side_rgbd_undis',
                               'camera_side_rgbd_60_undis', 'camera_side_rgbd_reflect', 'camera_center_xyz_reflect',
-                              'camera_side_rgbd_random_reflect', 'camera_fix_rgbd']
+                              'camera_side_rgbd_random_reflect', 'camera_fix_rgbd', 'render_center_side']
     self.view_scale = config['view_scale']
     self.robot_type = config['robot']
     if config['robot'] == 'kuka':
@@ -80,7 +80,18 @@ class CloseLoopEnv(BaseEnv):
     cam_up_vector = [-1, 0, 0]
     self.sensor = OrthographicSensor(cam_pos, cam_up_vector, target_pos, self.obs_size_m, 0.1, 1)
     self.sensor.setCamMatrix(cam_pos, cam_up_vector, target_pos)
-    self.renderer = Renderer(self.workspace)
+    if self.view_type == 'render_center_side':
+      cam_pos = [1, self.workspace[1].mean(), 0.6]
+      target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
+      cam_up_vector = [-1, 0, 0]
+      sensor = Sensor(cam_pos, cam_up_vector, target_pos, 0.7, 0.1, 3)
+      sensor.fov = 40
+      sensor.proj_matrix = pb.computeProjectionMatrixFOV(sensor.fov, 1, sensor.near, sensor.far)
+      self.renderer = Renderer(self.workspace, [sensor])
+      self.renderer.run_interpolate = False
+      self.renderer.max_crop_z = 0.1
+    else:
+      self.renderer = Renderer(self.workspace)
     self.pers_sensor = Sensor(cam_pos, cam_up_vector, target_pos, self.obs_size_m, cam_pos[2] - 1, cam_pos[2])
 
   def _getValidOrientation(self, random_orientation):
@@ -220,7 +231,8 @@ class CloseLoopEnv(BaseEnv):
       self.heightmap = self._getHeightmap()
       heightmap = self.heightmap
       # draw gripper if view is centered at the gripper
-      if self.view_type in ['camera_center_xyz', 'camera_center_xyz_height', 'render_center', 'render_center_height']:
+      if self.view_type in ['camera_center_xyz', 'camera_center_xyz_height', 'render_center', 'render_center_height',
+                            'render_center_side']:
         gripper_img = self.getGripperImg()
         if self.view_type.find('height') > -1:
           gripper_pos = self.robot._getEndEffectorPosition()
@@ -303,7 +315,7 @@ class CloseLoopEnv(BaseEnv):
       gripper_pos = self.robot._getEndEffectorPosition()
     if gripper_rz is None:
       gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
-    if self.view_type == 'render_center':
+    if self.view_type in ['render_center', 'render_center_side']:
       return self.renderer.getTopDownDepth(self.obs_size_m, self.heightmap_size, gripper_pos, 0)
     elif self.view_type == 'render_center_height':
       depth = self.renderer.getTopDownDepth(self.obs_size_m, self.heightmap_size, gripper_pos, 0)
