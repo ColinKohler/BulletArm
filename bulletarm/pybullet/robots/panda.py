@@ -84,13 +84,19 @@ class Panda(RobotBase):
       spinningFriction=0.001,
     )
 
-    self.force_history = np.zeros((72, 18)).tolist()
+    if False:
+      self.force_history = np.zeros((72, 18)).tolist()
+    else:
+      self.force_history = np.zeros((72, 6)).tolist()
 
     # Zero force out
     pb.stepSimulation()
     wrist_force, wrist_moment = self.getWristForce()
-    finger_1_force, finger_1_moment, finger_2_force, finger_2_moment = self.getFingerForce()
-    self.zero_force = np.concatenate((wrist_force, wrist_moment, finger_1_force, finger_1_moment, finger_2_force, finger_2_moment))
+    if False:
+      finger_1_force, finger_1_moment, finger_2_force, finger_2_moment = self.getFingerForce()
+      self.zero_force = np.concatenate((wrist_force, wrist_moment, finger_1_force, finger_1_moment, finger_2_force, finger_2_moment))
+    else:
+      self.zero_force = np.concatenate((wrist_force, wrist_moment))
 
   def reset(self):
     self.gripper_closed = False
@@ -100,13 +106,19 @@ class Panda(RobotBase):
     self.moveToJ(self.home_positions_joint[:self.num_dofs])
     self.openGripper()
 
-    self.force_history = np.zeros((72, 18)).tolist()
+    if False:
+      self.force_history = np.zeros((72, 18)).tolist()
+    else:
+      self.force_history = np.zeros((72, 6)).tolist()
 
     # Zero force out
     pb.stepSimulation()
     wrist_force, wrist_moment = self.getWristForce()
-    finger_1_force, finger_1_moment, finger_2_force, finger_2_moment = self.getFingerForce()
-    self.zero_force = np.concatenate((wrist_force, wrist_moment, finger_1_force, finger_1_moment, finger_2_force, finger_2_moment))
+    if False:
+      finger_1_force, finger_1_moment, finger_2_force, finger_2_moment = self.getFingerForce()
+      self.zero_force = np.concatenate((wrist_force, wrist_moment, finger_1_force, finger_1_moment, finger_2_force, finger_2_moment))
+    else:
+      self.zero_force = np.concatenate((wrist_force, wrist_moment))
 
   def controlGripper(self, open_ratio, max_it=100):
     p1, p2 = self._getGripperJointPosition()
