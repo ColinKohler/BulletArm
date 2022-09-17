@@ -19,6 +19,8 @@ class CloseLoopDrawerOpeningEnv(CloseLoopEnv):
     self.drawer = Drawer()
     self.drawer_rot = 0
 
+    self.robot.speed = 0.05
+
   def initialize(self):
     super().initialize()
     self.drawer.initialize((self.workspace[0].mean(), self.workspace[1].mean(), 0), pb.getQuaternionFromEuler((0, 0, 0)), 0.3)

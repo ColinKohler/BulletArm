@@ -4,17 +4,16 @@ from bulletarm_baselines.logger.plotter import Plotter
 
 def plot(lc_smoothing=100, eval_smoothing=5, num_eval=None):
   log_filepaths = [
-    '/home/colin/hdd/workspace/midichlorians/data/block_pulling/new_controller_128_wrist/log_data.pkl',
-    '/home/colin/hdd/workspace/midichlorians/data/block_pulling/new_controller/log_data.pkl',
-    '/home/colin/hdd/workspace/ysalamir/data/block_pulling/new_controller/log_data.pkl',
+    '/home/colin/hdd/workspace/midichlorians/data/drawer_opening/new_controller/log_data.pkl',
+    #'/home/colin/hdd/workspace/midichlorians/data/drawer_opening/new_controller_16/log_data.pkl',
+    '/home/colin/hdd/workspace/ysalamir/data/drawer_opening/new_controller/log_data.pkl',
   ]
   log_names = [
     'wrist_force',
-    'wirst+finger_force',
+    #'wirst+finger_force',
     'vision'
   ]
-  titles = '128x128 Block Pulling'
-
+  titles = '128x128 Drawer Opening'
   base_dir = 'scripts/outputs/'
 
   plotter = Plotter(log_filepaths, log_names)
