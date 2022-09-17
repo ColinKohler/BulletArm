@@ -19,7 +19,7 @@ class CloseLoopDrawerOpeningEnv(CloseLoopEnv):
     self.drawer = Drawer()
     self.drawer_rot = 0
 
-    self.robot.speed = 0.05
+    self.robot.speed = 0.02
 
   def initialize(self):
     super().initialize()
