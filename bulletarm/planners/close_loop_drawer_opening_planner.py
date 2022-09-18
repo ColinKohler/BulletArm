@@ -22,7 +22,7 @@ class CloseLoopDrawerOpeningPlanner(CloseLoopPlanner):
     drawer_rot = self.env.drawer_rot
     m = np.array(transformations.euler_matrix(0, 0, drawer_rot))[:3, :3]
     handle_pos = handle_pos + m[:, 0] * 0.02
-    handle_pos = handle_pos - m[:, 2] * 0.02
+    handle_pos = handle_pos - m[:, 2] * 0.04
     pull_pos = handle_pos - m[:, 0] * 0.2
     pre_pos = np.copy(handle_pos)
     pre_pos[2] += 0.1

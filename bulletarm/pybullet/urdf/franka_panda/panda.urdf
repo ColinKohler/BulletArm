@@ -267,13 +267,13 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://meshes/visual/finger.obj"/>
+        <mesh filename="package://meshes/visual/finger.obj" scale="1.0 1.0 1.5"/>
       </geometry>
       <material name="panda_white"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://meshes/collision/finger.obj"/>
+        <mesh filename="package://meshes/collision/finger.obj" scale="1.0 1.0 1.5"/>
       </geometry>
       <material name="panda_white"/>
     </collision>
@@ -295,14 +295,14 @@
     <visual>
       <origin rpy="0 0 3.14159265359" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://meshes/visual/finger.obj"/>
+        <mesh filename="package://meshes/visual/finger.obj" scale="1.0 1.0 1.5"/>
       </geometry>
       <material name="panda_white"/>
     </visual>
     <collision>
       <origin rpy="0 0 3.14159265359" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://meshes/collision/finger.obj"/>
+        <mesh filename="package://meshes/collision/finger.obj" scale="1.0 1.0 1.5"/>
       </geometry>
       <material name="panda_white"/>
     </collision>
@@ -373,6 +373,6 @@
   <joint name="panda_grasptarget_hand" type="fixed">
     <parent link="panda_hand"/>
     <child link="panda_grasptarget"/>
-    <origin rpy="3.1415 0 1.5707" xyz="0 0 0.105"/>
+    <origin rpy="3.1415 0 1.5707" xyz="0 0 0.1575"/>
   </joint>
 </robot>
