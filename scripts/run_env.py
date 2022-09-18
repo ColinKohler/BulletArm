@@ -8,14 +8,14 @@ from bulletarm import env_factory
 def run(task, robot):
   workspace = np.array([[0.25, 0.65], [-0.2, 0.2], [0.01, 0.25]])
   if 'close_loop' in task or 'force' in task:
-    env_config = {'robot' : robot, 'render' : True, 'action_sequence' : 'pxyzr', 'workspace' : workspace, 'view_type': 'render_center', 'physics_mode' : 'force', 'max_steps' : 50, 'obs_size' : 16}
+    env_config = {'robot' : robot, 'render' : True, 'action_sequence' : 'pxyzr', 'workspace' : workspace, 'view_type': 'render_center', 'physics_mode' : 'force', 'max_steps' : 50, 'obs_size' : 128}
     planner_config = {'dpos': 0.05, 'drot': np.pi/4}
   else:
     env_config = {'robot' : robot, 'render' : True}
     planner_config = None
   env = env_factory.createEnvs(0, task, env_config, planner_config)
 
-  for _ in range(1):
+  for _ in range(20):
     s, in_hand, obs, force = env.reset()
     done = False
     action_his_len = [force.shape[0]]
@@ -27,14 +27,14 @@ def run(task, robot):
 
       print(np.mean(np.abs(force)))
 
-      fig, ax = plt.subplots(nrows=1, ncols=2)
-      ax[0].imshow(obs.squeeze(), cmap='gray')
-      ax[1].plot(force[:,0], label='wFx')
-      ax[1].plot(force[:,1], label='wFy')
-      ax[1].plot(force[:,2], label='wFz')
-      ax[1].plot(force[:,3], label='wMx')
-      ax[1].plot(force[:,4], label='wMy')
-      ax[1].plot(force[:,5], label='wMz')
+      #fig, ax = plt.subplots(nrows=1, ncols=2)
+      #ax[0].imshow(obs.squeeze(), cmap='gray')
+      #ax[1].plot(force[:,0], label='wFx')
+      #ax[1].plot(force[:,1], label='wFy')
+      #ax[1].plot(force[:,2], label='wFz')
+      #ax[1].plot(force[:,3], label='wMx')
+      #ax[1].plot(force[:,4], label='wMy')
+      #ax[1].plot(force[:,5], label='wMz')
       #ax[2].plot(force[:,6], label='f1Fx')
       #ax[2].plot(force[:,7], label='f1Fy')
       #ax[2].plot(force[:,8], label='f1Fz')
@@ -50,11 +50,11 @@ def run(task, robot):
 
 
       #ax[1].set_ylim(-0.1,0.1)
-      plt.legend()
-      plt.show()
+      #plt.legend()
+      #plt.show()
 
     print(reward)
-    print(action_his_len)
+    #print(action_his_len)
 
   force_1 = 10
   force_2 = 30

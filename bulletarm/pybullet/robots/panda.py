@@ -24,7 +24,7 @@ class Panda(RobotBase):
     self.gripper_z_offset = 0.08
     self.gripper_joint_limit = [0, 0.04]
 
-    self.max_torque = [87, 87, 87, 87, 12, 12, 12]
+    self.max_torque = [87, 87, 87, 87, 24, 24, 24]
 
     self.ll = [-2.9671, -1.8326, -2.9671, -3.1416, -2.9671, -0.0873, -2.9671]
     self.ul = [ 2.9671,  1.8326,  2.9671,  0,       2.9671,  3.8223,  2.9671]
