@@ -81,7 +81,7 @@ class Kuka(RobotBase):
         self.arm_joint_indices.append(i)
 
     # Zero force out
-    self.force_history = list()
+    self.force_history = np.zeros((72, 6)).tolist()
     pb.stepSimulation()
     force, moment = self.getWristForce()
     self.zero_force = np.concatenate((force, moment))
@@ -95,11 +95,10 @@ class Kuka(RobotBase):
     self.openGripper()
 
     # Zero force out
-    self.force_history = list()
+    self.force_history = np.zeros((72, 6)).tolist()
     pb.stepSimulation()
     force, moment = self.getWristForce()
     self.zero_force = np.concatenate((force, moment))
-
 
   def controlGripper(self, open_ratio, max_it=100):
     p1, p2 = self._getGripperJointPosition()
@@ -186,8 +185,15 @@ class Kuka(RobotBase):
 
   def getWristForce(self):
     self.wrist_index = 7
-    wrist_force = np.array(list(pb.getJointState(self.id, self.wrist_index)[2][:3]))
-    wrist_moment = np.array(list(pb.getJointState(self.id, self.wrist_index)[2][3:]))
+    wrist_info = list(pb.getJointState(self.id, self.wrist_index)[2])
+    wrist_force = np.array(wrist_info[:3])
+    wrist_moment = np.array(wrist_info[3:])
+
+    # Transform to world frame
+    wrist_rot = pb.getMatrixFromQuaternion(pb.getLinkState(self.id, self.wrist_index - 1)[5])
+    wrist_rot = np.array(list(wrist_rot)).reshape((3,3))
+    wrist_force = np.dot(wrist_rot, wrist_force)
+    wrist_moment = np.dot(wrist_rot, wrist_moment)
 
     return wrist_force, wrist_moment
 
