@@ -87,7 +87,7 @@ class Panda(RobotBase):
     if False:
       self.force_history = np.zeros((72, 18)).tolist()
     else:
-      self.force_history = np.zeros((72, 6)).tolist()
+      self.force_history = np.zeros((256, 6)).tolist()
 
     # Zero force out
     pb.stepSimulation()
@@ -109,7 +109,7 @@ class Panda(RobotBase):
     if False:
       self.force_history = np.zeros((72, 18)).tolist()
     else:
-      self.force_history = np.zeros((72, 6)).tolist()
+      self.force_history = np.zeros((256, 6)).tolist()
 
     # Zero force out
     pb.stepSimulation()

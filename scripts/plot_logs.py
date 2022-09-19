@@ -4,9 +4,9 @@ from bulletarm_baselines.logger.plotter import Plotter
 
 def plot(lc_smoothing=100, eval_smoothing=5, num_eval=None):
   log_filepaths = [
-    '/home/colin/hdd/workspace/midichlorians/data/drawer_opening/new_controller/log_data.pkl',
+    '/home/colin/hdd/workspace/midichlorians/data/drawer_opening/new_controller_longer_fingers_more_panda_force/log_data.pkl',
     #'/home/colin/hdd/workspace/midichlorians/data/drawer_opening/new_controller_16/log_data.pkl',
-    '/home/colin/hdd/workspace/ysalamir/data/drawer_opening/new_controller/log_data.pkl',
+    '/home/colin/hdd/workspace/ysalamir/data/drawer_opening/new_controller_longer_fingers_more_panda_force/log_data.pkl',
   ]
   log_names = [
     'wrist_force',
