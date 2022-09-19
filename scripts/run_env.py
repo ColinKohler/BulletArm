@@ -15,7 +15,7 @@ def run(task, robot):
     planner_config = None
   env = env_factory.createEnvs(0, task, env_config, planner_config)
 
-  for _ in range(20):
+  for _ in range(1):
     s, in_hand, obs, force = env.reset()
     done = False
     action_his_len = [force.shape[0]]
@@ -27,14 +27,14 @@ def run(task, robot):
 
       print(np.mean(np.abs(force)))
 
-      #fig, ax = plt.subplots(nrows=1, ncols=2)
-      #ax[0].imshow(obs.squeeze(), cmap='gray')
-      #ax[1].plot(force[:,0], label='wFx')
-      #ax[1].plot(force[:,1], label='wFy')
-      #ax[1].plot(force[:,2], label='wFz')
-      #ax[1].plot(force[:,3], label='wMx')
-      #ax[1].plot(force[:,4], label='wMy')
-      #ax[1].plot(force[:,5], label='wMz')
+      fig, ax = plt.subplots(nrows=1, ncols=2)
+      ax[0].imshow(obs.squeeze(), cmap='gray')
+      ax[1].plot(force[:,0], label='wFx')
+      ax[1].plot(force[:,1], label='wFy')
+      ax[1].plot(force[:,2], label='wFz')
+      ax[1].plot(force[:,3], label='wMx')
+      ax[1].plot(force[:,4], label='wMy')
+      ax[1].plot(force[:,5], label='wMz')
       #ax[2].plot(force[:,6], label='f1Fx')
       #ax[2].plot(force[:,7], label='f1Fy')
       #ax[2].plot(force[:,8], label='f1Fz')
@@ -48,10 +48,8 @@ def run(task, robot):
       #ax[3].plot(force[:,16], label='f1My')
       #ax[3].plot(force[:,17], label='f1Mz')
 
-
-      #ax[1].set_ylim(-0.1,0.1)
-      #plt.legend()
-      #plt.show()
+      plt.legend()
+      plt.show()
 
     print(reward)
     #print(action_his_len)

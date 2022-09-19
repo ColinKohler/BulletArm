@@ -15,4 +15,4 @@ class ForceDrawerOpeningEnv(CloseLoopDrawerOpeningEnv):
     max_force = 100
     force = np.clip(uniform_filter1d(force, size=64, axis=0), -max_force, max_force) / max_force
 
-    return state, hand_obs, obs, force[-72:-8]
+    return state, hand_obs, obs, force[-256:]#[-72:-8]
