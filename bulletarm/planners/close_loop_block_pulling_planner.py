@@ -40,10 +40,10 @@ class CloseLoopBlockPullingPlanner(CloseLoopPlanner):
       self.current_target = (g[0], g[1], 0.1), (0, 0, rot), constants.PLACE_PRIMATIVE
       self.stage = 1
     elif self.stage == 1:
-      self.current_target = (g[0], g[1], 0.03), (0, 0, rot), constants.PLACE_PRIMATIVE
+      self.current_target = (g[0], g[1], 0.01), (0, 0, rot), constants.PLACE_PRIMATIVE
       self.stage = 2
     else:
-      self.current_target = (obj2_pos[0], obj2_pos[1], 0.03), (0, 0, rot), constants.PLACE_PRIMATIVE
+      self.current_target = (obj2_pos[0], obj2_pos[1], 0.01), (0, 0, rot), constants.PLACE_PRIMATIVE
       self.stage = 0
 
   def getNextAction(self):

@@ -44,7 +44,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     self.resetPegHole()
     self.peg = self._generateShapes(
       constants.SQUARE_PEG,
-      pos=[[self.workspace[0].mean(), self.workspace[1].mean(), 0.27]],
+      pos=[[self.workspace[0].mean(), self.workspace[1].mean(), 0.29]],
       rot=[[0,0,0,1]],
       scale=0.115,
       wait=False

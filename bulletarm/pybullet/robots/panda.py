@@ -209,7 +209,7 @@ class Panda(RobotBase):
     wrist_moment = np.array(wrist_info[3:])
 
     # Transform to world frame
-    wrist_rot = pb.getMatrixFromQuaternion(pb.getLinkState(self.id, self.wrist_index - 1)[5])
+    wrist_rot = pb.getMatrixFromQuaternion(pb.getLinkState(self.id, self.wrist_index)[5])
     wrist_rot = np.array(list(wrist_rot)).reshape((3,3))
     wrist_force = np.dot(wrist_rot, wrist_force)
     wrist_moment = np.dot(wrist_rot, wrist_moment)
