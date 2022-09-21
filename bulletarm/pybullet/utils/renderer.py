@@ -161,7 +161,7 @@ class Renderer(object):
     if self.run_interpolate:
       depth = self.interpolate(depth)
     else:
-      depth[np.isnan(depth)] = 1
+      depth[np.isnan(depth)] = -0.1
 
     # mask = np.isnan(depth)
     # depth[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), depth[~mask])
