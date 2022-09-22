@@ -57,6 +57,7 @@ class CloseLoopEnv(BaseEnv):
     self.renderer = None
     self.pers_sensor = None
     self.obs_size_m = self.workspace_size * self.view_scale
+    self.heightmap_resolution = self.obs_size_m / self.heightmap_size
     self.initSensor()
 
     self.simulate_z_threshold = self.workspace[2][0] + 0.07
