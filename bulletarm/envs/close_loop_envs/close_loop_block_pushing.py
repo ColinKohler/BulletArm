@@ -66,7 +66,7 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
 
   def _getHeightmap(self, gripper_pos=None, gripper_rz=None):
     heightmap = super()._getHeightmap(gripper_pos, gripper_rz)
-    if self.view_type in ['camera_center_xyz', 'camera_center_xyz_height', 'render_center', 'render_center_height']:
+    if self.view_type in ['camera_center_xyz', 'camera_center_xyz_height', 'render_center', 'render_center_height', 'render_center_side']:
       goal_x, goal_y = self.getGoalPixel(gripper_pos)
       # heightmap[max(goal_x-self.goal_grid_size, 0):min(goal_x+self.goal_grid_size, self.heightmap_size-1), max(goal_y-self.goal_grid_size, 0):min(goal_y+self.goal_grid_size, self.heightmap_size-1)] += 0.025
       test_x = np.arange(goal_x - self.goal_grid_size_half, goal_x + self.goal_grid_size_half, 1)
