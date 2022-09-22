@@ -12,7 +12,7 @@ class ForcePegInsertionEnv(CloseLoopPegInsertionEnv):
     state, hand_obs, obs = super()._getObservation(action=action)
     force = np.array(self.robot.force_history)
 
-    max_force = 50
+    max_force = 200
     force = np.clip(force, -max_force, max_force) / max_force
 
-    return state, hand_obs, obs, force[-64:]
+    return state, hand_obs, obs, force[-256:]

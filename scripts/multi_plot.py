@@ -7,6 +7,7 @@ def plot(lc_eps=None, lc_smoothing=100, eval_smoothing=5, num_eval=None):
     [
       '/home/colin/hdd/workspace/midichlorians/data/drawer_opening/test_4/log_data.pkl',
       '/home/colin/hdd/workspace/midichlorians/data/drawer_opening/new_force_tweaks/log_data.pkl',
+      '/home/colin/hdd/workspace/midichlorians/data/drawer_opening/new_force_tweaks_2/log_data.pkl',
     ],
     [
       '/home/colin/hdd/workspace/ysalamir/data/drawer_opening/test_2/log_data.pkl',
@@ -25,6 +26,7 @@ def plot(lc_eps=None, lc_smoothing=100, eval_smoothing=5, num_eval=None):
   plotter = MultiPlotter(log_filepaths, log_names)
   #plotter.plotLearningCurves(title, base_dir + 'train.pdf', max_eps=lc_eps, window=lc_smoothing)
   plotter.plotEvalRewards(title, base_dir + 'eval_rewards.pdf', num_eval_intervals=num_eval, window=eval_smoothing, eval_interval=500)
+  plotter.plotEvalLens(title, base_dir + 'eval_lens.pdf', num_eval_intervals=num_eval, window=eval_smoothing, eval_interval=500)
 
 if __name__ == '__main__':
   parser =  argparse.ArgumentParser()
