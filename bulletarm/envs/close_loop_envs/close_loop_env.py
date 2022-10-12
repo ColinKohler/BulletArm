@@ -39,11 +39,11 @@ class CloseLoopEnv(BaseEnv):
                               'camera_center_xyz_height', 'camera_center_xy_height', 'camera_fix_height',
                               'camera_center_z', 'camera_center_z_height', 'pers_center_xyz', 'camera_side',
                               'camera_side_rgbd', 'camera_side_height', 'camera_side_offset', 'camera_side_offset_rgbd',
-                              'camera_side_offset_height', 'camera_side_1', 'camera_side_1_rgbd', 'camera_side_1_height',
-                              'camera_side_rgbd_15', 'camera_side_rgbd_30', 'camera_side_rgbd_60', 'camera_side_rgbd_undis',
-                              'camera_side_rgbd_60_undis', 'camera_side_rgbd_reflect', 'camera_center_xyz_reflect',
-                              'camera_side_rgbd_random_reflect', 'camera_fix_rgbd', 'render_center_side', 'camera_side_rgbd_75',
-                              'camera_side_rgbd_90', 'camera_side_rgbd_45']
+                              'camera_side_offset_height', 'camera_side_rgbd_15', 'camera_side_rgbd_30',
+                              'camera_side_rgbd_45', 'camera_side_rgbd_60', 'camera_side_rgbd_75',
+                              'camera_side_rgbd_90', 'camera_side_rgbd_undis', 'camera_side_rgbd_60_undis',
+                              'camera_side_rgbd_reflect', 'camera_center_xyz_reflect',
+                              'camera_side_rgbd_random_reflect', 'camera_fix_rgbd', 'render_center_side']
     self.view_scale = config['view_scale']
     self.robot_type = config['robot']
     if config['robot'] == 'kuka':
@@ -497,24 +497,6 @@ class CloseLoopEnv(BaseEnv):
         else:
           raise NotImplementedError
         depth = np.moveaxis(depth, 2, 0)
-      return depth
-    elif self.view_type in ['camera_side_1', 'camera_side_1_rgbd', 'camera_side_1_height']:
-      cam_pos = [1, self.workspace[1].mean(), 1]
-      target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
-      cam_up_vector = [-1, 0, 0]
-      self.sensor = Sensor(cam_pos, cam_up_vector, target_pos, 0.7, 0.1, 3)
-      # self.sensor.fov = 40
-      # self.sensor.fov = 25
-      self.sensor.fov = 30
-      self.sensor.proj_matrix = pb.computeProjectionMatrixFOV(self.sensor.fov, 1, self.sensor.near, self.sensor.far)
-      if self.view_type == 'camera_side_1':
-        depth = self.sensor.getDepthImg(self.heightmap_size)
-      elif self.view_type == 'camera_side_1_rgbd':
-        rgb_img = self.sensor.getRGBImg(self.heightmap_size)
-        depth_img = self.sensor.getDepthImg(self.heightmap_size).reshape(1, self.heightmap_size, self.heightmap_size)
-        depth = np.concatenate([rgb_img, depth_img])
-      else:
-        depth = self.sensor.getHeightmap(self.heightmap_size)
       return depth
     elif self.view_type in ['camera_side_offset', 'camera_side_offset_rgbd', 'camera_side_offset_height']:
       cam_pos = [1, self.workspace[1].mean()-0.05, 0.6]
