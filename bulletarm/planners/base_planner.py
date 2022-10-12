@@ -10,7 +10,7 @@ class BasePlanner(object):
     self.rand_place_prob = config['rand_place_prob'] if 'rand_place_prob' in config else 0.0
     self.pick_noise = config['pick_noise'] if 'pick_noise' in config else None
     self.place_noise = config['place_noise'] if 'place_noise' in config else None
-    self.planner_res = config['planner_res'] if 'planner_res' in config else 10
+    self.planner_res = config['planner_res'] if 'planner_res' in config else 100
     self.rot_noise = config['rot_noise'] if 'rot_noise' in config else None
     self.pos_noise = config['pos_noise'] if 'rot_noise' in config else None
     self.gamma = config['gamma']  if 'gamma' in config else 0.9
@@ -74,7 +74,6 @@ class BasePlanner(object):
     x = np.round(x, self.planner_res)
     y = np.round(y, self.planner_res)
     x, y = self.addNoiseToPos(x, y, primitive)
-    # TODO: addNoiseToRot with 3 rots
     if self.rot_noise: r = self.addNoiseToRot(r)
     if self.half_rotation:
       if not hasattr(r, '__len__'):
