@@ -66,16 +66,17 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
 
   def _getHeightmap(self, gripper_pos=None, gripper_rz=None):
     heightmap = super()._getHeightmap(gripper_pos, gripper_rz)
-    goal_x, goal_y = self.getGoalPixel(gripper_pos)
-    # heightmap[max(goal_x-self.goal_grid_size, 0):min(goal_x+self.goal_grid_size, self.heightmap_size-1), max(goal_y-self.goal_grid_size, 0):min(goal_y+self.goal_grid_size, self.heightmap_size-1)] += 0.025
-    test_x = np.arange(goal_x - self.goal_grid_size_half, goal_x + self.goal_grid_size_half, 1)
-    test_x = test_x[(0 <= test_x) & (test_x < 128)]
-    test_y = np.arange(goal_y - self.goal_grid_size_half, goal_y + self.goal_grid_size_half, 1)
-    test_y = test_y[(0 <= test_y) & (test_y < 128)]
-    # heightmap[test_x, test_y] += 0.025
-    X2D, Y2D = np.meshgrid(test_x, test_y)
-    out = np.column_stack((X2D.ravel(), Y2D.ravel())).astype(int)
-    heightmap[out[:, 0].reshape(-1), out[:, 1].reshape(-1)] += 0.02
+    if self.view_type in ['camera_center_xyz', 'camera_center_xyz_height', 'render_center', 'render_center_height']:
+      goal_x, goal_y = self.getGoalPixel(gripper_pos)
+      # heightmap[max(goal_x-self.goal_grid_size, 0):min(goal_x+self.goal_grid_size, self.heightmap_size-1), max(goal_y-self.goal_grid_size, 0):min(goal_y+self.goal_grid_size, self.heightmap_size-1)] += 0.025
+      test_x = np.arange(goal_x - self.goal_grid_size_half, goal_x + self.goal_grid_size_half, 1)
+      test_x = test_x[(0 <= test_x) & (test_x < 128)]
+      test_y = np.arange(goal_y - self.goal_grid_size_half, goal_y + self.goal_grid_size_half, 1)
+      test_y = test_y[(0 <= test_y) & (test_y < 128)]
+      # heightmap[test_x, test_y] += 0.025
+      X2D, Y2D = np.meshgrid(test_x, test_y)
+      out = np.column_stack((X2D.ravel(), Y2D.ravel())).astype(int)
+      heightmap[out[:, 0].reshape(-1), out[:, 1].reshape(-1)] += 0.02
     return heightmap
 
   def _checkTermination(self):

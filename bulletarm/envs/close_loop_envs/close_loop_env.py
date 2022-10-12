@@ -58,6 +58,7 @@ class CloseLoopEnv(BaseEnv):
     self.renderer = None
     self.pers_sensor = None
     self.obs_size_m = self.workspace_size * self.view_scale
+    self.heightmap_resolution = self.obs_size_m / self.heightmap_size
     self.initSensor()
 
     self.simulate_z_threshold = self.workspace[2][0] + 0.07
@@ -216,10 +217,9 @@ class CloseLoopEnv(BaseEnv):
     if self.obs_type == 'pixel':
       self.heightmap = self._getHeightmap()
       heightmap = self.heightmap
-      #heightmap += np.clip(npr.normal(scale=1e-2, size=heightmap.shape), 0, 100)
       # draw gripper if view is centered at the gripper
-      if self.view_type.find('camera_center_xy') > -1 or self.view_type.find('render_center') > -1:
-        gripper_img = self.robot.getGripperImg(self.heightmap_size, self.workspace_size, self.obs_size_m)
+      if self.view_type in ['camera_center_xyz', 'camera_center_xyz_height', 'render_center', 'render_center_height']:
+        gripper_img = self.getGripperImg()
         if self.view_type.find('height') > -1:
           gripper_pos = self.robot._getEndEffectorPosition()
           heightmap[gripper_img == 1] = gripper_pos[2]
