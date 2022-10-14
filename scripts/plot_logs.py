@@ -7,7 +7,8 @@ def plot(lc_smoothing=100, eval_smoothing=5, num_eval=None):
     '/home/colin/workspace/neu/midichlorians/data/block_picking/discovery/log_data.pkl',
   ]
   log_names = [
-    'wrist_force',
+    #'wrist_force',
+    'vision'
   ]
   title = '128x128 Block Picking'
   base_dir = 'scripts/outputs/'
