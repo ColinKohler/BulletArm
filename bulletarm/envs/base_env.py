@@ -456,7 +456,7 @@ class BaseEnv:
                       constants.RANDOM_HOUSEHOLD, constants.BOTTLE, constants.TEST_TUBE, constants.SWAB, constants.SQUARE_PEG):
       padding = self.max_block_size * 2.4
     elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON, constants.BOX,
-                        constants.FLAT_BLOCK):
+                        constants.FLAT_BLOCK, constants.OBSTRUCTION):
       padding = self.max_block_size * 3.4
     elif shape_type == constants.BOWL:
       padding = 0.17
@@ -471,7 +471,7 @@ class BaseEnv:
                       constants.BOTTLE, constants.TEST_TUBE, constants.SWAB, constants.SQUARE_PEG):
       min_distance = self.max_block_size * 2.4
     elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON, constants.BOX,
-                        constants.FLAT_BLOCK):
+                        constants.FLAT_BLOCK, constants.OBSTRUCTION):
       min_distance = self.max_block_size * 3.4
     elif shape_type in [constants.RANDOM_HOUSEHOLD]:
       min_distance = self.max_block_size * 4
@@ -584,6 +584,8 @@ class BaseEnv:
         handle = pb_obj_generation.generateGraspNetObject(position, orientation, scale, model_id)
       elif shape_type == constants.SQUARE_PEG:
         handle = pb_obj_generation.generateSquarePeg(position, orientation, scale)
+      elif shape_type == constants.OBSTRUCTION:
+        handle = pb_obj_generation.generateObstruction(position, orientation, scale)
       else:
         raise NotImplementedError
 

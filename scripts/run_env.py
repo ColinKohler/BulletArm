@@ -8,7 +8,7 @@ from bulletarm import env_factory
 def run(task, robot):
   workspace = np.array([[0.25, 0.65], [-0.2, 0.2], [0.01, 0.25]])
   if 'close_loop' in task or 'force' in task:
-    env_config = {'robot' : robot, 'render' : True, 'action_sequence' : 'pxyzr', 'workspace' : workspace, 'view_type': 'render_center', 'physics_mode' : 'force', 'max_steps' : 50, 'obs_size' : 32}
+    env_config = {'robot' : robot, 'render' : True, 'action_sequence' : 'pxyzr', 'workspace' : workspace, 'view_type': 'render_center', 'physics_mode' : 'force', 'max_steps' : 50, 'obs_size' : 128}
     planner_config = {'dpos': 0.05, 'drot': np.pi/4}
   else:
     env_config = {'robot' : robot, 'render' : True}
@@ -21,6 +21,7 @@ def run(task, robot):
     while not done:
       action = env.getNextAction()
       obs, reward, done = env.step(action)
+      plt.imshow(obs[2].squeeze(), cmap='gray'); plt.show()
   env.close()
 
 if __name__ == '__main__':

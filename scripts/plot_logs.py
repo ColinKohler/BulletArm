@@ -4,14 +4,12 @@ from bulletarm_baselines.logger.plotter import Plotter
 
 def plot(lc_smoothing=100, eval_smoothing=5, num_eval=None):
   log_filepaths = [
-    '/home/colin/hdd/workspace/midichlorians/data/block_pulling_corner/new_force_tweaks/log_data.pkl',
-    '/home/colin/hdd/workspace/ysalamir/data/block_pulling_corner/new_force_tweaks/log_data.pkl',
+    '/home/colin/workspace/neu/midichlorians/data/block_picking/discovery/log_data.pkl',
   ]
   log_names = [
     'wrist_force',
-    'vision'
   ]
-  title = '128x128 Block Corner Pulling'
+  title = '128x128 Block Picking'
   base_dir = 'scripts/outputs/'
 
   plotter = Plotter(log_filepaths, log_names)
