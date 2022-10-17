@@ -95,7 +95,12 @@ class CloseLoopEnv(BaseEnv):
     self.simulate_pos = self.robot._getEndEffectorPosition()
     self.simulate_rot = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())
 
-    self.obs_mask = npr.choice(2, (1, self.heightmap_size, self.heightmap_size), p=[self.occlusion_prob, 1-self.occlusion_prob])
+    #self.obs_mask = npr.choice(2, (1, self.heightmap_size, self.heightmap_size), p=[self.occlusion_prob, 1-self.occlusion_prob])
+    self.obs_mask = np.ones((1, self.heightmap_size, self.heightmap_size))
+    if self.occlusion_prob > 0:
+      occlusion_size = int(self.occlusion_prob * self.heightmap_size)
+      pos = npr.randint(occlusion_size/2, self.heightmap_size-occlusion_size/2, 2)
+      self.obs_mask[:, int(pos[0]-occlusion_size/2):int(pos[0]+occlusion_size/2), int(pos[1]-occlusion_size/2):int(pos[1]+occlusion_size/2)] = 0
 
   def step(self, action):
     self.robot.step = 0
