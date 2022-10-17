@@ -94,7 +94,6 @@ class Plotter(object):
 
     for log_name, log in self.logs.items():
       eval_rewards = [np.mean(rewards) for rewards in log['eval_eps_rewards']]
-      breakpoint()
       if num_eval_intervals:
         eval_rewards = eval_rewards[:num_eval_intervals]
       eval_rewards = np.mean(list(more_itertools.windowed(eval_rewards, window)), axis=1)
