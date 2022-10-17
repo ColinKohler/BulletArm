@@ -43,7 +43,6 @@ class BaseEnv:
     # Setup environment
     self.workspace = config['workspace']
     self.workspace_size = np.linalg.norm(self.workspace[0,1] - self.workspace[0,0])
-    self.pos_candidate = config['pos_candidate'].astype(np.int) if config['pos_candidate'] else None
     self.max_steps = config['max_steps']
 
     # Setup heightmap
@@ -52,6 +51,7 @@ class BaseEnv:
     self.in_hand_mode = config['in_hand_mode']
     self.heightmap_shape = (self.heightmap_size, self.heightmap_size, 1)
     self.heightmap_resolution = self.workspace_size / self.heightmap_size
+    self.occlusion_prob = config['occlusion_prob']
 
     # Setup action format
     assert config['action_sequence'].find('x') != -1
@@ -162,13 +162,8 @@ class BaseEnv:
     self.objects = list()
     self.object_types = {}
 
-    self.simulate_grasp = config['simulate_grasp']
-    self.perfect_grasp = config['perfect_grasp']
-    self.perfect_place = config['perfect_place']
     self.workspace_check = config['workspace_check']
-    self.num_random_objects = config['num_random_objects']
     self.random_orientation = config['random_orientation']
-    self.check_random_obj_valid = config['check_random_obj_valid']
     self.random_orientation = config['random_orientation']
     self.num_obj = config['num_objects']
     self.reward_type = config['reward_type']
@@ -244,14 +239,6 @@ class BaseEnv:
       self.state = {}
       self.pb_state = None
 
-    while True:
-      try:
-        self._generateShapes(constants.RANDOM, self.num_random_objects, random_orientation=True)
-      except Exception as e:
-        continue
-      else:
-        break
-
     pb.stepSimulation()
 
   def reset(self):
@@ -299,15 +286,11 @@ class BaseEnv:
     # Take action specfied by motion primative
     if motion_primative == constants.PICK_PRIMATIVE:
       if self.robot.holding_obj is None:
-        if self.perfect_grasp and not self._checkPerfectGrasp(x, y, z, rot, self.objects):
-          return
         self.robot.pick(pos, rot_q, self.pick_pre_offset, dynamic=self.dynamic,
                         objects=self.objects, simulate_grasp=self.simulate_grasp, top_down_approach=self.pick_top_down_approach)
     elif motion_primative == constants.PLACE_PRIMATIVE:
       obj = self.robot.holding_obj
       if self.robot.holding_obj is not None:
-        if self.perfect_place and not self._checkPerfectPlace(x, y, z, rot, self.objects):
-          return
         self.robot.place(pos, rot_q, self.place_pre_offset,
                          dynamic=self.dynamic, simulate_place=self.simulate_grasp, top_down_approach=self.place_top_down_approach)
     elif motion_primative == constants.PUSH_PRIMATIVE:
@@ -320,8 +303,6 @@ class BaseEnv:
   def isSimValid(self):
     for obj in self.objects:
       p = obj.getPosition()
-      if not self.check_random_obj_valid and self.object_types[obj] == constants.RANDOM:
-        continue
       if self._isObjectHeld(obj):
         continue
       if self.workspace_check == 'point':
@@ -329,9 +310,6 @@ class BaseEnv:
           return False
       else:
         if not self._isObjectWithinWorkspace(obj):
-          return False
-      if self.pos_candidate is not None:
-        if np.abs(self.pos_candidate[0] - p[0]).min() > 0.02 or np.abs(self.pos_candidate[1] - p[1]).min() > 0.02:
           return False
     return True
 
@@ -420,13 +398,6 @@ class BaseEnv:
         else:
           position = [(x_extents - border_padding) * npr.random_sample() + self.getValidSpace()[0][0] + border_padding / 2,
                       (y_extents - border_padding) * npr.random_sample() + self.getValidSpace()[1][0] +  border_padding / 2]
-
-        if self.pos_candidate is not None:
-          position[0] = self.pos_candidate[0][np.abs(self.pos_candidate[0] - position[0]).argmin()]
-          position[1] = self.pos_candidate[1][np.abs(self.pos_candidate[1] - position[1]).argmin()]
-          if not (self.getValidSpace()[0][0]+border_padding/2 < position[0] < self.getValidSpace()[0][1]-border_padding/2 and
-                  self.getValidSpace()[1][0]+border_padding/2 < position[1] < self.getValidSpace()[1][1]-border_padding/2):
-            continue
 
         if existing_positions_copy:
           distances = np.array(list(map(lambda p: np.linalg.norm(np.array(p)-position), existing_positions_copy)))
@@ -979,17 +950,6 @@ class BaseEnv:
     x = x_pixel * self.heightmap_resolution + self.workspace[0][0]
     y = y_pixel * self.heightmap_resolution + self.workspace[1][0]
     return x, y
-
-  def _isObjectOnCandidatePose(self, obj):
-    '''
-    Checks if the object has drifted off the candidate positions.
-    Args:
-      - obs: A simulated object
-    Returns: True if object is close to a candidate position, False otherwise
-    '''
-    pos = obj.getPosition()
-    return np.abs(self.pos_candidate[0] - pos[0]).min() > 0.02 or \
-           np.abs(self.pos_candidate[1] - pos[1]).min() > 0.02
 
   def _isObjectWithinWorkspace(self, obj):
     '''
