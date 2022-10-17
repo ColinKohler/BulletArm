@@ -175,10 +175,10 @@ class BaseEnv:
     self.pick_top_down_approach = config['pick_top_down_approach']
     self.place_top_down_approach = config['place_top_down_approach']
     self.half_rotation = config['half_rotation']
-    self.white_plane = config['white_plane']
-    self.black_workspace = config['black_workspace']
-    self.trans_plane = config['trans_plane']
-    self.trans_robot = config['trans_robot']
+    self.white_plane = 'white_plane' in config['workspace_option']
+    self.black_workspace = 'black_workspace' in config['workspace_option']
+    self.trans_plane = 'trans_plane' in config['workspace_option']
+    self.trans_robot = 'trans_robot' in config['workspace_option']
     if self.trans_robot and config['robot'] != 'kuka':
       raise NotImplementedError
 
