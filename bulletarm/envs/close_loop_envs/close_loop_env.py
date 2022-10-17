@@ -95,6 +95,8 @@ class CloseLoopEnv(BaseEnv):
     self.simulate_pos = self.robot._getEndEffectorPosition()
     self.simulate_rot = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())
 
+    self.obs_mask = npr.choice(2, (1, self.heightmap_size, self.heightmap_size), p=[self.occlusion_prob, 1-self.occlusion_prob])
+
   def step(self, action):
     self.robot.step = 0
     p, x, y, z, rot = self._decodeAction(action)
@@ -228,6 +230,7 @@ class CloseLoopEnv(BaseEnv):
       # add channel dimension if view is depth only
       if self.view_type.find('rgb') == -1:
         heightmap = heightmap.reshape([1, self.heightmap_size, self.heightmap_size])
+      heightmap = self.obs_mask * heightmap
       return self._isHolding(), None, heightmap
     else:
       obs = self._getVecObservation()

@@ -50,6 +50,8 @@ DEFAULT_CONFIG = {
   #                                       'camera_center_xy_height', 'camera_fix_height', 'camera_center_z',
   #                                       'camera_center_z_height', 'pers_center_xyz'
   'view_type': 'camera_center_xyz',
+  # Chance to occlude pixels
+  'occlusion_prob': 0,
   # The minimal distance between objects in initialization
   'min_object_distance': None,
   # The minimal distance to the workspace boarder in initialization
@@ -80,12 +82,4 @@ DEFAULT_CONFIG = {
   'view_scale': 1.5,
   # The type of observation. Choices: 'pixel', 'vec'
   'obs_type': 'pixel',
-
-  ## Deprecated parameters ##
-  'pos_candidate': None,
-  'perfect_grasp': False,
-  'perfect_place': False,
-  'num_random_objects': 0,
-  'check_random_obj_valid': False,
-  'simulate_grasp': True,
 }
