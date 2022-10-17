@@ -5,6 +5,8 @@ import copy
 import collections
 from tqdm import tqdm
 import datetime
+import matplotlib
+matplotlib.use('Agg')
 
 # sys.path.append('./')
 # sys.path.append('..')
