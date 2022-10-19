@@ -99,8 +99,9 @@ class CloseLoopEnv(BaseEnv):
     self.obs_mask = np.ones((1, self.heightmap_size, self.heightmap_size))
     if self.occlusion_prob > 0:
       occlusion_size = int(self.occlusion_prob * self.heightmap_size)
-      pos = npr.randint(occlusion_size/2, self.heightmap_size-occlusion_size/2, 2)
-      self.obs_mask[:, int(pos[0]-occlusion_size/2):int(pos[0]+occlusion_size/2), int(pos[1]-occlusion_size/2):int(pos[1]+occlusion_size/2)] = 0
+      for _ in range(self.num_occlusions):
+        pos = npr.randint(occlusion_size/2, self.heightmap_size-occlusion_size/2, 2)
+        self.obs_mask[:, int(pos[0]-occlusion_size/2):int(pos[0]+occlusion_size/2), int(pos[1]-occlusion_size/2):int(pos[1]+occlusion_size/2)] = 0
 
   def step(self, action):
     self.robot.step = 0

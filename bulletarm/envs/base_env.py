@@ -52,6 +52,7 @@ class BaseEnv:
     self.heightmap_shape = (self.heightmap_size, self.heightmap_size, 1)
     self.heightmap_resolution = self.workspace_size / self.heightmap_size
     self.occlusion_prob = config['occlusion_prob']
+    self.num_occlusions = config['num_occlusions']
 
     # Setup action format
     assert config['action_sequence'].find('x') != -1

@@ -52,6 +52,7 @@ DEFAULT_CONFIG = {
   'view_type': 'camera_center_xyz',
   # Chance to occlude pixels
   'occlusion_prob': 0,
+  'num_occlusions': 0,
   # The minimal distance between objects in initialization
   'min_object_distance': None,
   # The minimal distance to the workspace boarder in initialization
