@@ -5,22 +5,21 @@ from bulletarm_baselines.logger.multi_plotter import MultiPlotter
 def plot(lc_eps=None, lc_smoothing=100, eval_smoothing=5, num_eval=None):
   log_filepaths = [
     [
-      '/home/colin/hdd/workspace/midichlorians/data/block_picking/16_run_4/log_data.pkl',
-      '/home/colin/hdd/workspace/midichlorians/data/block_picking/16_run_2/log_data.pkl',
-      '/home/colin/hdd/workspace/midichlorians/data/block_picking/16_run_3/log_data.pkl',
+      '/home/colin/hdd/workspace/midichlorians/data/peg_insertion/128_run_4/log_data.pkl',
+      '/home/colin/hdd/workspace/midichlorians/data/peg_insertion/128_run_2/log_data.pkl',
+      '/home/colin/hdd/workspace/midichlorians/data/peg_insertion/128_run_3/log_data.pkl',
     ],
     [
-      '/home/colin/hdd/workspace/ysalamir/data/block_picking/16_run_1/log_data.pkl',
-      '/home/colin/hdd/workspace/ysalamir/data/block_picking/16_run_2/log_data.pkl',
-      '/home/colin/hdd/workspace/ysalamir/data/block_picking/16_run_3/log_data.pkl',
+      '/home/colin/hdd/workspace/ysalamir/data/peg_insertion/128_run_1/log_data.pkl',
+      '/home/colin/hdd/workspace/ysalamir/data/peg_insertion/128_run_2/log_data.pkl',
+      '/home/colin/hdd/workspace/ysalamir/data/peg_insertion/128_run_3/log_data.pkl',
     ]
   ]
   log_names = [
-
     'vision+force',
     'vision'
   ]
-  title = '128x128 Block Picking'
+  title = '16x16 Block Pulling'
   base_dir = 'scripts/outputs/'
 
   plotter = MultiPlotter(log_filepaths, log_names)
