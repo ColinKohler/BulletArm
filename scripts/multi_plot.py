@@ -5,21 +5,19 @@ from bulletarm_baselines.logger.multi_plotter import MultiPlotter
 def plot(lc_eps=None, lc_smoothing=100, eval_smoothing=5, num_eval=None):
   log_filepaths = [
     [
-      '/home/colin/hdd/workspace/midichlorians/data/peg_insertion/128_run_4/log_data.pkl',
-      '/home/colin/hdd/workspace/midichlorians/data/peg_insertion/128_run_2/log_data.pkl',
-      '/home/colin/hdd/workspace/midichlorians/data/peg_insertion/128_run_3/log_data.pkl',
+      '/home/colin/hdd/workspace/midichlorians/data/block_picking/128_0_35_occlusion_block_test_64_force/log_data.pkl',
+      '/home/colin/hdd/workspace/midichlorians/data/block_picking/128_0_35_occlusion_block_test_64_force_2/log_data.pkl',
     ],
     [
-      '/home/colin/hdd/workspace/ysalamir/data/peg_insertion/128_run_1/log_data.pkl',
-      '/home/colin/hdd/workspace/ysalamir/data/peg_insertion/128_run_2/log_data.pkl',
-      '/home/colin/hdd/workspace/ysalamir/data/peg_insertion/128_run_3/log_data.pkl',
+      '/home/colin/hdd/workspace/ysalamir/data/block_picking/128_0_35_occlusion_block_test/log_data.pkl',
+      '/home/colin/hdd/workspace/ysalamir/data/block_picking/128_0_35_occlusion_block_test_2/log_data.pkl',
     ]
   ]
   log_names = [
     'vision+force',
     'vision'
   ]
-  title = '16x16 Block Pulling'
+  title = '128x128 Block Pickingg - 35% Block Occlusion'
   base_dir = 'scripts/outputs/'
 
   plotter = MultiPlotter(log_filepaths, log_names)
