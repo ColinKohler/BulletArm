@@ -100,7 +100,7 @@ class CloseLoopEnv(BaseEnv):
     if self.occlusion_prob > 0:
       occlusion_size = int(self.occlusion_prob * self.heightmap_size)
       for _ in range(self.num_occlusions):
-        pos = npr.randint(occlusion_size/2, self.heightmap_size-occlusion_size/2, 2)
+        pos = npr.randint(self.heightmap_size/2 - self.heightmap_size/6, self.heightmap_size/2 + self.heightmap_size/6, 2)
         self.obs_mask[:, int(pos[0]-occlusion_size/2):int(pos[0]+occlusion_size/2), int(pos[1]-occlusion_size/2):int(pos[1]+occlusion_size/2)] = 0
 
   def step(self, action):
@@ -232,7 +232,7 @@ class CloseLoopEnv(BaseEnv):
           gripper_pos = self.robot._getEndEffectorPosition()
           heightmap[gripper_img == 1] = gripper_pos[2]
         else:
-          heightmap[gripper_img == 1] = 0
+          heightmap[gripper_img == 1] = 0.01
       # add channel dimension if view is depth only
       if self.view_type.find('rgb') == -1:
         heightmap = heightmap.reshape([1, self.heightmap_size, self.heightmap_size])
