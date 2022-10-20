@@ -175,6 +175,12 @@ class BaseEnv:
     self.pick_top_down_approach = config['pick_top_down_approach']
     self.place_top_down_approach = config['place_top_down_approach']
     self.half_rotation = config['half_rotation']
+    self.white_plane = 'white_plane' in config['workspace_option']
+    self.black_workspace = 'black_workspace' in config['workspace_option']
+    self.trans_plane = 'trans_plane' in config['workspace_option']
+    self.trans_robot = 'trans_robot' in config['workspace_option']
+    if self.trans_robot and config['robot'] != 'kuka':
+      raise NotImplementedError
 
     self.robot.adjust_gripper_after_lift = config['adjust_gripper_after_lift']
     if config['robot'] == 'kuka':
@@ -202,12 +208,27 @@ class BaseEnv:
     pb.setGravity(0, 0, -10)
 
     # TODO: These might have to be in the config depending on how they effect the solver_residual_threshold
-    self.table_id = pb.loadURDF('plane.urdf', [0,0,0])
+    if self.white_plane:
+      self.table_id = pb.loadURDF(os.path.join(constants.URDF_PATH, 'white_plane.urdf'), [0,0,0])
+    else:
+      self.table_id = pb.loadURDF('plane.urdf', [0, 0, 0])
+    if self.trans_plane:
+      pb.changeVisualShape(self.table_id, -1, rgbaColor=[0, 0, 0, 0])
     pb.changeDynamics(self.table_id, -1, linearDamping=0.04, angularDamping=0.04, restitution=0, contactStiffness=3000, contactDamping=100)
+
+    if self.black_workspace:
+      ws_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[self.workspace_size/2, self.workspace_size/2, 0.001], rgbaColor=[0.2, 0.2, 0.2, 1])
+      ws_id = pb.createMultiBody(baseMass=0,
+                                 baseVisualShapeIndex=ws_visual,
+                                 basePosition=[self.workspace[0].mean(), self.workspace[1].mean(), 0],
+                                 baseOrientation=[0, 0, 0, 1])
 
     # Load the UR5 and set it to the home positions
     self.robot.initialize()
-
+    if self.trans_robot:
+      for i in range(-1, 9):
+        pb.changeVisualShape(self.robot.id, i, rgbaColor=[1, 1, 1, 0])
+      pb.changeVisualShape(self.robot.id, 11, rgbaColor=[1, 1, 1, 0])
     # Reset episode vars
     self.objects = list()
     self.object_types = {}

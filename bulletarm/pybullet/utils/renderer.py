@@ -5,24 +5,29 @@ from bulletarm.pybullet.utils.sensor import Sensor
 from bulletarm.pybullet.utils import transformations
 
 class Renderer(object):
-  def __init__(self, workspace):
+  def __init__(self, workspace, sensors=None):
     self.workspace = workspace
 
-    cam_forward_target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
-    cam_forward_up_vector = [0, 0, 1]
+    self.sensors = []
+    if sensors is None:
+      cam_forward_target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
+      cam_forward_up_vector = [0, 0, 1]
 
-    cam_1_forward_pos = [self.workspace[0].mean(), 0.5, 1]
-    far_1 = np.linalg.norm(np.array(cam_1_forward_pos) - np.array(cam_forward_target_pos)) + 2
-    self.sensor_1 = Sensor(cam_1_forward_pos, cam_forward_up_vector, cam_forward_target_pos,
-                           2, near=0.1, far=far_1)
+      cam_1_forward_pos = [self.workspace[0].mean(), 0.5, 1]
+      far_1 = np.linalg.norm(np.array(cam_1_forward_pos) - np.array(cam_forward_target_pos)) + 2
+      self.sensors.append(Sensor(cam_1_forward_pos, cam_forward_up_vector, cam_forward_target_pos,
+                                 2, near=0.1, far=far_1))
 
-    cam_2_forward_pos = [self.workspace[0].mean(), -0.5, 1]
-    far_2 = np.linalg.norm(np.array(cam_2_forward_pos) - np.array(cam_forward_target_pos)) + 2
-    self.sensor_2 = Sensor(cam_2_forward_pos, cam_forward_up_vector, cam_forward_target_pos,
-                           2, near=0.1, far=far_2)
+      cam_2_forward_pos = [self.workspace[0].mean(), -0.5, 1]
+      far_2 = np.linalg.norm(np.array(cam_2_forward_pos) - np.array(cam_forward_target_pos)) + 2
+      self.sensors.append(Sensor(cam_2_forward_pos, cam_forward_up_vector, cam_forward_target_pos,
+                                 2, near=0.1, far=far_2))
 
-
+    else:
+      self.sensors = sensors
     self.points = np.empty((0, 3))
+    self.max_crop_z = 0.05
+    self.run_interpolate = True
 
   def getNewPointCloud(self, res=256):
     self.clearPoints()
@@ -30,10 +35,8 @@ class Renderer(object):
     #                                np.linspace(self.workspace[1][0], self.workspace[1][1], 256))).T.reshape(-1, 2)
     # ceiling = np.concatenate((ceiling, 0.25 * np.ones((256*256, 1))), 1)
     # self.addPoints(np.array(ceiling))
-    points1 = self.sensor_1.getPointCloud(res, to_numpy=False)
-    points2 = self.sensor_2.getPointCloud(res, to_numpy=False)
-    self.addPoints(points1)
-    self.addPoints(points2)
+    for sensor in self.sensors:
+      self.addPoints(sensor.getPointCloud(res, to_numpy=False))
     self.points = self.points[self.points[:, 2] <= self.workspace[2][1]]
     # import pyrender
     # mesh = pyrender.Mesh.from_points(self.points.get())
@@ -44,9 +47,9 @@ class Renderer(object):
   def getTopDownDepth(self, target_size, img_size, gripper_pos, gripper_rz):
     if self.points.shape[0] == 0:
       self.getNewPointCloud(512)
-      self.points = self.points[self.points[:, 2] <= max(gripper_pos[2]-0.01, 0.05)]
+      self.points = self.points[self.points[:, 2] <= max(gripper_pos[2] - 0.01, self.max_crop_z)]
     points = np.copy(self.points)
-    points = points[points[:, 2] <= max(gripper_pos[2]-0.01, 0.05)]
+    points = points[points[:, 2] <= max(gripper_pos[2] - 0.01, self.max_crop_z)]
     # self.points = self.points[(self.workspace[0, 0] <= self.points[:, 0]) * (self.points[:, 0] <= self.workspace[0, 1])]
     # self.points = self.points[(self.workspace[1, 0] <= self.points[:, 1]) * (self.points[:, 1] <= self.workspace[1, 1])]
 
@@ -155,7 +158,10 @@ class Renderer(object):
     depth = depth.reshape(size, size)
     # depth = np.asnumpy(depth)
 
-    depth = self.interpolate(depth)
+    if self.run_interpolate:
+      depth = self.interpolate(depth)
+    else:
+      depth[np.isnan(depth)] = -0.1
 
     # mask = np.isnan(depth)
     # depth[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), depth[~mask])

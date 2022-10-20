@@ -7,7 +7,7 @@ from bulletarm.pybullet.utils.ortho_sensor import OrthographicSensor
 from bulletarm.pybullet.utils.sensor import Sensor
 from bulletarm.pybullet.equipments.tray import Tray
 from scipy.ndimage import rotate
-
+import cv2
 
 class CloseLoopEnv(BaseEnv):
   def __init__(self, config):
@@ -38,7 +38,12 @@ class CloseLoopEnv(BaseEnv):
                               'camera_center_xyz', 'camera_center_xy', 'camera_fix', 'camera_center_xyr_height',
                               'camera_center_xyz_height', 'camera_center_xy_height', 'camera_fix_height',
                               'camera_center_z', 'camera_center_z_height', 'pers_center_xyz', 'camera_side',
-                              'camera_side_rgbd', 'camera_side_height']
+                              'camera_side_rgbd', 'camera_side_height', 'camera_side_offset', 'camera_side_offset_rgbd',
+                              'camera_side_offset_height', 'camera_side_rgbd_15', 'camera_side_rgbd_30',
+                              'camera_side_rgbd_45', 'camera_side_rgbd_60', 'camera_side_rgbd_75',
+                              'camera_side_rgbd_90', 'camera_side_rgbd_undis', 'camera_side_rgbd_60_undis',
+                              'camera_side_rgbd_reflect', 'camera_center_xyz_reflect',
+                              'camera_side_rgbd_random_reflect', 'camera_fix_rgbd', 'render_center_side']
     self.view_scale = config['view_scale']
     self.robot_type = config['robot']
     if config['robot'] == 'kuka':
@@ -77,7 +82,18 @@ class CloseLoopEnv(BaseEnv):
     cam_up_vector = [-1, 0, 0]
     self.sensor = OrthographicSensor(cam_pos, cam_up_vector, target_pos, self.obs_size_m, 0.1, 1)
     self.sensor.setCamMatrix(cam_pos, cam_up_vector, target_pos)
-    self.renderer = Renderer(self.workspace)
+    if self.view_type == 'render_center_side':
+      cam_pos = [1, self.workspace[1].mean(), 0.6]
+      target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
+      cam_up_vector = [-1, 0, 0]
+      sensor = Sensor(cam_pos, cam_up_vector, target_pos, 0.7, 0.1, 3)
+      sensor.fov = 40
+      sensor.proj_matrix = pb.computeProjectionMatrixFOV(sensor.fov, 1, sensor.near, sensor.far)
+      self.renderer = Renderer(self.workspace, [sensor])
+      self.renderer.run_interpolate = False
+      self.renderer.max_crop_z = 0.1
+    else:
+      self.renderer = Renderer(self.workspace)
     self.pers_sensor = Sensor(cam_pos, cam_up_vector, target_pos, self.obs_size_m, cam_pos[2] - 1, cam_pos[2])
 
   def _getValidOrientation(self, random_orientation):
@@ -217,7 +233,8 @@ class CloseLoopEnv(BaseEnv):
       self.heightmap = self._getHeightmap()
       heightmap = self.heightmap
       # draw gripper if view is centered at the gripper
-      if self.view_type in ['camera_center_xyz', 'camera_center_xyz_height', 'render_center', 'render_center_height']:
+      if self.view_type in ['camera_center_xyz', 'camera_center_xyz_height', 'render_center', 'render_center_height',
+                            'render_center_side']:
         gripper_img = self.getGripperImg()
         if self.view_type.find('height') > -1:
           gripper_pos = self.robot._getEndEffectorPosition()
@@ -300,7 +317,7 @@ class CloseLoopEnv(BaseEnv):
       gripper_pos = self.robot._getEndEffectorPosition()
     if gripper_rz is None:
       gripper_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
-    if self.view_type == 'render_center':
+    if self.view_type in ['render_center', 'render_center_side']:
       return self.renderer.getTopDownDepth(self.obs_size_m, self.heightmap_size, gripper_pos, 0)
     elif self.view_type == 'render_center_height':
       depth = self.renderer.getTopDownDepth(self.obs_size_m, self.heightmap_size, gripper_pos, 0)
@@ -332,7 +349,7 @@ class CloseLoopEnv(BaseEnv):
       else:
         depth = heightmap
       return depth
-    elif self.view_type in ['camera_center_xyz', 'camera_center_xyz_height']:
+    elif self.view_type in ['camera_center_xyz', 'camera_center_xyz_height', 'camera_center_xyz_reflect']:
       # xyz centered, gripper will be visible
       gripper_pos[2] += gripper_z_offset
       target_pos = [gripper_pos[0], gripper_pos[1], 0]
@@ -341,6 +358,9 @@ class CloseLoopEnv(BaseEnv):
       heightmap = self.sensor.getHeightmap(self.heightmap_size)
       if self.view_type == 'camera_center_xyz':
         depth = -heightmap + gripper_pos[2]
+      elif self.view_type == 'camera_center_xyz_reflect':
+        depth = -heightmap + gripper_pos[2]
+        depth = depth[:, ::-1]
       else:
         depth = heightmap
       return depth
@@ -377,14 +397,21 @@ class CloseLoopEnv(BaseEnv):
       else:
         depth = heightmap
       return depth
-    elif self.view_type in ['camera_fix', 'camera_fix_height']:
+    elif self.view_type in ['camera_fix', 'camera_fix_height', 'camera_fix_rgbd']:
       heightmap = self.sensor.getHeightmap(self.heightmap_size)
       if self.view_type == 'camera_fix':
         depth = -heightmap + gripper_pos[2]
-      else:
+      elif self.view_type == 'camera_fix_height':
         depth = heightmap
+      elif self.view_type == 'camera_fix_rgbd':
+        rgb_img = self.sensor.getRGBImg(self.heightmap_size)
+        depth_img = self.sensor.getDepthImg(self.heightmap_size).reshape(1, self.heightmap_size, self.heightmap_size)
+        depth = np.concatenate([rgb_img, depth_img])
+      else:
+        raise NotImplementedError
       return depth
-    elif self.view_type in ['camera_side', 'camera_side_rgbd', 'camera_side_height']:
+    elif self.view_type in ['camera_side', 'camera_side_rgbd', 'camera_side_height', 'camera_side_rgbd_undis',
+                            'camera_side_rgbd_reflect', 'camera_side_rgbd_random_reflect']:
       cam_pos = [1, self.workspace[1].mean(), 0.6]
       target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
       cam_up_vector = [-1, 0, 0]
@@ -394,6 +421,93 @@ class CloseLoopEnv(BaseEnv):
       if self.view_type == 'camera_side':
         depth = self.sensor.getDepthImg(self.heightmap_size)
       elif self.view_type == 'camera_side_rgbd':
+        rgb_img = self.sensor.getRGBImg(self.heightmap_size)
+        depth_img = self.sensor.getDepthImg(self.heightmap_size).reshape(1, self.heightmap_size, self.heightmap_size)
+        depth = np.concatenate([rgb_img, depth_img])
+      elif self.view_type == 'camera_side_rgbd_reflect':
+        rgb_img = self.sensor.getRGBImg(self.heightmap_size)
+        depth_img = self.sensor.getDepthImg(self.heightmap_size).reshape(1, self.heightmap_size, self.heightmap_size)
+        depth = np.concatenate([rgb_img, depth_img])
+        depth = depth[:, :, ::-1]
+      elif self.view_type == 'camera_side_rgbd_random_reflect':
+        rgb_img = self.sensor.getRGBImg(self.heightmap_size)
+        depth_img = self.sensor.getDepthImg(self.heightmap_size).reshape(1, self.heightmap_size, self.heightmap_size)
+        depth = np.concatenate([rgb_img, depth_img])
+        if np.random.random() > 0.5:
+          depth = depth[:, :, ::-1]
+        if np.random.random() > 0.5:
+          depth = depth[:, ::-1, :]
+      elif self.view_type == 'camera_side_rgbd_undis':
+        rgb_img = self.sensor.getRGBImg(self.heightmap_size)
+        depth_img = self.sensor.getDepthImg(self.heightmap_size).reshape(1, self.heightmap_size, self.heightmap_size)
+        depth = np.concatenate([rgb_img, depth_img])
+        if self.heightmap_size == 64:
+          matrix = np.array([[1.5853, 0.5081, -18.4355],
+                             [0., 2.5887, -33.6935],
+                             [-0., 0.0161, 1.]])
+          depth = cv2.warpPerspective(np.moveaxis(depth, 0, 2), matrix, (64, 64))
+        elif self.heightmap_size == 76:
+          matrix = np.array([[  1.9938,   0.5882, -37.7647],
+                             [ -0.    ,   3.2229, -59.7678],
+                             [ -0.    ,   0.0155,   1.    ]])
+          depth = cv2.warpPerspective(np.moveaxis(depth, 0, 2), matrix, (76, 76))
+        else:
+          raise NotImplementedError
+        depth = np.moveaxis(depth, 2, 0)
+      else:
+        depth = self.sensor.getHeightmap(self.heightmap_size)
+      return depth
+    elif self.view_type in ['camera_side_rgbd_15', 'camera_side_rgbd_30', 'camera_side_rgbd_60', 'camera_side_rgbd_60_undis',
+                            'camera_side_rgbd_75', 'camera_side_rgbd_90', 'camera_side_rgbd_45']:
+      target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
+      dist = 0.81
+      if self.view_type == 'camera_side_rgbd_15':
+        angle = np.deg2rad(15)
+      elif self.view_type == 'camera_side_rgbd_30':
+        angle = np.deg2rad(30)
+      elif self.view_type == 'camera_side_rgbd_75':
+        angle = np.deg2rad(75)
+      elif self.view_type == 'camera_side_rgbd_90':
+        angle = np.deg2rad(90)
+      elif self.view_type == 'camera_side_rgbd_45':
+        angle = np.deg2rad(45)
+      else:
+        angle = np.deg2rad(60)
+      dz = np.sin(angle) * dist
+      dx = np.cos(angle) * dist
+      cam_pos = [self.workspace[0].mean() + dx, self.workspace[1].mean(), dz]
+      cam_up_vector = [-1, 0, 0]
+      self.sensor = Sensor(cam_pos, cam_up_vector, target_pos, 0.7, 0.1, 3)
+      self.sensor.fov = 40
+      self.sensor.proj_matrix = pb.computeProjectionMatrixFOV(self.sensor.fov, 1, self.sensor.near, self.sensor.far)
+      rgb_img = self.sensor.getRGBImg(self.heightmap_size)
+      depth_img = self.sensor.getDepthImg(self.heightmap_size).reshape(1, self.heightmap_size, self.heightmap_size)
+      depth = np.concatenate([rgb_img, depth_img])
+      if self.view_type == 'camera_side_rgbd_60_undis':
+        if self.heightmap_size == 64:
+          matrix = np.array([[  1.3096,   0.2665,  -9.7538],
+                             [  0.    ,   1.7944, -15.6472],
+                             [  0.    ,   0.0085,   1.    ]])
+          depth = cv2.warpPerspective(np.moveaxis(depth, 0, 2), matrix, (64, 64))
+        elif self.heightmap_size == 76:
+          matrix = np.array([[1.6047, 0.3214, -22.9767],
+                             [-0., 2.1691, -29.9302],
+                             [-0., 0.0085, 1.]])
+          depth = cv2.warpPerspective(np.moveaxis(depth, 0, 2), matrix, (76, 76))
+        else:
+          raise NotImplementedError
+        depth = np.moveaxis(depth, 2, 0)
+      return depth
+    elif self.view_type in ['camera_side_offset', 'camera_side_offset_rgbd', 'camera_side_offset_height']:
+      cam_pos = [1, self.workspace[1].mean()-0.05, 0.6]
+      target_pos = [self.workspace[0].mean()-0.05, self.workspace[1].mean()-0.05, 0]
+      cam_up_vector = [-1, 0, 0]
+      self.sensor = Sensor(cam_pos, cam_up_vector, target_pos, 0.7, 0.1, 3)
+      self.sensor.fov = 40
+      self.sensor.proj_matrix = pb.computeProjectionMatrixFOV(self.sensor.fov, 1, self.sensor.near, self.sensor.far)
+      if self.view_type == 'camera_side_offset':
+        depth = self.sensor.getDepthImg(self.heightmap_size)
+      elif self.view_type == 'camera_side_offset_rgbd':
         rgb_img = self.sensor.getRGBImg(self.heightmap_size)
         depth_img = self.sensor.getDepthImg(self.heightmap_size).reshape(1, self.heightmap_size, self.heightmap_size)
         depth = np.concatenate([rgb_img, depth_img])
