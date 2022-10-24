@@ -122,6 +122,7 @@ class CloseLoopEnv(BaseEnv):
     self.robot.controlGripper(p)
     self.robot.adjustGripperCommand()
     self.setRobotHoldingObj()
+    self.renderer.gitterSensors()
     self.renderer.clearPoints()
     obs = self._getObservation(action)
     valid = self.isSimValid()
