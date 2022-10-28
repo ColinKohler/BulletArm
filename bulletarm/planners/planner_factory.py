@@ -71,4 +71,5 @@ PLANNERS = {
   'force_peg_insertion' : CloseLoopPegInsertionPlanner,
   'force_drawer_opening' : CloseLoopDrawerOpeningPlanner,
   'force_clutter_picking' : CloseLoopHouseholdPickingClutteredPlanner,
+  'force_mug_picking' : CloseLoopMugPickingPlanner,
 }

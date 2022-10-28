@@ -84,4 +84,5 @@ CREATE_ENV_FNS = {
   'force_clutter_picking': createEnv(ForceHouseholdPickingClutteredEnv),
   'force_block_in_bowl': createEnv(ForceBlockInBowlEnv),
   'force_peg_insertion': createEnv(ForcePegInsertionEnv),
+  'force_mug_picking': createEnv(ForceMugPickingEnv),
 }
