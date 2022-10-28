@@ -27,6 +27,7 @@ from bulletarm.pybullet.objects.flat_block import FlatBlock
 from bulletarm.pybullet.objects.random_household_object_200 import RandomHouseHoldObject200
 from bulletarm.pybullet.objects.grasp_net_obj import GraspNetObject
 from bulletarm.pybullet.objects.obstruction import Obstruction
+from bulletarm.pybullet.objects.mug import Mug
 
 def generateCube(pos, rot, scale):
   ''''''
@@ -95,3 +96,6 @@ def generateGraspNetObject(pos, rot, scale, index):
 def generateObstruction(pos, rot, scale):
   ''''''
   return Obstruction(pos, rot, scale)
+
+def generateMug(pos, rot, scale):
+  return Mug(pos, rot, scale)

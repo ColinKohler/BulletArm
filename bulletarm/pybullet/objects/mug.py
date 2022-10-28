@@ -10,16 +10,13 @@ from bulletarm.pybullet.objects.pybullet_object import PybulletObject
 from bulletarm.pybullet.utils import constants
 
 
-class Bottle(PybulletObject):
+class Mug(PybulletObject):
   def __init__(self, pos, rot, scale):
-    self.scale = scale
     root_dir = os.path.dirname(bulletarm.__file__)
-    # self.model_id = 1
-    self.model_id = np.random.choice([1, 3, 4, 5, 7, 8, 9, 10])
-    urdf_filepath = os.path.join(root_dir, constants.OBJECTS_PATH, 'bottle/bottle{}.urdf'.format(self.model_id))
+    urdf_filepath = os.path.join(root_dir, constants.OBJECTS_PATH, 'mug/mug.urdf')
     object_id = pb.loadURDF(urdf_filepath, basePosition=pos, baseOrientation=rot, globalScaling=scale)
 
-    super(Bottle, self).__init__(constants.BOTTLE, object_id)
+    super().__init__(constants.MUG, object_id)
 
   def getGraspRotation(self):
     link_state = pb.getLinkState(self.object_id, 0)
@@ -33,3 +30,4 @@ class Bottle(PybulletObject):
 
   def getGraspPose(self):
     return self.getGraspPosition(), self.getGraspRotation()
+

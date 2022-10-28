@@ -72,6 +72,7 @@ CREATE_ENV_FNS = {
   'close_loop_block_pushing': createEnv(CloseLoopBlockPushingEnv),
   'close_loop_block_in_bowl': createEnv(CloseLoopBlockInBowlEnv),
   'close_loop_peg_insertion': createEnv(CloseLoopPegInsertionEnv),
+  'close_loop_mug_picking': createEnv(CloseLoopMugPickingEnv),
   'force_block_picking': createEnv(ForceBlockPickingEnv),
   'force_block_reaching': createEnv(ForceBlockReachingEnv),
   'force_block_stacking': createEnv(ForceBlockStackingEnv),
