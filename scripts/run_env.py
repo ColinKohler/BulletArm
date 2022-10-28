@@ -21,9 +21,9 @@ def run(task, robot):
     while not done:
       action = env.getNextAction()
       obs, reward, done = env.step(action)
-      fig, ax = plt.subplots(nrows=1, ncols=2)
-      ax[0].plot(obs[3])
-      ax[1].imshow(obs[2].squeeze(), cmap='gray')
+      fig, ax = plt.subplots(nrows=1, ncols=1)
+      #ax[0].plot(obs[3])
+      ax.imshow(obs[2].squeeze(), cmap='gray')
       plt.show()
   env.close()
 

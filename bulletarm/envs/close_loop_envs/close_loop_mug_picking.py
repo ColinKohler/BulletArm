@@ -38,5 +38,5 @@ class CloseLoopMugPickingEnv(CloseLoopEnv):
     mug_grasp_pos = self.objects[-1].getGraspPosition()
 
     return (self.robot.holding_obj == self.objects[-1] and
-            np.allclose(gripper_pos, mug_grasp_pos, atol=5e-2) and
+            np.allclose(gripper_pos, mug_grasp_pos, atol=1e-2) and
             gripper_pos[-1] > 0.15)

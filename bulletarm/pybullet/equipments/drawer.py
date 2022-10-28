@@ -59,6 +59,14 @@ class Drawer:
       pb.stepSimulation()
     pass
 
+  def open(self):
+    pb.resetJointState(self.id, 1, 0.10)
+    self.handle.reset()
+
+  def close(self):
+    pb.resetJointState(self.id, 1, 0.0)
+    self.handle.reset()
+
   def isDrawerOpen(self):
     return pb.getJointState(self.id, 1)[0] > 0.10
 
