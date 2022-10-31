@@ -5,19 +5,32 @@ from bulletarm_baselines.logger.multi_plotter import MultiPlotter
 def plot(lc_eps=None, lc_smoothing=100, eval_smoothing=5, num_eval=None):
   log_filepaths = [
     [
-      '/home/colin/hdd/workspace/midichlorians/data/block_picking/128_0_35_occlusion_block_test_64_force/log_data.pkl',
-      '/home/colin/hdd/workspace/midichlorians/data/block_picking/128_0_35_occlusion_block_test_64_force_2/log_data.pkl',
+      '/home/colin/hdd/workspace/discovery_runs/drawer_opening/force_1/log_data.pkl',
+      '/home/colin/hdd/workspace/discovery_runs/drawer_opening/force_2/log_data.pkl',
+      '/home/colin/hdd/workspace/discovery_runs/drawer_opening/force_3/log_data.pkl',
+      #'/home/colin/hdd/workspace/discovery_runs/block_picking/0_5_occlusion_snp_force_1/log_data.pkl',
+      #'/home/colin/hdd/workspace/discovery_runs/block_picking/0_5_occlusion_snp_force_2/log_data.pkl',
+      #'/home/colin/hdd/workspace/discovery_runs/block_picking/0_5_occlusion_snp_force_3/log_data.pkl',
+      #'/home/colin/hdd/workspace/midichlorians/data/block_picking/low_res_gitter_sensor_test/log_data.pkl',
+      #'/home/colin/hdd/workspace/midichlorians/data/block_picking/low_res_gitter_sensor_test_2/log_data.pkl',
+      #'/home/colin/hdd/workspace/midichlorians/data/block_picking/low_res_gitter_sensor_test_3/log_data.pkl',
     ],
     [
-      '/home/colin/hdd/workspace/ysalamir/data/block_picking/128_0_35_occlusion_block_test/log_data.pkl',
-      '/home/colin/hdd/workspace/ysalamir/data/block_picking/128_0_35_occlusion_block_test_2/log_data.pkl',
+      '/home/colin/hdd/workspace/discovery_runs/drawer_opening/vision_1/log_data.pkl',
+      '/home/colin/hdd/workspace/discovery_runs/drawer_opening/vision_2/log_data.pkl',
+      '/home/colin/hdd/workspace/discovery_runs/drawer_opening/vision_3/log_data.pkl',
+      #'/home/colin/hdd/workspace/discovery_runs/block_picking/0_5_occlusion_snp_vision_1/log_data.pkl',
+      #'/home/colin/hdd/workspace/discovery_runs/block_picking/0_5_occlusion_snp_vision_2/log_data.pkl',
+      #'/home/colin/hdd/workspace/discovery_runs/block_picking/0_5_occlusion_snp_vision_3/log_data.pkl',
+      #'/home/colin/hdd/workspace/ysalamir/data/block_picking/low_res_gitter_sensor_test/log_data.pkl',
+      #'/home/colin/hdd/workspace/ysalamir/data/block_picking/low_res_gitter_sensor_test_2/log_data.pkl',
     ]
   ]
   log_names = [
     'vision+force',
     'vision'
   ]
-  title = '128x128 Block Pickingg - 35% Block Occlusion'
+  title = '128x128 Drawer Opening'
   base_dir = 'scripts/outputs/'
 
   plotter = MultiPlotter(log_filepaths, log_names)

@@ -27,7 +27,6 @@ class Renderer(object):
 
   def gitterSensors(self):
     cam_1_forward_pos = np.array(self.cam_1_forward_pos) + npr.uniform(-0.1, 0.1, 3)
-    print(cam_1_forward_pos)
     self.sensor_1.setCamMatrix(cam_1_forward_pos, self.cam_forward_up_vector, self.cam_forward_target_pos)
 
     cam_2_forward_pos = np.array(self.cam_2_forward_pos) + npr.uniform(-0.1, 0.1, 3)

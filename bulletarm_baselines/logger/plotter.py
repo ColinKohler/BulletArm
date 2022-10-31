@@ -87,7 +87,7 @@ class Plotter(object):
     Args:
     '''
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(10,5))
     ax.set_title(title)
     ax.set_xlabel('Training Steps')
     ax.set_ylabel('Avg. Reward')
@@ -101,7 +101,8 @@ class Plotter(object):
       xs = np.arange(window, len(eval_rewards) + window) * eval_interval
       ax.plot(xs, eval_rewards, label=log_name)
 
-    ax.legend()
+    ax.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')
+    plt.tight_layout()
     plt.savefig(filepath)
     plt.close()
 

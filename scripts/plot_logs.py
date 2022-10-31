@@ -4,12 +4,20 @@ from bulletarm_baselines.logger.plotter import Plotter
 
 def plot(lc_smoothing=100, eval_smoothing=5, num_eval=None):
   log_filepaths = [
-    '/home/colin/hdd/workspace/midichlorians/data/block_picking/0_1_10_block_occlusion_test_1/log_data.pkl',
-    '/home/colin/hdd/workspace/ysalamir/data/block_picking/0_1_10_block_occlusion_test_1/log_data.pkl',
+    '/home/colin/hdd/workspace/discovery_runs/block_picking/0_1_3_occlusions_force_1/log_data.pkl',
+    '/home/colin/hdd/workspace/discovery_runs/block_picking/0_1_3_occlusions_force_2/log_data.pkl',
+    '/home/colin/hdd/workspace/discovery_runs/block_picking/0_1_3_occlusions_force_3/log_data.pkl',
+    '/home/colin/hdd/workspace/discovery_runs/block_picking/0_1_3_occlusions_vision_1/log_data.pkl',
+    '/home/colin/hdd/workspace/discovery_runs/block_picking/0_1_3_occlusions_vision_2/log_data.pkl',
+    '/home/colin/hdd/workspace/discovery_runs/block_picking/0_1_3_occlusions_vision_3/log_data.pkl',
   ]
   log_names = [
-    #'wrist_force',
-    'vision'
+    'force1',
+    'force2',
+    'force3',
+    'vision1',
+    'vision2',
+    'vision3'
   ]
   title = '128x128 Block Picking'
   base_dir = 'scripts/outputs/'
