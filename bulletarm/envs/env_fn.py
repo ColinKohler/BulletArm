@@ -82,6 +82,7 @@ CREATE_ENV_FNS = {
   'force_block_picking_corner': createEnv(ForceBlockPickingCornerEnv),
   'force_block_pulling_corner': createEnv(ForceBlockPullingCornerEnv),
   'force_drawer_opening': createEnv(ForceDrawerOpeningEnv),
+  'force_drawer_closing': createEnv(ForceDrawerClosingEnv),
   'force_clutter_picking': createEnv(ForceHouseholdPickingClutteredEnv),
   'force_block_in_bowl': createEnv(ForceBlockInBowlEnv),
   'force_peg_insertion': createEnv(ForcePegInsertionEnv),

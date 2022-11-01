@@ -71,6 +71,7 @@ PLANNERS = {
   'force_block_picking_corner' : CloseLoopBlockPickingCornerPlanner,
   'force_peg_insertion' : CloseLoopPegInsertionPlanner,
   'force_drawer_opening' : CloseLoopDrawerOpeningPlanner,
+  'force_drawer_closing' : CloseLoopDrawerClosingPlanner,
   'force_clutter_picking' : CloseLoopHouseholdPickingClutteredPlanner,
   'force_mug_picking' : CloseLoopMugPickingPlanner,
 }
