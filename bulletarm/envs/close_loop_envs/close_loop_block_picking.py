@@ -19,7 +19,7 @@ class CloseLoopBlockPickingEnv(CloseLoopEnv):
   def __init__(self, config):
     super().__init__(config)
 
-    self.robot.speed = 0.05
+    self.robot.speed = 0.01
 
   def reset(self):
     self.resetPybulletWorkspace()

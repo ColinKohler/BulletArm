@@ -227,11 +227,14 @@ class Panda(RobotBase):
   def getPickedObj(self, objects):
     if not objects:
       return None
+
     for obj in objects:
       # check the contact force normal to count the horizontal contact points
-      contact_points = pb.getContactPoints(self.id, obj.object_id, self.finger_a_index) + pb.getContactPoints(self.id, obj.object_id, self.finger_b_index)
-      horizontal = list(filter(lambda p: abs(p[7][2]) < 0.2, contact_points))
-      if len(horizontal) >= 2:
+      finger_a_contact_points = pb.getContactPoints(self.id, obj.object_id, self.finger_a_index)
+      finger_b_contact_points = pb.getContactPoints(self.id, obj.object_id, self.finger_b_index)
+      finger_a_horizontal = list(filter(lambda p: abs(p[7][2]) < 0.3, finger_a_contact_points))
+      finger_b_horizontal = list(filter(lambda p: abs(p[7][2]) < 0.3, finger_b_contact_points))
+      if len(finger_a_horizontal) >= 1 and len(finger_b_horizontal) >=1:
         return obj
 
   def getGripperImg(self, img_size, workspace_size, obs_size_m):

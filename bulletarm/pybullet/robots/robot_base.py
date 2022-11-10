@@ -337,12 +337,10 @@ class RobotBase:
 
         if i % 10 == 0:
           wrist_force, wrist_moment = self.getWristForce()
-          if False:
-            finger_1_force, finger_1_moment, finger_2_force, finger_2_moment = self.getFingerForce()
-            force = np.concatenate((wrist_force, wrist_moment, finger_1_force, finger_1_moment, finger_2_force, finger_2_moment))
-          else:
-            force = np.concatenate((wrist_force, wrist_moment))
+          force = np.concatenate((wrist_force, wrist_moment))
           self.force_history.append(force - self.zero_force)
+          if np.max(np.abs(self.force_history[-1])) > 10:
+            return
         i += 1
     else:
       self._setJointPoses(target_pose)
