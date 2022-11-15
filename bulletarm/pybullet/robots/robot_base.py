@@ -43,6 +43,7 @@ class RobotBase:
 
     self.position_gain = 0.02
     self.speed = 0.05
+    self.max_force = 10
     self.adjust_gripper_after_lift = False
     self.force_history = np.zeros((64, 6)).tolist()
     self.zero_force = None
@@ -313,19 +314,12 @@ class RobotBase:
     '''
     if dynamic:
       t0 = time.time()
-      past_joint_pos = deque(maxlen=50)
-      i = 0
       while (time.time() - t0) < 1:
         joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
         joint_pos = np.array(list(zip(*joint_state))[0])
-        past_joint_pos.append(joint_pos)
         target_pose = np.array(target_pose)
         diff = target_pose - joint_pos
-        if all(np.abs(diff) < 1e-3):
-          return
-
-        # Check to see if the arm can't move any close to the desired joint position
-        if len(past_joint_pos) == 50 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=1e-3):
+        if all(np.abs(diff) < 1e-2):
           return
 
         # Move with constant velocity
@@ -335,13 +329,12 @@ class RobotBase:
         self._sendPositionCommand(step)
         pb.stepSimulation()
 
-        if i % 10 == 0:
-          wrist_force, wrist_moment = self.getWristForce()
-          force = np.concatenate((wrist_force, wrist_moment))
-          self.force_history.append(force - self.zero_force)
-          if np.max(np.abs(self.force_history[-1])) > 10:
-            return
-        i += 1
+        #if i % 10 == 0:
+        wrist_force, wrist_moment = self.getWristForce()
+        force = np.concatenate((wrist_force, wrist_moment))
+        self.force_history.append(force - self.zero_force)
+        if np.max(np.abs(self.force_history[-1])) > self.max_force:
+          return
     else:
       self._setJointPoses(target_pose)
 

@@ -81,6 +81,6 @@ DEFAULT_CONFIG = {
   'close_loop_tray': False,
   # The ratio between the length covered in the observation to the size of the workspace
   'view_scale': 1.5,
-  # The type of observation. Choices: 'pixel', 'vec'
+  # The type of observation. Choices: 'pixel', 'pixel+force', 'vec'
   'obs_type': 'pixel',
 }

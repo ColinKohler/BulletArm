@@ -16,16 +16,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     self.peg_hole_rz = 0
     self.peg_hole_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
 
-    # Modify physics to restrict object penetration during contact
-    self.num_solver_iterations = 200
-    self.solver_residual_threshold = 1e-7
-    pb.setPhysicsEngineParameter(
-      numSubSteps=0,
-      numSolverIterations=self.num_solver_iterations,
-      solverResidualThreshold=self.solver_residual_threshold,
-      constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_SI,
-      contactERP=0.2,
-    )
+    self.robot.speed = 0.0001
 
   def resetPegHole(self):
     self.peg_hole_rz = np.random.random_sample() * 2*np.pi - np.pi if self.random_orientation else 0
@@ -75,13 +66,6 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
   def step(self, action):
     # Force the gripper to stay closed
     action[0] = 0.
-
-    # Check if the peg is close to the fixture and set the robot's speed appropriately
-    peg_pos = self.peg.getPosition()
-    if peg_pos[2] < 0.18:
-      self.robot.speed = 0.01
-    else:
-      self.robot.speed = 0.05
 
     return super().step(action)
 

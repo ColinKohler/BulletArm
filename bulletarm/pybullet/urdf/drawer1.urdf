@@ -61,11 +61,15 @@
         <box size="0.7 0.02 0.3"/>
       </geometry>
     </collision>
+    <contact>
+      <friction_anchor/>
+      <lateral_friction value="0.0"/>
+      <rolling_friction value="0.0001"/>
+      <inertia_scalling value="3.0"/>
+    </contact>
     <inertial>
-      <!-- CENTER OF MASS -->
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <mass value="0.05"/>
-      <!-- box inertia: 1/12*m(y^2+z^2), ... -->
       <inertia ixx="0.00257" ixy="0" ixz="0" iyy="0.0280625" iyz="0" izz="0.0255125"/>
     </inertial>
   </link>
@@ -89,6 +93,12 @@
         <box size="0.7 0.02 0.3"/>
       </geometry>
     </collision>
+    <contact>
+      <friction_anchor/>
+      <lateral_friction value="0.0"/>
+      <rolling_friction value="0.0001"/>
+      <inertia_scalling value="3.0"/>
+    </contact>
     <inertial>
       <!-- CENTER OF MASS -->
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -104,10 +114,6 @@
   </joint>
 
   <link name="drawer_bottom_wall">
-    <contact>
-			<friction_anchor/>
-			<lateral_friction value="1.0"/>
-		</contact>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
@@ -121,6 +127,12 @@
         <box size="0.7 0.7 0.02"/>
       </geometry>
     </collision>
+    <contact>
+      <friction_anchor/>
+      <lateral_friction value="0.0"/>
+      <rolling_friction value="0.0001"/>
+      <inertia_scalling value="3.0"/>
+    </contact>
     <inertial>
       <!-- CENTER OF MASS -->
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -148,6 +160,12 @@
         <box size="0.02 0.7 0.3"/>
       </geometry>
     </collision>
+    <contact>
+      <friction_anchor/>
+      <lateral_friction value="0.0"/>
+      <rolling_friction value="0.0001"/>
+      <inertia_scalling value="3.0"/>
+    </contact>
     <inertial>
       <!-- CENTER OF MASS -->
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -176,6 +194,12 @@
         <box size="0.02 0.7 0.3"/>
       </geometry>
     </collision>
+    <contact>
+      <friction_anchor/>
+      <lateral_friction value="0.0"/>
+      <rolling_friction value="0.0001"/>
+      <inertia_scalling value="3.0"/>
+    </contact>
     <inertial>
       <!-- CENTER OF MASS -->
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -214,6 +238,12 @@
         <box size="0.71 0.02 0.32"/>
       </geometry>
     </collision>
+    <contact>
+      <friction_anchor/>
+      <lateral_friction value="0.0"/>
+      <rolling_friction value="0.0001"/>
+      <inertia_scalling value="3.0"/>
+    </contact>
     <inertial>
       <!-- CENTER OF MASS -->
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -241,6 +271,12 @@
         <box size="0.71 0.02 0.32"/>
       </geometry>
     </collision>
+    <contact>
+      <friction_anchor/>
+      <lateral_friction value="0.0"/>
+      <rolling_friction value="0.0001"/>
+      <inertia_scalling value="3.0"/>
+    </contact>
     <inertial>
       <!-- CENTER OF MASS -->
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -268,6 +304,12 @@
         <box size="0.71 0.76 0.02"/>
       </geometry>
     </collision>
+    <contact>
+      <friction_anchor/>
+      <lateral_friction value="0.0"/>
+      <rolling_friction value="0.0001"/>
+      <inertia_scalling value="3.0"/>
+    </contact>
     <inertial>
       <!-- CENTER OF MASS -->
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -322,6 +364,12 @@
         <box size="0.02 0.76 0.36"/>
       </geometry>
     </collision>
+    <contact>
+      <friction_anchor/>
+      <lateral_friction value="0.0"/>
+      <rolling_friction value="0.0001"/>
+      <inertia_scalling value="3.0"/>
+    </contact>
     <inertial>
       <!-- CENTER OF MASS -->
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -336,10 +384,6 @@
     <child link="back_wall"/>
   </joint>
   <link name="drawer_obj_pos">
-    <contact>
-			<friction_anchor/>
-			<lateral_friction value="1.0"/>
-		</contact>
     <inertial>
       <!-- CENTER OF MASS -->
       <origin rpy="0 0 0" xyz="0 0 0"/>

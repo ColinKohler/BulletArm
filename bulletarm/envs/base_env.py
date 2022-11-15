@@ -126,9 +126,9 @@ class BaseEnv:
       self.robot.position_gain = 0.01
     elif config['physics_mode'] == 'force':
       self.physics_mode = 'force'
-      self.num_solver_iterations = 200
+      self.num_solver_iterations = 50
       self.solver_residual_threshold = 1e-7
-      self.robot.position_gain = 0.01
+      self.robot.position_gain = 1.0
     elif config['physics_mode'] == 'custom':
       self.physics_mode = 'custom'
       self.num_solver_iterations = config['num_solver_iterations']

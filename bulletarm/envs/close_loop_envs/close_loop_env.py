@@ -45,6 +45,8 @@ class CloseLoopEnv(BaseEnv):
     if config['robot'] == 'kuka':
       self.robot.home_positions = [-0.4446, 0.0837, -2.6123, 1.8883, -0.0457, -1.1810, 0.0699, 0., 0., 0., 0., 0., 0., 0., 0.]
       self.robot.home_positions_joint = self.robot.home_positions[:7]
+    self.robot.speed = 0.01
+    self.robot.max_force = 100
 
     self.has_tray = config['close_loop_tray']
     self.bin_size = self.workspace_size - 0.05
@@ -195,6 +197,26 @@ class CloseLoopEnv(BaseEnv):
       obj_poses.append(pos + rot)
     return np.array(obj_poses)
 
+  def _getDepthObservation(self):
+    '''
+    Get a depth image of the worksapce
+    '''
+    self.heightmap = self._getHeightmap()
+    heightmap = self.heightmap
+    # draw gripper if view is centered at the gripper
+    if self.view_type in ['camera_center_xyz', 'camera_center_xyz_height', 'render_center', 'render_center_height']:
+      gripper_img = self.robot.getGripperImg(self.heightmap_size, self.workspace_size, self.obs_size_m)
+      if self.view_type.find('height') > -1:
+        gripper_pos = self.robot._getEndEffectorPosition()
+        heightmap[gripper_img == 1] = gripper_pos[2]
+      else:
+        heightmap[gripper_img == 1] = 0.01
+    # add channel dimension if view is depth only
+    if self.view_type.find('rgb') == -1:
+      heightmap = heightmap.reshape([1, self.heightmap_size, self.heightmap_size])
+    heightmap = self.obs_mask * heightmap
+    return heightmap
+
   def _getVecObservation(self):
     '''
     get the observation in vector form. The observation has a size of (1+4+4*n), where the first value is the gripper
@@ -221,27 +243,24 @@ class CloseLoopEnv(BaseEnv):
       [np.array([gripper_state]), scaled_gripper_pos, np.array([scaled_gripper_rz]), scaled_obj_poses])
     return obs
 
+  def _getForceObservation(self):
+    force = np.array(self.robot.force_history)
+    return 1e-1 * force[-32:]
+
   def _getObservation(self, action=None):
     ''''''
     if self.obs_type == 'pixel':
-      self.heightmap = self._getHeightmap()
-      heightmap = self.heightmap
-      # draw gripper if view is centered at the gripper
-      if self.view_type in ['camera_center_xyz', 'camera_center_xyz_height', 'render_center', 'render_center_height']:
-        gripper_img = self.robot.getGripperImg(self.heightmap_size, self.workspace_size, self.obs_size_m)
-        if self.view_type.find('height') > -1:
-          gripper_pos = self.robot._getEndEffectorPosition()
-          heightmap[gripper_img == 1] = gripper_pos[2]
-        else:
-          heightmap[gripper_img == 1] = 0.01
-      # add channel dimension if view is depth only
-      if self.view_type.find('rgb') == -1:
-        heightmap = heightmap.reshape([1, self.heightmap_size, self.heightmap_size])
-      heightmap = self.obs_mask * heightmap
-      return self._isHolding(), None, heightmap
+      depth = self._getDepthObservation()
+      obs = (self._isHolding(), None, depth)
+    elif self.obs_type == 'pixel+force':
+      depth = self._getDepthObservation()
+      force = self._getForceObservation()
+      obs = (self._isHolding, None, depth, force)
     else:
-      obs = self._getVecObservation()
-      return self._isHolding(), None, obs
+      vec = self._getVecObservation()
+      obs = (self._isHolding(), None, vec)
+
+    return obs
 
   def simulate(self, action):
     p, dx, dy, dz, r = self._decodeAction(action)

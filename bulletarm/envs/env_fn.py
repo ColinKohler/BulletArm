@@ -1,5 +1,4 @@
 from bulletarm.envs.close_loop_envs import *
-from bulletarm.envs.force_envs import *
 from bulletarm.envs.block_structure_envs import *
 from bulletarm.envs.deconstruct_envs import *
 from bulletarm.envs.realistic_envs import *
@@ -74,17 +73,4 @@ CREATE_ENV_FNS = {
   'close_loop_block_in_bowl': createEnv(CloseLoopBlockInBowlEnv),
   'close_loop_peg_insertion': createEnv(CloseLoopPegInsertionEnv),
   'close_loop_mug_picking': createEnv(CloseLoopMugPickingEnv),
-  'force_block_picking': createEnv(ForceBlockPickingEnv),
-  'force_block_reaching': createEnv(ForceBlockReachingEnv),
-  'force_block_stacking': createEnv(ForceBlockStackingEnv),
-  'force_block_pulling': createEnv(ForceBlockPullingEnv),
-  'force_block_pushing': createEnv(ForceBlockPushingEnv),
-  'force_block_picking_corner': createEnv(ForceBlockPickingCornerEnv),
-  'force_block_pulling_corner': createEnv(ForceBlockPullingCornerEnv),
-  'force_drawer_opening': createEnv(ForceDrawerOpeningEnv),
-  'force_drawer_closing': createEnv(ForceDrawerClosingEnv),
-  'force_clutter_picking': createEnv(ForceHouseholdPickingClutteredEnv),
-  'force_block_in_bowl': createEnv(ForceBlockInBowlEnv),
-  'force_peg_insertion': createEnv(ForcePegInsertionEnv),
-  'force_mug_picking': createEnv(ForceMugPickingEnv),
 }
