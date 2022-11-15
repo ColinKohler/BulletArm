@@ -20,8 +20,6 @@ class CloseLoopBlockPullingEnv(CloseLoopEnv):
       config['object_scale_range'] = [0.8, 0.8]
     super().__init__(config)
 
-    self.robot.speed = 0.05
-
   def reset(self):
     while True:
       self.resetPybulletWorkspace()

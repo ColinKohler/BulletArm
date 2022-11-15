@@ -22,8 +22,6 @@ class CloseLoopBlockPullingCornerEnv(CloseLoopEnv):
     self.corner_rz = 0
     self.corner_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
 
-    self.robot.speed = 0.05
-
   def resetCorner(self):
     self.corner_rz = np.random.random_sample() * 2*np.pi - np.pi if self.random_orientation else 0
     self.corner_pos = self._getValidPositions(0.10, 0, [], 1)[0]

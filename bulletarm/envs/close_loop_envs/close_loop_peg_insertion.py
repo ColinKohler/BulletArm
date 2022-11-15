@@ -16,8 +16,6 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     self.peg_hole_rz = 0
     self.peg_hole_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
 
-    self.robot.speed = 0.0001
-
   def resetPegHole(self):
     self.peg_hole_rz = np.random.random_sample() * 2*np.pi - np.pi if self.random_orientation else 0
     self.peg_hole_pos = self._getValidPositions(0.1, 0, [], 1)[0]

@@ -1,5 +1,6 @@
 import argparse
 import numpy as np
+import numpy.random as npr
 import matplotlib.pyplot as plt
 from scipy.ndimage import uniform_filter1d
 
@@ -18,13 +19,23 @@ def run(task, robot):
   for _ in range(20):
     obs = env.reset()
     done = False
+    i = 0
     while not done:
       action = env.getNextAction()
       obs, reward, done = env.step(action)
-      fig, ax = plt.subplots(nrows=1, ncols=2)
-      ax[0].plot(obs[3])
-      ax[1].imshow(obs[2].squeeze(), cmap='gray')
-      plt.show()
+      if i >= 0:
+        fig, ax = plt.subplots(nrows=1, ncols=3)
+        ax[0].plot(np.tanh(obs[3][:,0]), label='Fx')
+        ax[0].plot(np.tanh(obs[3][:,1]), label='Fy')
+        ax[0].plot(np.tanh(obs[3][:,2]), label='Fz')
+        ax[0].plot(np.tanh(obs[3][:,3]), label='Mx')
+        ax[0].plot(np.tanh(obs[3][:,4]), label='My')
+        ax[0].plot(np.tanh(obs[3][:,5]), label='Mz')
+        ax[1].plot(np.tanh(obs[3] + npr.uniform(0, 0.05, (32, 6))))
+        ax[2].imshow(obs[2].squeeze(), cmap='gray')
+        fig.legend()
+        plt.show()
+      i += 1
   env.close()
 
 if __name__ == '__main__':

@@ -45,8 +45,12 @@ class CloseLoopEnv(BaseEnv):
     if config['robot'] == 'kuka':
       self.robot.home_positions = [-0.4446, 0.0837, -2.6123, 1.8883, -0.0457, -1.1810, 0.0699, 0., 0., 0., 0., 0., 0., 0., 0.]
       self.robot.home_positions_joint = self.robot.home_positions[:7]
-    self.robot.speed = 0.01
-    self.robot.max_force = 100
+
+    self.robot.speed = 1e-1
+    self.robot.max_force = 10000
+    if 'force' in self.obs_type:
+      self.robot.speed = 1e-4
+      self.robot.max_force = 10
 
     self.has_tray = config['close_loop_tray']
     self.bin_size = self.workspace_size - 0.05
@@ -245,7 +249,7 @@ class CloseLoopEnv(BaseEnv):
 
   def _getForceObservation(self):
     force = np.array(self.robot.force_history)
-    return 1e-1 * force[-32:]
+    return force[-32:]
 
   def _getObservation(self, action=None):
     ''''''

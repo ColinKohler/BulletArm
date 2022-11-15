@@ -84,7 +84,7 @@ class Panda(RobotBase):
       spinningFriction=0.001,
     )
 
-    self.force_history = np.zeros((256, 6)).tolist()
+    self.force_history = np.zeros((32, 6)).tolist()
 
     # Zero force out
     pb.stepSimulation()
@@ -95,16 +95,15 @@ class Panda(RobotBase):
     self.gripper_closed = False
     self.holding_obj = None
 
-    [pb.resetJointState(self.id, idx, self.home_positions[idx]) for idx in range(self.num_joints)]
-    self.moveToJ(self.home_positions_joint[:self.num_dofs])
+    self.moveToJ(self.home_positions_joint[:self.num_dofs], dynamic=False)
     self.openGripper()
 
-    self.force_history = np.zeros((256, 6)).tolist()
+    self.force_history = np.zeros((32, 6)).tolist()
 
     # Zero force out
-    #pb.stepSimulation()
-    #wrist_force, wrist_moment = self.getWristForce()
-    #self.zero_force = np.concatenate((wrist_force, wrist_moment))
+    pb.stepSimulation()
+    wrist_force, wrist_moment = self.getWristForce()
+    self.zero_force = np.concatenate((wrist_force, wrist_moment))
 
   def controlGripper(self, open_ratio, max_it=100):
     p1, p2 = self._getGripperJointPosition()
@@ -267,6 +266,8 @@ class Panda(RobotBase):
       maxNumIterations=100,
       residualThreshold=1e-6
     )
+    joints = np.float32(joints)
+    joints[2:] = (joints[2:] + np.pi) % (2 * np.pi) - np.pi
     return joints[:self.num_dofs]
 
   def _getGripperJointPosition(self):

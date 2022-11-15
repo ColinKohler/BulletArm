@@ -195,10 +195,10 @@ class BaseEnv:
     Initialize the pybullet world.
     '''
     pb.resetSimulation()
-    pb.setPhysicsEngineParameter(numSubSteps=0,
-                                 numSolverIterations=self.num_solver_iterations,
-                                 solverResidualThreshold=self.solver_residual_threshold,
-                                 constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_SI)
+    #pb.setPhysicsEngineParameter(constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_DANTZIG)
+    #pb.setPhysicsEngineParameter(numSubSteps=0,
+    #                             numSolverIterations=self.num_solver_iterations,
+    #                             solverResidualThreshold=self.solver_residual_threshold)
     pb.setTimeStep(self._timestep)
     pb.setGravity(0, 0, -10)
 
@@ -428,7 +428,7 @@ class BaseEnv:
                       constants.RANDOM_HOUSEHOLD, constants.BOTTLE, constants.TEST_TUBE, constants.SWAB, constants.SQUARE_PEG):
       padding = self.max_block_size * 2.4
     elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON, constants.BOX,
-                        constants.FLAT_BLOCK, constants.OBSTRUCTION, contants.MUG):
+                        constants.FLAT_BLOCK, constants.OBSTRUCTION, constants.MUG):
       padding = self.max_block_size * 3.4
     elif shape_type == constants.BOWL:
       padding = 0.17

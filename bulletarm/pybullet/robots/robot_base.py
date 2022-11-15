@@ -314,12 +314,12 @@ class RobotBase:
     '''
     if dynamic:
       t0 = time.time()
-      while (time.time() - t0) < 1:
+      while (time.time() - t0) < 1.:
         joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
         joint_pos = np.array(list(zip(*joint_state))[0])
         target_pose = np.array(target_pose)
         diff = target_pose - joint_pos
-        if all(np.abs(diff) < 1e-2):
+        if all(np.abs(diff) < 1e-3):
           return
 
         # Move with constant velocity
@@ -329,12 +329,13 @@ class RobotBase:
         self._sendPositionCommand(step)
         pb.stepSimulation()
 
-        #if i % 10 == 0:
         wrist_force, wrist_moment = self.getWristForce()
         force = np.concatenate((wrist_force, wrist_moment))
-        self.force_history.append(force - self.zero_force)
-        if np.max(np.abs(self.force_history[-1])) > self.max_force:
-          return
+        force[2] -= self.zero_force[2]
+        force[5] -= self.zero_force[5]
+        self.force_history.append(force)
+        #if np.max(np.abs(self.force_history[-1])) > self.max_force:
+        #  return
     else:
       self._setJointPoses(target_pose)
 
