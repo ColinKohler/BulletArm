@@ -160,10 +160,8 @@ class PybulletObject(object):
       Bool: True if objects are touching, False otherwise.
     '''
     contact_points = self.getContactPoints()
-    for p in contact_points:
-      if p[2] == obj.object_id:
-        return True
-    return False
+    obj_contact_points = list(filter(lambda x, o=obj.object_id: x[2]==o, contact_points))
+    return len(obj_contact_points) >= 1
 
   def isTouchingId(self, obj_id):
     '''

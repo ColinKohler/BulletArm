@@ -259,7 +259,7 @@ class CloseLoopEnv(BaseEnv):
     elif self.obs_type == 'pixel+force':
       depth = self._getDepthObservation()
       force = self._getForceObservation()
-      obs = (self._isHolding, None, depth, force)
+      obs = (self._isHolding(), None, depth, force)
     else:
       vec = self._getVecObservation()
       obs = (self._isHolding(), None, vec)

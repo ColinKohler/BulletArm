@@ -101,7 +101,8 @@ class Panda(RobotBase):
     self.force_history = np.zeros((32, 6)).tolist()
 
     # Zero force out
-    pb.stepSimulation()
+    for _ in range(100):
+      pb.stepSimulation()
     wrist_force, wrist_moment = self.getWristForce()
     self.zero_force = np.concatenate((wrist_force, wrist_moment))
 
@@ -224,7 +225,8 @@ class Panda(RobotBase):
     return finger_a_force, finger_a_moment, finger_b_force, finger_b_moment
 
   def getPickedObj(self, objects):
-    if not objects:
+    gripper_state = self.getGripperOpenRatio()
+    if not objects or gripper_state < 0.03:
       return None
 
     for obj in objects:
