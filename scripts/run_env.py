@@ -10,7 +10,7 @@ def run(task, robot):
   workspace = np.array([[0.25, 0.65], [-0.2, 0.2], [0.01, 0.25]])
   if 'close_loop' in task or 'force' in task:
     env_config = {'robot' : robot, 'render' : True, 'action_sequence' : 'pxyzr', 'workspace' : workspace, 'view_type': 'render_center', 'physics_mode' : 'force', 'max_steps' : 50, 'obs_size' : 128, 'occlusion_prob' : 0.1, 'num_occlusions' : 0, 'view_scale' : 1.5, 'obs_type' : 'pixel+force'}
-    planner_config = {'dpos': 0.05, 'drot': np.pi/4}
+    planner_config = {'dpos': 0.025, 'drot': np.pi/16}
   else:
     env_config = {'robot' : robot, 'render' : True}
     planner_config = {'half_rotation' : True}
@@ -36,6 +36,7 @@ def run(task, robot):
         fig.legend()
         plt.show()
       i += 1
+
   env.close()
 
 if __name__ == '__main__':

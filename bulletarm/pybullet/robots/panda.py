@@ -84,7 +84,7 @@ class Panda(RobotBase):
       spinningFriction=0.001,
     )
 
-    self.force_history = np.zeros((32, 6)).tolist()
+    self.force_history = np.zeros((64, 6)).tolist()
 
     # Zero force out
     pb.stepSimulation()
@@ -98,7 +98,7 @@ class Panda(RobotBase):
     self.moveToJ(self.home_positions_joint[:self.num_dofs], dynamic=False)
     self.openGripper()
 
-    self.force_history = np.zeros((32, 6)).tolist()
+    self.force_history = np.zeros((64, 6)).tolist()
 
     # Zero force out
     for _ in range(100):
@@ -266,7 +266,7 @@ class Panda(RobotBase):
       jointRanges=self.jr,
       restPoses=self.ml,
       maxNumIterations=100,
-      residualThreshold=1e-6
+      residualThreshold=1e-5
     )
     joints = np.float32(joints)
     joints[2:] = (joints[2:] + np.pi) % (2 * np.pi) - np.pi

@@ -41,9 +41,8 @@ class RobotBase:
       'gripper_closed': self.gripper_closed
     }
 
-    self.position_gain = 0.02
-    self.speed = 0.05
-    self.max_force = 10
+    self.position_gain = 1.0
+    self.speed = 1e-4
     self.adjust_gripper_after_lift = False
     self.force_history = np.zeros((64, 6)).tolist()
     self.zero_force = None
@@ -319,13 +318,14 @@ class RobotBase:
         joint_pos = np.array(list(zip(*joint_state))[0])
         target_pose = np.array(target_pose)
         diff = target_pose - joint_pos
-        if all(np.abs(diff) < 1e-3):
+        if all(np.abs(diff) < 1e-2):
           return
 
         # Move with constant velocity
         norm = np.linalg.norm(diff)
         v = diff / norm if norm > 0 else 0
         step = joint_pos + v * self.speed
+        #step = np.array((joint_pos[:6] + v[:6] * self.speed).tolist() + [joint_pos[6] + diff[6] * 0.1])
         self._sendPositionCommand(step)
         pb.stepSimulation()
 
@@ -334,8 +334,6 @@ class RobotBase:
         force[2] -= self.zero_force[2]
         force[5] -= self.zero_force[5]
         self.force_history.append(force)
-        #if np.max(np.abs(self.force_history[-1])) > self.max_force:
-        #  return
     else:
       self._setJointPoses(target_pose)
 
