@@ -23,7 +23,7 @@ def run(task, robot):
     while not done:
       action = env.getNextAction()
       obs, reward, done = env.step(action)
-      if i >= 190000:
+      if i >= 0:
         fig, ax = plt.subplots(nrows=1, ncols=3)
         ax[0].plot(np.tanh(obs[3][:,0]), label='Fx')
         ax[0].plot(np.tanh(obs[3][:,1]), label='Fy')
@@ -31,7 +31,7 @@ def run(task, robot):
         ax[0].plot(np.tanh(obs[3][:,3]), label='Mx')
         ax[0].plot(np.tanh(obs[3][:,4]), label='My')
         ax[0].plot(np.tanh(obs[3][:,5]), label='Mz')
-        ax[1].plot(np.clip(obs[3], -10, 10) / 10)
+        ax[1].plot(obs[3])
         ax[2].imshow(obs[2].squeeze(), cmap='gray')
         fig.legend()
         plt.show()
