@@ -313,12 +313,21 @@ class RobotBase:
     '''
     if dynamic:
       t0 = time.time()
+      i = 0
+      past_joint_pos = deque(maxlen=5)
       while (time.time() - t0) < 1.:
         joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
         joint_pos = np.array(list(zip(*joint_state))[0])
         target_pose = np.array(target_pose)
         diff = target_pose - joint_pos
         if all(np.abs(diff) < 1e-2):
+          #print('motion complete')
+          #print(i)
+          return
+
+        if (len(past_joint_pos) == 5 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=1e-3)):
+          #print('motion stuck')
+          #print(i)
           return
 
         # Move with constant velocity
@@ -329,11 +338,17 @@ class RobotBase:
         self._sendPositionCommand(step)
         pb.stepSimulation()
 
+        # Force sensor
         wrist_force, wrist_moment = self.getWristForce()
         force = np.concatenate((wrist_force, wrist_moment))
         force[2] -= self.zero_force[2]
         force[5] -= self.zero_force[5]
         self.force_history.append(force)
+
+        past_joint_pos.append(joint_pos)
+        i += 1
+      #print('motion timeout')
+      #print(i)
     else:
       self._setJointPoses(target_pose)
 

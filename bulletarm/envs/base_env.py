@@ -126,7 +126,7 @@ class BaseEnv:
       self.robot.position_gain = 0.01
     elif config['physics_mode'] == 'force':
       self.physics_mode = 'force'
-      self.num_solver_iterations = 50
+      self.num_solver_iterations = 100
       self.solver_residual_threshold = 1e-7
       self.robot.position_gain = 1.0
     elif config['physics_mode'] == 'custom':
@@ -195,10 +195,11 @@ class BaseEnv:
     Initialize the pybullet world.
     '''
     pb.resetSimulation()
-    #pb.setPhysicsEngineParameter(constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_DANTZIG)
-    #pb.setPhysicsEngineParameter(numSubSteps=0,
-    #                             numSolverIterations=self.num_solver_iterations,
-    #                             solverResidualThreshold=self.solver_residual_threshold)
+    pb.setPhysicsEngineParameter(numSubSteps=0,
+                                 numSolverIterations=self.num_solver_iterations,
+                                 solverResidualThreshold=self.solver_residual_threshold,
+                                 constraintSolverType=pb.CONSTRAINT_SOLVER_LCP_DANTZIG,
+                                 globalCFM=1e-6)
     pb.setTimeStep(self._timestep)
     pb.setGravity(0, 0, -10)
 

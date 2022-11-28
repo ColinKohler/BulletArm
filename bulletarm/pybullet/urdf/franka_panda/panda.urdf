@@ -7,7 +7,7 @@
   <link name="panda_link0">
   	<inertial>
       <origin rpy="0 0 0" xyz="0 0 0.05"/>
-       <mass value="2.9"/>
+       <mass value=".29"/>
        <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
     </inertial>
     <visual>
@@ -28,7 +28,7 @@
   <link name="panda_link1">
   	<inertial>
       <origin rpy="0 0 0" xyz="0 -0.04 -0.05"/>
-       <mass value="2.7"/>
+       <mass value=".27"/>
        <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
     </inertial>
     <visual>
@@ -55,7 +55,7 @@
   <link name="panda_link2">
   	<inertial>
       <origin rpy="0 0 0" xyz="0 -0.04 0.06"/>
-       <mass value="2.73"/>
+       <mass value=".273"/>
        <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
     </inertial>
     <visual>
@@ -82,7 +82,7 @@
   <link name="panda_link3">
 	  <inertial>
       <origin rpy="0 0 0" xyz="0.01 0.01 -0.05"/>
-       <mass value="2.04"/>
+       <mass value=".204"/>
        <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
     </inertial>
     <visual>
@@ -110,7 +110,7 @@
   <link name="panda_link4">
   	<inertial>
       <origin rpy="0 0 0" xyz="-0.03 0.03 0.02"/>
-       <mass value="2.08"/>
+       <mass value=".208"/>
        <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
     </inertial>
     <visual>
@@ -137,7 +137,7 @@
   <link name="panda_link5">
   	<inertial>
       <origin rpy="0 0 0" xyz="0 0.04 -0.12"/>
-       <mass value="3"/>
+       <mass value=".3"/>
        <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
     </inertial>
     <visual>
@@ -164,7 +164,7 @@
   <link name="panda_link6">
   	<inertial>
       <origin rpy="0 0 0" xyz="0.04 0 0"/>
-       <mass value="1.3"/>
+       <mass value=".13"/>
        <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
     </inertial>
     <visual>
@@ -191,7 +191,7 @@
   <link name="panda_link7">
   	<inertial>
       <origin rpy="0 0 0" xyz="0 0 0.08"/>
-       <mass value=".2"/>
+       <mass value=".02"/>
        <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
     </inertial>
     <visual>
@@ -236,7 +236,7 @@
   <link name="panda_hand">
   	<inertial>
       <origin rpy="0 0 0" xyz="0 0 0.04"/>
-       <mass value=".81"/>
+       <mass value=".081"/>
        <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
     </inertial>
     <visual>
@@ -262,7 +262,7 @@
     </contact>
   	<inertial>
       <origin rpy="0 0 0" xyz="0 0.01 0.02"/>
-       <mass value="0.1"/>
+       <mass value="0.01"/>
        <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
     </inertial>
     <visual>
@@ -289,7 +289,7 @@
 
   	<inertial>
       <origin rpy="0 0 0" xyz="0 -0.01 0.02"/>
-       <mass value="0.1"/>
+       <mass value="0.01"/>
        <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
     </inertial>
     <visual>
@@ -324,7 +324,7 @@
   </joint>
   <link name="panda_left_finger">
   	<inertial>
-      <origin rpy="0 0 0" xyz="0 0.0 0.0"/> <mass value="0.1"/>
+      <origin rpy="0 0 0" xyz="0 0.0 0.0"/> <mass value="0.01"/>
       <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
     </inertial>
     <visual>
@@ -340,7 +340,7 @@
   <link name="panda_right_finger">
   	<inertial>
       <origin rpy="0 0 0" xyz="0 0.0 0.0"/>
-      <mass value="0.1"/>
+      <mass value="0.01"/>
       <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
     </inertial>
     <visual>

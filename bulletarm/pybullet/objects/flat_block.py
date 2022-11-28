@@ -11,7 +11,7 @@ class FlatBlock(PybulletObject):
   def __init__(self, pos, rot, scale):
     bottom_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[0.05*scale, 0.05*scale, 0.025], rgbaColor=[1, 1, 1, 1])
     bottom_collision = pb.createCollisionShape(pb.GEOM_BOX, halfExtents=[0.05*scale, 0.05*scale, 0.025])
-    object_id = pb.createMultiBody(baseMass=0.5,
+    object_id = pb.createMultiBody(baseMass=0.1,
                             baseCollisionShapeIndex=bottom_collision,
                             baseVisualShapeIndex=bottom_visual,
                             basePosition=pos,
