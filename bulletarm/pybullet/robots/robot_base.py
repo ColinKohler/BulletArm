@@ -320,21 +320,16 @@ class RobotBase:
         joint_pos = np.array(list(zip(*joint_state))[0])
         target_pose = np.array(target_pose)
         diff = target_pose - joint_pos
-        if all(np.abs(diff) < 1e-2):
-          #print('motion complete')
-          #print(i)
+        if all(np.abs(diff) < 1e-3):
           return
 
         if (len(past_joint_pos) == 5 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=1e-3)):
-          #print('motion stuck')
-          #print(i)
           return
 
         # Move with constant velocity
         norm = np.linalg.norm(diff)
         v = diff / norm if norm > 0 else 0
         step = joint_pos + v * self.speed
-        #step = np.array((joint_pos[:6] + v[:6] * self.speed).tolist() + [joint_pos[6] + diff[6] * 0.1])
         self._sendPositionCommand(step)
         pb.stepSimulation()
 
@@ -347,8 +342,6 @@ class RobotBase:
 
         past_joint_pos.append(joint_pos)
         i += 1
-      #print('motion timeout')
-      #print(i)
     else:
       self._setJointPoses(target_pose)
 

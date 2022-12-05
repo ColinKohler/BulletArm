@@ -41,20 +41,20 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
 
     ee_pose = self.robot._getEndEffectorPose()
     peg_pose = self.peg.getPose()
-    world_to_ee = pb.invertTransform(ee_pose[0], ee_pose[1])
-    peg_to_ee = pb.multiplyTransforms(world_to_ee[0], world_to_ee[1], peg_pose[0], peg_pose[1])
-    cid = pb.createConstraint(
-      parentBodyUniqueId=self.robot.id,
-      parentLinkIndex=self.robot.end_effector_index,
-      childBodyUniqueId=self.peg.object_id,
-      childLinkIndex=-1,
-      jointType=pb.JOINT_FIXED,
-      jointAxis=(0,0,0),
-      parentFramePosition=peg_to_ee[0],
-      parentFrameOrientation=peg_to_ee[1],
-      childFramePosition=(0,0,0.0),
-      childFrameOrientation=(0,0,0),
-    )
+    #world_to_ee = pb.invertTransform(ee_pose[0], ee_pose[1])
+    #peg_to_ee = pb.multiplyTransforms(world_to_ee[0], world_to_ee[1], peg_pose[0], peg_pose[1])
+    #cid = pb.createConstraint(
+    #  parentBodyUniqueId=self.robot.id,
+    #  parentLinkIndex=self.robot.end_effector_index,
+    #  childBodyUniqueId=self.peg.object_id,
+    #  childLinkIndex=-1,
+    #  jointType=pb.JOINT_FIXED,
+    #  jointAxis=(0,0,0),
+    #  parentFramePosition=peg_to_ee[0],
+    #  parentFrameOrientation=peg_to_ee[1],
+    #  childFramePosition=(0,0,0.0),
+    #  childFrameOrientation=(0,0,0),
+    #)
 
     self.robot.closeGripper()
     self.setRobotHoldingObj()
