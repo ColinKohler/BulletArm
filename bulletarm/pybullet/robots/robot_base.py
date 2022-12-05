@@ -314,16 +314,16 @@ class RobotBase:
     if dynamic:
       t0 = time.time()
       i = 0
-      past_joint_pos = deque(maxlen=5)
+      past_joint_pos = deque(maxlen=2)
       while (time.time() - t0) < 1.:
         joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
         joint_pos = np.array(list(zip(*joint_state))[0])
         target_pose = np.array(target_pose)
         diff = target_pose - joint_pos
-        if all(np.abs(diff) < 1e-3):
+        if all(np.abs(diff) < 5e-3):
           return
 
-        if (len(past_joint_pos) == 5 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=1e-3)):
+        if (len(past_joint_pos) == 5 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=5e-3)):
           return
 
         # Move with constant velocity

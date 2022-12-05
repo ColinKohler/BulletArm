@@ -270,7 +270,6 @@ class Panda(RobotBase):
       residualThreshold=1e-5
     )
     joints = np.float32(joints)
-    joints[2:] = (joints[2:] + np.pi) % (2 * np.pi) - np.pi
     return joints[:self.num_dofs]
 
   def _getGripperJointPosition(self):

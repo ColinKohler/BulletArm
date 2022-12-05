@@ -22,6 +22,7 @@ def run(task, robot):
     i = 0
     while not done:
       action = env.getNextAction()
+      print(action)
       obs, reward, done = env.step(action)
       if i >= 0:
         fig, ax = plt.subplots(nrows=1, ncols=2)

@@ -56,8 +56,6 @@ class SquarePegHole(object):
       -1,
       lateralFriction=0.3,
       rollingFriction=0.0001,
-      contactStiffness=1,
-      contactDamping=1,
     )
 
   def reset(self, pos=(0,0,0), rot=(0,0,0,1)):
