@@ -35,7 +35,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
       constants.SQUARE_PEG,
       pos=[[self.workspace[0].mean(), self.workspace[1].mean(), 0.29]],
       rot=[[0,0,0,1]],
-      scale=0.115,
+      scale=0.105,#0.115,
       wait=False
     )[0]
 
@@ -88,6 +88,6 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     peg_rot = transformations.euler_from_quaternion(self.peg.getRotation())
 
     end_effector_pos = self.robot._getEndEffectorPosition()
-    end_effector_pos[2] -= 0.03
+    end_effector_pos[2] -= 0.01
 
-    return np.allclose(peg_pos, end_effector_pos, atol=5e-1) and np.allclose(peg_rot[:2], [0., 0.], atol=1e-1)
+    return np.allclose(peg_pos, end_effector_pos, atol=1e-2) and np.allclose(peg_rot[:2], [0., 0.], atol=1e-1)
