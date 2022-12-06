@@ -9,9 +9,8 @@
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <mass value="0.1"/>
-      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
+      <inertia ixx="0.009" ixy="0" ixz="0" iyy="0.009" iyz="0" izz="0.005"/>
     </inertial>
-      contactDamping=1,
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>

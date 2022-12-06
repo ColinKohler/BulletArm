@@ -33,14 +33,14 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     self.resetPegHole()
     self.peg = self._generateShapes(
       constants.SQUARE_PEG,
-      pos=[[self.workspace[0].mean(), self.workspace[1].mean(), 0.29]],
+      pos=[[self.workspace[0].mean(), self.workspace[1].mean(), 0.32]], #0.29]],
       rot=[[0,0,0,1]],
       scale=0.105,#0.115,
       wait=False
     )[0]
 
-    ee_pose = self.robot._getEndEffectorPose()
-    peg_pose = self.peg.getPose()
+    #ee_pose = self.robot._getEndEffectorPose()
+    #peg_pose = self.peg.getPose()
     #world_to_ee = pb.invertTransform(ee_pose[0], ee_pose[1])
     #peg_to_ee = pb.multiplyTransforms(world_to_ee[0], world_to_ee[1], peg_pose[0], peg_pose[1])
     #cid = pb.createConstraint(
@@ -88,6 +88,6 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     peg_rot = transformations.euler_from_quaternion(self.peg.getRotation())
 
     end_effector_pos = self.robot._getEndEffectorPosition()
-    end_effector_pos[2] -= 0.01
+    end_effector_pos[2] += 0.02
 
     return np.allclose(peg_pos, end_effector_pos, atol=1e-2) and np.allclose(peg_rot[:2], [0., 0.], atol=1e-1)

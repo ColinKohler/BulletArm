@@ -332,6 +332,7 @@ class RobotBase:
         step = joint_pos + v * self.speed
         self._sendPositionCommand(step)
         pb.stepSimulation()
+        #time.sleep(0.1)
 
         # Force sensor
         wrist_force, wrist_moment = self.getWristForce()
