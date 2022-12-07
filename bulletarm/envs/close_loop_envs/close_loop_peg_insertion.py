@@ -90,4 +90,6 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     end_effector_pos = self.robot._getEndEffectorPosition()
     end_effector_pos[2] += 0.02
 
-    return np.allclose(peg_pos, end_effector_pos, atol=1e-2) and np.allclose(peg_rot[:2], [0., 0.], atol=1e-1)
+    return np.allclose(peg_pos[:2], end_effector_pos[:2], atol=1e-2) and \
+           np.allclose(peg_pos[2], end_effector_pos[2], atol=2e-2) and \
+           np.allclose(peg_rot[:2], [0., 0.], atol=1e-1)

@@ -1,6 +1,3 @@
-import sys
-sys.path.append('..')
-
 import pybullet as pb
 
 from bulletarm.pybullet.objects.pybullet_object import PybulletObject
