@@ -258,6 +258,14 @@ class CloseLoopEnv(BaseEnv):
       depth = self._getDepthObservation()
       force = self._getForceObservation()
       obs = (self._isHolding(), None, depth, force)
+    elif self.obs_type == 'pixel+force+proprio':
+      end_pos = self.robot._getEndEffectorPosition()
+      end_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
+      proprio = np.array(end_pos + [end_rz])
+
+      depth = self._getDepthObservation()
+      force = self._getForceObservation()
+      obs = (self._isHolding(), None, depth, force, proprio)
     else:
       vec = self._getVecObservation()
       obs = (self._isHolding(), None, vec)
