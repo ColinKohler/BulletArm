@@ -22,6 +22,10 @@ class Renderer(object):
     self.sensor_2 = Sensor(self.cam_2_forward_pos, self.cam_forward_up_vector, self.cam_forward_target_pos,
                            2, near=0.1, far=far_2)
 
+    self.cam_3_forward_pos = [1.0, self.workspace[1].mean(), 1]
+    far_3 = np.linalg.norm(np.array(self.cam_3_forward_pos) - np.array(self.cam_forward_target_pos)) + 2
+    self.sensor_3 = Sensor(self.cam_3_forward_pos, self.cam_forward_up_vector, self.cam_forward_target_pos,
+                           2, near=0.1, far=far_2)
 
     self.points = np.empty((0, 3))
 
@@ -32,6 +36,9 @@ class Renderer(object):
     cam_2_forward_pos = np.array(self.cam_2_forward_pos) + npr.uniform(-0.1, 0.1, 3)
     self.sensor_1.setCamMatrix(cam_2_forward_pos, self.cam_forward_up_vector, self.cam_forward_target_pos)
 
+    cam_3_forward_pos = np.array(self.cam_3_forward_pos) + npr.uniform(-0.1, 0.1, 3)
+    self.sensor_3.setCamMatrix(cam_2_forward_pos, self.cam_forward_up_vector, self.cam_forward_target_pos)
+
   def getNewPointCloud(self, res=256):
     self.clearPoints()
     # ceiling = np.array(np.meshgrid(np.linspace(self.workspace[0][0], self.workspace[0][1], 256),
@@ -40,8 +47,10 @@ class Renderer(object):
     # self.addPoints(np.array(ceiling))
     points1 = self.sensor_1.getPointCloud(res, to_numpy=False)
     points2 = self.sensor_2.getPointCloud(res, to_numpy=False)
+    points3 = self.sensor_3.getPointCloud(res, to_numpy=False)
     self.addPoints(points1)
     self.addPoints(points2)
+    self.addPoints(points3)
     self.points = self.points[self.points[:, 2] <= self.workspace[2][1]]
     # import pyrender
     # mesh = pyrender.Mesh.from_points(self.points.get())
