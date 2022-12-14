@@ -1,8 +1,8 @@
 import pybullet as pb
 import numpy as np
 
-from bulletarm.pybullet.equipments.drawer import Drawer
-from bulletarm.pybullet.equipments.rack import Rack
+from bulletarm.pybullet.equipment.drawer import Drawer
+from bulletarm.pybullet.equipment.rack import Rack
 
 class DrawerWithRack:
   def __init__(self, rack_n=3):

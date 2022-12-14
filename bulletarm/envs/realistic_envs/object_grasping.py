@@ -6,7 +6,7 @@ import bulletarm
 from bulletarm.envs.base_env import BaseEnv
 from bulletarm.pybullet.utils import constants
 from bulletarm.pybullet.utils.constants import NoValidPositionException
-from bulletarm.pybullet.equipments.tray import Tray
+from bulletarm.pybullet.equipment.tray import Tray
 from scipy.ndimage.interpolation import rotate
 import pybullet as pb
 

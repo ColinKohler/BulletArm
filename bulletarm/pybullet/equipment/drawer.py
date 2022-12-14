@@ -4,7 +4,7 @@ import numpy as np
 
 from bulletarm.pybullet.utils import transformations
 from bulletarm.pybullet.utils import constants
-from bulletarm.pybullet.equipments.drawer_handle import DrawerHandle
+from bulletarm.pybullet.equipment.drawer_handle import DrawerHandle
 from bulletarm.pybullet.objects.pybullet_object import PybulletObject
 from typing import List
 

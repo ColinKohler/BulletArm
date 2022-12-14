@@ -4,7 +4,7 @@ import numpy as np
 from bulletarm.pybullet.utils import constants
 from bulletarm.envs.close_loop_envs.close_loop_env import CloseLoopEnv
 from bulletarm.pybullet.utils import transformations
-from bulletarm.pybullet.equipments.corner import Corner
+from bulletarm.pybullet.equipment.corner import Corner
 
 class CloseLoopBlockPullingCornerEnv(CloseLoopEnv):
   '''Close loop corner block pulling task.

@@ -73,4 +73,5 @@ CREATE_ENV_FNS = {
   'close_loop_block_in_bowl': createEnv(CloseLoopBlockInBowlEnv),
   'close_loop_peg_insertion': createEnv(CloseLoopPegInsertionEnv),
   'close_loop_mug_picking': createEnv(CloseLoopMugPickingEnv),
+  'close_loop_pivoting': createEnv(CloseLoopPivotingEnv)
 }

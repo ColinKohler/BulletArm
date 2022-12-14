@@ -5,7 +5,7 @@ from bulletarm.pybullet.utils import constants
 from bulletarm.envs.close_loop_envs.close_loop_env import CloseLoopEnv
 from bulletarm.pybullet.utils import transformations
 from bulletarm.planners.close_loop_block_picking_corner_planner import CloseLoopBlockPickingCornerPlanner
-from bulletarm.pybullet.equipments.corner import Corner
+from bulletarm.pybullet.equipment.corner import Corner
 
 class CloseLoopBlockPickingCornerEnv(CloseLoopEnv):
   '''Close loop corner block picking task.

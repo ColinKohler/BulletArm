@@ -2,7 +2,7 @@ import numpy as np
 from bulletarm.envs.base_env import BaseEnv
 from bulletarm.pybullet.utils import constants
 from bulletarm.pybullet.utils.constants import NoValidPositionException
-from bulletarm.pybullet.equipments.container_box import ContainerBox
+from bulletarm.pybullet.equipment.container_box import ContainerBox
 
 class RandomBlockPickingClutterEnv(BaseEnv):
   '''

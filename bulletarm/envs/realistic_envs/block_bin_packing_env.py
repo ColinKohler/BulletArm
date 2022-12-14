@@ -2,7 +2,7 @@ import pybullet as pb
 import numpy as np
 import numpy.random as npr
 
-from bulletarm.pybullet.equipments.container_box import ContainerBox
+from bulletarm.pybullet.equipment.container_box import ContainerBox
 from bulletarm.envs.base_env import BaseEnv
 from bulletarm.pybullet.utils import constants
 from bulletarm.pybullet.utils.constants import NoValidPositionException

@@ -28,6 +28,7 @@ from bulletarm.pybullet.objects.random_household_object_200 import RandomHouseHo
 from bulletarm.pybullet.objects.grasp_net_obj import GraspNetObject
 from bulletarm.pybullet.objects.obstruction import Obstruction
 from bulletarm.pybullet.objects.mug import Mug
+from bulletarm.pybullet.objects.pivoting_block import PivotingBlock
 
 def generateCube(pos, rot, scale):
   ''''''
@@ -99,3 +100,6 @@ def generateObstruction(pos, rot, scale):
 
 def generateMug(pos, rot, scale):
   return Mug(pos, rot, scale)
+
+def generatePivotingBlock(pos, rot, scale):
+  return PivotingBlock(pos, rot, scale)

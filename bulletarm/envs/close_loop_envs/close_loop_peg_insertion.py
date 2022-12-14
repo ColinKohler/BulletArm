@@ -6,7 +6,7 @@ from bulletarm.pybullet.utils import constants
 from bulletarm.envs.close_loop_envs.close_loop_env import CloseLoopEnv
 from bulletarm.pybullet.utils import transformations
 import bulletarm.pybullet.utils.object_generation as pb_obj_generation
-from bulletarm.pybullet.equipments.square_peg_hole import SquarePegHole
+from bulletarm.pybullet.equipment.square_peg_hole import SquarePegHole
 from bulletarm.planners.close_loop_peg_insertion_planner import CloseLoopPegInsertionPlanner
 
 class CloseLoopPegInsertionEnv(CloseLoopEnv):
@@ -35,7 +35,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
       constants.SQUARE_PEG,
       pos=[[self.workspace[0].mean(), self.workspace[1].mean(), 0.32]], #0.29]],
       rot=[[0,0,0,1]],
-      scale=0.110,#0.115,
+      scale=0.100,#0.115,
       wait=False
     )[0]
 

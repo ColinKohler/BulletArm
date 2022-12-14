@@ -7,7 +7,7 @@ from bulletarm.pybullet.utils import transformations
 from bulletarm.pybullet.utils.renderer import Renderer
 from bulletarm.pybullet.utils.ortho_sensor import OrthographicSensor
 from bulletarm.pybullet.utils.sensor import Sensor
-from bulletarm.pybullet.equipments.tray import Tray
+from bulletarm.pybullet.equipment.tray import Tray
 
 
 class CloseLoopEnv(BaseEnv):

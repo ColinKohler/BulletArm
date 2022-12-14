@@ -5,7 +5,7 @@ from bulletarm.envs.close_loop_envs.close_loop_env import CloseLoopEnv
 from bulletarm.pybullet.utils import constants
 from bulletarm.planners.close_loop_block_in_bowl_planner import CloseLoopBlockInBowlPlanner
 from bulletarm.pybullet.utils.constants import NoValidPositionException
-from bulletarm.pybullet.equipments.tray import Tray
+from bulletarm.pybullet.equipment.tray import Tray
 
 class CloseLoopBlockInBowlEnv(CloseLoopEnv):
   '''Close loop block in bowl task.

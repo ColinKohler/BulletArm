@@ -4,7 +4,7 @@ import numpy as np
 from bulletarm.envs.close_loop_envs.close_loop_env import CloseLoopEnv
 from bulletarm.pybullet.utils import transformations
 from bulletarm.planners.close_loop_drawer_opening_planner import CloseLoopDrawerOpeningPlanner
-from bulletarm.pybullet.equipments.drawer import Drawer
+from bulletarm.pybullet.equipment.drawer import Drawer
 
 class CloseLoopDrawerOpeningEnv(CloseLoopEnv):
   '''Close loop drawer opening task.

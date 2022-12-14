@@ -5,7 +5,7 @@ from bulletarm.pybullet.utils import constants
 from bulletarm.envs.close_loop_envs.close_loop_env import CloseLoopEnv
 from bulletarm.pybullet.utils import transformations
 from bulletarm.planners.close_loop_block_pushing_planner import CloseLoopBlockPushingPlanner
-from bulletarm.pybullet.equipments.tray import Tray
+from bulletarm.pybullet.equipment.tray import Tray
 from bulletarm.pybullet.utils.constants import NoValidPositionException
 
 class CloseLoopBlockPushingEnv(CloseLoopEnv):
