@@ -33,7 +33,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     self.resetPegHole()
     self.peg = self._generateShapes(
       constants.SQUARE_PEG,
-      pos=[[self.workspace[0].mean(), self.workspace[1].mean(), 0.32]], #0.29]],
+      pos=[[self.workspace[0].mean(), self.workspace[1].mean(), 0.30]], #0.29]],
       rot=[[0,0,0,1]],
       scale=0.100,#0.115,
       wait=False
@@ -62,16 +62,19 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
   def _getReward(self):
     hole_pos, hole_rot = self.peg_hole.getHolePose()
     peg_pos = self.peg.getPosition()
-
     success_reward = 1 if np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < 0.11 else 0
-    return success_reward
+
+    contact_points = pb.getContactPoints(self.peg.object_id, self.peg_hole.id)
+    touching_fixture_reward = 0.01 if len(contact_points) > 0 else 0
+
+    return success_reward + touching_fixture_reward
 
   def _isPegInHand(self):
     peg_pos = self.peg.getPosition()
     peg_rot = transformations.euler_from_quaternion(self.peg.getRotation())
 
     end_effector_pos = self.robot._getEndEffectorPosition()
-    end_effector_pos[2] += 0.02
+    #end_effector_pos[2] += 0.02
 
     return np.allclose(peg_pos[:2], end_effector_pos[:2], atol=1e-2) and \
            np.allclose(peg_pos[2], end_effector_pos[2], atol=2e-2) and \
