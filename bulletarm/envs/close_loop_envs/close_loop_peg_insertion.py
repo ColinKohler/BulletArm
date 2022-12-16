@@ -62,7 +62,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
   def _getReward(self):
     hole_pos, hole_rot = self.peg_hole.getHolePose()
     peg_pos = self.peg.getPosition()
-    success_reward = 1 if np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < 0.11 else 0
+    success_reward = 1 if np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < 0.14 else 0
 
     contact_points = pb.getContactPoints(self.peg.object_id, self.peg_hole.id)
     touching_fixture_reward = 0.01 if len(contact_points) > 0 else 0
@@ -77,5 +77,5 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     #end_effector_pos[2] += 0.02
 
     return np.allclose(peg_pos[:2], end_effector_pos[:2], atol=1e-2) and \
-           np.allclose(peg_pos[2], end_effector_pos[2], atol=2e-2) and \
            np.allclose(peg_rot[:2], [0., 0.], atol=1e-1)
+           #np.allclose(peg_pos[2], end_effector_pos[2], atol=2e-2) and \
