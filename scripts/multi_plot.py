@@ -5,14 +5,13 @@ from bulletarm_baselines.logger.multi_plotter import MultiPlotter
 def plot(lc_eps=None, lc_smoothing=100, eval_smoothing=5, num_eval=None):
   log_filepaths = [
     [
-      '/home/colin/workspace/neu/discovery_runs/block_picking/fusion_1.pkl',
-      '/home/colin/workspace/neu/discovery_runs/block_picking/fusion_2.pkl',
-      '/home/colin/workspace/neu/discovery_runs/block_picking/fusion_3.pkl',
+      '/home/colin/hdd/workspace/midichlorians/data/drawer_opening/new_model_w_gate/log_data.pkl',
+      '/home/colin/hdd/workspace/midichlorians/data/drawer_opening/new_model_w_gate_2/log_data.pkl',
     ],
     [
-      '/home/colin/workspace/neu/discovery_runs/block_picking/vision_1.pkl',
-      '/home/colin/workspace/neu/discovery_runs/block_picking/vision_2.pkl',
-      '/home/colin/workspace/neu/discovery_runs/block_picking/vision_3.pkl',
+      '/home/colin/hdd/workspace/ysalamir/data/drawer_opening/new_controller_slow/log_data.pkl',
+      '/home/colin/hdd/workspace/ysalamir/data/drawer_opening/new_controller_slow_2/log_data.pkl',
+      '/home/colin/hdd/workspace/ysalamir/data/drawer_opening/new_controller_slow_3/log_data.pkl',
     ]
   ]
   log_names = [
