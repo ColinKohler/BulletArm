@@ -35,7 +35,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
       constants.SQUARE_PEG,
       pos=[[self.workspace[0].mean(), self.workspace[1].mean(), 0.30]], #0.29]],
       rot=[[0,0,0,1]],
-      scale=0.100,#0.115,
+      scale=0.115,#0.115,
       wait=False
     )[0]
 
@@ -57,7 +57,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     hole_pos, hole_rot = self.peg_hole.getHolePose()
     peg_pos = self.peg.getPosition()
 
-    return np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < 0.11
+    return np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < 0.14
 
   def _getReward(self):
     hole_pos, hole_rot = self.peg_hole.getHolePose()

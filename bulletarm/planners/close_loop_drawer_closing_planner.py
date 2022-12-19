@@ -55,6 +55,3 @@ class CloseLoopDrawerClosingPlanner(CloseLoopPlanner):
     else:
       self.setNewTarget()
       return self.getNextActionToCurrentTarget()
-
-  def getStepsLeft(self):
-    return 100

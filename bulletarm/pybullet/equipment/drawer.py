@@ -42,7 +42,6 @@ class Drawer:
     return list(pos), list(rot)
 
   def getHandlePosition(self):
-    # return pb.getLinkState(self.handle.id, 0)[4]
     return self.handle.getPosition()
 
   def getHandleRotation(self):
