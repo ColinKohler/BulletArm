@@ -39,7 +39,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
       wait=False
     )[0]
 
-    self.robot.closeGripper()
+    self.robot.gripper.close()
     self.setRobotHoldingObj()
 
     return self._getObservation()

@@ -5,21 +5,21 @@ from bulletarm_baselines.logger.multi_plotter import MultiPlotter
 def plot(lc_eps=None, lc_smoothing=100, eval_smoothing=5, num_eval=None):
   log_filepaths = [
     [
-      '/home/colin/workspace/neu/discovery_runs/block_pulling/fusion_1.pkl',
-      '/home/colin/workspace/neu/discovery_runs/block_pulling/fusion_2.pkl',
-      '/home/colin/workspace/neu/discovery_runs/block_pulling/fusion_3.pkl',
+      '/home/colin/workspace/neu/discovery_runs/block_pushing/fusion_1.pkl',
+      '/home/colin/workspace/neu/discovery_runs/block_pushing/fusion_2.pkl',
+      '/home/colin/workspace/neu/discovery_runs/block_pushing/fusion_3.pkl',
     ],
     [
-      '/home/colin/workspace/neu/discovery_runs/block_pulling/vision_1.pkl',
-      '/home/colin/workspace/neu/discovery_runs/block_pulling/vision_2.pkl',
-      '/home/colin/workspace/neu/discovery_runs/block_pulling/vision_3.pkl',
+      '/home/colin/workspace/neu/discovery_runs/block_pushing/vision_1.pkl',
+      '/home/colin/workspace/neu/discovery_runs/block_pushing/vision_2.pkl',
+      '/home/colin/workspace/neu/discovery_runs/block_pushing/vision_3.pkl',
     ]
   ]
   log_names = [
     'fusion',
     'vision'
   ]
-  title = '128x128 Block Pulling'
+  title = '128x128 Block Pushing'
   base_dir = 'scripts/outputs/'
 
   plotter = MultiPlotter(log_filepaths, log_names)
