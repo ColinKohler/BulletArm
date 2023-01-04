@@ -54,17 +54,11 @@ def worker(remote, parent_remote, env_fn, planner_fn=None):
         remote.send(obs)
       elif cmd == 'get_spaces':
         remote.send((env.obs_shape, env.action_space, env.action_shape))
-      elif cmd == 'get_empty_in_hand':
-        remote.send(env.getEmptyInHand())
-      elif cmd == 'get_env_id':
-        remote.send(env.active_env_id)
       elif cmd == 'get_next_action':
         if planner:
           remote.send(planner.getNextAction())
         else:
           raise ValueError('Attempting to use a planner which was not initialized.')
-      elif cmd == 'get_num_obj':
-        remote.send(env.num_obj)
       elif cmd == 'save':
         env.saveState()
       elif cmd == 'restore':
@@ -300,16 +294,6 @@ class MultiRunner(object):
     action = np.stack(action)
     return action
 
-  def getEmptyInHand(self):
-    '''
-
-    '''
-    for remote in self.remotes:
-      remote.send(('get_empty_in_hand', None))
-    hand_obs = [remote.recv() for remote in self.remotes]
-    hand_obs = np.stack(hand_obs)
-    return hand_obs
-
   @staticmethod
   def getEnvGitHash():
     '''
@@ -317,15 +301,6 @@ class MultiRunner(object):
     '''
     repo = git.Repo(bulletarm.__path__[0])
     return repo.head.object.hexsha
-
-  def getNumObj(self):
-    '''
-    Get the number of objects in the environment
-    Returns: int: number of objects
-    '''
-    self.remotes[0].send(('get_num_obj', None))
-    num_obj = self.remotes[0].recv()
-    return num_obj
 
   def gatherDeconstructTransitions(self, planner_episode):
     '''

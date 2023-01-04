@@ -52,7 +52,7 @@ class CloseLoopBlockPickingCornerEnv(CloseLoopEnv):
 
   def _checkTermination(self):
     gripper_z = self.robot._getEndEffectorPosition()[-1]
-    return self.robot.holding_obj == self.objects[-1] and gripper_z > 0.1
+    return self.robot.getHeldObject() == self.objects[-1] and gripper_z > 0.1
 
   def getObjectPoses(self, objects=None):
     if objects is None: objects = self.objects + [self.corner]

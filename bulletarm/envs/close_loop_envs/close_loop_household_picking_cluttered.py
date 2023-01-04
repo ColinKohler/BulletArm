@@ -128,7 +128,6 @@ class CloseLoopHouseholdPickingClutteredEnv(CloseLoopEnv):
           return True
         return False
     return False
-    # return self.robot.holding_obj == self.objects[-1] and gripper_z > 0.08
 
   def isSimValid(self):
     for obj in self.objects:

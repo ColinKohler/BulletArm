@@ -46,7 +46,7 @@ class BlockPickingEnv(BaseEnv):
       if self._isObjectHeld(obj):
         self.obj_grasped += 1
         self._removeObject(obj)
-        self.robot.holding_obj = None
+        self.robot.gripper.holding_obj = None
         if self.obj_grasped == self.num_obj:
           return True
         return False
