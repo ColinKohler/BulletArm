@@ -20,10 +20,10 @@ class CheckGoalCustomLabels(CheckGoal):
     super(CheckGoalCustomLabels, self).__init__(goal, env)
 
   def get_label_pick(self):
-    if self.env.robot.holding_obj is None:
+    if self.env.robot.getHeldObject() is None:
       return self.LABEL_PICK_FAIL
 
-    obj = self.env.object_types[self.env.robot.holding_obj]
+    obj = self.env.object_types[self.env.robot.getHeldObject()]
 
     if obj == constants.CUBE:
       return self.LABEL_PICK_CUBE

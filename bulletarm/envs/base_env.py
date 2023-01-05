@@ -279,7 +279,7 @@ class BaseEnv:
   def takeAction(self, action):
     motion_primative, x, y, z, rot = self._decodeAction(action)
     self.last_action = action
-    self.last_obj = self.robot.holding_obj
+    self.last_obj = self.robot.getHeldObject()
 
     # Get transform for action
     pos = [x, y, z]
@@ -287,12 +287,12 @@ class BaseEnv:
 
     # Take action specfied by motion primative
     if motion_primative == constants.PICK_PRIMATIVE:
-      if self.robot.holding_obj is None:
+      if self.robot.getHeldObject() is None:
         self.robot.pick(pos, rot_q, self.pick_pre_offset, dynamic=self.dynamic,
                         objects=self.objects, simulate_grasp=self.simulate_grasp, top_down_approach=self.pick_top_down_approach)
     elif motion_primative == constants.PLACE_PRIMATIVE:
-      obj = self.robot.holding_obj
-      if self.robot.holding_obj is not None:
+      obj = self.robot.getHeldObject()
+      if self.robot.getHeldObject() is not None:
         self.robot.place(pos, rot_q, self.place_pre_offset,
                          dynamic=self.dynamic, simulate_place=self.simulate_grasp, top_down_approach=self.place_top_down_approach)
     elif motion_primative == constants.PUSH_PRIMATIVE:
@@ -607,14 +607,11 @@ class BaseEnv:
       obj_positions.append(obj.getPosition())
     return np.array(obj_positions)
 
-  def _getHoldingObj(self):
-    return self.robot.holding_obj
-
   def _getHoldingObjType(self):
-    return self.object_types[self._getHoldingObj()] if self.robot.holding_obj else None
+    return self.object_types[self.robot.getHeldObject()] if self.robot.getHeldObject() else None
 
   def _isHolding(self):
-    return self.robot.holding_obj is not None
+    return self.robot.getHeldObject() is not None
 
   def _getRestPoseMatrix(self):
     T = np.eye(4)
@@ -623,14 +620,14 @@ class BaseEnv:
     return T
 
   def _isObjectHeld(self, obj):
-    return self.robot.holding_obj == obj
+    return self.robot.getHeldObject() == obj
 
   def _removeObject(self, obj):
     if obj in self.objects:
       pb.removeBody(obj.object_id)
       # self._moveObjectOutWorkspace(obj)
       self.objects.remove(obj)
-      self.robot.openGripper()
+      self.robot.gripper.open()
 
   def _moveObjectOutWorkspace(self, obj):
     pos = [-0.50, 0, 0.25]
@@ -794,9 +791,9 @@ class BaseEnv:
     '''
     x_pixel, y_pixel = self._getPixelsFromPos(x, y)
     if self._isHolding():
-      if self.object_types[self.robot.holding_obj] is constants.BRICK:
+      if self.object_types[self.robot.getHeldObjet()] is constants.BRICK:
         extend = int(2*self.max_block_size/self.heightmap_resolution)
-      elif self.object_types[self.robot.holding_obj] is constants.ROOF:
+      elif self.object_types[self.robot.getHeldObject()] is constants.ROOF:
         extend = int(1.5*self.max_block_size/self.heightmap_resolution)
       else:
         extend = int(0.5*self.max_block_size/self.heightmap_resolution)

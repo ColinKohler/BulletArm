@@ -39,7 +39,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
       wait=False
     )[0]
 
-    self.robot.closeGripper()
+    self.robot.gripper.close()
     self.setRobotHoldingObj()
 
     return self._getObservation()
@@ -57,7 +57,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     hole_pos, hole_rot = self.peg_hole.getHolePose()
     peg_pos = self.peg.getPosition()
 
-    return np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < 0.11
+    return np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < 0.14
 
   def _getReward(self):
     hole_pos, hole_rot = self.peg_hole.getHolePose()

@@ -58,7 +58,7 @@ class Pivot(object):
       linkMasses=[0, 0, 0, 0, 0, 0, 0, 0, 0],
       linkCollisionShapeIndices=[pivoting_block_collision, pivoting_collision, lift_1_collision, lift_2_collision, lift_3_collision, lift_4_collision, lift_5_collision, lift_6_collision, lift_7_collision],
       linkVisualShapeIndices=[pivoting_block_visual, pivoting_visual, lift_1_visual, lift_2_visual, lift_3_visual, lift_4_visual, lift_5_visual, lift_6_visual, lift_7_visual],
-      linkPositions=[[0, 0.0875, 0.02], [0, 0.175, -0.01], [0, 0.170, -0.01], [0, 0.1675, 0.0], [0, 0.165, 0.02], [0, 0.1625, 0.03], [0, 0.150, 0.04], [0, 0.145, 0.05], [0, 0.140, 0.06]],
+      linkPositions=[[0, 0.0875, 0.02], [0, 0.175, -0.01], [0, 0.170, -0.01], [0, 0.165, 0.0], [0, 0.16, 0.02], [0, 0.155, 0.04], [0, 0.150, 0.04], [0, 0.145, 0.05], [0, 0.140, 0.06]],
       linkOrientations=[[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1]],
       linkInertialFramePositions=[[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]],
       linkInertialFrameOrientations=[[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1],  [0, 0, 0, 1], [0, 0, 0, 1],  [0, 0, 0, 1], [0, 0, 0, 1],  [0, 0, 0, 1]],

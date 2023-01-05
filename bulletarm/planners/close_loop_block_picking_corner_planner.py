@@ -39,10 +39,10 @@ class CloseLoopBlockPickingCornerPlanner(CloseLoopPlanner):
     pre_press_rot = [0, 0, pull_rz]
 
     press_pos = self.env.corner.getPressPose()[0]
-    press_pos[2] += 0.2 * self.env.max_block_size
+    press_pos[2] += 0.55 * self.env.max_block_size
 
     pull_pos = self.env.corner.getPullPose()[0]
-    pull_pos[2] += 0.2 * self.env.max_block_size
+    pull_pos[2] += 0.55 * self.env.max_block_size
 
     pull_rot = [0, 0, pull_rz]
 

@@ -5,20 +5,21 @@ from bulletarm_baselines.logger.multi_plotter import MultiPlotter
 def plot(lc_eps=None, lc_smoothing=100, eval_smoothing=5, num_eval=None):
   log_filepaths = [
     [
-      '/home/colin/hdd/workspace/midichlorians/data/drawer_opening/new_model_w_gate/log_data.pkl',
-      '/home/colin/hdd/workspace/midichlorians/data/drawer_opening/new_model_w_gate_2/log_data.pkl',
+      '/home/colin/workspace/neu/discovery_runs/block_pushing/fusion_1.pkl',
+      '/home/colin/workspace/neu/discovery_runs/block_pushing/fusion_2.pkl',
+      '/home/colin/workspace/neu/discovery_runs/block_pushing/fusion_3.pkl',
     ],
     [
-      '/home/colin/hdd/workspace/ysalamir/data/drawer_opening/new_controller_slow/log_data.pkl',
-      '/home/colin/hdd/workspace/ysalamir/data/drawer_opening/new_controller_slow_2/log_data.pkl',
-      '/home/colin/hdd/workspace/ysalamir/data/drawer_opening/new_controller_slow_3/log_data.pkl',
+      '/home/colin/workspace/neu/discovery_runs/block_pushing/vision_1.pkl',
+      '/home/colin/workspace/neu/discovery_runs/block_pushing/vision_2.pkl',
+      '/home/colin/workspace/neu/discovery_runs/block_pushing/vision_3.pkl',
     ]
   ]
   log_names = [
     'fusion',
     'vision'
   ]
-  title = '128x128 Block Picking'
+  title = '128x128 Block Pushing'
   base_dir = 'scripts/outputs/'
 
   plotter = MultiPlotter(log_filepaths, log_names)

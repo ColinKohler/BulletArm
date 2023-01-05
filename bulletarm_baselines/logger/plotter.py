@@ -11,15 +11,24 @@ import seaborn as sns
 sns.set_theme()
 
 class Plotter(object):
-  '''
-  Plotting utility.
+  ''' Plotting utility.
+
+  Converts log files from Logger to various plots.
+
+  Args:
+    log_filepaths (list[str]): Filepath to log files
+    log_names (list[str]): Name for log to use for plots
   '''
   def __init__(self, log_filepaths, log_names):
     self.logs = self.loadLogs(log_filepaths, log_names)
 
   def loadLogs(self, filepaths, names):
     '''
+    Load the logs into a dictionary ussing names as keys.
 
+    Args:
+      log_filepaths (list[str]): Filepath to log files
+      log_names (list[str]): Name for log to use for plots
     '''
     logs = dict()
 
@@ -37,6 +46,10 @@ class Plotter(object):
     Plot mulitple learning curves on a single plot.
 
     Args:
+      title (str): Title of the figure
+      filepath (str): Filepath to save the figure to
+      window (int): Number of episodes to average over for smoothing. (Defaults to 100)
+      max_eps (int): Maximum number of episodes to plot from log. (Defaults to all)
     '''
 
     fig, ax = plt.subplots()
@@ -61,6 +74,11 @@ class Plotter(object):
     Plot mulitple evaluation curves on a single plot.
 
     Args:
+      title (str): Title of the figure
+      filepath (str): Filepath to save the figure to
+      window (int): Number of episodes to average over for smoothing. (Defaults to 1)
+      num_eval_intervals (int): Maximum number of episodes to plot from log. (Defaults to all)
+      eval_intervals (int): Maximum number of episodes to plot from log. (Defaults to 500)
     '''
 
     fig, ax = plt.subplots()

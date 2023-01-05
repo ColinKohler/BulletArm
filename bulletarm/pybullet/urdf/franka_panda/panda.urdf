@@ -367,7 +367,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0.0 0.0"/>
       <geometry>
-	 	<box size="0.01 0.01 0.01"/>
+	 	<box size="0.0 0.0 0.0"/>
       </geometry>
       <material name="blue">
         <color rgba="0 1 0 1"/>

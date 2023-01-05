@@ -23,12 +23,11 @@ def run(task, robot):
     while not done:
       action = env.getNextAction()
       obs, reward, done = env.step(action)
-      print(reward)
       norm_force = np.clip(obs[3], -10, 10) / 10
       #print(np.max(np.abs(norm_force)))
       #print(np.mean(np.abs(norm_force)))
       #print(np.mean(np.abs(norm_force)) > 18e-3)
-      if i >= 0:
+      if i >= 10000:
         fig, ax = plt.subplots(nrows=1, ncols=2)
         ax[0].plot(obs[3][:,0], label='Fx')
         ax[0].plot(obs[3][:,1], label='Fy')

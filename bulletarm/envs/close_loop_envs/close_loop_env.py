@@ -108,7 +108,6 @@ class CloseLoopEnv(BaseEnv):
         self.obs_mask[:, int(pos[0]-occlusion_size/2):int(pos[0]+occlusion_size/2), int(pos[1]-occlusion_size/2):int(pos[1]+occlusion_size/2)] = 0
 
   def step(self, action):
-    self.robot.step = 0
     p, x, y, z, rot = self._decodeAction(action)
     current_pos = self.robot._getEndEffectorPosition()
     current_rot = list(transformations.euler_from_quaternion(self.robot._getEndEffectorRotation()))
@@ -123,8 +122,8 @@ class CloseLoopEnv(BaseEnv):
     pos[1] = np.clip(pos[1], self.workspace[1, 0], self.workspace[1, 1])
     pos[2] = np.clip(pos[2], self.workspace[2, 0], self.workspace[2, 1])
     self.robot.moveTo(pos, rot_q, dynamic=True)
-    self.robot.controlGripper(p)
-    self.robot.adjustGripperCommand()
+    self.robot.gripper.control(p)
+    self.robot.gripper.adjustCommand()
     self.setRobotHoldingObj()
     #self.renderer.gitterSensors()
     self.renderer.clearPoints()
@@ -151,10 +150,10 @@ class CloseLoopEnv(BaseEnv):
       return 0
 
   def setRobotHoldingObj(self):
-    self.robot.holding_obj = self.robot.getPickedObj(self.objects)
+    self.robot.getPickedObj(self.objects)
 
   def setRobotHoldingObjWithRotConstraint(self):
-    self.robot.holding_obj = None
+    self.robot.gripper.holding_obj = None
     for obj in self.objects:
       obj_rot = transformations.euler_from_quaternion(obj.getRotation())[-1]
       gripper_rot = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[-1]
@@ -162,7 +161,7 @@ class CloseLoopEnv(BaseEnv):
       angle_diff = min(angle_diff, abs(angle_diff - np.pi))
       angle_diff = min(angle_diff, abs(angle_diff - np.pi / 2))
       if len(pb.getContactPoints(self.robot.id, obj.object_id)) >= 2 and angle_diff < np.pi / 12:
-        self.robot.holding_obj = obj
+        self.robot.gripper.holding_obj = obj
         break
 
   def _scaleX(self, x):
@@ -237,7 +236,7 @@ class CloseLoopEnv(BaseEnv):
       scaled_obj_poses.append(
         np.concatenate([self._scalePos(obj_poses[i, :3]), np.array([self._scaleRz(obj_poses[i, 3])])]))
     scaled_obj_poses = np.concatenate(scaled_obj_poses)
-    gripper_state = self.robot.getGripperOpenRatio()
+    gripper_state = self.robot.gripper.getOpenRatio()
     gripper_state = gripper_state * 2 - 1
     gripper_state = np.clip(gripper_state, -1, 1)
     # gripper_state = 1 if self._isHolding() else -1
@@ -301,7 +300,6 @@ class CloseLoopEnv(BaseEnv):
     self.simulate_rot = np.array(transformations.euler_from_quaternion(self.robot._getEndEffectorRotation()))
 
   def canSimulate(self):
-    # pos = list(self.robot._getEndEffectorPosition())
     return not self._isHolding() and self.simulate_pos[2] > self.simulate_z_threshold
 
   def _getHeightmap(self, gripper_pos=None, gripper_rz=None):

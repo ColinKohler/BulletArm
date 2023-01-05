@@ -165,6 +165,7 @@ class DrawerHandle:
     m = np.array(pb.getMatrixFromQuaternion(rot)).reshape(3, 3)
     offset = 0.01
     pos = pos + m[:, 0] * offset
+    pos[2] += 0.02 # Handle z position is low
     return pos
 
   def getRotation(self):

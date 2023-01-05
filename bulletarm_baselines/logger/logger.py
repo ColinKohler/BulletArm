@@ -7,13 +7,29 @@ import json
 import time
 import pickle
 import torch
+import ray
 import matplotlib.pyplot as plt
 import numpy as np
 from torch.utils.tensorboard import SummaryWriter
 
-class Logger(object):
+@ray.remote
+class RayLogger(Logger):
+  ''' Ray wrapper for logger.
+
+  Allows use of logger with ray multoprocesssing.
+
+  Args:
+    results_path (str): Path to save log files to
+    num_eval_eps (int): Number of episodes in a evaluation iteration
+    hyperparameters (dict): Hyperparameters to log. Defaults to None
   '''
-  Logger class. Writes log data to tensorboard.
+  def __init__(self, results_path, num_eval_eps=100, hyperparameters=None):
+    super().__init__(results_path, num_eval_eps=num_eval_eps, hyperparameters=hyperparameters)
+
+class Logger(object):
+  ''' Training logger..
+
+  Writes log data to tensorboard.
 
   Args:
     results_path (str): Path to save log files to
