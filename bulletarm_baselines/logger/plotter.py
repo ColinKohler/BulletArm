@@ -97,7 +97,7 @@ class Plotter(object):
       if num_eval_intervals:
         eval_rewards = eval_rewards[:num_eval_intervals]
       eval_rewards = np.mean(list(more_itertools.windowed(eval_rewards, window)), axis=1)
-      eval_rewards = np.clip(eval_rewards, -1, 1)
+      #eval_rewards = np.clip(eval_rewards, -1, 1)
       xs = np.arange(window, len(eval_rewards) + window) * eval_interval
       ax.plot(xs, eval_rewards, label=log_name)
 

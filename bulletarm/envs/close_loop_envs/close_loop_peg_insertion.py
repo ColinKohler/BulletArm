@@ -35,7 +35,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
       constants.SQUARE_PEG,
       pos=[[self.workspace[0].mean(), self.workspace[1].mean(), 0.30]], #0.29]],
       rot=[[0,0,0,1]],
-      scale=0.100,#0.115,
+      scale=0.115,#0.115,
       wait=False
     )[0]
 
