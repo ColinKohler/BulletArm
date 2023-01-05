@@ -50,6 +50,7 @@ DEFAULT_CONFIG = {
   #                                       'camera_center_xy_height', 'camera_fix_height', 'camera_center_z',
   #                                       'camera_center_z_height', 'pers_center_xyz'
   'view_type': 'camera_center_xyz',
+  'num_sensors': 2,
   # Chance to occlude pixels
   'occlusion_prob': 0,
   'num_occlusions': 0,

@@ -9,7 +9,18 @@ from bulletarm import env_factory
 def run(task, robot):
   workspace = np.array([[0.25, 0.65], [-0.2, 0.2], [0.01, 0.25]])
   if 'close_loop' in task or 'force' in task:
-    env_config = {'robot' : robot, 'render' : True, 'action_sequence' : 'pxyzr', 'workspace' : workspace, 'view_type': 'render_center', 'physics_mode' : 'force', 'max_steps' : 50, 'obs_size' : 128, 'occlusion_prob' : 0.1, 'num_occlusions' : 0, 'view_scale' : 1.5, 'obs_type' : 'pixel+force+proprio'}
+    env_config = {
+      'robot' : robot,
+      'render' : True,
+      'action_sequence' : 'pxyzr',
+      'workspace' : workspace,
+      'view_type' : 'render_center',
+      'num_sensors' : 3,
+      'physics_mode' : 'force',
+      'max_steps' : 50,
+      'obs_size' : 128,
+      'view_scale' : 1.5,
+      'obs_type' : 'pixel+force+proprio'}
     planner_config = {'dpos': 0.025, 'drot': np.pi/16}
   else:
     env_config = {'robot' : robot, 'render' : True}
@@ -27,7 +38,7 @@ def run(task, robot):
       #print(np.max(np.abs(norm_force)))
       #print(np.mean(np.abs(norm_force)))
       #print(np.mean(np.abs(norm_force)) > 18e-3)
-      if i >= 10000:
+      if i >= 0:
         fig, ax = plt.subplots(nrows=1, ncols=2)
         ax[0].plot(obs[3][:,0], label='Fx')
         ax[0].plot(obs[3][:,1], label='Fy')

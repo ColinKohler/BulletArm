@@ -4,9 +4,9 @@ import numpy.random as npr
 
 from bulletarm.envs.base_env import BaseEnv
 from bulletarm.pybullet.utils import transformations
-from bulletarm.pybullet.utils.renderer import Renderer
-from bulletarm.pybullet.utils.ortho_sensor import OrthographicSensor
-from bulletarm.pybullet.utils.sensor import Sensor
+from bulletarm.pybullet.sensors.renderer import Renderer
+from bulletarm.pybullet.sensors.ortho_sensor import OrthographicSensor
+from bulletarm.pybullet.sensors.sensor import Sensor
 from bulletarm.pybullet.equipment.tray import Tray
 
 
@@ -41,6 +41,7 @@ class CloseLoopEnv(BaseEnv):
                               'camera_center_z', 'camera_center_z_height', 'pers_center_xyz', 'camera_side',
                               'camera_side_rgbd', 'camera_side_height']
     self.view_scale = config['view_scale']
+    self.num_sensors = config['num_sensors']
     self.robot_type = config['robot']
     if config['robot'] == 'kuka':
       self.robot.home_positions = [-0.4446, 0.0837, -2.6123, 1.8883, -0.0457, -1.1810, 0.0699, 0., 0., 0., 0., 0., 0., 0., 0.]
@@ -82,7 +83,7 @@ class CloseLoopEnv(BaseEnv):
     cam_up_vector = [-1, 0, 0]
     self.sensor = OrthographicSensor(cam_pos, cam_up_vector, target_pos, self.obs_size_m, 0.1, 1)
     self.sensor.setCamMatrix(cam_pos, cam_up_vector, target_pos)
-    self.renderer = Renderer(self.workspace)
+    self.renderer = Renderer(self.workspace, num_sensors=self.num_sensors)
     self.pers_sensor = Sensor(cam_pos, cam_up_vector, target_pos, self.obs_size_m, cam_pos[2] - 1, cam_pos[2])
 
   def _getValidOrientation(self, random_orientation):
@@ -125,7 +126,6 @@ class CloseLoopEnv(BaseEnv):
     self.robot.gripper.control(p)
     self.robot.gripper.adjustCommand()
     self.setRobotHoldingObj()
-    #self.renderer.gitterSensors()
     self.renderer.clearPoints()
     obs = self._getObservation(action)
     valid = self.isSimValid()

@@ -2,42 +2,14 @@ import pybullet as pb
 import numpy as np
 import numpy.random as npr
 import scipy
-from bulletarm.pybullet.utils.sensor import Sensor
+from bulletarm.pybullet.sensors.sensor import Sensor
 from bulletarm.pybullet.utils import transformations
 
 class Renderer(object):
-  def __init__(self, workspace):
+  def __init__(self, workspace, num_sensors):
     self.workspace = workspace
-
-    self.cam_forward_target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
-    self.cam_forward_up_vector = [0, 0, 1]
-
-    self.cam_1_forward_pos = [self.workspace[0].mean(), 0.5, 1]
-    far_1 = np.linalg.norm(np.array(self.cam_1_forward_pos) - np.array(self.cam_forward_target_pos)) + 2
-    self.sensor_1 = Sensor(self.cam_1_forward_pos, self.cam_forward_up_vector, self.cam_forward_target_pos,
-                           2, near=0.1, far=far_1)
-
-    self.cam_2_forward_pos = [self.workspace[0].mean(), -0.5, 1]
-    far_2 = np.linalg.norm(np.array(self.cam_2_forward_pos) - np.array(self.cam_forward_target_pos)) + 2
-    self.sensor_2 = Sensor(self.cam_2_forward_pos, self.cam_forward_up_vector, self.cam_forward_target_pos,
-                           2, near=0.1, far=far_2)
-
-    self.cam_3_forward_pos = [1.0, self.workspace[1].mean(), 1]
-    far_3 = np.linalg.norm(np.array(self.cam_3_forward_pos) - np.array(self.cam_forward_target_pos)) + 2
-    self.sensor_3 = Sensor(self.cam_3_forward_pos, self.cam_forward_up_vector, self.cam_forward_target_pos,
-                           2, near=0.1, far=far_2)
-
+    self.initSensors(num_sensors)
     self.points = np.empty((0, 3))
-
-  def gitterSensors(self):
-    cam_1_forward_pos = np.array(self.cam_1_forward_pos) + npr.uniform(-0.1, 0.1, 3)
-    self.sensor_1.setCamMatrix(cam_1_forward_pos, self.cam_forward_up_vector, self.cam_forward_target_pos)
-
-    cam_2_forward_pos = np.array(self.cam_2_forward_pos) + npr.uniform(-0.1, 0.1, 3)
-    self.sensor_1.setCamMatrix(cam_2_forward_pos, self.cam_forward_up_vector, self.cam_forward_target_pos)
-
-    cam_3_forward_pos = np.array(self.cam_3_forward_pos) + npr.uniform(-0.1, 0.1, 3)
-    self.sensor_3.setCamMatrix(cam_2_forward_pos, self.cam_forward_up_vector, self.cam_forward_target_pos)
 
   def getNewPointCloud(self, res=256):
     self.clearPoints()
@@ -45,12 +17,9 @@ class Renderer(object):
     #                                np.linspace(self.workspace[1][0], self.workspace[1][1], 256))).T.reshape(-1, 2)
     # ceiling = np.concatenate((ceiling, 0.25 * np.ones((256*256, 1))), 1)
     # self.addPoints(np.array(ceiling))
-    points1 = self.sensor_1.getPointCloud(res, to_numpy=False)
-    points2 = self.sensor_2.getPointCloud(res, to_numpy=False)
-    points3 = self.sensor_3.getPointCloud(res, to_numpy=False)
-    self.addPoints(points1)
-    self.addPoints(points2)
-    self.addPoints(points3)
+    for sensor in self.sensors:
+      points = sensor.getPointCloud(res, to_numpy=False)
+      self.addPoints(points)
     self.points = self.points[self.points[:, 2] <= self.workspace[2][1]]
     # import pyrender
     # mesh = pyrender.Mesh.from_points(self.points.get())
@@ -170,3 +139,46 @@ class Renderer(object):
   def projectHeightmap(self, size, cam_pos, cam_up_vector, target_pos, target_size):
     depth = self.projectDepth(self.points, size, cam_pos, cam_up_vector, target_pos, target_size)
     return np.abs(depth - np.max(depth))
+
+  def initSensors(self, num_sensors):
+    self.sensors = list()
+
+    forward_target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
+    forward_up_vector = [0, 0, 1]
+
+    if num_sensors == 1 or num_sensors == 3:
+      front_forward_pos = [1.0, self.workspace[1].mean(), 1]
+      front_far = np.linalg.norm(np.array(front_forward_pos) - np.array(forward_target_pos)) + 2
+      front_sensor = Sensor(
+        front_forward_pos,
+        forward_up_vector,
+        forward_target_pos,
+        2,
+        near=0.1,
+        far=front_far
+      )
+      self.sensors.append(front_sensor)
+    if num_sensors == 2 or num_sensors == 3:
+      right_forward_pos = [self.workspace[0].mean(), 0.5, 1]
+      right_far = np.linalg.norm(np.array(right_forward_pos) - np.array(forward_target_pos)) + 2
+      right_sensor = Sensor(
+        right_forward_pos,
+        forward_up_vector,
+        forward_target_pos,
+        2,
+        near=0.1,
+        far=right_far
+      )
+      self.sensors.append(right_sensor)
+
+      left_forward_pos = [self.workspace[0].mean(), -0.5, 1]
+      left_far = np.linalg.norm(np.array(left_forward_pos) - np.array(forward_target_pos)) + 2
+      left_sensor = Sensor(
+        left_forward_pos,
+        forward_up_vector,
+        forward_target_pos,
+        2,
+        near=0.1,
+        far=left_far
+      )
+      self.sensors.append(left_sensor)

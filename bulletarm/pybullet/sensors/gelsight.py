@@ -1,7 +1,7 @@
 import pybullet as pb
 import numpy as np
 import scipy
-from bulletarm.pybullet.utils.sensor import Sensor
+from bulletarm.pybullet.sensors.sensor import Sensor
 from bulletarm.pybullet.utils import transformations
 
 class Gelsight(object):

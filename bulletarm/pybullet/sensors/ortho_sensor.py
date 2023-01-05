@@ -1,6 +1,6 @@
 import pybullet as pb
 import numpy as np
-from bulletarm.pybullet.utils.sensor import Sensor
+from bulletarm.pybullet.sensors.sensor import Sensor
 
 class OrthographicSensor(Sensor):
   def __init__(self, cam_pos, cam_up_vector, target_pos, target_size, near, far):
