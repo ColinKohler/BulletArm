@@ -12,12 +12,9 @@ class CloseLoopCabinetOpeningPlanner(CloseLoopPlanner):
 
   def getNextActionToCurrentTarget(self):
     x, y, z, r = self.getActionByGoalPose(self.current_target[0], self.current_target[1])
-    primitive = constants.PICK_PRIMATIVE if self.current_target[2] is constants.PICK_PRIMATIVE else constants.PLACE_PRIMATIVE
+    primitive = self.current_target[2]
     if np.all(np.abs([x, y, z]) < self.dpos) and np.abs(r) < self.drot:
-      primitive = constants.PICK_PRIMATIVE if self.current_target[2] is constants.PICK_PRIMATIVE else constants.PLACE_PRIMATIVE
       self.current_target = None
-    else:
-      primitive = constants.PICK_PRIMATIVE if self.isHolding() else constants.PLACE_PRIMATIVE
     return self.env._encodeAction(primitive, x, y, z, r)
 
   def setNewTarget(self):
@@ -26,6 +23,9 @@ class CloseLoopCabinetOpeningPlanner(CloseLoopPlanner):
     handle_rot += np.pi / 2
     pre_pos = np.copy(handle_pos)
     pre_pos[2] += 0.12
+
+    pull_pos = np.copy(handle_pos)
+    pull_pos[0] -= 0.1
 
     handle_rot += np.pi/2
     while handle_rot > np.pi/2:
@@ -41,7 +41,14 @@ class CloseLoopCabinetOpeningPlanner(CloseLoopPlanner):
     elif self.stage == 1:
       # moving to handle
       self.stage = 2
+      self.current_target = (handle_pos, rot, constants.PLACE_PRIMATIVE)
+    elif self.stage == 2:
+      # moving to handle
+      self.stage = 3
       self.current_target = (handle_pos, rot, constants.PICK_PRIMATIVE)
+    elif self.stage == 3:
+      self.stage = 0
+      self.current_target = (pull_pos, rot, constants.PICK_PRIMATIVE)
 
   def getNextAction(self):
     if self.env.current_episode_steps == 1:

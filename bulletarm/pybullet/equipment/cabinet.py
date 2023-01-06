@@ -32,7 +32,8 @@ class Cabinet:
   def getLeftHandlePos(self):
     link_state = pb.getLinkState(self.id, 4)
     pos = list(link_state[0])
-    pos[0] -= 0.02
+    pos[0] -= 0.025
+    pos[2] += 0.04
     rot = list(link_state[1])
     return pos
 
