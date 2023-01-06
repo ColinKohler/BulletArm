@@ -67,6 +67,7 @@ CREATE_ENV_FNS = {
   'close_loop_block_picking_corner': createEnv(CloseLoopBlockPickingCornerEnv),
   'close_loop_drawer_opening': createEnv(CloseLoopDrawerOpeningEnv),
   'close_loop_drawer_closing': createEnv(CloseLoopDrawerClosingEnv),
+  'close_loop_cabinet_opening': createEnv(CloseLoopCabinetOpeningEnv),
   'close_loop_household_picking': createEnv(CloseLoopHouseholdPickingEnv),
   'close_loop_clutter_picking': createEnv(CloseLoopHouseholdPickingClutteredEnv),
   'close_loop_block_pushing': createEnv(CloseLoopBlockPushingEnv),

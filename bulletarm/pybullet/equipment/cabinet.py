@@ -11,8 +11,18 @@ class Cabinet:
     self.id = None
 
   def initialize(self, pos=(0, 0, 0), rot=(0, 0, 0, 1)):
-    cabinet_urdf_filepath = os.path.join(constants.URDF_PATH, 'kitchen_description/urdf/kitchen_right_only.urdf')
-    self.id = pb.loadURDF(cabinet_urdf_filepath, pos, rot)
+    cabinet_urdf_filepath = os.path.join(constants.URDF_PATH, 'cabinet/cabinet.urdf')
+    self.id = pb.loadURDF(cabinet_urdf_filepath, pos, rot, globalScaling=0.4)
+
+  def reset(self, pos=(0,0,0), rot=(0,0,0,1)):
+    pb.resetBasePositionAndOrientation(self.id, pos, rot)
+    pb.resetJointState(self.id, 1, 0)
+    for i in range(50):
+      pb.stepSimulation()
+    pb.resetJointState(self.id, 1, 0)
+    for i in range(50):
+      pb.stepSimulation()
+    pass
 
   def remove(self):
     if self.id:
@@ -20,20 +30,17 @@ class Cabinet:
     self.id = None
 
   def getLeftHandlePos(self):
-    link_state = pb.getLinkState(self.id, 5)
+    link_state = pb.getLinkState(self.id, 4)
     pos = list(link_state[0])
-    pos[0] += 0.005
+    pos[0] -= 0.02
     rot = list(link_state[1])
     return pos
 
   def getLeftHandleRot(self):
-    link_state = pb.getLinkState(self.id, 5)
+    link_state = pb.getLinkState(self.id, 4)
     pos = list(link_state[0])
     rot = list(link_state[1])
     return rot
 
-  def getRightHandlePos(self):
-    link_state = pb.getLinkState(self.id, 9)
-    pos = list(link_state[0])
-    rot = list(link_state[1])
-    return pos
+  def isOpen(self):
+    return False

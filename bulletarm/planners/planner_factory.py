@@ -54,6 +54,7 @@ PLANNERS = {
   'close_loop_block_pulling_corner':CloseLoopBlockPickingCornerPlanner,
   'close_loop_block_picking_corner':CloseLoopBlockPickingCornerPlanner,
   'close_loop_drawer_opening':CloseLoopDrawerOpeningPlanner,
+  'close_loop_cabinet_opening':CloseLoopCabinetOpeningPlanner,
   'close_loop_drawer_closing':CloseLoopDrawerClosingPlanner,
   'close_loop_household_picking':CloseLoopBlockPickingPlanner,
   'close_loop_clutter_picking':CloseLoopHouseholdPickingClutteredPlanner,
