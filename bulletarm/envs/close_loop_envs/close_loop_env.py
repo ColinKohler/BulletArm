@@ -40,10 +40,10 @@ class CloseLoopEnv(BaseEnv):
                               'camera_center_xyz_height', 'camera_center_xy_height', 'camera_fix_height',
                               'camera_center_z', 'camera_center_z_height', 'pers_center_xyz', 'camera_side',
                               'camera_side_rgbd', 'camera_side_height']
-    self.view_scale = config['view_scale']
-    self.num_sensors = config['num_sensors']
+    self.view_scale = self.config['view_scale']
+    self.num_sensors = self.config['num_sensors']
     self.robot_type = config['robot']
-    if config['robot'] == 'kuka':
+    if self.config['robot'] == 'kuka':
       self.robot.home_positions = [-0.4446, 0.0837, -2.6123, 1.8883, -0.0457, -1.1810, 0.0699, 0., 0., 0., 0., 0., 0., 0., 0.]
       self.robot.home_positions_joint = self.robot.home_positions[:7]
 
@@ -51,7 +51,7 @@ class CloseLoopEnv(BaseEnv):
     #if 'force' in self.obs_type:
     #  self.robot.speed = 1e-3
 
-    self.has_tray = config['close_loop_tray']
+    self.has_tray = self.config['close_loop_tray']
     self.bin_size = self.workspace_size - 0.05
     self.tray = None
     if self.has_tray:

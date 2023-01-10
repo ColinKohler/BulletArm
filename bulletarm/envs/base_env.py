@@ -35,7 +35,7 @@ class BaseEnv:
   '''
   def __init__(self, config):
     # Load the default config and replace any duplicate values with the config
-    config = {**env_configs.DEFAULT_CONFIG, **config}
+    self.config = {**env_configs.DEFAULT_CONFIG, **config}
 
     self.seed = config['seed']
     npr.seed(self.seed)

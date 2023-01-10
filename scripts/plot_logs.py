@@ -4,14 +4,14 @@ from bulletarm_baselines.logger.plotter import Plotter
 
 def plot(lc_smoothing=100, eval_smoothing=5, num_eval=None):
   log_filepaths = [
-    '/home/colin/hdd/workspace/midichlorians/data/peg_insertion/easy_proprio_test/log_data.pkl',
-    '/home/colin/hdd/workspace/ysalamir/data/peg_insertion/easy_test/log_data.pkl',
+    '/home/colin/hdd/workspace/midichlorians/data/block_pushing/1_sensor/log_data.pkl',
+    '/home/colin/hdd/workspace/ysalamir/data/block_pushing/1_sensor/log_data.pkl',
   ]
   log_names = [
-    'force',
+    'fusion',
     'vision',
   ]
-  title = '128x128 Block Pulling'
+  title = '128x128 Block Pushing'
   base_dir = 'scripts/outputs/'
 
   plotter = Plotter(log_filepaths, log_names)
