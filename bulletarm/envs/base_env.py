@@ -37,27 +37,27 @@ class BaseEnv:
     # Load the default config and replace any duplicate values with the config
     self.config = {**env_configs.DEFAULT_CONFIG, **config}
 
-    self.seed = config['seed']
+    self.seed = self.config['seed']
     npr.seed(self.seed)
 
     # Setup environment
-    self.workspace = config['workspace']
+    self.workspace = self.config['workspace']
     self.workspace_size = np.linalg.norm(self.workspace[0,1] - self.workspace[0,0])
-    self.max_steps = config['max_steps']
+    self.max_steps = self.config['max_steps']
 
     # Setup heightmap
-    self.heightmap_size = config['obs_size']
-    self.in_hand_size = config['in_hand_size']
-    self.in_hand_mode = config['in_hand_mode']
+    self.heightmap_size = self.config['obs_size']
+    self.in_hand_size = self.config['in_hand_size']
+    self.in_hand_mode = self.config['in_hand_mode']
     self.heightmap_shape = (self.heightmap_size, self.heightmap_size, 1)
     self.heightmap_resolution = self.workspace_size / self.heightmap_size
-    self.occlusion_prob = config['occlusion_prob']
-    self.num_occlusions = config['num_occlusions']
+    self.occlusion_prob = self.config['occlusion_prob']
+    self.num_occlusions = self.config['num_occlusions']
 
     # Setup action format
-    assert config['action_sequence'].find('x') != -1
-    assert config['action_sequence'].find('y') != -1
-    self.action_sequence = config['action_sequence']
+    assert self.config['action_sequence'].find('x') != -1
+    assert self.config['action_sequence'].find('y') != -1
+    self.action_sequence = self.config['action_sequence']
 
     # Setup observation and action spaces
     self.obs_shape = self.heightmap_shape
@@ -84,7 +84,7 @@ class BaseEnv:
     self.action_shape = self.action_space.shape[0]
 
     # Connect to pybullet and add data files to path
-    if config['render']:
+    if self.config['render']:
       self.client = pb.connect(pb.GUI)
       # For screenshotting envs
       # pb.configureDebugVisualizer(pb.COV_ENABLE_GUI, 0)
@@ -98,46 +98,46 @@ class BaseEnv:
     pb.setAdditionalSearchPath(pybullet_data.getDataPath())
 
     # Environment specific variables
-    self.dynamic = not config['fast_mode']
+    self.dynamic = not self.config['fast_mode']
     self._timestep = 1. / 240.
 
     # Setup robot
-    if config['robot'] == 'ur5':
+    if self.config['robot'] == 'ur5':
       self.robot = UR5_Simple()
-    elif config['robot'] == 'ur5_robotiq':
+    elif self.config['robot'] == 'ur5_robotiq':
       self.robot = UR5_Robotiq()
-    elif config['robot'] == 'kuka':
+    elif self.config['robot'] == 'kuka':
       self.robot = Kuka()
-    elif config['robot'] == 'panda':
+    elif self.config['robot'] == 'panda':
       self.robot = Panda()
     else:
       raise NotImplementedError
 
     # Setup physics mode
-    if config['physics_mode'] == 'fast':
+    if self.config['physics_mode'] == 'fast':
       self.physics_mode = 'fast'
       self.num_solver_iterations = 50
       self.solver_residual_threshold = 1e-7
       self.robot.position_gain = 0.02
-    elif config['physics_mode'] == 'slow':
+    elif self.config['physics_mode'] == 'slow':
       self.physics_mode = 'slow'
       self.num_solver_iterations = 200
       self.solver_residual_threshold = 1e-7
       self.robot.position_gain = 0.01
-    elif config['physics_mode'] == 'force':
+    elif self.config['physics_mode'] == 'force':
       self.physics_mode = 'force'
       self.num_solver_iterations = 100
       self.solver_residual_threshold = 1e-7
       self.robot.position_gain = 1.0
-    elif config['physics_mode'] == 'custom':
+    elif self.config['physics_mode'] == 'custom':
       self.physics_mode = 'custom'
-      self.num_solver_iterations = config['num_solver_iterations']
-      self.solver_residual_threshold = config['solver_residual_threshold']
+      self.num_solver_iterations = self.config['num_solver_iterations']
+      self.solver_residual_threshold = self.config['solver_residual_threshold']
       self.robot.position_gain = 0.01
 
     # TODO: Move this somewhere it makes sense
     self.block_original_size = 0.05
-    self.block_scale_range = config['object_scale_range']
+    self.block_scale_range = self.config['object_scale_range']
     self.min_block_size = self.block_original_size * self.block_scale_range[0]
     self.max_block_size = self.block_original_size * self.block_scale_range[1]
 
@@ -163,23 +163,23 @@ class BaseEnv:
     self.objects = list()
     self.object_types = {}
 
-    self.workspace_check = config['workspace_check']
-    self.random_orientation = config['random_orientation']
-    self.random_orientation = config['random_orientation']
-    self.num_obj = config['num_objects']
-    self.reward_type = config['reward_type']
-    self.object_type = config['object_type']
-    self.hard_reset_freq = config['hard_reset_freq']
-    self.min_object_distance = config['min_object_distance']
-    self.min_boarder_padding = config['min_boarder_padding']
-    self.deconstruct_init_offset = config['deconstruct_init_offset']
-    self.pick_top_down_approach = config['pick_top_down_approach']
-    self.place_top_down_approach = config['place_top_down_approach']
-    self.half_rotation = config['half_rotation']
+    self.workspace_check = self.config['workspace_check']
+    self.random_orientation = self.config['random_orientation']
+    self.random_orientation = self.config['random_orientation']
+    self.num_obj = self.config['num_objects']
+    self.reward_type = self.config['reward_type']
+    self.object_type = self.config['object_type']
+    self.hard_reset_freq = self.config['hard_reset_freq']
+    self.min_object_distance = self.config['min_object_distance']
+    self.min_boarder_padding = self.config['min_boarder_padding']
+    self.deconstruct_init_offset = self.config['deconstruct_init_offset']
+    self.pick_top_down_approach = self.config['pick_top_down_approach']
+    self.place_top_down_approach = self.config['place_top_down_approach']
+    self.half_rotation = self.config['half_rotation']
 
-    self.robot.adjust_gripper_after_lift = config['adjust_gripper_after_lift']
-    if config['robot'] == 'kuka':
-      self.robot.adjust_gripper_offset = config['kuka_adjust_gripper_offset']
+    self.robot.adjust_gripper_after_lift = self.config['adjust_gripper_after_lift']
+    if self.config['robot'] == 'kuka':
+      self.robot.adjust_gripper_offset = self.config['kuka_adjust_gripper_offset']
 
     self.episode_count = -1
     self.table_id = None

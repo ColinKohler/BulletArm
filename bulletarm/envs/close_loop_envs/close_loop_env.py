@@ -33,6 +33,7 @@ class CloseLoopEnv(BaseEnv):
     if 'close_loop_tray' not in config:
       config['close_loop_tray'] = False
     super().__init__(config)
+
     self.view_type = config['view_type']
     self.obs_type = config['obs_type']
     assert self.view_type in ['render_center', 'render_center_height', 'render_fix', 'camera_center_xyzr', 'camera_center_xyr',
