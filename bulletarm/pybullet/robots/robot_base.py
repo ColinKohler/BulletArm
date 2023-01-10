@@ -351,7 +351,7 @@ class RobotBase:
     if dynamic:
       t0 = time.time()
       i = 0
-      past_joint_pos = deque(maxlen=5)
+      past_joint_pos = deque(maxlen=10)
       while (time.time() - t0) < 1.:
         # Calculate difference between current pose and target pose
         joint_state = pb.getJointStates(self.id, self.arm_joint_indices)
@@ -363,8 +363,8 @@ class RobotBase:
         if all(np.abs(diff) < 5e-3):
           return
         # Exit if the robot is stuck
-        #if (len(past_joint_pos) == 5 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=5e-3)):
-        #  return
+        if (len(past_joint_pos) == 10 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=1e-3)):
+          return
 
         # Move with constant velocity
         norm = np.linalg.norm(diff)

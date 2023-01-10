@@ -20,18 +20,22 @@ class CloseLoopCabinetOpeningPlanner(CloseLoopPlanner):
   def setNewTarget(self):
     handle_pos = self.env.cabinet.getLeftHandlePos()
     handle_rot = transformations.euler_from_quaternion(self.env.cabinet.getLeftHandleRot())[2]
-    handle_rot += np.pi / 2
+    #handle_rot += np.pi / 2
     pre_pos = np.copy(handle_pos)
     pre_pos[2] += 0.12
 
-    pull_pos = np.copy(handle_pos)
-    pull_pos[0] -= 0.1
+    pull_pos_1 = np.copy(handle_pos)
+    pull_pos_1[0] -= 0.1
 
-    handle_rot += np.pi/2
-    while handle_rot > np.pi/2:
-      handle_rot -= np.pi
-    while handle_rot < -np.pi/2:
-      handle_rot += np.pi
+    pull_pos_2 = np.copy(handle_pos)
+    pull_pos_2[0] -= 0.2
+    pull_pos_2[1] -= 0.1
+
+    #handle_rot += np.pi/2
+    #while handle_rot > np.pi/2:
+    #  handle_rot -= np.pi
+    #while handle_rot < -np.pi/2:
+    #  handle_rot += np.pi
     rot = [0, 0, handle_rot]
 
     if self.stage == 0:
@@ -47,8 +51,11 @@ class CloseLoopCabinetOpeningPlanner(CloseLoopPlanner):
       self.stage = 3
       self.current_target = (handle_pos, rot, constants.PICK_PRIMATIVE)
     elif self.stage == 3:
+      self.stage = 4
+      self.current_target = (pull_pos_1, rot, constants.PICK_PRIMATIVE)
+    elif self.stage == 4:
       self.stage = 0
-      self.current_target = (pull_pos, rot, constants.PICK_PRIMATIVE)
+      self.current_target = (pull_pos_1, rot, constants.PICK_PRIMATIVE)
 
   def getNextAction(self):
     if self.env.current_episode_steps == 1:

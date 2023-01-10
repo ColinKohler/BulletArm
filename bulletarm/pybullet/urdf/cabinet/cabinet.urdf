@@ -30,7 +30,7 @@
   <joint name="cabinet_door_left_joint_fixed" type="fixed">
     <parent link="cabinet"/>
     <child link="cabinet_door_left_anchor_link"/>
-    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <origin rpy="0 0 0" xyz="0.38 -0.31 0"/>
   </joint>
   <link name="cabinet_door_left_anchor_link"/>
   <joint name="cabinet_door_left_joint" type="revolute">
@@ -38,13 +38,13 @@
     <child link="cabinet_door_left_link_tmp"/>
     <origin rpy="0 0 0" xyz="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit effort="1000.0" lower="-1.57" upper="0" velocity="100"/>
+    <limit effort="1000.0" lower="0.02" upper="1.57" velocity="100"/>
   </joint>
   <link name="cabinet_door_left_link_tmp"/>
   <joint name="cabinet_door_left_joint_fixed_2" type="fixed">
     <parent link="cabinet_door_left_link_tmp"/>
     <child link="cabinet_door_left_link"/>
-    <origin rpy="0 0 0" xyz="0.18 -0.30 0.0"/>
+    <origin rpy="0 0 0" xyz="-0.20 0.0 0.0"/> <!-- this -->
   </joint>
   <link name="cabinet_door_left_link">
     <inertial>
@@ -68,7 +68,7 @@
   <joint name="cabinet_door_left_handle_transform" type="fixed">
     <parent link="cabinet_door_left_link_tmp"/>
     <child link="cabinet_door_left_handle"/>
-    <origin rpy="0 0 0" xyz="0.02 -0.31 0.00"/>
+    <origin rpy="0 0 0" xyz="-0.36 0.0 0.00"/> <!-- this -->
     <axis xyz="0 0 1"/>
   </joint>
   <link name="cabinet_door_left_handle">
