@@ -72,7 +72,8 @@ class GripperBase(object):
     '''
     state = self.getOpenRatio()
     if not objects or state < 0.03:
-      return None
+      self.holding_obj = None
+      return
 
     for obj in objects:
       # check the contact force normal to count the horizontal contact points
@@ -82,6 +83,8 @@ class GripperBase(object):
       finger_2_horizontal = list(filter(lambda p: abs(p[7][2]) < 0.3, finger_2_contact_points))
       if len(finger_1_horizontal) >= 1 and len(finger_2_horizontal) >=1:
         self.holding_obj = obj
+        return
+    self.holding_obj = None
 
   def _sendCommand(self, target_pos_1, target_pos_2, force=10):
     pb.setJointMotorControlArray(
