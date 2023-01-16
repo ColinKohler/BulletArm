@@ -27,7 +27,7 @@ class CloseLoopEnv(BaseEnv):
     if 'view_type' not in config:
       config['view_type'] = 'camera_center_xyz'
     if 'obs_type' not in config:
-      config['obs_type'] = 'pixel'
+      config['obs_type'] = ['depth']
     if 'view_scale' not in config:
       config['view_scale'] = 1.5
     if 'close_loop_tray' not in config:
@@ -49,8 +49,6 @@ class CloseLoopEnv(BaseEnv):
       self.robot.home_positions_joint = self.robot.home_positions[:7]
 
     self.robot.speed = 1e-3
-    #if 'force' in self.obs_type:
-    #  self.robot.speed = 1e-3
 
     self.has_tray = self.config['close_loop_tray']
     self.bin_size = self.workspace_size - 0.05
@@ -251,24 +249,19 @@ class CloseLoopEnv(BaseEnv):
 
   def _getObservation(self, action=None):
     ''''''
-    if self.obs_type == 'pixel':
-      depth = self._getDepthObservation()
-      obs = (self._isHolding(), None, depth)
-    elif self.obs_type == 'pixel+force':
-      depth = self._getDepthObservation()
-      force = self._getForceObservation()
-      obs = (self._isHolding(), None, depth, force)
-    elif self.obs_type == 'pixel+force+proprio':
-      end_pos = self.robot._getEndEffectorPosition()
-      end_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
-      proprio = np.array(end_pos.tolist() + [end_rz])
-
-      depth = self._getDepthObservation()
-      force = self._getForceObservation()
-      obs = (self._isHolding(), None, depth, force, proprio)
-    else:
-      vec = self._getVecObservation()
-      obs = (self._isHolding(), None, vec)
+    obs = list()
+    for obs_type in self.obs_type:
+      if obs_type == 'depth':
+        depth = self._getDepthObservation()
+        obs.append(depth)
+      if obs_type == 'force':
+        force = self._getForceObservation()
+        obs.append(force)
+      if obs_type == 'proprio':
+        end_pos = self.robot._getEndEffectorPosition()
+        end_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
+        proprio = np.array([self._isHolding(), self.robot.gripper.getOpenRatio()] + end_pos.tolist() + [end_rz])
+        obs.append(proprio)
 
     return obs
 
