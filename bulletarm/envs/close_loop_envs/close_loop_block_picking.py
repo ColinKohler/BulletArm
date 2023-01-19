@@ -22,7 +22,7 @@ class CloseLoopBlockPickingEnv(CloseLoopEnv):
   def reset(self):
     self.resetPybulletWorkspace()
     self.robot.moveTo([self.workspace[0].mean(), self.workspace[1].mean(), 0.2], transformations.quaternion_from_euler(0, 0, 0))
-    self._generateShapes(constants.CUBE, 1, random_orientation=self.random_orientation, padding=0)
+    self._generateShapes(constants.CUBE, 1, random_orientation=self.random_orientation, padding=0.1)
     return self._getObservation()
 
   def _getValidOrientation(self, random_orientation):

@@ -41,7 +41,6 @@ class MultiPlotter(object):
 
     Args:
     '''
-
     fig, ax = plt.subplots(figsize=(8,6), dpi=80)
     ax.set_title(title, fontsize=18, weight='bold')
     ax.set_xlabel('Episodes', fontsize=14, weight='bold')
@@ -56,6 +55,10 @@ class MultiPlotter(object):
         avg_reward = np.mean(list(more_itertools.windowed(eps_rewards, window)), axis=1)
         sr.append(avg_reward)
 
+      max_len = max([s.size for s in sr])
+      for i, s in enumerate(sr):
+        if s.size < max_len:
+          sr[i] = np.pad(s, (0, max_len - s.size), 'edge')
       sr = np.array(sr)
       x = np.arange(1, sr.shape[1] + 1)
 
