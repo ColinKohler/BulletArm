@@ -386,11 +386,11 @@ class CloseLoopEnv(BaseEnv):
         depth = heightmap
       return depth
     elif self.view_type in ['camera_side', 'camera_side_rgbd', 'camera_side_height']:
-      cam_pos = [1, self.workspace[1].mean(), 0.6]
+      cam_pos = [0.8, -0.4, 0.5]
       target_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
-      cam_up_vector = [-1, 0, 0]
+      cam_up_vector = [0, 0, 1]
       self.sensor = Sensor(cam_pos, cam_up_vector, target_pos, 0.7, 0.1, 3)
-      self.sensor.fov = 40
+      self.sensor.fov = 60
       self.sensor.proj_matrix = pb.computeProjectionMatrixFOV(self.sensor.fov, 1, self.sensor.near, self.sensor.far)
       if self.view_type == 'camera_side':
         depth = self.sensor.getDepthImg(self.heightmap_size)

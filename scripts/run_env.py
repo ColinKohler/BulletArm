@@ -14,13 +14,14 @@ def run(task, robot):
       'render' : True,
       'action_sequence' : 'pxyzr',
       'workspace' : workspace,
-      'view_type' : 'render_center',
-      'num_sensors' : 3,
+      'view_type' : 'camera_side_rgbd',
+      'num_sensors' : 1,
       'physics_mode' : 'force',
       'max_steps' : 50,
-      'obs_size' : 128,
+      'obs_size' : 152,
       'view_scale' : 1.5,
-      'obs_type' : 'pixel+force+proprio'}
+      'obs_type' : ['depth', 'force', 'proprio']
+    }
     planner_config = {'dpos': 0.025, 'drot': np.pi/16}
   else:
     env_config = {'robot' : robot, 'render' : True}
@@ -34,19 +35,17 @@ def run(task, robot):
     while not done:
       action = env.getNextAction()
       obs, reward, done = env.step(action)
-      norm_force = np.clip(obs[3], -10, 10) / 10
-      #print(np.max(np.abs(norm_force)))
-      #print(np.mean(np.abs(norm_force)))
-      #print(np.mean(np.abs(norm_force)) > 18e-3)
+      norm_force = np.clip(obs[1], -10, 10) / 10
       if i >= 0:
-        fig, ax = plt.subplots(nrows=1, ncols=2)
-        ax[0].plot(obs[3][:,0], label='Fx')
-        ax[0].plot(obs[3][:,1], label='Fy')
-        ax[0].plot(obs[3][:,2], label='Fz')
-        ax[0].plot(obs[3][:,3], label='Mx')
-        ax[0].plot(obs[3][:,4], label='My')
-        ax[0].plot(obs[3][:,5], label='Mz')
-        ax[1].imshow(obs[2].squeeze(), cmap='gray')
+        fig, ax = plt.subplots(nrows=1, ncols=3)
+        ax[0].imshow(obs[0][3].squeeze(), cmap='gray')
+        ax[1].imshow(obs[0][:3].transpose(1,2,0))
+        ax[2].plot(obs[1][:,0], label='Fx')
+        ax[2].plot(obs[1][:,1], label='Fy')
+        ax[2].plot(obs[1][:,2], label='Fz')
+        ax[2].plot(obs[1][:,3], label='Mx')
+        ax[2].plot(obs[1][:,4], label='My')
+        ax[2].plot(obs[1][:,5], label='Mz')
         fig.legend()
         plt.show()
       i += 1
