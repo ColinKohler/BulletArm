@@ -93,6 +93,10 @@ class MultiPlotter(object):
         avg_eval_rewards = np.mean(list(more_itertools.windowed(eval_rewards, window)), axis=1)
         sr.append(avg_eval_rewards)
 
+      max_len = max([s.size for s in sr])
+      for i, s in enumerate(sr):
+        if s.size < max_len:
+          sr[i] = np.pad(s, (0, max_len - s.size), 'edge')
       sr = np.array(sr)
       x = np.arange(1, sr.shape[1]+1) * eval_interval
 
@@ -127,6 +131,10 @@ class MultiPlotter(object):
         avg_eval_lens = np.mean(list(more_itertools.windowed(eval_lens, window)), axis=1)
         lens.append(avg_eval_lens)
 
+      max_len = max([l.size for l in lens])
+      for i, l in enumerate(lens):
+        if l.size < max_len:
+          lens[i] = np.pad(l, (0, max_len - l.size), 'edge')
       lens = np.array(lens)
       x = np.arange(1, lens.shape[1]+1) * eval_interval
 
