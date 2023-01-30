@@ -18,7 +18,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
 
   def resetPegHole(self):
     self.peg_hole_rz = np.random.random_sample() * 2*np.pi - np.pi if self.random_orientation else 0
-    self.peg_hole_pos = self._getValidPositions(0.1, 0, [], 1)[0]
+    self.peg_hole_pos = self._getValidPositions(0.2, 0, [], 1)[0]
     self.peg_hole_pos.append(0)
     self.peg_hole.reset(self.peg_hole_pos, pb.getQuaternionFromEuler((0, 0, self.peg_hole_rz)))
 
@@ -35,7 +35,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
       constants.SQUARE_PEG,
       pos=[[self.workspace[0].mean(), self.workspace[1].mean(), 0.30]],
       rot=[[0,0,0,1]],
-      scale=0.11,
+      scale=0.115,
       wait=False
     )[0]
 
