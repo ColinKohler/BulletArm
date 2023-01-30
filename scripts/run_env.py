@@ -6,7 +6,7 @@ from scipy.ndimage import uniform_filter1d
 
 from bulletarm import env_factory
 
-def run(task, robot):
+def run(task, robot, plot_obs):
   workspace = np.array([[0.25, 0.65], [-0.2, 0.2], [0.01, 0.25]])
   if 'close_loop' in task or 'force' in task:
     env_config = {
@@ -18,8 +18,8 @@ def run(task, robot):
       'num_sensors' : 1,
       'physics_mode' : 'force',
       'max_steps' : 50,
-      'obs_size' : 152,
-      'view_scale' : 1.5,
+      'obs_size' : 74,
+      'view_scale' : 1.0,
       'obs_type' : ['depth', 'force', 'proprio']
     }
     planner_config = {'dpos': 0.025, 'drot': np.pi/16}
@@ -31,15 +31,14 @@ def run(task, robot):
   for _ in range(20):
     obs = env.reset()
     done = False
-    i = 0
     while not done:
       action = env.getNextAction()
       obs, reward, done = env.step(action)
       norm_force = np.clip(obs[1], -10, 10) / 10
-      if i >= 0:
+      if plot_obs:
         fig, ax = plt.subplots(nrows=1, ncols=3)
         ax[0].imshow(obs[0][3].squeeze(), cmap='gray')
-        ax[1].imshow(obs[0][:3].transpose(1,2,0))
+        ax[1].imshow(obs[0][:3][:,6:-6,6:-6].transpose(1,2,0))
         ax[2].plot(obs[1][:,0], label='Fx')
         ax[2].plot(obs[1][:,1], label='Fy')
         ax[2].plot(obs[1][:,2], label='Fz')
@@ -48,7 +47,7 @@ def run(task, robot):
         ax[2].plot(obs[1][:,5], label='Mz')
         fig.legend()
         plt.show()
-      i += 1
+      print(reward)
   env.close()
 
 if __name__ == '__main__':
@@ -57,6 +56,8 @@ if __name__ == '__main__':
     help='Task to run')
   parser.add_argument('--robot', type=str, default='kuka',
     help='Robot to run')
+  parser.add_argument('--plot_obs', default=False, action='store_true',
+    help='Display observations.')
 
   args = parser.parse_args()
-  run(args.task, args.robot)
+  run(args.task, args.robot, args.plot_obs)

@@ -9,7 +9,7 @@ class SquarePegHole(object):
   def __init__(self):
     self.id = None
 
-  def initialize(self, pos=(0,0,0), rot=(0,0,0,1), size=(0.35, 0.35, 0.1)):
+  def initialize(self, pos=(0,0,0), rot=(0,0,0,1), size=(0.3, 0.3, 0.1)):
     ''''''
     bottom_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[size[0]/2, size[1]/2, 0.001], rgbaColor=[0, 0, 0, 1])
     bottom_collision = pb.createCollisionShape(pb.GEOM_BOX, halfExtents=[size[0]/2, size[1]/2, 0.001])
