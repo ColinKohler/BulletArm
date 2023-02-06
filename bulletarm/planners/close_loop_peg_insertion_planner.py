@@ -73,7 +73,7 @@ class CloseLoopPegInsertionPlanner(CloseLoopPlanner):
       drag_pos_2[1] += self.hole_y_offset
 
       self.stage = 2
-      self.current_target = (drag_pos_2, drag_rot_2, constants.PICK_PRIMATIVE, 5e-3, None)
+      self.current_target = (drag_pos_2, drag_rot_2, constants.PICK_PRIMATIVE, 1e-3, None)
     elif self.stage == 2:
       # Drag peg to hole
       while pre_insert_rot[2] - gripper_rz > np.pi/4:
@@ -82,7 +82,7 @@ class CloseLoopPegInsertionPlanner(CloseLoopPlanner):
         pre_insert_rot[2] += np.pi/2
 
       self.stage = 3
-      self.current_target = (pre_insert_pos, pre_insert_rot, constants.PICK_PRIMATIVE, 5e-3, 1e-1)
+      self.current_target = (pre_insert_pos, pre_insert_rot, constants.PICK_PRIMATIVE, 1e-3, 1e-1)
     elif self.stage == 3:
       # insert peg
       while insert_rot[2] - gripper_rz > np.pi/4:
@@ -91,7 +91,7 @@ class CloseLoopPegInsertionPlanner(CloseLoopPlanner):
         insert_rot[2] += np.pi/2
 
       self.stage = 0
-      self.current_target = (insert_pos, insert_rot, constants.PICK_PRIMATIVE, 5e-3, 1e-1)
+      self.current_target = (insert_pos, insert_rot, constants.PICK_PRIMATIVE, 1e-3, 1e-1)
 
   def getNextAction(self):
     if self.env.current_episode_steps == 1:

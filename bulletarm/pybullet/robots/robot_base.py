@@ -360,7 +360,7 @@ class RobotBase:
         diff = target_pose - joint_pos
 
         # Exit if the difference is within a small tolerance
-        if all(np.abs(diff) < 5e-3):
+        if all(np.abs(diff) < 1e-3):
           return
         # Exit if the robot is stuck
         if (len(past_joint_pos) == 10 and np.allclose(past_joint_pos[-1], past_joint_pos, atol=1e-3)):
