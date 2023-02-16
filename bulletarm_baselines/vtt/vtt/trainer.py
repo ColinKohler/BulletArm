@@ -10,6 +10,8 @@ import numpy.random as npr
 from bulletarm_baselines.vtt.agent import Agent
 from bulletarm_baselines.vtt.data_generator import DataGenerator, EvalDataGenerator
 from bulletarm_baselines.vtt.models.sac import Critic, GaussianPolicy
+from bulletarm_baselines.vtt.models.latent import LatentModel
+from bulletarm_baselines.vtt.utils import create_feature_actions
 from bulletarm_baselines.vtt import torch_utils
 
 @ray.remote
@@ -30,16 +32,20 @@ class Trainer(object):
     self.log_alpha = torch.tensor(np.log(self.alpha), requires_grad=True, device=self.device)
     self.alpha_optimizer = torch.optim.Adam([self.log_alpha], lr=self.config.actor_lr_init)
 
-    # Initialize actor, and critic models
-    self.actor = GaussianPolicy(self.config.vision_size, self.config.action_dim, encoder=self.config.encoder)
+    # Initialize actor, critic, and latent models
+    self.latent = LatentModel()
+    self.latent.train()
+    self.latent.to(self.device)
+
+    self.actor = GaussianPolicy()
     self.actor.train()
     self.actor.to(self.device)
 
-    self.critic = Critic(self.config.vision_size, self.config.action_dim, encoder=self.config.encoder)
+    self.critic = Critic()
     self.critic.train()
     self.critic.to(self.device)
 
-    self.critic_target = Critic(self.config.vision_size, self.config.action_dim, encoder=self.config.encoder)
+    self.critic_target = Critic()
     self.critic_target.train()
     self.critic_target.to(self.device)
     for param in self.critic_target.parameters():
@@ -48,6 +54,10 @@ class Trainer(object):
     self.training_step = initial_checkpoint['training_step']
 
     # Initialize optimizer
+    self.latent_optimizer = torch.optim.Adam(self.latent.parameters(),
+                                             lr=self.config.latent_lr_init)
+    self.latent_scheduler = torch.optim.lr_scheduler.ExponentialLR(self.latent_optimizer,
+                                                                   self.config.lr_decay)
     self.actor_optimizer = torch.optim.Adam(self.actor.parameters(),
                                             lr=self.config.actor_lr_init)
     self.actor_scheduler = torch.optim.lr_scheduler.ExponentialLR(self.actor_optimizer,
@@ -66,7 +76,7 @@ class Trainer(object):
       )
 
     # Initialize data generator
-    self.agent = Agent(self.config, self.device, actor=self.actor, critic=self.critic)
+    self.agent = Agent(self.config, self.device, latent=self.latent, actor=self.actor, critic=self.critic)
     self.data_generator = DataGenerator(self.agent, self.config, self.config.seed)
 
     # Set random number generator seed
@@ -117,6 +127,18 @@ class Trainer(object):
     '''
     self.data_generator.resetEnvs(is_expert=False)
 
+    # Update latent variable model first before SLAC
+    next_batch = replay_buffer.sample.remote(shared_storage)
+    while self.init_training_step < self.config.init_training_steps and \
+        not ray.get(shared_storage.getInfo.remote('terminate')):
+
+      idx_batch, batch = ray.get(next_batch)
+      next_batch = replay_buffer.sample.remote(shared_storage)
+
+      latent_loss = self.updateLatent(batch)
+      self.updateLatentAlign(batch)
+
+    # Update SLAC while generating data
     next_batch = replay_buffer.sample.remote(shared_storage)
     while self.training_step < self.config.training_steps and \
           not ray.get(shared_storage.getInfo.remote('terminate')):
@@ -131,6 +153,8 @@ class Trainer(object):
       idx_batch, batch = ray.get(next_batch)
       next_batch = replay_buffer.sample.remote(shared_storage)
 
+      latent_loss = self.updateLatent(batch)
+      self.updateLatentAlign(batch)
       priorities, loss = self.updateWeights(batch)
       replay_buffer.updatePriorities.remote(priorities.cpu(), idx_batch)
       self.training_step += 1
@@ -147,15 +171,19 @@ class Trainer(object):
 
       # Save to shared storage
       if self.training_step % self.config.checkpoint_interval == 0:
+        latent_weights = torch_utils.dictToCpu(self.latent.state_dict())
         actor_weights = torch_utils.dictToCpu(self.actor.state_dict())
         critic_weights = torch_utils.dictToCpu(self.critic.state_dict())
+        latent_optimizer_state = torch_utils.dictToCpu(self.latent_optimizer.state_dict())
         actor_optimizer_state = torch_utils.dictToCpu(self.actor_optimizer.state_dict())
         critic_optimizer_state = torch_utils.dictToCpu(self.critic_optimizer.state_dict())
 
         shared_storage.setInfo.remote(
           {
-            'weights' : copy.deepcopy((actor_weights, critic_weights)),
-            'optimizer_state' : (copy.deepcopy(actor_optimizer_state), copy.deepcopy(critic_optimizer_state))
+            'weights' : copy.deepcopy((latent_weights, actor_weights, critic_weights)),
+            'optimizer_state' : (copy.deepcopy(latent_optimizer_state),
+                                 copy.deepcopy(actor_optimizer_state),
+                                 copy.deepcopy(critic_optimizer_state))
           }
         )
 
@@ -172,20 +200,44 @@ class Trainer(object):
       )
       logger.updateScalars.remote(
         {
-          '3.Loss/4.Actor_lr' : self.actor_optimizer.param_groups[0]['lr'],
-          '3.Loss/5.Critic_lr' : self.critic_optimizer.param_groups[0]['lr'],
-          '3.Loss/6.Entropy' : loss[3]
+          '3.Loss/4.Latent_lr' : self.latent_optimizer.param_groups[0]['lr'],
+          '3.Loss/5.Actor_lr' : self.actor_optimizer.param_groups[0]['lr'],
+          '3.Loss/6.Critic_lr' : self.critic_optimizer.param_groups[0]['lr'],
+          '3.Loss/7.Entropy' : loss[3]
         }
       )
       logger.logTrainingStep.remote(
         {
+          'Latent' : latent_loss,
           'Actor' : loss[0],
           'Critic' : loss[1],
           'Alpha' : loss[2],
         }
       )
 
-  def updateWeights(self, batch):
+  def updateLatent(self, batch):
+    obs_batch, next_obs_batch, action_batch, reward_batch, non_final_mask_batch, is_expert_batch, weight_batch = self.processBatch(batch)
+
+    loss_kld, loss_image, loss_reward, align_loss, contact_loss = self.latent.calculate_loss(state_, tactile_, action_, reward_, done_)
+
+    self.latent_optimizer.zero_grad()
+    (loss_kld + loss_image + loss_reward + alignment_loss + contact_loss).backward()
+    self.latent_optimizer.step()
+
+    return loss_kld.item() + loss_reward.item() + loss_image.item() + align_loss.item() + contact_loss.item()
+
+  def updateLatentAlign(self, batch):
+    obs_batch, next_obs_batch, action_batch, reward_batch, non_final_mask_batch, is_expert_batch, weight_batch = self.processBatch(batch)
+
+    align_loss = self.latent.calculate_alignment_loss(state_, tactile_)
+
+    self.latent_optimizer.zero_grad()
+    allign_loss.backward()
+    self.latent_optimizer.step()
+
+    return align_loss.item()
+
+  def updateSAC(self, batch):
     '''
     Perform one training step.
 
@@ -195,6 +247,62 @@ class Trainer(object):
     Returns:
       (numpy.array, double) : (Priorities, Batch Loss)
     '''
+    obs_batch, next_obs_batch, action_batch, reward_batch, non_final_mask_batch, is_expert_batch, weight_batch = self.processBatch(batch)
+
+    # Calculate latent representation
+    with torch.no_grad():
+      feature_, _, _ = self.latent.encoder(obs_batch)
+      z_ = torch.cat(self.latent.sample_posterior(feature_, action_batch)[2:], dim=-1)
+    z, next_z = z_[:,-2], z_[:,-1]
+    feature_action, next_feature_action = create_feature_actions(feature_, action_batch)
+
+    # Critic Update
+    with torch.no_grad():
+      next_action, next_log_pi = self.actor.sample(next_feature_action)
+      next_q1, next_q2 = self.critic_target(next_z, next_action)
+      next_log_pi, next_q1, next_q2 = next_log_pi.squeeze(), next_q1.squeeze(), next_q2.squeeze()
+
+      next_q = torch.min(next_q1, next_q2) - self.alpha * next_log_pi
+      target_q = reward_batch + non_final_mask_batch * self.config.discount * next_q
+
+    curr_q1, curr_q2 = self.critic(z, action_batch)
+    curr_q1, curr_q2 = curr_q1.squeeze(), curr_q2.squeeze()
+
+    critic_loss = F.mse_loss(curr_q1, target_q) + F.mse_loss(curr_q2, target_q)
+
+    with torch.no_grad():
+      td_error = 0.5 * (torch.abs(curr_q1 - target_q) + torch.abs(curr_q2 - target_q))
+
+    self.critic_optimizer.zero_grad()
+    critic_loss.backward(retain_graph=False)
+    self.critic_optimizer.step()
+
+    # Actor update
+    action, log_pi = self.actor.sample(feature_action)
+    q1, q2 = self.critic(z, action)
+
+    actor_loss = -torch.mean(torch.min(q1, q2) - self.alpha * log_pi)
+    if is_expert_batch.sum():
+      actor_loss += 0.1 * F.mse_loss(action[is_expert_batch], action_batch[is_expert_batch])
+
+    self.actor_optimizer.zero_grad()
+    actor_loss.backward(retain_graph=False)
+    self.actor_optimizer.step()
+
+    # Alpha update
+    alpha_loss = -(self.log_alpha * (log_pi + self.target_entropy).detach()).mean()
+
+    self.alpha_optimizer.zero_grad()
+    alpha_loss.backward(retain_graph=False)
+    self.alpha_optimizer.step()
+
+    with torch.no_grad():
+      entropy = -log_pi.detach().mean()
+      self.alpha = self.log_alpha.exp()
+
+    return td_error, (actor_loss.item(), critic_loss.item(), alpha_loss.item(), entropy.item())
+
+  def processBatch(self, batch):
     obs_batch, next_obs_batch, action_batch, reward_batch, non_final_mask_batch, is_expert_batch, weight_batch = batch
 
     obs_batch = (obs_batch[0].to(self.device), obs_batch[1].to(self.device), obs_batch[2].to(self.device))
@@ -204,51 +312,7 @@ class Trainer(object):
     non_final_mask_batch = non_final_mask_batch.to(self.device)
     weight_batch = weight_batch.to(self.device)
 
-    # Critic Update
-    with torch.no_grad():
-      next_action, next_log_pi, _ = self.actor.sample(next_obs_batch)
-      next_q1, next_q2 = self.critic_target(next_obs_batch, next_action)
-      next_log_pi, next_q1, next_q2 = next_log_pi.squeeze(), next_q1.squeeze(), next_q2.squeeze()
-
-      next_q = torch.min(next_q1, next_q2) - self.alpha * next_log_pi
-      target_q = reward_batch + non_final_mask_batch * self.config.discount * next_q
-
-    curr_q1, curr_q2 = self.critic(obs_batch, action_batch)
-    curr_q1, curr_q2 = curr_q1.squeeze(), curr_q2.squeeze()
-
-    critic_loss = F.mse_loss(curr_q1, target_q) + F.mse_loss(curr_q2, target_q)
-
-    with torch.no_grad():
-      td_error = 0.5 * (torch.abs(curr_q1 - target_q) + torch.abs(curr_q2 - target_q))
-
-    self.critic_optimizer.zero_grad()
-    critic_loss.backward()
-    self.critic_optimizer.step()
-
-    # Actor update
-    action, log_pi, _ = self.actor.sample(obs_batch)
-    q1, q2 = self.critic(obs_batch, action)
-
-    actor_loss = torch.mean((self.alpha * log_pi) - torch.min(q1, q2))
-    if is_expert_batch.sum():
-      actor_loss += 0.1 * F.mse_loss(action[is_expert_batch], action_batch[is_expert_batch])
-
-    self.actor_optimizer.zero_grad()
-    actor_loss.backward()
-    self.actor_optimizer.step()
-
-    # Alpha update
-    alpha_loss = -(self.log_alpha * (log_pi + self.target_entropy).detach()).mean()
-
-    self.alpha_optimizer.zero_grad()
-    alpha_loss.backward()
-    self.alpha_optimizer.step()
-
-    with torch.no_grad():
-      entropy = -log_pi.detach().mean()
-      self.alpha = self.log_alpha.exp()
-
-    return td_error, (actor_loss.item(), critic_loss.item(), alpha_loss.item(), entropy.item())
+    return obs_batch, next_obs_batch, action_batch, reward_batch, non_final_mask_batch, is_expert_batch, weight_batch
 
   def softTargetUpdate(self):
     '''
