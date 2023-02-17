@@ -260,7 +260,7 @@ class CloseLoopEnv(BaseEnv):
       if obs_type == 'proprio':
         end_pos = self.robot._getEndEffectorPosition()
         end_rz = transformations.euler_from_quaternion(self.robot._getEndEffectorRotation())[2]
-        proprio = np.array([self._isHolding(), self.robot.gripper.getOpenRatio()] + end_pos.tolist() + [end_rz])
+        proprio = np.array([self.robot.gripper.getOpenRatio()] + end_pos.tolist() + [end_rz])
         obs.append(proprio)
 
     return obs
