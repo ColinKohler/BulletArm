@@ -12,20 +12,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from torch.utils.tensorboard import SummaryWriter
 
-@ray.remote
-class RayLogger(Logger):
-  ''' Ray wrapper for logger.
-
-  Allows use of logger with ray multoprocesssing.
-
-  Args:
-    results_path (str): Path to save log files to
-    num_eval_eps (int): Number of episodes in a evaluation iteration
-    hyperparameters (dict): Hyperparameters to log. Defaults to None
-  '''
-  def __init__(self, results_path, num_eval_eps=100, hyperparameters=None):
-    super().__init__(results_path, num_eval_eps=num_eval_eps, hyperparameters=hyperparameters)
-
 class Logger(object):
   ''' Training logger..
 
@@ -342,4 +328,18 @@ class Logger(object):
     for k, v in self.loss.items():
       avg_losses.append(self.getAvg(v, n))
     return np.mean(avg_losses)
+
+@ray.remote
+class RayLogger(Logger):
+  ''' Ray wrapper for logger.
+
+  Allows use of logger with ray multoprocesssing.
+
+  Args:
+    results_path (str): Path to save log files to
+    num_eval_eps (int): Number of episodes in a evaluation iteration
+    hyperparameters (dict): Hyperparameters to log. Defaults to None
+  '''
+  def __init__(self, results_path, num_eval_eps=100, hyperparameters=None):
+    super().__init__(results_path, num_eval_eps=num_eval_eps, hyperparameters=hyperparameters)
 
