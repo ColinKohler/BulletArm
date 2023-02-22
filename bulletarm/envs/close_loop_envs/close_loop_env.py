@@ -27,7 +27,7 @@ class CloseLoopEnv(BaseEnv):
     if 'view_type' not in config:
       config['view_type'] = 'camera_center_xyz'
     if 'obs_type' not in config:
-      config['obs_type'] = ['depth']
+      config['obs_type'] = ['vision']
     if 'view_scale' not in config:
       config['view_scale'] = 1.5
     if 'close_loop_tray' not in config:
@@ -197,9 +197,9 @@ class CloseLoopEnv(BaseEnv):
       obj_poses.append(pos + rot)
     return np.array(obj_poses)
 
-  def _getDepthObservation(self):
+  def _getVisionObservation(self):
     '''
-    Get a depth image of the worksapce
+    Get a image of the worksapce
     '''
     self.heightmap = self._getHeightmap()
     heightmap = self.heightmap
@@ -251,9 +251,9 @@ class CloseLoopEnv(BaseEnv):
     ''''''
     obs = list()
     for obs_type in self.obs_type:
-      if obs_type == 'depth':
-        depth = self._getDepthObservation()
-        obs.append(depth)
+      if obs_type == 'vision':
+        vision = self._getVisionObservation()
+        obs.append(vision)
       if obs_type == 'force':
         force = self._getForceObservation()
         obs.append(force)
