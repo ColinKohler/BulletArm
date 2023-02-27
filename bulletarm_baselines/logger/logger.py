@@ -340,6 +340,6 @@ class RayLogger(Logger):
     num_eval_eps (int): Number of episodes in a evaluation iteration
     hyperparameters (dict): Hyperparameters to log. Defaults to None
   '''
-  def __init__(self, results_path, num_eval_eps=100, hyperparameters=None):
-    super().__init__(results_path, num_eval_eps=num_eval_eps, hyperparameters=hyperparameters)
+  def __init__(self, results_path, hyperparameters, checkpoint_interval=500, num_eval_eps=100):
+    super().__init__(results_path, hyperparameters, checkpoint_interval=checkpoint_interval, num_eval_eps=num_eval_eps)
 
