@@ -46,7 +46,7 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
           self._generateShapes(constants.CUBE, 1, pos=[[x, y1, self.object_init_z]], random_orientation=False)
           goal_pos = [x, y2]
         else:
-          self._generateShapes(constants.CUBE, 1, random_orientation=self.random_orientation, padding=0.1)
+          self._generateShapes(constants.CUBE, 1, random_orientation=self.random_orientation, padding=0.20)
           goal_pos = self._getValidPositions(0.08+0.05, 0.09, self.getObjectPositions()[:, :2].tolist(), 1)[0]
         self.goal_pos = goal_pos
       except NoValidPositionException as e:
