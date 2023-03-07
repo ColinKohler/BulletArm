@@ -135,17 +135,16 @@ class BaseEnv:
       self.solver_residual_threshold = self.config['solver_residual_threshold']
       self.robot.position_gain = 0.01
 
-    # TODO: Move this somewhere it makes sense
-    self.block_original_size = 0.05
-    self.block_scale_range = self.config['object_scale_range']
-    self.min_block_size = self.block_original_size * self.block_scale_range[0]
-    self.max_block_size = self.block_original_size * self.block_scale_range[1]
+    #self.block_original_size = 0.05
+    #self.block_scale_range = self.config['object_scale_range']
+    #self.min_block_size = self.block_original_size * self.block_scale_range[0]
+    #self.max_block_size = self.block_original_size * self.block_scale_range[1]
 
-    self.pick_pre_offset = 0.10
-    self.pick_offset = self.block_scale_range[1]*self.block_original_size/2
-    self.place_pre_offset = 0.10
-    self.place_offset = self.block_scale_range[1]*self.block_original_size/2
-    self.pull_offset = 0.25
+    #self.pick_pre_offset = 0.10
+    #self.pick_offset = self.block_scale_range[1]*self.block_original_size/2
+    #self.place_pre_offset = 0.10
+    #self.place_offset = self.block_scale_range[1]*self.block_original_size/2
+    #self.pull_offset = 0.25
 
     self.object_init_z = 0.020
 
@@ -427,10 +426,10 @@ class BaseEnv:
   def _getDefaultBoarderPadding(self, shape_type):
     if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK,
                       constants.RANDOM_HOUSEHOLD, constants.BOTTLE, constants.TEST_TUBE, constants.SWAB, constants.SQUARE_PEG):
-      padding = self.max_block_size * 2.4
+      padding = 2.4
     elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON, constants.BOX,
                         constants.FLAT_BLOCK, constants.OBSTRUCTION, constants.MUG, constants.PIVOTING_BLOCK):
-      padding = self.max_block_size * 3.4
+      padding = 3.4
     elif shape_type == constants.BOWL:
       padding = 0.17
     elif shape_type == constants.PLATE:
@@ -442,12 +441,12 @@ class BaseEnv:
   def _getDefaultMinDistance(self, shape_type):
     if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK,
                       constants.BOTTLE, constants.TEST_TUBE, constants.SWAB, constants.SQUARE_PEG):
-      min_distance = self.max_block_size * 2.4
+      min_distance = 2.4
     elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON, constants.BOX,
                         constants.FLAT_BLOCK, constants.OBSTRUCTION, constants.MUG, constants.PIVOTING_BLOCK):
-      min_distance = self.max_block_size * 3.4
+      min_distance = 3.4
     elif shape_type in [constants.RANDOM_HOUSEHOLD]:
-      min_distance = self.max_block_size * 4
+      min_distance = 4
     elif shape_type == constants.BOWL:
       min_distance = 0.17
     elif shape_type == constants.PLATE:
@@ -459,7 +458,7 @@ class BaseEnv:
   def _getExistingXYPositions(self):
     return [o.getXYPosition() for o in self.objects]
 
-  def _generateShapes(self, shape_type=0, num_shapes=1, scale=None, pos=None, rot=None,
+  def _generateShapes(self, shape_type=0, num_shapes=1, scale=1, pos=None, rot=None,
                            min_distance=None, padding=None, random_orientation=False, z_scale=1, model_id=1, wait=True):
     ''' Generate objects within the workspace.
 
@@ -514,9 +513,6 @@ class BaseEnv:
       orientations = rot
 
     for position, orientation in zip(valid_positions, orientations):
-      if not scale:
-        scale = npr.choice(np.arange(self.block_scale_range[0], self.block_scale_range[1]+0.01, 0.02))
-
       if shape_type == constants.CUBE:
         handle = pb_obj_generation.generateCube(position, orientation, scale)
       elif shape_type == constants.BRICK:

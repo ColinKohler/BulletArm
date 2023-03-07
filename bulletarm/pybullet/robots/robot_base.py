@@ -523,6 +523,17 @@ class RobotBase:
     state = pb.getLinkState(self.id, self.end_effector_index)
     return np.array(state[4])
 
+  def _getFingerPositions(self):
+    '''
+    Get the current finger positions
+
+    Returns:
+      (numpy.array): The end effector position.
+    '''
+    finger_1_state = pb.getLinkState(self.id, self.finger_idxs[0])
+    finger_2_state = pb.getLinkState(self.id, self.finger_idxs[1])
+    return np.array(finger_1_state[4]), np.array(finger_2_state[4])
+
   def _getEndEffectorRotation(self):
     '''
     Get the current end effector orientation.
