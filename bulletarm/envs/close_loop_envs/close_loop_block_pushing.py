@@ -1,5 +1,6 @@
 import pybullet as pb
 import numpy as np
+import numpy.random as npr
 
 from bulletarm.pybullet.utils import constants
 from bulletarm.envs.close_loop_envs.close_loop_env import CloseLoopEnv
@@ -46,7 +47,20 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
           self._generateShapes(constants.CUBE, 1, pos=[[x, y1, self.object_init_z]], random_orientation=False)
           goal_pos = [x, y2]
         else:
-          self._generateShapes(constants.CUBE, 1, random_orientation=self.random_orientation, padding=0.20)
+          self.cube = self._generateShapes(
+            shape_type=constants.CUBE,
+            scale=npr.uniform(0.75, 1.0),
+            random_orientation=self.random_orientation,
+            padding=0.20
+          )[0]
+          pb.changeDynamics(
+            self.cube.object_id,
+            -1,
+            mass=npr.uniform(0.05, 0.15),
+            lateralFriction=npr.uniform(0.9, 1.0),
+            rollingFriction=0.0001,
+          )
+
           goal_pos = self._getValidPositions(0.08+0.05, 0.09, self.getObjectPositions()[:, :2].tolist(), 1)[0]
         self.goal_pos = goal_pos
       except NoValidPositionException as e:

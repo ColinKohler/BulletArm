@@ -43,6 +43,8 @@ class Logger(object):
     self.eval_eps_dis_rewards = [list()]
     self.eval_mean_values = [list()]
     self.eval_eps_lens = [list()]
+    self.num_eval_eps = num_eval_eps
+
 
     # sub folders for saving the models and checkpoint
     self.models_dir = os.path.join(self.results_path, 'models')
@@ -93,6 +95,9 @@ class Logger(object):
     self.training_eps_rewards.append(np.sum(rewards))
 
   def logEvalInterval(self):
+    # Write log to ensure eval interval gets logged due to new TB bug
+    self.writeLog()
+
     self.num_eval_intervals += 1
     self.eval_eps_rewards.append(list())
     self.eval_eps_dis_rewards.append(list())
@@ -139,18 +144,21 @@ class Logger(object):
     Write the logdir to the tensorboard summary writer. Calling this too often can
     slow down training.
     '''
-    self.writer.add_scalar('1.Evaluate/1.Reward',
-                           np.mean(self.eval_eps_rewards[self.num_eval_intervals]) if self.eval_eps_rewards[self.num_eval_intervals] else 0,
-                           self.num_eval_intervals+1)
-    self.writer.add_scalar('1.Evaluate/2.Discounted_rewards',
-                           np.mean(self.eval_eps_dis_rewards[self.num_eval_intervals]) if self.eval_eps_dis_rewards[self.num_eval_intervals] else 0,
-                           self.num_eval_intervals+1)
-    self.writer.add_scalar('1.Evaluate/3.Mean_value',
-                           np.mean(self.eval_mean_values[self.num_eval_intervals]) if self.eval_mean_values[self.num_eval_intervals] else 0,
-                           self.num_eval_intervals+1)
-    self.writer.add_scalar('1.Evaluate/4.Eps_len',
-                          np.mean(self.eval_eps_lens[self.num_eval_intervals]) if self.eval_eps_lens[self.num_eval_intervals] else 0,
-                          self.num_eval_intervals+1)
+    # Update to TB has a bug where two datapoints are getting plotted on the same step.
+    # Atm resticting this to only write when the eval interval is done
+    if len(self.eval_eps_rewards[self.num_eval_intervals]) == self.num_eval_eps:
+      self.writer.add_scalar('1.Evaluate/1.Reward',
+                             np.mean(self.eval_eps_rewards[self.num_eval_intervals]),
+                             self.num_eval_intervals+1)
+      self.writer.add_scalar('1.Evaluate/2.Discounted_rewards',
+                             np.mean(self.eval_eps_dis_rewards[self.num_eval_intervals]),
+                             self.num_eval_intervals+1)
+      self.writer.add_scalar('1.Evaluate/3.Mean_value',
+                             np.mean(self.eval_mean_values[self.num_eval_intervals]),
+                             self.num_eval_intervals+1)
+      self.writer.add_scalar('1.Evaluate/4.Eps_len',
+                            np.mean(self.eval_eps_lens[self.num_eval_intervals]),
+                            self.num_eval_intervals+1)
     self.writer.add_scalar('1.Evaluate/5.Learning_curve',
                            self.getAvg(self.training_eps_rewards, n=100),
                            len(self.training_eps_rewards))

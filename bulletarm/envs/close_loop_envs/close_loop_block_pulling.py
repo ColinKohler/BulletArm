@@ -1,5 +1,6 @@
 import pybullet as pb
 import numpy as np
+import numpy.random as npr
 
 from bulletarm.pybullet.utils import constants
 from bulletarm.envs.close_loop_envs.close_loop_env import CloseLoopEnv
@@ -34,9 +35,40 @@ class CloseLoopBlockPullingEnv(CloseLoopEnv):
             y2 = np.random.random() * (self.workspace_size - padding) + self.workspace[1][0] + padding/2
             if max(y1, y2) - min(y1, y2) > min_distance:
               break
-          self._generateShapes(constants.FLAT_BLOCK, 2, pos=[[x, y1, self.object_init_z], [x, y2, self.object_init_z]], random_orientation=True)
+          self._generateShapes(
+            shape_type=constants.FLAT_BLOCK,
+            num_shapes=2,
+            pos=[[x, y1, self.object_init_z], [x, y2, self.object_init_z]],
+            random_orientation=True
+          )
         else:
-          self._generateShapes(constants.FLAT_BLOCK, 2, random_orientation=self.random_orientation)
+          self.block1 = self._generateShapes(
+            shape_type=constants.FLAT_BLOCK,
+            scale=npr.uniform(0.75, 1.0),
+            padding=0.15,
+            random_orientation=self.random_orientation
+          )[0]
+          pb.changeDynamics(
+            self.block1.object_id,
+            -1,
+            mass=npr.uniform(0.05, 0.15),
+            lateralFriction=npr.uniform(0.9, 1.0),
+            rollingFriction=0.0001,
+          )
+
+          self.block2 = self._generateShapes(
+            shape_type=constants.FLAT_BLOCK,
+            scale=npr.uniform(0.75, 1.0),
+            padding=0.15,
+            random_orientation=self.random_orientation
+          )[0]
+          pb.changeDynamics(
+            self.block2.object_id,
+            -1,
+            mass=npr.uniform(0.05, 0.15),
+            lateralFriction=npr.uniform(0.9, 1.0),
+            rollingFriction=0.0001,
+          )
       except NoValidPositionException as e:
         continue
       else:

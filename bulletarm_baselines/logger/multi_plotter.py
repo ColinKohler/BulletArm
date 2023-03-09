@@ -42,16 +42,19 @@ class MultiPlotter(object):
     Args:
     '''
     fig, ax = plt.subplots(figsize=(8,6), dpi=80)
-    ax.set_title(title, fontsize=18, weight='bold')
+    ax.set_title('{} - Learning Curve'.format(title), fontsize=18, weight='bold')
     ax.set_xlabel('Episodes', fontsize=14, weight='bold')
     ax.set_ylabel('Avg. Reward', fontsize=14, weight='bold')
 
     for log_name, log in self.logs.items():
       sr = list()
       for run in log:
-        eps_rewards = run['training_eps_rewards'][:max_eps]
+        eps_rewards = run['training_eps_rewards']
         if max_eps:
           eps_rewards = eps_rewards[:max_eps]
+        if len(eps_rewards) < window:
+          print('{} might be incomplete'.format(log_name))
+          continue
         avg_reward = np.mean(list(more_itertools.windowed(eps_rewards, window)), axis=1)
         sr.append(avg_reward)
 
@@ -79,7 +82,7 @@ class MultiPlotter(object):
     '''
 
     fig, ax = plt.subplots(figsize=(8,6), dpi=80)
-    ax.set_title(title, fontsize=18, weight='bold')
+    ax.set_title('{} - Eval Curve'.format(title), fontsize=18, weight='bold')
     ax.set_xlabel('Training Steps', fontsize=14, weight='bold')
     ax.set_ylabel('Avg. Reward', fontsize=14, weight='bold')
 
@@ -87,6 +90,9 @@ class MultiPlotter(object):
       sr = list()
       for run in log:
         eval_rewards = run['eval_eps_rewards']
+        if len(eval_rewards) < 10:
+          continue
+
         if num_eval_intervals:
           eval_rewards = eval_rewards[:num_eval_intervals]
         eval_rewards = [np.mean(eps) for eps in eval_rewards]
@@ -125,6 +131,10 @@ class MultiPlotter(object):
       lens = list()
       for run in log:
         eval_lens = run['eval_eps_lens']
+
+        if len(eval_lens) < 10:
+          continue
+
         if num_eval_intervals:
           eval_lens = eval_lens[:num_eval_intervals]
         eval_lens = [np.mean(eps) for eps in eval_lens]

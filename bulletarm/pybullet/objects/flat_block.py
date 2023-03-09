@@ -3,7 +3,6 @@ import pybullet as pb
 from bulletarm.pybullet.objects.pybullet_object import PybulletObject
 from bulletarm.pybullet.utils import constants
 
-
 class FlatBlock(PybulletObject):
   def __init__(self, pos, rot, scale):
     bottom_visual = pb.createVisualShape(pb.GEOM_BOX, halfExtents=[0.05*scale, 0.05*scale, 0.025], rgbaColor=[1, 1, 1, 1])
@@ -21,4 +20,5 @@ class FlatBlock(PybulletObject):
       lateralFriction=0.3,
       rollingFriction=0.0001,
     )
-    super(FlatBlock, self).__init__(constants.FLAT_BLOCK, object_id)
+
+    super().__init__(constants.FLAT_BLOCK, object_id)

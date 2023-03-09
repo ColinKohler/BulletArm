@@ -426,10 +426,10 @@ class BaseEnv:
   def _getDefaultBoarderPadding(self, shape_type):
     if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK,
                       constants.RANDOM_HOUSEHOLD, constants.BOTTLE, constants.TEST_TUBE, constants.SWAB, constants.SQUARE_PEG):
-      padding = 2.4
+      padding = 0.05
     elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON, constants.BOX,
                         constants.FLAT_BLOCK, constants.OBSTRUCTION, constants.MUG, constants.PIVOTING_BLOCK):
-      padding = 3.4
+      padding = 0.05
     elif shape_type == constants.BOWL:
       padding = 0.17
     elif shape_type == constants.PLATE:
@@ -441,12 +441,12 @@ class BaseEnv:
   def _getDefaultMinDistance(self, shape_type):
     if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK,
                       constants.BOTTLE, constants.TEST_TUBE, constants.SWAB, constants.SQUARE_PEG):
-      min_distance = 2.4
+      min_distance = 0.2
     elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON, constants.BOX,
                         constants.FLAT_BLOCK, constants.OBSTRUCTION, constants.MUG, constants.PIVOTING_BLOCK):
-      min_distance = 3.4
+      min_distance = 0.2
     elif shape_type in [constants.RANDOM_HOUSEHOLD]:
-      min_distance = 4
+      min_distance = 0.4
     elif shape_type == constants.BOWL:
       min_distance = 0.17
     elif shape_type == constants.PLATE:
