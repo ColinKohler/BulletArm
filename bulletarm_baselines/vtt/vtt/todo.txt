@@ -1,0 +1,16 @@
+NOTES:
+  - To start out we are just going to use vision + force (i.e. no proprioception)
+    + This is mainly b/c I don't know if adding it to the transformer will cause issues
+    + We could potentially explore adding this back in later if desired
+
+Done:
+  - Runner: Deals w/ray and logging
+  - SharedStorage: Deals with passing information b/t ray threads
+  - Agent: Mostly just changed action sampling to use latent space
+  - DataGenerator: I don't think this needs to change
+    + This just calls BulletArm and the Agent to get observations
+    + Might need to update this alongside ReplayBuffer if we need to do some weird stuff here
+
+TODO:
+  - ReplayBuffer: Need to add/modify sampling to work w/latent model training
+  - Trainer:

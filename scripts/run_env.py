@@ -21,7 +21,8 @@ def run(task, robot, plot_obs, render):
       'max_steps' : 50,
       'obs_size' : 74,
       'view_scale' : 1.0,
-      'obs_type' : ['depth', 'force', 'proprio']
+      'obs_type' : ['vision', 'force', 'proprio'],
+      'random_orientation': True,
     }
     planner_config = {'dpos': 0.025, 'drot': np.pi/16}
   else:
@@ -39,17 +40,17 @@ def run(task, robot, plot_obs, render):
     while not done:
       action = env.getNextAction()
       obs, reward, done = env.step(action)
-      norm_force = np.clip(obs[1], -10, 10) / 10
+      norm_force = np.clip(obs[1], -50, 50) / 50
       if plot_obs:
         fig, ax = plt.subplots(nrows=1, ncols=3)
         ax[0].imshow(obs[0][3].squeeze(), cmap='gray')
         ax[1].imshow(obs[0][:3][:,6:-6,6:-6].transpose(1,2,0))
-        ax[2].plot(obs[1][:,0], label='Fx')
-        ax[2].plot(obs[1][:,1], label='Fy')
-        ax[2].plot(obs[1][:,2], label='Fz')
-        ax[2].plot(obs[1][:,3], label='Mx')
-        ax[2].plot(obs[1][:,4], label='My')
-        ax[2].plot(obs[1][:,5], label='Mz')
+        ax[2].plot(norm_force[:,0], label='Fx')
+        ax[2].plot(norm_force[:,1], label='Fy')
+        ax[2].plot(norm_force[:,2], label='Fz')
+        ax[2].plot(norm_force[:,3], label='Mx')
+        ax[2].plot(norm_force[:,4], label='My')
+        ax[2].plot(norm_force[:,5], label='Mz')
         fig.legend()
         plt.show()
     s += reward

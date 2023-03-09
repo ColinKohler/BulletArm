@@ -1,7 +1,6 @@
 import torch
 import numpy as np
 import numpy.random as npr
-from functools import partial
 
 from bulletarm_baselines.vtt import torch_utils
 from bulletarm_baselines.vtt.models.sac import GaussianPolicy, TwinnedQNetwork
@@ -18,8 +17,6 @@ class Agent(object):
   def __init__(self, config, device, latent=None, actor=None, critic=None, initialize_models=True):
     self.config = config
     self.device = device
-
-    self.normalizeForce = partial(torch_utils.normalizeForce, max_force=self.config.max_force)
 
     self.p_range = torch.tensor([0, 1])
     self.dx_range = torch.tensor([-self.config.dpos, self.config.dpos])
@@ -65,10 +62,11 @@ class Agent(object):
     proprio = torch.Tensor(proprio).view(vision.shape[0], self.config.proprio_dim).to(self.device)
 
     with torch.no_grad():
+      z, _, _ = self.latent.encoder(vision, force)
       if evaluate:
-        _, _, action = self.actor.sample((vision, force, proprio))
+        _, _, action = self.actor.sample(z)
       else:
-        action, _, _ = self.actor.sample((vision, force, proprio))
+        action, _, _ = self.actor.sample(z)
 
     action = action.cpu()
     action_idx, action = self.decodeActions(*[action[:,i] for i in range(self.action_shape)])
@@ -143,7 +141,8 @@ class Agent(object):
   def getWeights(self):
     '''
     '''
-    return (self.actor.state_dict(),
+    return (self.latent.state_dict(),
+            self.actor.state_dict(),
             self.critic.state_dict())
 
   def setWeights(self, weights):
@@ -154,5 +153,6 @@ class Agent(object):
       weights (dict, dict): (actor weights, critic weights)
     '''
     if weights is not None:
-      self.actor.load_state_dict(weights[0])
-      self.critic.load_state_dict(weights[1])
+      sefllatent.load_state_dict(weights[0])
+      self.actor.load_state_dict(weights[1])
+      self.critic.load_state_dict(weights[2])
