@@ -21,7 +21,7 @@ def run(task, robot, plot_obs, render):
       'max_steps' : 50,
       'obs_size' : 74,
       'view_scale' : 1.0,
-      'obs_type' : ['depth', 'force', 'proprio']
+      'obs_type' : ['vision', 'force', 'proprio']
     }
     planner_config = {'dpos': 0.025, 'drot': np.pi/16}
   else:
