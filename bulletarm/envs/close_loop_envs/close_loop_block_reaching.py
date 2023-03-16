@@ -1,5 +1,6 @@
 import pybullet as pb
 import numpy as np
+import numpy.random as npr
 
 from bulletarm.pybullet.utils import constants
 from bulletarm.envs.close_loop_envs.close_loop_env import CloseLoopEnv
@@ -20,7 +21,14 @@ class CloseLoopBlockReachingEnv(CloseLoopEnv):
   def reset(self):
     self.resetPybulletWorkspace()
     self.robot.moveTo([self.workspace[0].mean(), self.workspace[1].mean(), 0.2], transformations.quaternion_from_euler(0, 0, 0))
-    self._generateShapes(constants.CUBE, 1, random_orientation=self.random_orientation)
+    self.cube = self._generateShapes(
+      constants.CUBE,
+      1,
+      random_orientation=self.random_orientation,
+      padding=0.2,
+      scale=npr.uniform(0.75, 1.25)
+    )[0]
+
     return self._getObservation()
 
   def _checkTermination(self):

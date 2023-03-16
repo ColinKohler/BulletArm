@@ -40,7 +40,7 @@ def run(task, robot, plot_obs, render):
     while not done:
       action = env.getNextAction()
       obs, reward, done = env.step(action)
-      norm_force = np.clip(obs[1], -50, 50) / 50
+      norm_force = np.clip(obs[1], -10, 10) / 10
       if plot_obs:
         fig, ax = plt.subplots(nrows=1, ncols=3)
         ax[0].imshow(obs[0][3].squeeze(), cmap='gray')
