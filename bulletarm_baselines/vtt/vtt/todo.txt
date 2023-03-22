@@ -13,4 +13,4 @@ Done:
 
 TODO:
   - ReplayBuffer: Need to add/modify sampling to work w/latent model training
-  - Trainer:
+  - Trainer: Needs to call the appriate methods in models

@@ -97,6 +97,9 @@ class MultiPlotter(object):
           eval_rewards = eval_rewards[:num_eval_intervals]
         eval_rewards = [np.mean(eps) for eps in eval_rewards]
         avg_eval_rewards = np.mean(list(more_itertools.windowed(eval_rewards, window)), axis=1)
+        for i, s in enumerate(avg_eval_rewards):
+          if np.isnan(s):
+            avg_eval_rewards[i] = avg_eval_rewards[i-1]
         sr.append(avg_eval_rewards)
 
       max_len = max([s.size for s in sr])
