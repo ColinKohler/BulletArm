@@ -24,7 +24,7 @@ class CloseLoopBlockPullingCornerEnv(CloseLoopEnv):
 
   def resetCorner(self):
     self.corner_rz = np.random.random_sample() * 2*np.pi - np.pi if self.random_orientation else 0
-    self.corner_pos = self._getValidPositions(0.10, 0, [], 1)[0]
+    self.corner_pos = self._getValidPositions(0.20, 0, [], 1)[0]
     self.corner_pos.append(0)
     self.corner.reset(self.corner_pos, pb.getQuaternionFromEuler((0, 0, self.corner_rz)))
 
