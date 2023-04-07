@@ -46,8 +46,8 @@ class CloseLoopBlockPushingPlanner(CloseLoopPlanner):
     p[0] = np.clip(p[0], self.env.workspace[0][0], self.env.workspace[0][1])
     p[1] = np.clip(p[1], self.env.workspace[1][0], self.env.workspace[1][1])
     self.pre_push_start_pos = (p[0], p[1], self.env.workspace[2][0] + 0.1)
-    self.push_start_pos = (p[0], p[1], self.env.workspace[2][0]+0.015)
-    self.push_end_pos = (g[0], g[1], self.env.workspace[2][0]+0.015)
+    self.push_start_pos = (p[0], p[1], self.env.workspace[2][0]+0.016)
+    self.push_end_pos = (g[0], g[1], self.env.workspace[2][0]+0.016)
     self.push_rot = rot
 
   def setNewTarget(self):

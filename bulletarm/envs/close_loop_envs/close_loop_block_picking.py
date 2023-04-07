@@ -28,7 +28,7 @@ class CloseLoopBlockPickingEnv(CloseLoopEnv):
       1,
       random_orientation=self.random_orientation,
       scale=npr.uniform(0.75, 1.25),
-      padding=0.2,
+      padding=0.05,
     )[0]
     pb.changeDynamics(
       self.cube.object_id,

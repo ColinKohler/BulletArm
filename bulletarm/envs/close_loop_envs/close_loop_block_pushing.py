@@ -51,7 +51,7 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
             shape_type=constants.CUBE,
             scale=npr.uniform(0.75, 1.0),
             random_orientation=self.random_orientation,
-            padding=0.20
+            padding=0.12
           )[0]
           pb.changeDynamics(
             self.cube.object_id,
@@ -61,7 +61,7 @@ class CloseLoopBlockPushingEnv(CloseLoopEnv):
             rollingFriction=0.0001,
           )
 
-          goal_pos = self._getValidPositions(0.08+0.05, 0.09, self.getObjectPositions()[:, :2].tolist(), 1)[0]
+          goal_pos = self._getValidPositions(0.12, 0.2, self.getObjectPositions()[:, :2].tolist(), 1)[0]
         self.goal_pos = goal_pos
       except NoValidPositionException as e:
         continue

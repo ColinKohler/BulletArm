@@ -8,7 +8,7 @@ import tqdm
 from bulletarm import env_factory
 
 def run(task, robot, plot_obs, render):
-  workspace = np.array([[0.25, 0.65], [-0.2, 0.2], [-0.01, 0.25]])
+  workspace = np.array([[0.20, 0.60], [-0.2, 0.2], [-0.01, 0.25]])
   if 'close_loop' in task or 'force' in task:
     env_config = {
       'robot' : robot,
@@ -19,7 +19,7 @@ def run(task, robot, plot_obs, render):
       'num_sensors' : 1,
       'physics_mode' : 'force',
       'max_steps' : 50,
-      'obs_size' : 74,
+      'obs_size' : 128+12,
       'view_scale' : 1.0,
       'obs_type' : ['vision', 'force', 'proprio'],
       'random_orientation': True,
@@ -35,22 +35,21 @@ def run(task, robot, plot_obs, render):
   pbar.set_description('0/100')
   for n in range(100):
     obs = env.reset()
-    #plt.imshow(obs[0][:3][:,6:-6,6:-6].transpose(1,2,0)); plt.show()
     done = False
     while not done:
       action = env.getNextAction()
       obs, reward, done = env.step(action)
       norm_force = np.clip(obs[1], -10, 10) / 10
       if plot_obs:
-        fig, ax = plt.subplots(nrows=1, ncols=3)
-        ax[0].imshow(obs[0][3].squeeze(), cmap='gray')
-        ax[1].imshow(obs[0][:3][:,6:-6,6:-6].transpose(1,2,0))
-        ax[2].plot(norm_force[:,0], label='Fx')
-        ax[2].plot(norm_force[:,1], label='Fy')
-        ax[2].plot(norm_force[:,2], label='Fz')
-        ax[2].plot(norm_force[:,3], label='Mx')
-        ax[2].plot(norm_force[:,4], label='My')
-        ax[2].plot(norm_force[:,5], label='Mz')
+        fig, ax = plt.subplots(nrows=1, ncols=2)
+        #ax[0].imshow(obs[0][0].squeeze(), cmap='gray')
+        ax[0].imshow(obs[0][:3][:,6:-6,6:-6].transpose(1,2,0))
+        ax[1].plot(norm_force[:,0], label='Fx')
+        ax[1].plot(norm_force[:,1], label='Fy')
+        ax[1].plot(norm_force[:,2], label='Fz')
+        ax[1].plot(norm_force[:,3], label='Mx')
+        ax[1].plot(norm_force[:,4], label='My')
+        ax[1].plot(norm_force[:,5], label='Mz')
         fig.legend()
         plt.show()
     s += reward

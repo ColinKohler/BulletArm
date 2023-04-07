@@ -10,6 +10,15 @@ class CloseLoopPlanner(BasePlanner):
     self.dpos = config['dpos'] if 'dpos' in config else 0.05
     self.drot = config['drot'] if 'drot' in config else np.pi / 4
 
+  def getNextActionToCurrentTarget(self, pos_tol=None, rot_tol=None):
+    pos_tol = pos_tol if pos_tol else self.dpos
+    rot_tol = rot_tol if rot_tol else self.drot
+
+    x, y, z, r = self.getActionByGoalPose(self.current_target[0], self.current_target[1])
+    if np.all(np.abs([x, y, z]) < pos_tol) and np.abs(r) < rot_tol:
+      self.current_target = None
+    return self.env._encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
+
   def getActionByGoalPose(self, goal_pos, goal_rot):
     current_pos = self.env.robot._getEndEffectorPosition()
     current_rot = transformations.euler_from_quaternion(self.env.robot._getEndEffectorRotation())

@@ -10,12 +10,6 @@ class CloseLoopBlockPullingPlanner(CloseLoopPlanner):
     self.current_target = None
     self.stage = 0
 
-  def getNextActionToCurrentTarget(self):
-    x, y, z, r = self.getActionByGoalPose(self.current_target[0], self.current_target[1])
-    if np.all(np.abs([x, y, z]) < self.dpos) and np.abs(r) < self.drot:
-      self.current_target = None
-    return self.env._encodeAction(constants.PLACE_PRIMATIVE, x, y, z, r)
-
   def setNewTarget(self):
     obj1_pos = self.env.objects[0].getPosition()
     obj2_pos = self.env.objects[1].getPosition()
@@ -40,10 +34,10 @@ class CloseLoopBlockPullingPlanner(CloseLoopPlanner):
       self.current_target = (g[0], g[1], 0.1), (0, 0, rot), constants.PLACE_PRIMATIVE
       self.stage = 1
     elif self.stage == 1:
-      self.current_target = (g[0], g[1], 0.005), (0, 0, rot), constants.PLACE_PRIMATIVE
+      self.current_target = (g[0], g[1], 0.006), (0, 0, rot), constants.PLACE_PRIMATIVE
       self.stage = 2
     else:
-      self.current_target = (obj2_pos[0], obj2_pos[1], 0.005), (0, 0, rot), constants.PLACE_PRIMATIVE
+      self.current_target = (obj2_pos[0], obj2_pos[1], 0.006), (0, 0, rot), constants.PLACE_PRIMATIVE
       self.stage = 0
 
   def getNextAction(self):

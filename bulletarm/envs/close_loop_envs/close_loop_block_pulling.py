@@ -45,7 +45,7 @@ class CloseLoopBlockPullingEnv(CloseLoopEnv):
           self.block1 = self._generateShapes(
             shape_type=constants.FLAT_BLOCK,
             scale=npr.uniform(0.75, 1.0),
-            padding=0.15,
+            padding=0.12,
             random_orientation=self.random_orientation
           )[0]
           pb.changeDynamics(
@@ -59,7 +59,8 @@ class CloseLoopBlockPullingEnv(CloseLoopEnv):
           self.block2 = self._generateShapes(
             shape_type=constants.FLAT_BLOCK,
             scale=npr.uniform(0.75, 1.0),
-            padding=0.15,
+            padding=0.12,
+            min_distance=0.2,
             random_orientation=self.random_orientation
           )[0]
           pb.changeDynamics(
