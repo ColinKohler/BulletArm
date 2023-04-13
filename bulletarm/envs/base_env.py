@@ -638,7 +638,8 @@ class BaseEnv:
         continue
       block_position = o.getPosition()
       if np.allclose(block_position[:-1], obj_position[:-1],
-                     atol=self.block_original_size * self.block_scale_range[0] * 2 / 3) and \
+                     #atol=self.block_original_size * self.block_scale_range[0] * 2 / 3) and \
+                     atol=0.05 * 0.8 * 2 / 3) and \
           block_position[-1] > obj_position[-1]:
         return False
     return True
