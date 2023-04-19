@@ -35,7 +35,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
       constants.SQUARE_PEG,
       pos=[[self.workspace[0].mean(), self.workspace[1].mean(), 0.31]],
       rot=[[0,0,0,1]],
-      scale=0.110, wait=False
+      scale=0.115, wait=False
     )[0]
 
     self.robot.gripper.close()
