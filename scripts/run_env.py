@@ -10,6 +10,8 @@ from bulletarm import env_factory
 def run(task, robot, plot_obs, render):
   workspace = np.array([[0.20, 0.60], [-0.2, 0.2], [-0.01, 0.25]])
   if 'close_loop' in task or 'force' in task:
+    res = 64
+    p = 12
     env_config = {
       'robot' : robot,
       'render' : render,
@@ -20,7 +22,7 @@ def run(task, robot, plot_obs, render):
       'num_objects' : 1,
       'physics_mode' : 'force',
       'max_steps' : 50,
-      'obs_size' : 64+12,
+      'obs_size' : res + p,
       'view_scale' : 1.0,
       'obs_type' : ['vision', 'force', 'proprio'],
       'random_orientation': True,
@@ -40,11 +42,12 @@ def run(task, robot, plot_obs, render):
     while not done:
       action = env.getNextAction()
       obs, reward, done = env.step(action)
-      norm_force = np.clip(obs[1], -10, 10) / 10
+      max_force = 100
+      norm_force = np.clip(obs[1], -max_force, max_force) / max_force
       if plot_obs:
         fig, ax = plt.subplots(nrows=1, ncols=2)
         #ax[0].imshow(obs[0][0].squeeze(), cmap='gray')
-        ax[0].imshow(obs[0][:3][:,6:-6,6:-6].transpose(1,2,0))
+        ax[0].imshow(obs[0][:3][:,p//2:-p//2,p//2:-p//2].transpose(1,2,0))
         ax[1].plot(norm_force[:,0], label='Fx')
         ax[1].plot(norm_force[:,1], label='Fy')
         ax[1].plot(norm_force[:,2], label='Fz')
