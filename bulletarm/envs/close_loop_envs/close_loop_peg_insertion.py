@@ -14,17 +14,17 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     super().__init__(config)
     self.peg_hole = SquarePegHole()
     self.peg_hole_rz = 0
-    self.peg_hole_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0]
+    self.peg_hole_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0.03]
 
   def resetPegHole(self):
     self.peg_hole_rz = np.random.random_sample() * 2*np.pi - np.pi if self.random_orientation else 0
     self.peg_hole_pos = self._getValidPositions(0.2, 0, [], 1)[0]
-    self.peg_hole_pos.append(0)
-    self.peg_hole.reset(self.peg_hole_pos, pb.getQuaternionFromEuler((0, 0, self.peg_hole_rz)))
+    self.peg_hole_pos.append(0.03)
+    self.peg_hole.reset(self.peg_hole_pos, pb.getQuaternionFromEuler((-np.pi * 0.5, 0, self.peg_hole_rz)))
 
   def initialize(self):
     super().initialize()
-    self.peg_hole.initialize(pos=self.peg_hole_pos, rot=pb.getQuaternionFromEuler((0, 0, self.peg_hole_rz)))
+    self.peg_hole.initialize(pos=self.peg_hole_pos, rot=pb.getQuaternionFromEuler((-np.pi * 0.5, 0, self.peg_hole_rz)))
 
   def reset(self):
     self.resetPybulletWorkspace()
@@ -33,10 +33,12 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     self.resetPegHole()
     self.peg = self._generateShapes(
       constants.SQUARE_PEG,
-      pos=[[self.workspace[0].mean(), self.workspace[1].mean(), 0.31]],
-      rot=[[0,0,0,1]],
-      scale=0.112, wait=False
+      pos=[[self.workspace[0].mean(), self.workspace[1].mean(), 0.33]],
+      rot=[pb.getQuaternionFromEuler((-np.pi * 0.5, 0, 0))],
+      scale=1.5, wait=False
     )[0]
+    pb.changeDynamics(self.peg.object_id, -1, 1, lateralFriction=50, rollingFriction=50, spinningFriction=50)
+    pb.changeDynamics(self.peg.object_id, 0, 1, lateralFriction=0, rollingFriction=0, spinningFriction=0)
 
     self.robot.gripper.close()
     self.setRobotHoldingObj()
@@ -66,4 +68,4 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     end_effector_pos = self.robot._getEndEffectorPosition()
 
     return np.allclose(peg_pos[:2], end_effector_pos[:2], atol=1e-2) and \
-           np.allclose(peg_rot[:2], [0., 0.], atol=1e-1)
+           np.allclose(peg_rot[:2], [-np.pi * 0.5, 0.], atol=1e-1)
