@@ -52,12 +52,12 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     hole_pos, hole_rot = self.peg_hole.getHolePose()
     peg_pos = self.peg.getPosition()
 
-    return np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < 0.12
+    return np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < 0.13
 
   def _getReward(self):
     hole_pos, hole_rot = self.peg_hole.getHolePose()
     peg_pos = self.peg.getPosition()
-    success_reward = 1 if np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < 0.12 else 0
+    success_reward = 1 if np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < 0.13 else 0
 
     return success_reward
 
