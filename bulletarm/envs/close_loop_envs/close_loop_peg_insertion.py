@@ -37,8 +37,8 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
       rot=[pb.getQuaternionFromEuler((-np.pi * 0.5, 0, 0))],
       scale=1.5, wait=False
     )[0]
-    pb.changeDynamics(self.peg.object_id, -1, 1, lateralFriction=50, rollingFriction=50, spinningFriction=50)
-    pb.changeDynamics(self.peg.object_id, 0, 1, lateralFriction=0, rollingFriction=0, spinningFriction=0)
+    pb.changeDynamics(self.peg.object_id, -1, 1, lateralFriction=10, rollingFriction=10, spinningFriction=10)
+    pb.changeDynamics(self.peg.object_id, 0, 1, lateralFriction=0.2, rollingFriction=0.0001, spinningFriction=0.0001)
 
     self.robot.gripper.close()
     self.setRobotHoldingObj()

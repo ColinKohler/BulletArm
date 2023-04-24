@@ -15,8 +15,6 @@ class CloseLoopPegInsertionPlanner(CloseLoopPlanner):
   def getNextActionToCurrentTarget(self):
     ee_to_peg = self.env.peg.getPosition() - self.env.robot._getEndEffectorPosition()
     x, y, z, r = self.getActionByGoalPose(self.current_target[0], self.current_target[1])
-    #x += ee_to_peg[0]
-    #y += ee_to_peg[1]
 
     primitive = constants.PICK_PRIMATIVE
     pos_min = self.current_target[3] if self.current_target[3] is not None else self.dpos
