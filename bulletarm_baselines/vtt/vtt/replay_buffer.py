@@ -4,7 +4,7 @@ import torch
 import numpy as np
 import numpy.random as npr
 
-from bulletarm_baselines.vtt import torch_utils
+from bulletarm_baselines.vtt.vtt import torch_utils
 from functools import partial
 
 @ray.remote
@@ -14,6 +14,7 @@ class ReplayBuffer(object):
   '''
   def __init__(self, initial_checkpoint, initial_buffer, config):
     self.config = config
+    self.config.batch_size = 32
     if self.config.seed:
       npr.seed(self.config.seed)
 
@@ -135,7 +136,8 @@ class ReplayBuffer(object):
     action_batch = torch.tensor(np.stack(action_batch)).float()
     reward_batch = torch.tensor(reward_batch).float()
     done_batch = torch.tensor(done_batch).int()
-    non_final_mask_batch = (done_batch ^ 1).float()
+    # non_final_mask_batch = (done_batch ^ 1).float()
+    non_final_mask_batch = (done_batch).float()
     is_expert_batch = torch.tensor(is_expert_batch).long()
     weight_batch = torch.tensor(weight_batch).float()
 

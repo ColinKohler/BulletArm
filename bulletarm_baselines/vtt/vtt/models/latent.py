@@ -3,9 +3,9 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
-from bulletarm_baselines.vtt.models.initializer import initialize_weight
-from bulletarm_baselines.vtt.models.encoder import VTT, Concatenation_Encoder, PoE_Encoder, Decoder
-from bulletarm_baselines.vtt.utils import build_mlp, calculate_kl_divergence
+from bulletarm_baselines.vtt.vtt.models.initializer import initialize_weight
+from bulletarm_baselines.vtt.vtt.models.encoder import VTT, Concatenation_Encoder, PoE_Encoder, Decoder
+from bulletarm_baselines.vtt.vtt.utils import build_mlp, calculate_kl_divergence
 
 class FixedGaussian(nn.Module):
   """

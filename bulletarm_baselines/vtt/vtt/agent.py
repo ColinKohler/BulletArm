@@ -2,9 +2,9 @@ import torch
 import numpy as np
 import numpy.random as npr
 
-from bulletarm_baselines.vtt import torch_utils
-from bulletarm_baselines.vtt.models.sac import GaussianPolicy, TwinnedQNetwork
-from bulletarm_baselines.vtt.models.latent import LatentModel
+from bulletarm_baselines.vtt.vtt import torch_utils
+from bulletarm_baselines.vtt.vtt.models.sac import GaussianPolicy, TwinnedQNetwork
+from bulletarm_baselines.vtt.vtt.models.latent import LatentModel
 
 class Agent(object):
   '''
@@ -28,21 +28,24 @@ class Agent(object):
     if actor:
       self.actor = actor
     else:
-      self.actor = GaussianPolicy()
+      # self.actor = GaussianPolicy()
+      self.actor = GaussianPolicy([5], 8, 36)
       self.actor.to(self.device)
       self.actor.train()
 
     if critic:
       self.critic = critic
     else:
-      self.critic = TwinnedQNetwork()
+      # self.critic = TwinnedQNetwork()
+      self.critic = TwinnedQNetwork([5], 2, 2)
       self.critic.to(self.device)
       self.critic.train()
 
     if latent:
       self.latent = latent
     else:
-      self.latent = LatentModel()
+      # self.latent = LatentModel()
+      self.latent = LatentModel([1, 288], [5])
       self.latent.to(self.device)
       self.latent.train()
 

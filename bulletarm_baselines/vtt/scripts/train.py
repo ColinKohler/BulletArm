@@ -6,7 +6,7 @@ import ray
 import argparse
 
 from configs import *
-from bulletarm_baslines.vtt.runner import Runner
+from bulletarm_baselines.vtt.vtt.runner import Runner
 
 task_configs = {
   'block_picking' : BlockPickingConfig,

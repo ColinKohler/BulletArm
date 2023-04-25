@@ -1,8 +1,8 @@
 import torch
 from torch import nn
 
-from bulletarm_baselines.vtt.models.initializer import initialize_weight
-from bulletarm_baselines.vtt.utils import build_mlp, reparameterize
+from bulletarm_baselines.vtt.vtt.models.initializer import initialize_weight
+from bulletarm_baselines.vtt.vtt.utils import build_mlp, reparameterize
 
 class GaussianPolicy(nn.Module):
   """
