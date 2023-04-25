@@ -4,8 +4,8 @@ import torch
 import numpy as np
 import numpy.random as npr
 
-from bulletarm_baselines.vtt.agent import Agent
-from bulletarm_baselines.vtt import torch_utils
+from bulletarm_baselines.vtt.vtt.agent import Agent
+from bulletarm_baselines.vtt.vtt import torch_utils
 
 from bulletarm import env_factory
 
@@ -95,6 +95,7 @@ class DataGenerator(object):
     self.obs = self.envs.reset()
     for i, eps_history in enumerate(self.current_episodes):
       eps_history.logStep(self.obs[0][i], self.obs[1][i], self.obs[2][i], np.array([0,0,0,0,0]), 0, 0, 0, self.config.max_force)
+      # eps_history.logStep(self.obs[0][i], self.obs[1][i], np.array([0,0,0,0,0]), 0, 0, 0, self.config.max_force)
 
   def stepEnvsAsync(self, shared_storage, replay_buffer, logger, expert=False):
     '''
@@ -200,10 +201,12 @@ class EpisodeHistory(object):
     self.is_expert = is_expert
 
   def logStep(self, vision, force, proprio, action, value, reward, done, max_force):
+  # def logStep(self, vision, force, action, value, reward, done, max_force):
     self.vision_history.append(vision)
-    self.force_history.append(
-      torch_utils.normalizeForce(force, max_force)
-    )
+    # self.force_history.append(
+    #   torch_utils.normalizeForce(force, max_force)
+    # )
+    self.force_history.append(force)
     self.proprio_history.append(proprio)
     self.action_history.append(action)
     self.value_history.append(value)

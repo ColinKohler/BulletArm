@@ -8,14 +8,14 @@ class Config(object):
 
   def __init__(self, vision_size=64, num_sensors=2, encoder='fusion', num_gpus=1):
     # Env
-    self.obs_type = ['depth', 'force', 'proprio']
+    self.obs_type = ['vision', 'force', 'proprio']
     self.vision_size = vision_size
     self.obs_size = vision_size + 12
     self.vision_channels = 4
     self.force_dim = 6
     self.force_history = 64
     self.max_force = 100
-    self.proprio_dim = 6
+    self.proprio_dim = 5
     self.num_sensors = num_sensors
 
     self.action_sequence = 'pxyzr'

@@ -7,12 +7,13 @@ import torch.nn.functional as F
 import numpy as np
 import numpy.random as npr
 
-from bulletarm_baselines.vtt.agent import Agent
-from bulletarm_baselines.vtt.data_generator import DataGenerator, EvalDataGenerator
-from bulletarm_baselines.vtt.models.sac import Critic, GaussianPolicy
-from bulletarm_baselines.vtt.models.latent import LatentModel
-from bulletarm_baselines.vtt.utils import create_feature_actions
-from bulletarm_baselines.vtt import torch_utils
+
+from bulletarm_baselines.vtt.vtt.agent import Agent
+from bulletarm_baselines.vtt.vtt.data_generator import DataGenerator, EvalDataGenerator
+from bulletarm_baselines.vtt.vtt.models.sac import TwinnedQNetwork, GaussianPolicy
+from bulletarm_baselines.vtt.vtt.models.latent import LatentModel
+from bulletarm_baselines.vtt.vtt.utils import create_feature_actions
+from bulletarm_baselines.vtt.vtt import torch_utils
 
 @ray.remote
 class Trainer(object):
@@ -30,32 +31,40 @@ class Trainer(object):
     self.alpha = self.config.init_temp
     self.target_entropy = -self.config.action_dim
     self.log_alpha = torch.tensor(np.log(self.alpha), requires_grad=True, device=self.device)
-    self.alpha_optimizer = torch.optim.Adam([self.log_alpha], lr=self.config.actor_lr_init)
+    # self.alpha_optimizer = torch.optim.Adam([self.log_alpha], lr=self.config.actor_lr_init)
+    self.alpha_optimizer = torch.optim.Adam([self.log_alpha], lr=0.0001)
 
     # Initialize actor, critic, and latent models
-    self.latent = LatentModel()
+    # self.latent = LatentModel()
+    self.latent = LatentModel([3, 64, 64], [5])
     self.latent.train()
     self.latent.to(self.device)
 
-    self.actor = GaussianPolicy()
+    # self.actor = GaussianPolicy()
+    self.actor = GaussianPolicy([5], 8, 288)
     self.actor.train()
     self.actor.to(self.device)
 
-    self.critic = Critic()
+    # self.critic = TwinnedQNetwork()
+    self.critic = TwinnedQNetwork([5], 2, 2)
     self.critic.train()
     self.critic.to(self.device)
 
-    self.critic_target = Critic()
+    # self.critic_target = TwinnedQNetwork()
+    self.critic_target = TwinnedQNetwork([5], 32, 256)
     self.critic_target.train()
     self.critic_target.to(self.device)
     for param in self.critic_target.parameters():
       param.requires_grad = False
 
     self.training_step = initial_checkpoint['training_step']
+    self.init_training_step = self.training_step
 
     # Initialize optimizer
+    # self.latent_optimizer = torch.optim.Adam(self.latent.parameters(),
+    #                                          lr=self.config.latent_lr_init)
     self.latent_optimizer = torch.optim.Adam(self.latent.parameters(),
-                                             lr=self.config.latent_lr_init)
+                                             lr=0.0001)
     self.latent_scheduler = torch.optim.lr_scheduler.ExponentialLR(self.latent_optimizer,
                                                                    self.config.lr_decay)
     self.actor_optimizer = torch.optim.Adam(self.actor.parameters(),
@@ -129,9 +138,16 @@ class Trainer(object):
 
     # Update latent variable model first before SLAC
     next_batch = replay_buffer.sample.remote(shared_storage)
-    while self.init_training_step < self.config.init_training_steps and \
-        not ray.get(shared_storage.getInfo.remote('terminate')):
+    # while self.init_training_step < self.config.init_training_steps and \
+    #     not ray.get(shared_storage.getInfo.remote('terminate')):
 
+    #   idx_batch, batch = ray.get(next_batch)
+    #   next_batch = replay_buffer.sample.remote(shared_storage)
+
+    #   latent_loss = self.updateLatent(batch)
+    #   self.updateLatentAlign(batch)
+    while self.init_training_step < 1000 and \
+      not ray.get(shared_storage.getInfo.remote('terminate')):
       idx_batch, batch = ray.get(next_batch)
       next_batch = replay_buffer.sample.remote(shared_storage)
 
@@ -218,10 +234,13 @@ class Trainer(object):
   def updateLatent(self, batch):
     obs_batch, next_obs_batch, action_batch, reward_batch, non_final_mask_batch, is_expert_batch, weight_batch = self.processBatch(batch)
 
-    loss_kld, loss_image, loss_reward, align_loss, contact_loss = self.latent.calculate_loss(state_, tactile_, action_, reward_, done_)
+    # loss_kld, loss_image, loss_reward, align_loss, contact_loss = self.latent.calculate_loss(next_obs_batch[0], next_obs_batch[1], action_batch, 
+    #                                                                                          reward_batch, done_)
+    loss_kld, loss_image, loss_reward, align_loss, contact_loss = self.latent.calculate_loss(next_obs_batch[0], next_obs_batch[1], action_batch, 
+                                                                                             reward_batch, non_final_mask_batch, self.config.max_force)
 
     self.latent_optimizer.zero_grad()
-    (loss_kld + loss_image + loss_reward + alignment_loss + contact_loss).backward()
+    (loss_kld + loss_image + loss_reward + align_loss + contact_loss).backward()
     self.latent_optimizer.step()
 
     return loss_kld.item() + loss_reward.item() + loss_image.item() + align_loss.item() + contact_loss.item()
@@ -229,10 +248,10 @@ class Trainer(object):
   def updateLatentAlign(self, batch):
     obs_batch, next_obs_batch, action_batch, reward_batch, non_final_mask_batch, is_expert_batch, weight_batch = self.processBatch(batch)
 
-    align_loss = self.latent.calculate_alignment_loss(state_, tactile_)
+    align_loss = self.latent.calculate_alignment_loss(next_obs_batch[0], next_obs_batch[1])
 
     self.latent_optimizer.zero_grad()
-    allign_loss.backward()
+    align_loss.backward()
     self.latent_optimizer.step()
 
     return align_loss.item()
@@ -305,8 +324,10 @@ class Trainer(object):
   def processBatch(self, batch):
     obs_batch, next_obs_batch, action_batch, reward_batch, non_final_mask_batch, is_expert_batch, weight_batch = batch
 
-    obs_batch = (obs_batch[0].to(self.device), obs_batch[1].to(self.device), obs_batch[2].to(self.device))
-    next_obs_batch = (next_obs_batch[0].to(self.device), next_obs_batch[1].to(self.device), next_obs_batch[2].to(self.device))
+    # obs_batch = (obs_batch[0].to(self.device), obs_batch[1].to(self.device), obs_batch[2].to(self.device))
+    # next_obs_batch = (next_obs_batch[0].to(self.device), next_obs_batch[1].to(self.device), next_obs_batch[2].to(self.device))
+    obs_batch = (obs_batch[0].to(self.device), obs_batch[1].to(self.device))
+    next_obs_batch = (next_obs_batch[0].to(self.device), next_obs_batch[1].to(self.device))
     action_batch = action_batch.to(self.device)
     reward_batch = reward_batch.to(self.device)
     non_final_mask_batch = non_final_mask_batch.to(self.device)
