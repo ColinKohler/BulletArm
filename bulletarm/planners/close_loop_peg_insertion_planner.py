@@ -2,9 +2,9 @@ import copy
 import numpy as np
 import numpy.random as npr
 
-from helping_hands_rl_envs.pybullet.utils import constants
-from helping_hands_rl_envs.planners.close_loop_planner import CloseLoopPlanner
-from helping_hands_rl_envs.pybullet.utils import transformations
+from bulletarm.pybullet.utils import constants
+from bulletarm.planners.close_loop_planner import CloseLoopPlanner
+from bulletarm.pybullet.utils import transformations
 
 class CloseLoopPegInsertionPlanner(CloseLoopPlanner):
   def __init__(self, env, config):
