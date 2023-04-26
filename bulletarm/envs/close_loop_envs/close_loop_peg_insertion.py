@@ -38,8 +38,8 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
       scale=1.45, wait=False
     )[0]
     pb.changeDynamics(self.peg.object_id, -1, 1, lateralFriction=10.0, rollingFriction=10.0, spinningFriction=10.0)
-    pb.changeDynamics(self.peg.object_id, 0, 1, lateralFriction=0.3, rollingFriction=0.0003)
-    pb.changeDynamics(self.peg_hole.id, 0, 1, lateralFriction=0.3, rollingFriction=0.0003)
+    pb.changeDynamics(self.peg.object_id, 0, 1, lateralFriction=0.5, rollingFriction=0.0003)
+    pb.changeDynamics(self.peg_hole.id, 0, 1, lateralFriction=0.5, rollingFriction=0.0003)
 
     self.robot.gripper.close()
     self.setRobotHoldingObj()
@@ -69,4 +69,4 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     end_effector_pos = self.robot._getEndEffectorPosition()
 
     return np.allclose(peg_pos[:2], end_effector_pos[:2], atol=1e-2) and \
-           np.allclose(peg_rot[:2], [-np.pi * 0.5, 0.], atol=1e-1)
+           np.allclose(peg_rot[:2], [-np.pi * 0.5, 0.], atol=5e-2)
