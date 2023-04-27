@@ -1,6 +1,7 @@
 import pybullet as pb
 import numpy as np
 import numpy.random as npr
+from collections import deque
 
 from bulletarm.pybullet.utils import constants
 from bulletarm.envs.close_loop_envs.close_loop_env import CloseLoopEnv
@@ -15,6 +16,8 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     self.peg_hole = SquarePegHole()
     self.peg_hole_rz = 0
     self.peg_hole_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0.03]
+    self.prev_ee_pos = deque(maxlen=5)
+    self.prev_ee_rot = deque(maxlen=5)
 
   def resetPegHole(self):
     self.peg_hole_rz = np.random.random_sample() * 2*np.pi - np.pi if self.random_orientation else 0
@@ -26,6 +29,13 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     super().initialize()
     self.peg_hole.initialize(pos=self.peg_hole_pos, rot=pb.getQuaternionFromEuler((-np.pi * 0.5, 0, self.peg_hole_rz)))
 
+  def step(self, action):
+    obs, reward, done = super().step(action)
+    self.prev_ee_pos.append(self.robot._getEndEffectorPosition())
+    self.prev_ee_rot.append(self.robot._getEndEffectorRotation())
+
+    return obs, reward, done
+
   def reset(self):
     self.resetPybulletWorkspace()
     self.robot.moveTo([self.workspace[0].mean(), self.workspace[1].mean(), 0.3], transformations.quaternion_from_euler(0, 0, 0), dynamic=False)
@@ -35,19 +45,22 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
       constants.SQUARE_PEG,
       pos=[[self.workspace[0].mean(), self.workspace[1].mean(), 0.33]],
       rot=[pb.getQuaternionFromEuler((-np.pi * 0.5, 0, 0))],
-      scale=1.45, wait=False
+      scale=1.48, wait=False
     )[0]
     pb.changeDynamics(self.peg.object_id, -1, 1, lateralFriction=10.0, rollingFriction=10.0, spinningFriction=10.0)
-    pb.changeDynamics(self.peg.object_id, 0, 1, lateralFriction=0.5, rollingFriction=0.0003)
-    pb.changeDynamics(self.peg_hole.id, 0, 1, lateralFriction=0.5, rollingFriction=0.0003)
+    pb.changeDynamics(self.peg.object_id, 0, 1, lateralFriction=0.7, rollingFriction=0.0003, spinningFriction=0.3)
+    pb.changeDynamics(self.peg_hole.id, 0, 1, lateralFriction=0.7, rollingFriction=0.0003, spinningFriction=0.3)
 
     self.robot.gripper.close()
     self.setRobotHoldingObj()
 
+    self.prev_ee_pos = deque(maxlen=5)
+    self.prev_ee_rot = deque(maxlen=5)
+
     return self._getObservation()
 
   def _checkTermination(self):
-    if not self._isPegInHand():
+    if not self._isPegInHand() or self._endEffectorStuck():
       return True
 
     hole_pos, hole_rot = self.peg_hole.getHolePose()
@@ -69,4 +82,9 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     end_effector_pos = self.robot._getEndEffectorPosition()
 
     return np.allclose(peg_pos[:2], end_effector_pos[:2], atol=1e-2) and \
-           np.allclose(peg_rot[:2], [-np.pi * 0.5, 0.], atol=5e-2)
+           np.allclose(peg_rot[:2], [-np.pi * 0.5, 0.], atol=1e-1)
+
+  def _endEffectorStuck(self):
+    return len(self.prev_ee_pos) == 5 and \
+           np.allclose(self.prev_ee_pos[0], self.prev_ee_pos, atol=1e-2) and \
+           np.allclose(self.prev_ee_rot[0], self.prev_ee_rot, atol=1e-1)
