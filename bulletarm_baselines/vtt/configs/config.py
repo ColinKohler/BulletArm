@@ -6,7 +6,7 @@ class Config(object):
   Base task config.
   '''
 
-  def __init__(self, vision_size=64, num_sensors=2, encoder='fusion', num_gpus=1):
+  def __init__(self, vision_size=64, num_sensors=1, encoder='vision+force+proprio', num_gpus=1):
     # Env
     self.obs_type = ['vision', 'force', 'proprio']
     self.vision_size = vision_size
@@ -21,7 +21,7 @@ class Config(object):
     self.action_sequence = 'pxyzr'
     self.action_dim =  len(self.action_sequence)
 
-    self.workspace = np.array([[0.25, 0.65], [-0.2, 0.2], [-0.01, 0.25]])
+    self.workspace = np.array([[0.30, 0.60], [-0.15, 0.15], [-0.01, 0.25]])
     self.view_type = 'camera_side_rgbd'
     self.random_orientation = True
     self.robot = 'panda'
@@ -30,6 +30,8 @@ class Config(object):
     self.dpos = 1e-3
     self.drot = np.pi / self.dpos
 
+    # Model
+    self.z_dim = 64
     self.encoder = encoder.split('+')
 
     # Training

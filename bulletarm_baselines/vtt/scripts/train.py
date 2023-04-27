@@ -9,12 +9,16 @@ from configs import *
 from bulletarm_baselines.vtt.vtt.runner import Runner
 
 task_configs = {
+  'block_reaching' : BlockReachingConfig,
   'block_picking' : BlockPickingConfig,
   'block_pulling' : BlockPullingConfig,
   'block_pushing' : BlockPushingConfig,
+  'block_pulling_corner' : BlockPullingCornerConfig,
   'peg_insertion' : PegInsertionConfig,
   'drawer_opening' : DrawerOpeningConfig,
   'drawer_closing' : DrawerClosingConfig,
+  'clutter_picking' : ClutterPickingConfig,
+  'mug_picking' : MugPickingConfig,
 }
 
 if __name__ == '__main__':

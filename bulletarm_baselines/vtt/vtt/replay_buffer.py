@@ -135,9 +135,7 @@ class ReplayBuffer(object):
     next_proprio_batch = torch.tensor(np.stack(next_proprio_batch)).float()
     action_batch = torch.tensor(np.stack(action_batch)).float()
     reward_batch = torch.tensor(reward_batch).float()
-    done_batch = torch.tensor(done_batch).int()
-    # non_final_mask_batch = (done_batch ^ 1).float()
-    non_final_mask_batch = (done_batch).float()
+    done_batch = torch.tensor(done_batch).float()
     is_expert_batch = torch.tensor(is_expert_batch).long()
     weight_batch = torch.tensor(weight_batch).float()
 
@@ -149,7 +147,7 @@ class ReplayBuffer(object):
         action_batch,
         reward_batch,
         non_final_mask_batch,
-        is_expert_batch,
+        done_batch,
         weight_batch
       )
     )

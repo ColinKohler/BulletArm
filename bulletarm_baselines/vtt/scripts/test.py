@@ -25,6 +25,8 @@ if __name__ == '__main__':
     help='Number of episodes to test on.')
   parser.add_argument('--num_sensors', type=int, default=2,
     help='Number of sensors to use when rendering the heightmap')
+  parser.add_argument('--vision_size', type=int, default=64,
+    help='The size of the RGB-D image used for vision.')
   parser.add_argument('--encoder', type=str, default='fusion',
     help='Type of latent encoder to use')
   parser.add_argument('--num_gpus', type=int, default=1,
@@ -35,7 +37,13 @@ if __name__ == '__main__':
     help='Render the simulation while evaluating.')
   args = parser.parse_args()
 
-  task_config = task_configs[args.task](args.num_sensors, args.encoder, args.num_gpus, results_path=args.checkpoint)
+  task_config = task_configs[args.task](
+    vision_size=args.vision_size,
+    args.num_sensors,
+    args.encoder,
+    args.num_gpus,
+    results_path=args.checkpoint
+  )
   checkpoint_path = os.path.join(task_config.results_path,
                                  'model.checkpoint')
   if os.path.exists(checkpoint_path):
@@ -69,15 +77,6 @@ if __name__ == '__main__':
         evaluate=True
       )
 
-      #_, _, zvalue = agent.getAction(
-      #  obs[0].reshape(1, *obs[0].shape),
-      #  np.zeros_like(obs[1]),
-      #  obs[2],
-      #  evaluate=True
-      #)
-
-      #print('v: {:.3f} | z: {:.3f}'.format(value.item(), zvalue.item()))
-      #if np.mean(np.abs(obs[3])) > 2e-2:
       if args.plot_obs:
         fig, ax = plt.subplots(nrows=1, ncols=3)
         ax[0].imshow(obs[0][3].squeeze(), cmap='gray')
