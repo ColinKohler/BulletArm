@@ -48,14 +48,15 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
       scale=1.48, wait=False
     )[0]
     pb.changeDynamics(self.peg.object_id, -1, 1, lateralFriction=10.0, rollingFriction=10.0, spinningFriction=10.0)
-    pb.changeDynamics(self.peg.object_id, 0, 1, lateralFriction=0.7, rollingFriction=0.0003, spinningFriction=0.3)
-    pb.changeDynamics(self.peg_hole.id, 0, 1, lateralFriction=0.7, rollingFriction=0.0003, spinningFriction=0.3)
+    pb.changeDynamics(self.peg.object_id, 0, 1, lateralFriction=0.6, rollingFriction=0.0003, spinningFriction=1.0)
+    pb.changeDynamics(self.peg_hole.id, 0, 1, lateralFriction=0.6, rollingFriction=0.0003, spinningFriction=1.0)
 
     self.robot.gripper.close()
     self.setRobotHoldingObj()
 
-    self.prev_ee_pos = deque(maxlen=5)
-    self.prev_ee_rot = deque(maxlen=5)
+    self.stuck_steps = 10
+    self.prev_ee_pos = deque(maxlen=self.stuck_steps)
+    self.prev_ee_rot = deque(maxlen=self.stuck_steps)
 
     return self._getObservation()
 
@@ -85,6 +86,6 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
            np.allclose(peg_rot[:2], [-np.pi * 0.5, 0.], atol=1e-1)
 
   def _endEffectorStuck(self):
-    return len(self.prev_ee_pos) == 5 and \
+    return len(self.prev_ee_pos) == self.stuck_steps and \
            np.allclose(self.prev_ee_pos[0], self.prev_ee_pos, atol=1e-2) and \
            np.allclose(self.prev_ee_rot[0], self.prev_ee_rot, atol=1e-1)
