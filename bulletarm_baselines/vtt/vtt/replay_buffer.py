@@ -171,7 +171,7 @@ class ReplayBuffer(object):
      is_expert_batch
     ) = [list() for _ in range(7)]
 
-    sequence_length = 9
+    sequence_length = 8
 
     next_vision_batch = np.empty((self.config.batch_size, sequence_length+1, 4, 64, 64))
     next_force_batch = np.empty((self.config.batch_size, sequence_length+1, 64, 6))
@@ -208,21 +208,17 @@ class ReplayBuffer(object):
         done.append(eps_history.done_history[eps_step+1])
         is_expert.append(eps_history.is_expert)
 
-      # index_batch.append(index)
-      # vision_batch.append(vision)
-      # force_batch.append(force)
-      # proprio_batch.append(proprio)
-      # next_vision_batch.append(next_vision)
-      # next_force_batch.append(next_force)
-      # next_proprio_batch.append(next_proprio)
-      # action_batch.append(action)
-      # reward_batch.append(reward)
-      # done_batch.append(done)
-      # is_expert_batch.append(is_expert)
-      next_vision_batch[i, ...] = torch.tensor(np.stack(next_vision)).float()
-      next_force_batch[i, ...] = torch.tensor(np.stack(next_force)).float()
-      next_proprio_batch[i, ...] = torch.tensor(np.stack(next_proprio)).float()
-      action_batch[i, ...] = torch.tensor(np.stack(action)).float()
+      # next_vision_batch[i, ...] = torch.tensor(np.stack(next_vision)).float()
+      # next_force_batch[i, ...] = torch.tensor(np.stack(next_force)).float()
+      # next_proprio_batch[i, ...] = torch.tensor(np.stack(next_proprio)).float()
+      # action_batch[i, ...] = torch.tensor(np.stack(action)).float()
+      # reward_batch[i, ...] = torch.tensor(reward).float()
+      # done_batch[i, ...] = torch.tensor(done).float()
+      # is_expert_batch[i, ...] = torch.tensor(is_expert).long()
+      next_vision_batch[i, ...] = torch.tensor(np.array(next_vision)).float()
+      next_force_batch[i, ...] = torch.tensor(np.array(next_force)).float()
+      next_proprio_batch[i, ...] = torch.tensor(np.array(next_proprio)).float()
+      action_batch[i, ...] = torch.tensor(action).float()
       reward_batch[i, ...] = torch.tensor(reward).float()
       done_batch[i, ...] = torch.tensor(done).float()
       is_expert_batch[i, ...] = torch.tensor(is_expert).long()
