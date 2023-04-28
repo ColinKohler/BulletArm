@@ -150,7 +150,7 @@ class Trainer(object):
     while self.init_training_step < 1000 and \
       not ray.get(shared_storage.getInfo.remote('terminate')):
       idx_batch, batch = ray.get(next_batch)
-      next_batch = replay_buffer.sample.remote(shared_storage)
+      next_batch = replay_buffer.sample_latent.remote(shared_storage)
 
       latent_loss = self.updateLatent(batch)
       self.updateLatentAlign(batch)
@@ -332,14 +332,15 @@ class Trainer(object):
     weight_batch = weight_batch.to(self.device)
 
   def processLatentBatch(self, batch):
-    next_obs_batch, action_batch, reward_batch, done_batch, is_expert_batch = batch
+    next_obs_batch, action_batch, reward_batch, done_batch, _ = batch
 
+    next_obs_batch = torch.tensor(next_obs_batch)
     next_obs_batch = (next_obs_batch[0].to(self.device), next_obs_batch[1].to(self.device))
     action_batch = action_batch.to(self.device)
     reward_batch = reward_batch.to(self.device)
     done_batch = done_batch.to(self.device)
 
-    return next_obs_batch, action_batch, reward_batch, done_batch, is_expert_batch
+    return next_obs_batch, action_batch, reward_batch, done_batch, _
 
   def softTargetUpdate(self):
     '''

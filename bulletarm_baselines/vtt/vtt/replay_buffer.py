@@ -162,37 +162,49 @@ class ReplayBuffer(object):
     Returns:
       (list[int], list[numpy.array], list[numpy.array], list[double], list[double]) : (Index, Observation, Action, Reward)
     '''
-    (next_vision_batch,
+    (index_batch,
+     next_vision_batch,
      next_force_batch,
      next_proprio_batch,
      action_batch,
      reward_batch,
      done_batch,
      is_expert_batch
-    ) = [list() for _ in range(7)]
+    ) = [list() for _ in range(8)]
 
     sequence_length = 8
 
     next_vision_batch = np.empty((self.config.batch_size, sequence_length+1, 4, 64, 64))
     next_force_batch = np.empty((self.config.batch_size, sequence_length+1, 64, 6))
-    next_proprio_batch = np.empty((self.config.batch_size, sequence_length+1, 5))
+    next_proprio_batch = np.empty((self.config.batch_size, sequence_length+1, 1, 5))
 
-    (next_vision,
+    (index,
+     next_vision,
      next_force,
      next_proprio,
      action,
      reward,
      done,
      is_expert,
-    ) = [list() for _ in range(7)]
+    ) = [list() for _ in range(8)]
 
     # loop through the sequence
     for i in range(self.config.batch_size):
 
+      next_vision.clear()
+      next_force.clear()
+      next_proprio.clear()
+      action.clear()
+      reward.clear()
+      done.clear()
+      is_expert.clear()
+
       # get a batch of data from the replay buffer and store it in ith position
-      for _ in range(sequence_length):
+      for _ in range(sequence_length+1):
         eps_id, eps_history, eps_prob = self.sampleEps(uniform=False)
         eps_step, step_prob = self.sampleStep(eps_history, uniform=False)
+
+        index.append([eps_id, eps_step])
 
         next_force.append(eps_history.force_history[eps_step+1].reshape(self.config.force_history, self.config.force_dim))
 
@@ -215,20 +227,23 @@ class ReplayBuffer(object):
       # reward_batch[i, ...] = torch.tensor(reward).float()
       # done_batch[i, ...] = torch.tensor(done).float()
       # is_expert_batch[i, ...] = torch.tensor(is_expert).long()
-      next_vision_batch[i, ...] = torch.tensor(np.array(next_vision)).float()
-      next_force_batch[i, ...] = torch.tensor(np.array(next_force)).float()
-      next_proprio_batch[i, ...] = torch.tensor(np.array(next_proprio)).float()
-      action_batch[i, ...] = torch.tensor(action).float()
-      reward_batch[i, ...] = torch.tensor(reward).float()
-      done_batch[i, ...] = torch.tensor(done).float()
-      is_expert_batch[i, ...] = torch.tensor(is_expert).long()
+      index_batch.append(np.array(index))
+      next_vision_batch[i] = torch.tensor(np.array(next_vision)).float()
+      next_force_batch[i] = torch.tensor(np.array(next_force)).float()
+      next_proprio_batch[i] = torch.tensor(np.array(next_proprio)).float()
+      action_batch.append(torch.tensor(np.array(action)).float())
+      reward_batch.append(torch.tensor(np.array(reward)).float())
+      done_batch.append(torch.tensor(np.array(done)).float())
+      is_expert_batch.append(torch.tensor(np.array(is_expert)).long())
 
     return (
+        index_batch,
+        (
         (next_vision_batch, next_force_batch, next_proprio_batch),
         action_batch,
         reward_batch,
         done_batch,
-        is_expert_batch
+        is_expert_batch)
     )
 
   def sampleEps(self, uniform=False):
