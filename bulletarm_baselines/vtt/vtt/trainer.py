@@ -150,7 +150,7 @@ class Trainer(object):
     while self.init_training_step < 1000 and \
       not ray.get(shared_storage.getInfo.remote('terminate')):
       idx_batch, batch = ray.get(next_batch)
-      next_batch = replay_buffer.sample.remote(shared_storage)
+      next_batch = replay_buffer.sample_latent.remote(shared_storage)
 
       latent_loss = self.updateLatent(batch)
       self.updateLatentAlign(batch)
@@ -234,7 +234,7 @@ class Trainer(object):
 
   def updateLatent(self, batch):
     # obs_batch, next_obs_batch, action_batch, reward_batch, done_batch, is_expert_batch, weight_batch = self.processBatch(batch)
-    obs_batch, next_obs_batch, action_batch, reward_batch, done_batch, is_expert_batch = self.processLatentBatch(batch)
+    next_obs_batch, action_batch, reward_batch, done_batch, _ = self.processLatentBatch(batch)
 
     loss_kld, loss_image, loss_reward, align_loss, contact_loss = self.latent.calculate_loss(next_obs_batch[0], next_obs_batch[1], action_batch, 
                                                                                              reward_batch, done_batch, self.config.max_force)
@@ -246,7 +246,7 @@ class Trainer(object):
     return loss_kld.item() + loss_reward.item() + loss_image.item() + align_loss.item() + contact_loss.item()
 
   def updateLatentAlign(self, batch):
-    obs_batch, next_obs_batch, action_batch, reward_batch, non_final_mask_batch, is_expert_batch, weight_batch = self.processBatch(batch)
+    next_obs_batch, _, _, _, _ = self.processLatentBatch(batch)
 
     align_loss = self.latent.calculate_alignment_loss(next_obs_batch[0], next_obs_batch[1])
 
@@ -332,15 +332,15 @@ class Trainer(object):
     weight_batch = weight_batch.to(self.device)
 
   def processLatentBatch(self, batch):
-    obs_batch, next_obs_batch, action_batch, reward_batch, done_batch, is_expert_batch = batch
+    next_obs_batch, action_batch, reward_batch, done_batch, _ = batch
 
-    obs_batch = (obs_batch[0].to(self.device), obs_batch[1].to(self.device))
+    next_obs_batch = torch.tensor(next_obs_batch)
     next_obs_batch = (next_obs_batch[0].to(self.device), next_obs_batch[1].to(self.device))
     action_batch = action_batch.to(self.device)
     reward_batch = reward_batch.to(self.device)
     done_batch = done_batch.to(self.device)
 
-    return obs_batch, next_obs_batch, action_batch, reward_batch, done_batch, is_expert_batch
+    return next_obs_batch, action_batch, reward_batch, done_batch, _
 
   def softTargetUpdate(self):
     '''
