@@ -137,7 +137,8 @@ class Trainer(object):
     self.data_generator.resetEnvs(is_expert=False)
 
     # Update latent variable model first before SLAC
-    next_batch = replay_buffer.sample.remote(shared_storage)
+    # next_batch = replay_buffer.sample.remote(shared_storage)
+    next_batch = replay_buffer.sample_latent.remote(shared_storage)
     # while self.init_training_step < self.config.init_training_steps and \
     #     not ray.get(shared_storage.getInfo.remote('terminate')):
 
@@ -232,12 +233,11 @@ class Trainer(object):
       )
 
   def updateLatent(self, batch):
-    obs_batch, next_obs_batch, action_batch, reward_batch, non_final_mask_batch, is_expert_batch, weight_batch = self.processBatch(batch)
+    # obs_batch, next_obs_batch, action_batch, reward_batch, done_batch, is_expert_batch, weight_batch = self.processBatch(batch)
+    obs_batch, next_obs_batch, action_batch, reward_batch, done_batch, is_expert_batch = self.processLatentBatch(batch)
 
-    # loss_kld, loss_image, loss_reward, align_loss, contact_loss = self.latent.calculate_loss(next_obs_batch[0], next_obs_batch[1], action_batch, 
-    #                                                                                          reward_batch, done_)
     loss_kld, loss_image, loss_reward, align_loss, contact_loss = self.latent.calculate_loss(next_obs_batch[0], next_obs_batch[1], action_batch, 
-                                                                                             reward_batch, non_final_mask_batch, self.config.max_force)
+                                                                                             reward_batch, done_batch, self.config.max_force)
 
     self.latent_optimizer.zero_grad()
     (loss_kld + loss_image + loss_reward + align_loss + contact_loss).backward()
@@ -322,18 +322,25 @@ class Trainer(object):
     return td_error, (actor_loss.item(), critic_loss.item(), alpha_loss.item(), entropy.item())
 
   def processBatch(self, batch):
-    obs_batch, next_obs_batch, action_batch, reward_batch, non_final_mask_batch, is_expert_batch, weight_batch = batch
+    obs_batch, next_obs_batch, action_batch, reward_batch, done_batch, is_expert_batch, weight_batch = batch
 
-    # obs_batch = (obs_batch[0].to(self.device), obs_batch[1].to(self.device), obs_batch[2].to(self.device))
-    # next_obs_batch = (next_obs_batch[0].to(self.device), next_obs_batch[1].to(self.device), next_obs_batch[2].to(self.device))
     obs_batch = (obs_batch[0].to(self.device), obs_batch[1].to(self.device))
     next_obs_batch = (next_obs_batch[0].to(self.device), next_obs_batch[1].to(self.device))
     action_batch = action_batch.to(self.device)
     reward_batch = reward_batch.to(self.device)
-    non_final_mask_batch = non_final_mask_batch.to(self.device)
+    done_batch = done_batch.to(self.device)
     weight_batch = weight_batch.to(self.device)
 
-    return obs_batch, next_obs_batch, action_batch, reward_batch, non_final_mask_batch, is_expert_batch, weight_batch
+  def processLatentBatch(self, batch):
+    obs_batch, next_obs_batch, action_batch, reward_batch, done_batch, is_expert_batch = batch
+
+    obs_batch = (obs_batch[0].to(self.device), obs_batch[1].to(self.device))
+    next_obs_batch = (next_obs_batch[0].to(self.device), next_obs_batch[1].to(self.device))
+    action_batch = action_batch.to(self.device)
+    reward_batch = reward_batch.to(self.device)
+    done_batch = done_batch.to(self.device)
+
+    return obs_batch, next_obs_batch, action_batch, reward_batch, done_batch, is_expert_batch
 
   def softTargetUpdate(self):
     '''
