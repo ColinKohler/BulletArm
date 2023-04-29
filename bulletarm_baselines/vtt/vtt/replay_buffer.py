@@ -239,13 +239,13 @@ class ReplayBuffer(object):
       is_expert_batch.append(is_expert)
 
 
-    next_vision_batch = torch.tensor(np.array(next_vision), dtype=torch.uint8).float()
-    next_force_batch = torch.tensor(np.array(next_force), dtype=torch.float16).float()
-    next_proprio_batch = torch.tensor(np.array(next_proprio), dtype=torch.float16).float()
-    action_batch = torch.tensor(np.array(action), dtype=torch.float16).float()
-    reward_batch = torch.tensor(np.array(reward), dtype=torch.float16).float()
-    done_batch = torch.tensor(np.array(done)).float()
-    is_expert_batch = torch.tensor(np.array(is_expert)).long()
+    next_vision_batch = torch.tensor(np.array(next_vision_batch), dtype=torch.uint8).float()
+    next_force_batch = torch.tensor(np.array(next_force_batch), dtype=torch.float16).float()
+    next_proprio_batch = torch.tensor(np.array(next_proprio_batch), dtype=torch.float16).float()
+    action_batch = torch.tensor(np.array(action_batch), dtype=torch.float16).float()
+    reward_batch = torch.tensor(np.array(reward_batch), dtype=torch.float16).float()
+    done_batch = torch.tensor(np.array(done_batch)).float()
+    is_expert_batch = torch.tensor(np.array(is_expert_batch)).long()
 
     return (
         index_batch,

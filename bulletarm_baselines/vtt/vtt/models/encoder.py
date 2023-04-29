@@ -59,7 +59,6 @@ class VTT(nn.Module):
       raise ValueError('Position Encoder does not match dimension')
 
   def prepare_tokens(self, x, tactile):
-    print(x.shape, tactile.shape)
     B, S, nc, w, h = x.shape
     x, patched_tactile = self.patch_embed(x, tactile)
     x = torch.cat((x, patched_tactile),dim=2)
