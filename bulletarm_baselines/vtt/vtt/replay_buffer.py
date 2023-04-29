@@ -174,9 +174,11 @@ class ReplayBuffer(object):
 
     sequence_length = 8
 
-    next_vision_batch = np.empty((self.config.batch_size, sequence_length+1, 4, 64, 64))
-    next_force_batch = np.empty((self.config.batch_size, sequence_length+1, 64, 6))
-    next_proprio_batch = np.empty((self.config.batch_size, sequence_length+1, 1, 5))
+    next_vision_batch = np.empty((self.config.batch_size, sequence_length+1, 4, 64, 64), dtype=np.uint8)
+    next_force_batch = np.empty((self.config.batch_size, sequence_length+1, 64, 6), dtype=np.float32)
+    next_proprio_batch = np.empty((self.config.batch_size, sequence_length+1, 1, 5), dtype=np.float32)
+    action_batch = np.empty((self.config.batch_size, sequence_length+1, 5), dtype=np.float32)
+    reward_batch = np.empty((self.config.batch_size, sequence_length+1), dtype=np.float32)
 
     (index,
      next_vision,
@@ -228,13 +230,22 @@ class ReplayBuffer(object):
       # done_batch[i, ...] = torch.tensor(done).float()
       # is_expert_batch[i, ...] = torch.tensor(is_expert).long()
       index_batch.append(np.array(index))
-      next_vision_batch[i] = torch.tensor(np.array(next_vision)).float()
-      next_force_batch[i] = torch.tensor(np.array(next_force)).float()
-      next_proprio_batch[i] = torch.tensor(np.array(next_proprio)).float()
-      action_batch.append(torch.tensor(np.array(action)).float())
-      reward_batch.append(torch.tensor(np.array(reward)).float())
-      done_batch.append(torch.tensor(np.array(done)).float())
-      is_expert_batch.append(torch.tensor(np.array(is_expert)).long())
+      next_vision_batch[i] = next_vision
+      next_force_batch[i] = next_force
+      next_proprio_batch[i] = next_proprio
+      action_batch[i] = action
+      reward_batch[i] = reward
+      done_batch.append(done)
+      is_expert_batch.append(is_expert)
+
+
+    next_vision_batch = torch.tensor(np.array(next_vision), dtype=torch.uint8).float()
+    next_force_batch = torch.tensor(np.array(next_force), dtype=torch.float16).float()
+    next_proprio_batch = torch.tensor(np.array(next_proprio), dtype=torch.float16).float()
+    action_batch = torch.tensor(np.array(action), dtype=torch.float16).float()
+    reward_batch = torch.tensor(np.array(reward), dtype=torch.float16).float()
+    done_batch = torch.tensor(np.array(done)).float()
+    is_expert_batch = torch.tensor(np.array(is_expert)).long()
 
     return (
         index_batch,
@@ -243,7 +254,8 @@ class ReplayBuffer(object):
         action_batch,
         reward_batch,
         done_batch,
-        is_expert_batch)
+        is_expert_batch
+        )
     )
 
   def sampleEps(self, uniform=False):
