@@ -36,7 +36,7 @@ class Trainer(object):
 
     # Initialize actor, critic, and latent models
     # self.latent = LatentModel()
-    self.latent = LatentModel([3, 64, 64], [5])
+    self.latent = LatentModel([4, 64, 64], [5])
     self.latent.train()
     self.latent.to(self.device)
 
@@ -46,7 +46,7 @@ class Trainer(object):
     self.actor.to(self.device)
 
     # self.critic = TwinnedQNetwork()
-    self.critic = TwinnedQNetwork([5], 2, 2)
+    self.critic = TwinnedQNetwork([5], 32, 256)
     self.critic.train()
     self.critic.to(self.device)
 

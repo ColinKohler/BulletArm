@@ -391,7 +391,7 @@ class Decoder(nn.Module):
   """
   Decoder.
   """
-  def __init__(self, input_dim=288, output_dim=3, std=1.0):
+  def __init__(self, input_dim=288, output_dim=4, std=1.0):
     super(Decoder, self).__init__()
 
     self.net = nn.Sequential(
@@ -405,11 +405,14 @@ class Decoder(nn.Module):
         nn.ConvTranspose2d(128, 64, 4, 2, 1, 1),
         nn.LeakyReLU(0.2, inplace=True),
         # (64, 21, 21) -> (32, 42, 42)
-        nn.ConvTranspose2d(64, 32, 3, 2, 1, 1),
-        nn.LeakyReLU(0.2, inplace=True),
-        # (32, 42, 42) -> (3, 84, 84)
-        nn.ConvTranspose2d(32, output_dim, 3, 2, 1, 1),
-        nn.LeakyReLU(0.2, inplace=True),
+        # nn.ConvTranspose2d(64, 32, 3, 2, 1, 1),
+        # nn.LeakyReLU(0.2, inplace=True),
+        # # (32, 42, 42) -> (3, 84, 84)
+        # nn.ConvTranspose2d(32, output_dim, 3, 2, 1, 1),
+        # nn.LeakyReLU(0.2, inplace=True),
+        # (64, 21, 21) -> (3, 64, 64)
+        nn.ConvTranspose2d(64, output_dim, 4, 3, 1, 2),
+        nn.LeakyReLU(0.2, inplace=True)
     )
     self.std = std
 
@@ -420,3 +423,4 @@ class Decoder(nn.Module):
     _, C, W, H = x.size()
     x = x.view(B, S, C, W, H)
     return x, torch.ones_like(x).mul_(self.std)
+ 
