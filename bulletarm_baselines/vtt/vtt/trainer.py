@@ -36,7 +36,7 @@ class Trainer(object):
 
     # Initialize actor, critic, and latent models
     # self.latent = LatentModel()
-    self.latent = LatentModel([3, 64, 64], [5])
+    self.latent = LatentModel([4, 64, 64], [5])
     self.latent.train()
     self.latent.to(self.device)
 
@@ -46,7 +46,7 @@ class Trainer(object):
     self.actor.to(self.device)
 
     # self.critic = TwinnedQNetwork()
-    self.critic = TwinnedQNetwork([5], 2, 2)
+    self.critic = TwinnedQNetwork([5], 32, 256)
     self.critic.train()
     self.critic.to(self.device)
 
@@ -334,7 +334,6 @@ class Trainer(object):
   def processLatentBatch(self, batch):
     next_obs_batch, action_batch, reward_batch, done_batch, _ = batch
 
-    next_obs_batch = torch.tensor(next_obs_batch)
     next_obs_batch = (next_obs_batch[0].to(self.device), next_obs_batch[1].to(self.device))
     action_batch = action_batch.to(self.device)
     reward_batch = reward_batch.to(self.device)

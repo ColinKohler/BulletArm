@@ -9,7 +9,7 @@ class VTT(nn.Module):
   # def __init__(self, img_size=[84], img_patch_size=14, tactile_patches=2, in_chans=3, embed_dim=384, depth=6,
   #              num_heads=8, mlp_ratio=4., qkv_bias=False, qk_scale=None, drop_rate=0., attn_drop_rate=0.,
   #              drop_path_rate=0., norm_layer=nn.LayerNorm, **kwargs):
-  def __init__(self, img_size=[84], img_patch_size=14, tactile_patches=2, in_chans=4, embed_dim=384, depth=6,
+  def __init__(self, img_size=[64], img_patch_size=8, tactile_patches=2, in_chans=4, embed_dim=384, depth=6,
                num_heads=8, mlp_ratio=4., qkv_bias=False, qk_scale=None, drop_rate=0., attn_drop_rate=0.,
                drop_path_rate=0., norm_layer=nn.LayerNorm, **kwargs):
     super().__init__()
@@ -59,7 +59,6 @@ class VTT(nn.Module):
       raise ValueError('Position Encoder does not match dimension')
 
   def prepare_tokens(self, x, tactile):
-    print(x.shape, tactile.shape)
     B, S, nc, w, h = x.shape
     x, patched_tactile = self.patch_embed(x, tactile)
     x = torch.cat((x, patched_tactile),dim=2)
@@ -109,7 +108,7 @@ class Attention(nn.Module):
 
 class PatchEmbed(nn.Module):
   # def __init__(self, img_size=84, tactile_dim = 6, img_patch_size=14, tactile_patch=2, in_chan=3, embeded_dim=384):
-  def __init__(self, img_size=84, tactile_dim = 6, img_patch_size=14, tactile_patch=2, in_chan=4, embeded_dim=384):
+  def __init__(self, img_size=64, tactile_dim = 384, img_patch_size=8, tactile_patch=2, in_chan=4, embeded_dim=384):
     super().__init__()
     self.img_patches = int((img_size/img_patch_size)*(img_size/img_patch_size))
     self.img_size = img_size
@@ -392,7 +391,7 @@ class Decoder(nn.Module):
   """
   Decoder.
   """
-  def __init__(self, input_dim=288, output_dim=3, std=1.0):
+  def __init__(self, input_dim=288, output_dim=4, std=1.0):
     super(Decoder, self).__init__()
 
     self.net = nn.Sequential(
@@ -406,11 +405,14 @@ class Decoder(nn.Module):
         nn.ConvTranspose2d(128, 64, 4, 2, 1, 1),
         nn.LeakyReLU(0.2, inplace=True),
         # (64, 21, 21) -> (32, 42, 42)
-        nn.ConvTranspose2d(64, 32, 3, 2, 1, 1),
-        nn.LeakyReLU(0.2, inplace=True),
-        # (32, 42, 42) -> (3, 84, 84)
-        nn.ConvTranspose2d(32, output_dim, 3, 2, 1, 1),
-        nn.LeakyReLU(0.2, inplace=True),
+        # nn.ConvTranspose2d(64, 32, 3, 2, 1, 1),
+        # nn.LeakyReLU(0.2, inplace=True),
+        # # (32, 42, 42) -> (3, 84, 84)
+        # nn.ConvTranspose2d(32, output_dim, 3, 2, 1, 1),
+        # nn.LeakyReLU(0.2, inplace=True),
+        # (64, 21, 21) -> (3, 64, 64)
+        nn.ConvTranspose2d(64, output_dim, 4, 3, 1, 2),
+        nn.LeakyReLU(0.2, inplace=True)
     )
     self.std = std
 
@@ -421,3 +423,4 @@ class Decoder(nn.Module):
     _, C, W, H = x.size()
     x = x.view(B, S, C, W, H)
     return x, torch.ones_like(x).mul_(self.std)
+ 

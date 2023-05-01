@@ -126,7 +126,8 @@ class LatentModel(nn.Module):
 
     z1_mean_.append(z1_mean)
     z1_std_.append(z1_std)
-    for t in range(1, actions_.size(1) + 1):
+    # for t in range(1, actions_.size(1) + 1):
+    for t in range(1, actions_.size(1)):
       # p(z1(t) | z2(t-1), a(t-1))
       z1_mean, z1_std = self.z1_prior(torch.cat([z2, actions_[:, t - 1]], dim=1))
       z1 = z1_mean + torch.randn_like(z1_std) * z1_std
@@ -160,7 +161,8 @@ class LatentModel(nn.Module):
     z1_.append(z1)
     z2_.append(z2)
 
-    for t in range(1, actions_.size(1) + 1):
+    # for t in range(1, actions_.size(1) + 1):
+    for t in range(1, actions_.size(1)):
       # q(z1(t) | feat(t), z2(t-1), a(t-1))
       z1_mean, z1_std = self.z1_posterior(torch.cat([features_[:, t], z2, actions_[:, t - 1]], dim=1))
       z1 = z1_mean + torch.randn_like(z1_std) * z1_std
@@ -191,6 +193,7 @@ class LatentModel(nn.Module):
     # Prediction loss of images.
     z_ = torch.cat([z1_, z2_], dim=-1)
     state_mean_, state_std_ = self.decoder(z_)
+    print(state_.shape, state_mean_.shape)
     state_noise_ = (state_ - state_mean_) / (state_std_ + 1e-8)
     log_likelihood_ = (-0.5 * state_noise_.pow(2) - state_std_.log()) - 0.5 * math.log(2 * math.pi)
     loss_image = -log_likelihood_.mean(dim=0).sum()
