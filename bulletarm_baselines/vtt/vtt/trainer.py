@@ -59,6 +59,7 @@ class Trainer(object):
 
     self.training_step = initial_checkpoint['training_step']
     self.init_training_step = self.training_step
+    self.pre_training_step = initial_checkpoint['pre_training_step']
 
     # Initialize optimizer
     # self.latent_optimizer = torch.optim.Adam(self.latent.parameters(),
@@ -155,6 +156,8 @@ class Trainer(object):
       latent_loss = self.updateLatent(batch)
       self.updateLatentAlign(batch)
 
+      self.pre_training_step += 1
+
     # Update SLAC while generating data
     next_batch = replay_buffer.sample.remote(shared_storage)
     while self.training_step < self.config.training_steps and \
@@ -236,7 +239,7 @@ class Trainer(object):
     # obs_batch, next_obs_batch, action_batch, reward_batch, done_batch, is_expert_batch, weight_batch = self.processBatch(batch)
     next_obs_batch, action_batch, reward_batch, done_batch, _ = self.processLatentBatch(batch)
 
-    loss_kld, loss_image, loss_reward, align_loss, contact_loss = self.latent.calculate_loss(next_obs_batch[0], next_obs_batch[1], action_batch, 
+    loss_kld, loss_image, loss_reward, align_loss, contact_loss = self.latent.calculate_loss(next_obs_batch[0], next_obs_batch[1], action_batch,
                                                                                              reward_batch, done_batch, self.config.max_force)
 
     self.latent_optimizer.zero_grad()
