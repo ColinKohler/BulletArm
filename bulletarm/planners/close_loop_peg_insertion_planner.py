@@ -32,10 +32,10 @@ class CloseLoopPegInsertionPlanner(CloseLoopPlanner):
   def setNewTarget(self):
     peg_pos, peg_rot = self.env.peg_hole.getHolePose()
 
-    hole_z_offset = 0.139
+    hole_z_offset = 0.1415
 
     drag_pos_1 = copy.copy(peg_pos)
-    drag_pos_1[2] += 0.165
+    drag_pos_1[2] += 0.143
     drag_rot_1 = list(transformations.euler_from_quaternion(peg_rot))
 
     drag_pos_2 = copy.copy(peg_pos)
