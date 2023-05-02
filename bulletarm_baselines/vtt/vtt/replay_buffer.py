@@ -14,7 +14,7 @@ class ReplayBuffer(object):
   '''
   def __init__(self, initial_checkpoint, initial_buffer, config):
     self.config = config
-    self.config.batch_size = 32
+    self.config.batch_size = 12
     if self.config.seed:
       npr.seed(self.config.seed)
 
@@ -175,10 +175,10 @@ class ReplayBuffer(object):
     sequence_length = 8
 
     next_vision_batch = np.empty((self.config.batch_size, sequence_length+1, 4, 64, 64), dtype=np.uint8)
-    next_force_batch = np.empty((self.config.batch_size, sequence_length+1, 64, 6), dtype=np.float32)
+    next_force_batch = np.empty((self.config.batch_size, sequence_length+1, 6), dtype=np.float32)
     next_proprio_batch = np.empty((self.config.batch_size, sequence_length+1, 1, 5), dtype=np.float32)
-    action_batch = np.empty((self.config.batch_size, sequence_length+1, 5), dtype=np.float32)
-    reward_batch = np.empty((self.config.batch_size, sequence_length+1), dtype=np.float32)
+    action_batch = np.empty((self.config.batch_size, sequence_length, 5), dtype=np.float32)
+    reward_batch = np.empty((self.config.batch_size, sequence_length), dtype=np.float32)
 
     (index,
      next_vision,
@@ -202,25 +202,37 @@ class ReplayBuffer(object):
       is_expert.clear()
 
       # get a batch of data from the replay buffer and store it in ith position
-      for _ in range(sequence_length+1):
+      for j in range(sequence_length+1):
         eps_id, eps_history, eps_prob = self.sampleEps(uniform=False)
         eps_step, step_prob = self.sampleStep(eps_history, uniform=False)
 
         index.append([eps_id, eps_step])
+        if j==1:
+          # get the latest force data to perform alignment check
+          next_force.append(eps_history.force_history[eps_step+1][-1])
 
-        next_force.append(eps_history.force_history[eps_step+1].reshape(self.config.force_history, self.config.force_dim))
+          next_proprio.append(eps_history.proprio_history[eps_step+1].reshape(1, self.config.proprio_dim))
 
-        next_proprio.append(eps_history.proprio_history[eps_step+1].reshape(1, self.config.proprio_dim))
+          _, v2 = self.crop(
+            (eps_history.vision_history[eps_step]),
+            (eps_history.vision_history[eps_step+1]),
+          )
+          next_vision.append(v2)
+        else:
+          # get the latest force data to perform alignment check
+          next_force.append(eps_history.force_history[eps_step+1][-1])
 
-        _, v2 = self.crop(
-          (eps_history.vision_history[eps_step]),
-          (eps_history.vision_history[eps_step+1]),
-        )
-        next_vision.append(v2)
-        action.append(eps_history.action_history[eps_step+1])
-        reward.append(eps_history.reward_history[eps_step+1])
-        done.append(eps_history.done_history[eps_step+1])
-        is_expert.append(eps_history.is_expert)
+          next_proprio.append(eps_history.proprio_history[eps_step+1].reshape(1, self.config.proprio_dim))
+
+          _, v2 = self.crop(
+            (eps_history.vision_history[eps_step]),
+            (eps_history.vision_history[eps_step+1]),
+          )
+          next_vision.append(v2)
+          action.append(eps_history.action_history[eps_step+1])
+          reward.append(eps_history.reward_history[eps_step+1])
+          done.append(eps_history.done_history[eps_step+1])
+          is_expert.append(eps_history.is_expert)
 
       # next_vision_batch[i, ...] = torch.tensor(np.stack(next_vision)).float()
       # next_force_batch[i, ...] = torch.tensor(np.stack(next_force)).float()

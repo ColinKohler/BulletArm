@@ -107,8 +107,8 @@ class Attention(nn.Module):
     return x, attn
 
 class PatchEmbed(nn.Module):
-  # def __init__(self, img_size=84, tactile_dim = 6, img_patch_size=14, tactile_patch=2, in_chan=3, embeded_dim=384):
-  def __init__(self, img_size=64, tactile_dim = 384, img_patch_size=8, tactile_patch=2, in_chan=4, embeded_dim=384):
+  def __init__(self, img_size=84, tactile_dim = 6, img_patch_size=14, tactile_patch=2, in_chan=3, embeded_dim=384):
+  # def __init__(self, img_size=64, tactile_dim = 384, img_patch_size=8, tactile_patch=2, in_chan=4, embeded_dim=384):
     super().__init__()
     self.img_patches = int((img_size/img_patch_size)*(img_size/img_patch_size))
     self.img_size = img_size
@@ -423,4 +423,3 @@ class Decoder(nn.Module):
     _, C, W, H = x.size()
     x = x.view(B, S, C, W, H)
     return x, torch.ones_like(x).mul_(self.std)
- 
