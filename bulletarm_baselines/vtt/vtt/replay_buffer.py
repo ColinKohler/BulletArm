@@ -14,7 +14,7 @@ class ReplayBuffer(object):
   '''
   def __init__(self, initial_checkpoint, initial_buffer, config):
     self.config = config
-    self.config.batch_size = 12
+    self.config.batch_size = 20
     if self.config.seed:
       npr.seed(self.config.seed)
 
@@ -174,7 +174,7 @@ class ReplayBuffer(object):
 
     sequence_length = 8
 
-    next_vision_batch = np.empty((self.config.batch_size, sequence_length+1, 4, 64, 64), dtype=np.uint8)
+    next_vision_batch = np.empty((self.config.batch_size, sequence_length+1, 4, 64, 64), dtype=np.float16)
     next_force_batch = np.empty((self.config.batch_size, sequence_length+1, 6), dtype=np.float32)
     next_proprio_batch = np.empty((self.config.batch_size, sequence_length+1, 1, 5), dtype=np.float32)
     action_batch = np.empty((self.config.batch_size, sequence_length, 5), dtype=np.float32)
@@ -251,7 +251,7 @@ class ReplayBuffer(object):
       is_expert_batch.append(is_expert)
 
 
-    next_vision_batch = torch.tensor(np.array(next_vision_batch), dtype=torch.uint8).float()
+    next_vision_batch = torch.tensor(np.array(next_vision_batch)).float()
     next_force_batch = torch.tensor(np.array(next_force_batch), dtype=torch.float16).float()
     next_proprio_batch = torch.tensor(np.array(next_proprio_batch), dtype=torch.float16).float()
     action_batch = torch.tensor(np.array(action_batch), dtype=torch.float16).float()

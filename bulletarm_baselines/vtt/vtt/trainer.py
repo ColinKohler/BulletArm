@@ -35,22 +35,18 @@ class Trainer(object):
     self.alpha_optimizer = torch.optim.Adam([self.log_alpha], lr=0.0001)
 
     # Initialize actor, critic, and latent models
-    # self.latent = LatentModel()
     self.latent = LatentModel([4, 64, 64], [5])
     self.latent.train()
     self.latent.to(self.device)
 
-    # self.actor = GaussianPolicy()
     self.actor = GaussianPolicy([5], 8, 288)
     self.actor.train()
     self.actor.to(self.device)
 
-    # self.critic = TwinnedQNetwork()
     self.critic = TwinnedQNetwork([5], 32, 256)
     self.critic.train()
     self.critic.to(self.device)
 
-    # self.critic_target = TwinnedQNetwork()
     self.critic_target = TwinnedQNetwork([5], 32, 256)
     self.critic_target.train()
     self.critic_target.to(self.device)
@@ -59,6 +55,8 @@ class Trainer(object):
 
     self.training_step = initial_checkpoint['training_step']
     self.init_training_step = self.training_step
+    self.pre_training_step = initial_checkpoint['pre_training_step']
+    # self.init_pre_training_step = self.pre_training_step
 
     # Initialize optimizer
     # self.latent_optimizer = torch.optim.Adam(self.latent.parameters(),
@@ -147,13 +145,30 @@ class Trainer(object):
 
     #   latent_loss = self.updateLatent(batch)
     #   self.updateLatentAlign(batch)
-    while self.init_training_step < 1000 and \
+    while self.pre_training_step < 500 and \
       not ray.get(shared_storage.getInfo.remote('terminate')):
       idx_batch, batch = ray.get(next_batch)
+
       next_batch = replay_buffer.sample_latent.remote(shared_storage)
 
-      latent_loss = self.updateLatent(batch)
+      latent_loss = self.updateLatent(batch, logger)
       self.updateLatentAlign(batch)
+
+      # Logger/Shared storage updates
+      shared_storage.setInfo.remote(
+        {
+          'pre_training_step' : self.pre_training_step,
+          'run_eval_interval' : self.pre_training_step > 0 and self.pre_training_step % self.config.eval_interval == 0
+        }
+      )
+      logger.updateScalars.remote(
+        {
+          '3.Loss/4.Latent_lr' : self.latent_optimizer.param_groups[0]['lr'],
+        }
+      )
+
+      print('Pre-training step: {}'.format(self.pre_training_step))
+      self.pre_training_step += 1
 
     # Update SLAC while generating data
     next_batch = replay_buffer.sample.remote(shared_storage)
@@ -232,7 +247,7 @@ class Trainer(object):
         }
       )
 
-  def updateLatent(self, batch):
+  def updateLatent(self, batch, logger):
     # obs_batch, next_obs_batch, action_batch, reward_batch, done_batch, is_expert_batch, weight_batch = self.processBatch(batch)
     next_obs_batch, action_batch, reward_batch, done_batch, _ = self.processLatentBatch(batch)
 
@@ -242,6 +257,16 @@ class Trainer(object):
     self.latent_optimizer.zero_grad()
     (loss_kld + loss_image + loss_reward + align_loss + contact_loss).backward()
     self.latent_optimizer.step()
+
+    logger.logTrainingStep.remote(
+        {
+          'KLD Loss' : loss_kld.item(),
+          'Reconstruction Loss' : loss_image.item(),
+          'Action conditioned Loss' : loss_reward.item(),
+          'Latent Alignment Loss' : align_loss.item(),
+          'Contact Loss' : contact_loss.item(),
+        }
+      )
 
     return loss_kld.item() + loss_reward.item() + loss_image.item() + align_loss.item() + contact_loss.item()
 

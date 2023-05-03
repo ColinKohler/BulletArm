@@ -42,6 +42,7 @@ class Runner(object):
       'weights' : None,
       'optimizer_state' : None,
       'training_step' : 0,
+      'pre_training_step' : 0,
       'num_eps' : 0,
       'num_steps' : 0,
       'best_model_reward' : 0,
