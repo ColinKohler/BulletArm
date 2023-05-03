@@ -55,6 +55,7 @@ class Trainer(object):
 
     self.training_step = initial_checkpoint['training_step']
     self.init_training_step = self.training_step
+    self.pre_training_step = initial_checkpoint['pre_training_step']
 
     # Initialize optimizer
     # self.latent_optimizer = torch.optim.Adam(self.latent.parameters(),
@@ -151,6 +152,23 @@ class Trainer(object):
 
       latent_loss = self.updateLatent(batch, logger)
       self.updateLatentAlign(batch)
+
+       # Logger/Shared storage updates
+      shared_storage.setInfo.remote(
+        {
+          'training_step' : self.training_step,
+          'run_eval_interval' : self.training_step > 0 and self.training_step % self.config.eval_interval == 0
+        }
+      )
+
+      logger.updateScalars.remote(
+        {
+          '3.Loss/4.Latent_lr' : self.latent_optimizer.param_groups[0]['lr'],
+        }
+      )
+
+      print('Pre-training step: ', self.pre_training_step)
+      self.pre_training_step += 1
 
     # Update SLAC while generating data
     next_batch = replay_buffer.sample.remote(shared_storage)
