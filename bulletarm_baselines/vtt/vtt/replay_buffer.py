@@ -173,7 +173,7 @@ class ReplayBuffer(object):
      is_expert_batch
     ) = [list() for _ in range(8)]
 
-    sequence_length = 6
+    sequence_length = 4
 
     next_vision_batch = np.empty((self.config.batch_size, sequence_length+1, 4, 64, 64), dtype=np.float16)
     next_force_batch = np.empty((self.config.batch_size, sequence_length+1, 6), dtype=np.float32)
@@ -311,7 +311,7 @@ class ReplayBuffer(object):
       reward.clear()
       done.clear()
       is_expert.clear()
-      
+
       # get a batch of data from the replay buffer and store it in ith position
       for j in range(sequence_length+1):
         eps_id, eps_history, eps_prob = self.sampleEps(uniform=False)
