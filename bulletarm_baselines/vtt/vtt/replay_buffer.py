@@ -3,6 +3,7 @@ import copy
 import torch
 import numpy as np
 import numpy.random as npr
+import sys
 
 from bulletarm_baselines.vtt.vtt import torch_utils
 from functools import partial
@@ -172,7 +173,7 @@ class ReplayBuffer(object):
      is_expert_batch
     ) = [list() for _ in range(8)]
 
-    sequence_length = 8
+    sequence_length = 6
 
     next_vision_batch = np.empty((self.config.batch_size, sequence_length+1, 4, 64, 64), dtype=np.float16)
     next_force_batch = np.empty((self.config.batch_size, sequence_length+1, 6), dtype=np.float32)
@@ -201,38 +202,37 @@ class ReplayBuffer(object):
       done.clear()
       is_expert.clear()
 
-      # get a batch of data from the replay buffer and store it in ith position
-      for j in range(sequence_length+1):
-        eps_id, eps_history, eps_prob = self.sampleEps(uniform=False)
-        eps_step, step_prob = self.sampleStep(eps_history, uniform=False)
+      # sample a sequence from a random episode and store the first step only for the observations
 
+      eps_id, eps_history, _ = self.sampleEps(uniform=True)
+      eps_step = npr.choice(len(eps_history.priorities) - sequence_length - 1)
+
+      index.append([eps_id, eps_step])
+
+      next_force.append(eps_history.force_history[eps_step+1][-1])
+      next_proprio.append(eps_history.proprio_history[eps_step+1].reshape(1, self.config.proprio_dim))
+      _, v2 = self.crop(
+          (eps_history.vision_history[eps_step]),
+          (eps_history.vision_history[eps_step+1]),
+        )
+      next_vision.append(v2)
+      eps_step += 1
+
+      # iterate through the sequence to collect the remaining steps of the epsiode for latent model training
+      for _ in range(sequence_length):
         index.append([eps_id, eps_step])
-        if j==1:
-          # get the latest force data to perform alignment check
-          next_force.append(eps_history.force_history[eps_step+1][-1])
-
-          next_proprio.append(eps_history.proprio_history[eps_step+1].reshape(1, self.config.proprio_dim))
-
-          _, v2 = self.crop(
-            (eps_history.vision_history[eps_step]),
-            (eps_history.vision_history[eps_step+1]),
-          )
-          next_vision.append(v2)
-        else:
-          # get the latest force data to perform alignment check
-          next_force.append(eps_history.force_history[eps_step+1][-1])
-
-          next_proprio.append(eps_history.proprio_history[eps_step+1].reshape(1, self.config.proprio_dim))
-
-          _, v2 = self.crop(
-            (eps_history.vision_history[eps_step]),
-            (eps_history.vision_history[eps_step+1]),
-          )
-          next_vision.append(v2)
-          action.append(eps_history.action_history[eps_step+1])
-          reward.append(eps_history.reward_history[eps_step+1])
-          done.append(eps_history.done_history[eps_step+1])
-          is_expert.append(eps_history.is_expert)
+        next_force.append(eps_history.force_history[eps_step+1][-1])
+        next_proprio.append(eps_history.proprio_history[eps_step+1].reshape(1, self.config.proprio_dim))
+        _, v2 = self.crop(
+          (eps_history.vision_history[eps_step]),
+          (eps_history.vision_history[eps_step+1]),
+        )
+        next_vision.append(v2)
+        action.append(eps_history.action_history[eps_step+1])
+        reward.append(eps_history.reward_history[eps_step+1])
+        done.append(eps_history.done_history[eps_step+1])
+        is_expert.append(eps_history.is_expert)
+        eps_step += 1
 
       index_batch.append(np.array(index))
       next_vision_batch[i] = next_vision
@@ -242,7 +242,6 @@ class ReplayBuffer(object):
       reward_batch[i] = reward
       done_batch.append(done)
       is_expert_batch.append(is_expert)
-
 
     next_vision_batch = torch.tensor(np.array(next_vision_batch)).float()
     next_force_batch = torch.tensor(np.array(next_force_batch), dtype=torch.float16).float()
@@ -262,7 +261,7 @@ class ReplayBuffer(object):
         is_expert_batch
         )
     )
-  
+
   def misalign_sample_latent(self, shared_storage):
     '''
     Sample a sequence of batches from the replay buffer for latent model training.
