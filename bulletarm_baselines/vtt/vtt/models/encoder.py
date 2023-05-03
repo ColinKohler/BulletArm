@@ -405,7 +405,7 @@ class Decoder(nn.Module):
         nn.ConvTranspose2d(128, 64, 2, stride=2, output_padding=0),
         nn.LeakyReLU(0.2, inplace=True),
         # (64, 32, 32) -> (4, 64, 64)
-        nn.ConvTranspose2d(64, output_dim, 2, stride=2, output_padding=0),
+        nn.ConvTranspose2d(64, output_dim, 2, stride=1, output_padding=0),
         nn.LeakyReLU(0.2, inplace=True)
     )
     self.std = std
