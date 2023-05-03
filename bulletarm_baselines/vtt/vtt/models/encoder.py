@@ -395,23 +395,17 @@ class Decoder(nn.Module):
     super(Decoder, self).__init__()
 
     self.net = nn.Sequential(
-        # (32+256, 1, 1) -> (256, 5, 5)
-        nn.ConvTranspose2d(input_dim, 256, 5),
+        # (32+256, 1, 1) -> (256, 8, 8)
+        nn.ConvTranspose2d(input_dim, 256, 8),
         nn.LeakyReLU(0.2, inplace=True),
-        # (256, 5, 5) -> (128, 10, 10)
-        nn.ConvTranspose2d(256, 128, 3, 2, 1, 1),
+        # (256, 8, 8) -> (128, 16, 16)
+        nn.ConvTranspose2d(256, 128, 3),
         nn.LeakyReLU(0.2, inplace=True),
-        # (128, 10, 10) -> (64, 21, 21)
-        nn.ConvTranspose2d(128, 64, 4, 2, 1, 1),
+        # (128, 16, 16) -> (64, 32, 32)
+        nn.ConvTranspose2d(128, 64, 3),
         nn.LeakyReLU(0.2, inplace=True),
-        # (64, 21, 21) -> (32, 42, 42)
-        # nn.ConvTranspose2d(64, 32, 3, 2, 1, 1),
-        # nn.LeakyReLU(0.2, inplace=True),
-        # # (32, 42, 42) -> (3, 84, 84)
-        # nn.ConvTranspose2d(32, output_dim, 3, 2, 1, 1),
-        # nn.LeakyReLU(0.2, inplace=True),
-        # (64, 21, 21) -> (3, 64, 64)
-        nn.ConvTranspose2d(64, output_dim, 4, 3, 1, 2),
+        # (64, 32, 32) -> (4, 64, 64)
+        nn.ConvTranspose2d(64, output_dim, 3),
         nn.LeakyReLU(0.2, inplace=True)
     )
     self.std = std
@@ -422,4 +416,5 @@ class Decoder(nn.Module):
     x = self.net(x)
     _, C, W, H = x.size()
     x = x.view(B, S, C, W, H)
+    print(x.shape)
     return x, torch.ones_like(x).mul_(self.std)
