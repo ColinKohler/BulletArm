@@ -197,14 +197,14 @@ class LatentModel(nn.Module):
     state_noise_ = (state_ - state_mean_) / (state_std_ + 1e-8)
     
     # save the reconstructed image
-    reconstructed_image = state_mean_[4][4][0:3, :, :].permute(1, 2, 0)
+    reconstructed_image = state_mean_[10][2][0:3, :, :].permute(2, 1, 0)
     reconstructed_image = reconstructed_image.detach().cpu().numpy()
     fig = plt.figure(figsize=(3, 3))
     reconstructed_image = (reconstructed_image - reconstructed_image.min()) / (reconstructed_image.max() - reconstructed_image.min())
     plt.imshow(reconstructed_image)
     fig.savefig('reconstructed_image.png')
     # save the original image
-    original_image = state_[4][4][0:3, :, :].permute(1, 2, 0)
+    original_image = state_[10][2][0:3, :, :].permute(2, 1, 0)
     original_image = original_image.detach().cpu().numpy()
     plt.imshow(original_image)
     fig.savefig('original_image.png')

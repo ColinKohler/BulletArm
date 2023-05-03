@@ -144,7 +144,7 @@ class Trainer(object):
 
     #   latent_loss = self.updateLatent(batch)
     #   self.updateLatentAlign(batch)
-    while self.pre_training_step < 500 and \
+    while self.pre_training_step < 1500 and \
       not ray.get(shared_storage.getInfo.remote('terminate')):
       idx_batch, batch = ray.get(next_batch)
 

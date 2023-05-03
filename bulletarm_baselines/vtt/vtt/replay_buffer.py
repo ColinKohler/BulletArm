@@ -14,7 +14,7 @@ class ReplayBuffer(object):
   '''
   def __init__(self, initial_checkpoint, initial_buffer, config):
     self.config = config
-    self.config.batch_size = 20
+    self.config.batch_size = 32
     if self.config.seed:
       npr.seed(self.config.seed)
 
@@ -234,13 +234,6 @@ class ReplayBuffer(object):
           done.append(eps_history.done_history[eps_step+1])
           is_expert.append(eps_history.is_expert)
 
-      # next_vision_batch[i, ...] = torch.tensor(np.stack(next_vision)).float()
-      # next_force_batch[i, ...] = torch.tensor(np.stack(next_force)).float()
-      # next_proprio_batch[i, ...] = torch.tensor(np.stack(next_proprio)).float()
-      # action_batch[i, ...] = torch.tensor(np.stack(action)).float()
-      # reward_batch[i, ...] = torch.tensor(reward).float()
-      # done_batch[i, ...] = torch.tensor(done).float()
-      # is_expert_batch[i, ...] = torch.tensor(is_expert).long()
       index_batch.append(np.array(index))
       next_vision_batch[i] = next_vision
       next_force_batch[i] = next_force
@@ -263,6 +256,120 @@ class ReplayBuffer(object):
         index_batch,
         (
         (next_vision_batch, next_force_batch, next_proprio_batch),
+        action_batch,
+        reward_batch,
+        done_batch,
+        is_expert_batch
+        )
+    )
+  
+  def misalign_sample_latent(self, shared_storage):
+    '''
+    Sample a sequence of batches from the replay buffer for latent model training.
+
+    Args:
+      shared_storage (ray.Worker): Shared storage worker.
+
+    Returns:
+      (list[int], list[numpy.array], list[numpy.array], list[double], list[double]) : (Index, Observation, Action, Reward)
+    '''
+    (index_batch,
+     next_vision_batch,
+     next_force_batch,
+     action_batch,
+     reward_batch,
+     done_batch,
+     is_expert_batch
+    ) = [list() for _ in range(7)]
+
+    sequence_length = 8
+
+    next_vision_batch = np.empty((self.config.batch_size, sequence_length+1, 4, 64, 64), dtype=np.float16)
+    next_force_batch = np.empty((self.config.batch_size, sequence_length+1, 6), dtype=np.float32)
+    next_proprio_batch = np.empty((self.config.batch_size, sequence_length+1, 1, 5), dtype=np.float32)
+    action_batch = np.empty((self.config.batch_size, sequence_length, 5), dtype=np.float32)
+    reward_batch = np.empty((self.config.batch_size, sequence_length), dtype=np.float32)
+
+    (index,
+     next_vision,
+     next_force,
+     action,
+     reward,
+     done,
+     is_expert,
+    ) = [list() for _ in range(7)]
+
+    idxes_state = np.random.randint(low=0, high=self._n, size=self.config.batch_size)
+    idxes_tactile = np.random.randint(low=0, high=self._n, size=self.config.batch_size)
+
+    while len(np.intersect1d(idxes_state, idxes_tactile)) != 0:
+        idxes_state = np.random.randint(low=0, high=self._n, size=self.config.batch_size)
+        idxes_tactile = np.random.randint(low=0, high=self._n, size=self.config.batch_size)
+
+    for i in range(idxes_state):
+      next_vision.clear()
+      action.clear()
+      reward.clear()
+      done.clear()
+      is_expert.clear()
+      
+      # get a batch of data from the replay buffer and store it in ith position
+      for j in range(sequence_length+1):
+        eps_id, eps_history, eps_prob = self.sampleEps(uniform=False)
+        eps_step, step_prob = self.sampleStep(eps_history, uniform=False)
+
+        index.append([eps_id, eps_step])
+        if j==1:
+          _, v2 = self.crop(
+            (eps_history.vision_history[eps_step]),
+            (eps_history.vision_history[eps_step+1]),
+          )
+          next_vision.append(v2)
+        else:
+          _, v2 = self.crop(
+            (eps_history.vision_history[eps_step]),
+            (eps_history.vision_history[eps_step+1]),
+          )
+          next_vision.append(v2)
+          action.append(eps_history.action_history[eps_step+1])
+          reward.append(eps_history.reward_history[eps_step+1])
+          done.append(eps_history.done_history[eps_step+1])
+          is_expert.append(eps_history.is_expert)
+
+      index_batch.append(np.array(index))
+      next_vision_batch[i] = next_vision
+      action_batch[i] = action
+      reward_batch[i] = reward
+      done_batch.append(done)
+      is_expert_batch.append(is_expert)
+
+    for i in range(idxes_tactile):
+
+      next_force.clear()
+
+      # get a batch of data from the replay buffer and store it in ith position
+      for j in range(sequence_length+1):
+        eps_id, eps_history, eps_prob = self.sampleEps(uniform=False)
+        eps_step, step_prob = self.sampleStep(eps_history, uniform=False)
+
+        if j==1:
+          # get the latest force data to perform alignment check
+          next_force.append(eps_history.force_history[eps_step+1][-1])
+
+      next_force_batch[i] = next_force
+
+
+    next_vision_batch = torch.tensor(np.array(next_vision_batch)).float()
+    next_force_batch = torch.tensor(np.array(next_force_batch), dtype=torch.float16).float()
+    action_batch = torch.tensor(np.array(action_batch), dtype=torch.float16).float()
+    reward_batch = torch.tensor(np.array(reward_batch), dtype=torch.float16).float()
+    done_batch = torch.tensor(np.array(done_batch)).float()
+    is_expert_batch = torch.tensor(np.array(is_expert_batch)).long()
+
+    return (
+        index_batch,
+        (
+        (next_vision_batch, next_force_batch),
         action_batch,
         reward_batch,
         done_batch,
