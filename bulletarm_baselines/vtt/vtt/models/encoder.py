@@ -396,16 +396,16 @@ class Decoder(nn.Module):
 
     self.net = nn.Sequential(
         # (32+256, 1, 1) -> (256, 8, 8)
-        nn.ConvTranspose2d(input_dim, 256, 8),
+        nn.ConvTranspose2d(input_dim, 256, 8, dilation=2, output_padding=1),
         nn.LeakyReLU(0.2, inplace=True),
         # (256, 8, 8) -> (128, 16, 16)
-        nn.ConvTranspose2d(256, 128, 3),
+        nn.ConvTranspose2d(256, 128, 2, stride=2, output_padding=0),
         nn.LeakyReLU(0.2, inplace=True),
         # (128, 16, 16) -> (64, 32, 32)
-        nn.ConvTranspose2d(128, 64, 3),
+        nn.ConvTranspose2d(128, 64, 2, stride=2, output_padding=0),
         nn.LeakyReLU(0.2, inplace=True),
         # (64, 32, 32) -> (4, 64, 64)
-        nn.ConvTranspose2d(64, output_dim, 3),
+        nn.ConvTranspose2d(64, output_dim, 2, stride=2, output_padding=0),
         nn.LeakyReLU(0.2, inplace=True)
     )
     self.std = std
@@ -416,5 +416,4 @@ class Decoder(nn.Module):
     x = self.net(x)
     _, C, W, H = x.size()
     x = x.view(B, S, C, W, H)
-    print(x.shape)
     return x, torch.ones_like(x).mul_(self.std)
