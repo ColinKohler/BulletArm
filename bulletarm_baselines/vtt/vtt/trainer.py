@@ -39,7 +39,7 @@ class Trainer(object):
     self.latent.train()
     self.latent.to(self.device)
 
-    self.actor = GaussianPolicy([5], 8, 288)
+    self.actor = GaussianPolicy([5], 4, 288)
     self.actor.train()
     self.actor.to(self.device)
 
@@ -144,7 +144,7 @@ class Trainer(object):
 
     #   latent_loss = self.updateLatent(batch)
     #   self.updateLatentAlign(batch)
-    while self.pre_training_step < 10000 and \
+    while self.pre_training_step < 1 and \
       not ray.get(shared_storage.getInfo.remote('terminate')):
       idx_batch, batch = ray.get(next_batch)
 
