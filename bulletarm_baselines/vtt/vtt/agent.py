@@ -5,6 +5,7 @@ import numpy.random as npr
 from bulletarm_baselines.vtt.vtt import torch_utils
 from bulletarm_baselines.vtt.vtt.models.sac import GaussianPolicy, TwinnedQNetwork
 from bulletarm_baselines.vtt.vtt.models.latent import LatentModel
+from collections import deque
 
 class Agent(object):
   '''
@@ -23,12 +24,17 @@ class Agent(object):
     self.dy_range = torch.tensor([-self.config.dpos, self.config.dpos])
     self.dz_range = torch.tensor([-self.config.dpos, self.config.dpos])
     self.dtheta_range = torch.tensor([-self.config.drot, self.config.drot])
-    self.action_shape = 5
+    # self.action_shape = (self.config.num_data_gen_envs, 5)
+    # self.vision_shape = (self.config.num_data_gen_envs, 4, 64, 64)
+    # self.force_shape = (self.config.num_data_gen_envs, 6)
+    self.action_shape = (1, 5)
+    self.vision_shape = (self.config.num_data_gen_envs, 4, 64, 64)
+    self.force_shape = (self.config.num_data_gen_envs, 6)
+    self.reset_episode()
 
     if actor:
       self.actor = actor
     else:
-      # self.actor = GaussianPolicy()
       self.actor = GaussianPolicy([5], 8, 36)
       self.actor.to(self.device)
       self.actor.train()
@@ -36,19 +42,26 @@ class Agent(object):
     if critic:
       self.critic = critic
     else:
-      # self.critic = TwinnedQNetwork()
-      self.critic = TwinnedQNetwork([5], 2, 2)
+      self.critic = TwinnedQNetwork([5], 32, 256)
       self.critic.to(self.device)
       self.critic.train()
 
     if latent:
       self.latent = latent
     else:
-      # self.latent = LatentModel()
       self.latent = LatentModel([1, 288], [5])
       self.latent.to(self.device)
       self.latent.train()
 
+  def reset_episode(self):
+    self._vision = deque(maxlen=3)
+    self._tactile = deque(maxlen=3)
+    self._action = deque(maxlen=2)
+    for _ in range(2):
+        self._vision.append(np.zeros(self.vision_shape, dtype=np.float32))
+        self._tactile.append(np.zeros(self.force_shape, dtype=np.float32))
+        self._action.append(np.zeros(self.action_shape, dtype=np.float32))
+    
   def getAction(self, vision, force, proprio, evaluate=False):
     '''
     Get the action from the policy.
@@ -61,11 +74,20 @@ class Agent(object):
     '''
     vision = torch.Tensor(vision.astype(np.float32)).view(vision.shape[0], vision.shape[1], vision.shape[2], vision.shape[3]).to(self.device)
     vision = torch_utils.centerCrop(vision, out=self.config.vision_size)
-    force = torch.Tensor(torch_utils.normalizeForce(force, self.config.max_force)).view(vision.shape[0], self.config.force_history, self.config.force_dim).to(self.device)
+    # force = torch.Tensor(torch_utils.normalizeForce(force, self.config.max_force)).view(vision.shape[0], self.config.force_history, self.config.force_dim).to(self.device)
+    force = torch.Tensor(torch_utils.normalizeForce(force[:, -1, :], self.config.max_force)).view(vision.shape[0], self.config.force_dim).to(self.device)
     proprio = torch.Tensor(proprio).view(vision.shape[0], self.config.proprio_dim).to(self.device)
 
+    self._vision.append(vision)
+    self._tactile.append(force)
+
+    self._vision = torch.tensor(self._vision).to(self.device)
+    self._tactile = torch.tensor(self._tactile).to(self.device)
+
     with torch.no_grad():
-      z, _, _ = self.latent.encoder(vision, force)
+      z, _, _ = self.latent.encoder(self._vision, self._tactile)
+      z = z.view(1, -1)
+      z = torch.cat([z, torch.tensor(self._action[-1]).to(self.device)], dim=1)
       if evaluate:
         _, _, action = self.actor.sample(z)
       else:
@@ -73,11 +95,14 @@ class Agent(object):
 
     action = action.cpu()
     action_idx, action = self.decodeActions(*[action[:,i] for i in range(self.action_shape)])
-    with torch.no_grad():
-      value = self.critic((vision, force, proprio), action_idx.to(self.device))
+    
+    self._action = torch.Tensor(self._action.append(action))
+    # with torch.no_grad():
+    #   value = self.critic((vision, force, proprio), action_idx.to(self.device))
 
-    value = torch.min(torch.hstack((value[0], value[1])), dim=1)[0]
-    return action_idx, action, value
+    # value = torch.min(torch.hstack((value[0], value[1])), dim=1)[0]
+    # return action_idx, action, value
+    return action_idx, self._action
 
   def decodeActions(self, unscaled_p, unscaled_dx, unscaled_dy, unscaled_dz, unscaled_dtheta):
     '''
