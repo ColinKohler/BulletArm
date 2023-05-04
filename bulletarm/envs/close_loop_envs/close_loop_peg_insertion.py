@@ -45,7 +45,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
       constants.SQUARE_PEG,
       pos=[[self.workspace[0].mean(), self.workspace[1].mean(), 0.33]],
       rot=[pb.getQuaternionFromEuler((-np.pi * 0.5, 0, 0))],
-      scale=1.45, wait=False
+      scale=1.52, wait=False
     )[0]
     pb.changeDynamics(self.peg.object_id, -1, 1, lateralFriction=20.0, rollingFriction=0.0003, spinningFriction=0.3)
     pb.changeDynamics(self.peg.object_id, 0, 1, lateralFriction=0.3, rollingFriction=0.0003, spinningFriction=0.3)
