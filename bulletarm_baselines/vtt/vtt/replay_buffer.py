@@ -15,7 +15,6 @@ class ReplayBuffer(object):
   '''
   def __init__(self, initial_checkpoint, initial_buffer, config):
     self.config = config
-    self.config.batch_size = 32
     if self.config.seed:
       npr.seed(self.config.seed)
 
@@ -44,21 +43,18 @@ class ReplayBuffer(object):
       eps_history (EpisodeHistory): The episode to add to the buffer.
       shared_storage (ray.Worker): Shared storage worker. Defaults to None.
     '''
-    # if eps_history.priorities is None:
-    #   # priorities = list()
-    #   priorities = list([0]*3)
-    #   for i, value in enumerate(eps_history.value_history):
-    #     if (i + 1) < len(eps_history.value_history):
-    #       priority = np.abs(value - (eps_history.reward_history[i] + self.config.discount * eps_history.value_history[i+1])) + self.config.per_eps
-    #     else:
-    #       priority = np.abs(value - eps_history.reward_history[i]) + self.config.per_eps
-    #     priority += 1 if eps_history.is_expert else 0
-    #     priorities.append(priority ** self.config.per_alpha)
-      
-    #   # eps_history.priorities = np.array(priorities, dtype=np.float32)
-    #   eps_history.priorities = priorities
-    #   # eps_history.priorities.append(np.array(priorities, dtype=np.float32))
-    #   eps_history.eps_priority = np.max(eps_history.priorities)
+    if eps_history.priorities is None:
+      priorities = list()
+      for i, value in enumerate(eps_history.value_history):
+        if (i + 1) < len(eps_history.value_history):
+          priority = np.abs(value - (eps_history.reward_history[i] + self.config.discount * eps_history.value_history[i+1])) + self.config.per_eps
+        else:
+          priority = np.abs(value - eps_history.reward_history[i]) + self.config.per_eps
+        priority += 1 if eps_history.is_expert else 0
+        priorities.append(priority ** self.config.per_alpha)
+
+      eps_history.priorities = np.array(priorities, dtype=np.float32)
+      eps_history.eps_priority = np.max(eps_history.priorities)
 
     # Add to buffer
     self.buffer[self.num_eps] = copy.deepcopy(eps_history)
@@ -156,7 +152,7 @@ class ReplayBuffer(object):
       )
     )
 
-  def sample_latent(self, shared_storage):
+  def sampleLatent(self, shared_storage):
     '''
     Sample a sequence of batches from the replay buffer for latent model training.
 
@@ -167,98 +163,59 @@ class ReplayBuffer(object):
       (list[int], list[numpy.array], list[numpy.array], list[double], list[double]) : (Index, Observation, Action, Reward)
     '''
     (index_batch,
-     next_vision_batch,
-     next_force_batch,
-     next_proprio_batch,
+     vision_batch,
+     force_batch,
+     proprio_batch,
      action_batch,
      reward_batch,
      done_batch,
      is_expert_batch
     ) = [list() for _ in range(8)]
 
-    sequence_length = 4
-
-    next_vision_batch = np.empty((self.config.batch_size, sequence_length+1, 4, 64, 64), dtype=np.float16)
-    next_force_batch = np.empty((self.config.batch_size, sequence_length+1, 6), dtype=np.float32)
-    next_proprio_batch = np.empty((self.config.batch_size, sequence_length+1, 1, 5), dtype=np.float32)
-    action_batch = np.empty((self.config.batch_size, sequence_length, 5), dtype=np.float32)
-    reward_batch = np.empty((self.config.batch_size, sequence_length), dtype=np.float32)
-
-    (index,
-     next_vision,
-     next_force,
-     next_proprio,
-     action,
-     reward,
-     done,
-     is_expert,
-    ) = [list() for _ in range(8)]
-
-    # loop through the sequence
     for i in range(self.config.batch_size):
+      (vision,
+       force,
+       proprio,
+       action,
+       reward,
+       done,
+      ) = [list() for _ in range(6)]
 
-      next_vision.clear()
-      next_force.clear()
-      next_proprio.clear()
-      action.clear()
-      reward.clear()
-      done.clear()
-      is_expert.clear()
-
-      # sample a sequence from a random episode and store the first step only for the observations
       eps_id, eps_history, _ = self.sampleEps(uniform=True)
-      eps_step = npr.choice(len(eps_history.vision_history) - sequence_length - 1)
-      # print('episode step:', eps_step, 'vision length:', len(eps_history.vision_history))
+      eps_step = npr.choice(len(eps_history.vision_history) - self.config.seq_len - 1)
+      index_batch.append([eps_id, eps_step])
 
-      index.append([eps_id, eps_step])
+      for s in range(self.config.seq_len+1):
+        step = eps_step + s
 
-      next_force.append(eps_history.force_history[eps_step+1][-1])
-      next_proprio.append(eps_history.proprio_history[eps_step+1].reshape(1, self.config.proprio_dim))
-      _, v2 = self.crop(
-          (eps_history.vision_history[eps_step]),
-          (eps_history.vision_history[eps_step+1]),
-        )
-      next_vision.append(v2)
-      # print(len(next_vision[0]))
-      eps_step += 1
+        vision.append(self.centerCrop(eps_history.vision_history[step], out=self.config.vision_size))
+        force.append(eps_history.force_history[step][-1])
+        proprio.append(eps_history.proprio_history[step])
+        if s > 0:
+          action.append(eps_history.action_history[step])
+          reward.append(eps_history.reward_history[step])
+          done.append(eps_history.done_history[step])
 
-      # iterate through the sequence to collect the remaining steps of the epsiode for latent model training
-      for _ in range(sequence_length):
-        index.append([eps_id, eps_step])
-        next_force.append(eps_history.force_history[eps_step+1][-1])
-        next_proprio.append(eps_history.proprio_history[eps_step+1].reshape(1, self.config.proprio_dim))
-        _, v2 = self.crop(
-          (eps_history.vision_history[eps_step]),
-          (eps_history.vision_history[eps_step+1]),
-        )
-        next_vision.append(v2)
-        action.append(eps_history.action_history[eps_step+1])
-        reward.append(eps_history.reward_history[eps_step+1])
-        done.append(eps_history.done_history[eps_step+1])
-        is_expert.append(eps_history.is_expert)
-        eps_step += 1
-
-      index_batch.append(np.array(index))
-      next_vision_batch[i] = next_vision
-      next_force_batch[i] = next_force
-      next_proprio_batch[i] = next_proprio
-      action_batch[i] = action
-      reward_batch[i] = reward
+      vision_batch.append(vision)
+      force_batch.append(force)
+      proprio_batch.append(proprio)
+      action_batch.append(action)
+      reward_batch.append(reward)
       done_batch.append(done)
-      is_expert_batch.append(is_expert)
+      is_expert_batch.append(eps_history.is_expert)
 
-    next_vision_batch = torch.tensor(np.array(next_vision_batch)).float()
-    next_force_batch = torch.tensor(np.array(next_force_batch), dtype=torch.float16).float()
-    next_proprio_batch = torch.tensor(np.array(next_proprio_batch), dtype=torch.float16).float()
-    action_batch = torch.tensor(np.array(action_batch), dtype=torch.float16).float()
-    reward_batch = torch.tensor(np.array(reward_batch), dtype=torch.float16).float()
+    vision_batch = torch.tensor(np.array(vision_batch)).float()
+    force_batch = torch.tensor(np.array(force_batch)).float()
+    proprio_batch = torch.tensor(np.array(proprio_batch)).float()
+    action_batch = torch.tensor(np.array(action_batch)).float()
+    reward_batch = torch.tensor(np.array(reward_batch)).float()
     done_batch = torch.tensor(np.array(done_batch)).float()
     is_expert_batch = torch.tensor(np.array(is_expert_batch)).long()
 
     return (
         index_batch,
         (
-        (next_vision_batch, next_force_batch, next_proprio_batch),
+        (vision_batch, force_batch, proprio_batch),
         action_batch,
         reward_batch,
         done_batch,
@@ -329,6 +286,14 @@ class ReplayBuffer(object):
     vision_ = vision_[:, w1:w1+self.config.vision_size, w2:w2+self.config.vision_size]
 
     return vision, vision_
+
+  def centerCrop(self, img, out=64):
+    c, h, w = img.shape
+    top = (h - out) // 2
+    left = (w - out) // 2
+
+    img = img[:, top:top + out, left:left + out]
+    return img
 
   def updatePriorities(self, td_errors, idx_info):
     '''

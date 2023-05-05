@@ -17,6 +17,7 @@ class Config(object):
     self.max_force = 100
     self.proprio_dim = 5
     self.num_sensors = num_sensors
+    self.seq_len = 8
 
     self.action_sequence = 'pxyzr'
     self.action_dim =  len(self.action_sequence)

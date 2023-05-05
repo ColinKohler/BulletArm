@@ -91,12 +91,10 @@ class DataGenerator(object):
     self.current_epsiodes = None
 
   def resetEnvs(self, is_expert=False):
-    self.current_episodes = [EpisodeHistory(is_expert) for _ in range(self.num_envs)]
+    self.current_episodes = [EpisodeHistory(self.config.seq_len, is_expert) for _ in range(self.num_envs)]
     self.obs = self.envs.reset()
     for i, eps_history in enumerate(self.current_episodes):
-      # eps_history.logStep(self.obs[0][i], self.obs[1][i], self.obs[2][i], np.array([0,0,0,0,0]), 0, 0, 0, self.config.max_force)
-      eps_history.logStep(self.obs[0][i], self.obs[1][i], self.obs[2][i], np.array([0,0,0,0,0]), 0, 0, self.config.max_force)
-      # eps_history.logStep(self.obs[0][i], self.obs[1][i], np.array([0,0,0,0,0]), 0, 0, 0, self.config.max_force)
+      eps_history.logStep(self.obs[0][i], self.obs[1][i], self.obs[2][i], np.array([0,0,0,0,0]), 0, 0, 0, self.config.max_force)
 
   def stepEnvsAsync(self, shared_storage, replay_buffer, logger, expert=False):
     '''
@@ -143,7 +141,7 @@ class DataGenerator(object):
         obs_[1][i],
         obs_[2][i],
         self.action_idxs[i].squeeze().numpy(),
-        # self.values[i].item(),
+        self.values[i].item(),
         rewards[i],
         dones[i],
         self.config.max_force
@@ -164,22 +162,13 @@ class DataGenerator(object):
           logger.logEvalEpisode.remote(self.current_episodes[done_idx].reward_history,
                                        self.current_episodes[done_idx].value_history)
 
-        self.current_episodes[done_idx] = EpisodeHistory(expert)
-        # self.current_episodes[done_idx].logStep(
-        #   new_obs_[0][i],
-        #   new_obs_[1][i],
-        #   new_obs_[2][i],
-        #   np.array([0,0,0,0,0]),
-        #   0,
-        #   0,
-        #   0,
-        #   self.config.max_force
-        # )
+        self.current_episodes[done_idx] = EpisodeHistory(self.config.seq_len, expert)
         self.current_episodes[done_idx].logStep(
           new_obs_[0][i],
           new_obs_[1][i],
           new_obs_[2][i],
           np.array([0,0,0,0,0]),
+          0,
           0,
           0,
           self.config.max_force
@@ -196,40 +185,26 @@ class EpisodeHistory(object):
   '''
   Class containing the history of an episode.
   '''
-  def __init__(self, is_expert=False):
-    # self.vision_history = list(torch.zeros(1, 4, 64, 64))*3
-    # self.force_history = list(torch.zeros(1, 6))*3
-    # self.proprio_history = list(torch.zeros(1, 5))*3
-    # self.action_history = list(torch.zeros(1, 5))*2
-    # # self.value_history = list()
-    # self.reward_history = list(torch.zeros(1, 1))*2
-    # self.done_history = list(torch.zeros(1, 1))*2
-    # self.is_expert = is_expert
-
-    self.vision_history = list()
-    self.force_history = list()
-    self.proprio_history = list()
-    self.action_history = list()
-    # self.value_history = list()
-    self.reward_history = list()
-    self.done_history = list()
+  def __init__(self, seq_len, is_expert=False):
+    self.vision_history = [np.zeros((4, 64, 64))] * (seq_len - 1)
+    self.force_history = [np.zeros((64, 6))] * (seq_len - 1)
+    self.proprio_history = [np.zeros(5)] * (seq_len - 1)
+    self.action_history = [np.zeros(5)]  * (seq_len - 1)
+    self.value_history = [0.] * (seq_len - 1)
+    self.reward_history = [0.] * (seq_len - 1)
+    self.done_history = [0.] * (seq_len - 1)
     self.is_expert = is_expert
 
-    # self.priorities = None
-    # self.priorities = None
-    # self.eps_priority = None
+    self.priorities = None
+    self.priorities = None
+    self.eps_priority = None
     self.is_expert = is_expert
 
-  # def logStep(self, vision, force, proprio, action, value, reward, done, max_force):
-  def logStep(self, vision, force, proprio, action, reward, done, max_force):
-  # def logStep(self, vision, force, action, value, reward, done, max_force):
+  def logStep(self, vision, force, proprio, action, value, reward, done, max_force):
     self.vision_history.append(vision)
-    # self.force_history.append(
-    #   torch_utils.normalizeForce(force, max_force)
-    # )
     self.force_history.append(force)
     self.proprio_history.append(proprio)
     self.action_history.append(action)
-    # self.value_history.append(value)
+    self.value_history.append(value)
     self.reward_history.append(reward)
     self.done_history.append(done)

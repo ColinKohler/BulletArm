@@ -38,8 +38,9 @@ class BlockReachingConfig(Config):
                                        'block_reaching',
                                        datetime.datetime.now().strftime('%Y-%m-%d--%H-%M-%S'))
     self.save_model = True
+    self.pretraining_steps = 0
     self.training_steps = 25000
-    self.batch_size = 64
+    self.batch_size = 32
     self.target_update_interval = 1
     self.checkpoint_interval = 100
     self.init_temp = 1e-2
@@ -54,6 +55,7 @@ class BlockReachingConfig(Config):
     self.num_eval_intervals = int(self.training_steps / self.eval_interval)
 
     # LR schedule
+    self.latent_lr_init =1e-3
     self.actor_lr_init = 1e-3
     self.critic_lr_init = 1e-3
     self.lr_decay = 0.95
