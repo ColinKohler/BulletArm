@@ -168,6 +168,6 @@ class Agent(object):
       weights (dict, dict): (actor weights, critic weights)
     '''
     if weights is not None:
-      sefllatent.load_state_dict(weights[0])
+      self.latent.load_state_dict(weights[0])
       self.actor.load_state_dict(weights[1])
       self.critic.load_state_dict(weights[2])

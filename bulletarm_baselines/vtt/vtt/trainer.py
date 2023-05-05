@@ -34,7 +34,7 @@ class Trainer(object):
     self.alpha_optimizer = torch.optim.Adam([self.log_alpha], lr=self.config.actor_lr_init)
 
     # Initialize actor, critic, and latent models
-    self.latent = LatentModel([self.config.seq_len, 64, 64], [5])
+    self.latent = LatentModel([4, 64, 64], [5])
     self.latent.train()
     self.latent.to(self.device)
 
@@ -143,7 +143,7 @@ class Trainer(object):
        # Logger/Shared storage updates
       shared_storage.setInfo.remote(
         {
-          'pretraining_step' : self.pretraining_step,
+          'pretraining_step' : self.pre_training_step,
         }
       )
 
@@ -152,6 +152,8 @@ class Trainer(object):
           '3.Loss/4.Latent_lr' : self.latent_optimizer.param_groups[0]['lr'],
         }
       )
+
+      print('pre training step:', self.pre_training_step)
       self.pre_training_step += 1
 
     # Train policy
