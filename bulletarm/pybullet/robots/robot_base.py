@@ -37,6 +37,7 @@ class RobotBase:
     self.adjust_gripper_after_lift = False
     self.force_history = np.zeros((64, 6)).tolist()
     self.zero_force = None
+    self.force_limit = None
 
   def saveState(self):
     '''
@@ -379,6 +380,9 @@ class RobotBase:
         force[2] -= self.zero_force[2]
         force[5] -= self.zero_force[5]
         self.force_history.append(force)
+
+        if self.force_limit and np.mean(np.abs(self.force_history[-5:])) > self.force_limit:
+          return
 
         past_joint_pos.append(joint_pos)
         i += 1

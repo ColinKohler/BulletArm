@@ -18,6 +18,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     self.peg_hole_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0.03]
     self.prev_ee_pos = deque(maxlen=5)
     self.prev_ee_rot = deque(maxlen=5)
+    self.robot.max_torque = [50.0] * 7
 
   def resetPegHole(self):
     self.peg_hole_rz = np.random.random_sample() * 2*np.pi - np.pi if self.random_orientation else 0
@@ -47,9 +48,9 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
       rot=[pb.getQuaternionFromEuler((-np.pi * 0.5, 0, 0))],
       scale=1.52, wait=False
     )[0]
-    pb.changeDynamics(self.peg.object_id, -1, 1, lateralFriction=20.0, rollingFriction=0.0003, spinningFriction=0.3)
-    pb.changeDynamics(self.peg.object_id, 0, 1, lateralFriction=0.3, rollingFriction=0.0003, spinningFriction=0.3)
-    pb.changeDynamics(self.peg_hole.id, 0, 1, lateralFriction=0.3, rollingFriction=0.0003, spinningFriction=0.3)
+    pb.changeDynamics(self.peg.object_id, -1, 1, lateralFriction=50.0, rollingFriction=0.0003, spinningFriction=0.3)
+    pb.changeDynamics(self.peg.object_id, 0, 1, lateralFriction=0.7, rollingFriction=0.0003, spinningFriction=0.3)
+    #pb.changeDynamics(self.peg_hole.id, 0, 1, lateralFriction=0.3, rollingFriction=0.0003, spinningFriction=0.3)
 
     self.robot.gripper.close()
     self.setRobotHoldingObj()
