@@ -175,6 +175,7 @@ class Trainer(object):
       #self.updateLatentAlign(batch)
       priorities, loss = self.updateSLAC(batch)
       replay_buffer.updatePriorities.remote(priorities.cpu(), idx_batch)
+      print('training step:', self.training_step)
       self.training_step += 1
 
       self.data_generator.stepEnvsWait(shared_storage, replay_buffer, logger)
@@ -276,13 +277,13 @@ class Trainer(object):
     Returns:
       (numpy.array, double) : (Priorities, Batch Loss)
     '''
-    obs_batch, next_obs_batch, action_batch, reward_batch, done_batch = self.processLatentBatch(batch)
+    obs_batch, action_batch, reward_batch, done_batch = self.processLatentBatch(batch)
 
     # Calculate latent representation
     with torch.no_grad():
-      feature_, _, _ = self.latent.encoder(obs_batch)
+      feature_, _, _ = self.latent.encoder(obs_batch[0], obs_batch[1])
       z_ = torch.cat(self.latent.sample_posterior(feature_, action_batch)[2:], dim=-1)
-    z, next_z = z_[:,-2], z_[:,-1]
+    z, next_z = z_[:, -2], z_[:, -1]
     feature_action, next_feature_action = create_feature_actions(feature_, action_batch)
 
     # Critic Update
@@ -292,9 +293,11 @@ class Trainer(object):
       next_log_pi, next_q1, next_q2 = next_log_pi.squeeze(), next_q1.squeeze(), next_q2.squeeze()
 
       next_q = torch.min(next_q1, next_q2) - self.alpha * next_log_pi
-      target_q = reward_batch + (done_batch ^ 1) * self.config.discount * next_q
+      # target_q = reward_batch + (done_batch ^ 1) * self.config.discount * next_q
+      target_q = reward_batch[:, -1] + (1 - done_batch[:, -1]) * self.config.discount * next_q
 
-    curr_q1, curr_q2 = self.critic(z, action_batch)
+    # curr_q1, curr_q2 = self.critic(z, action_batch)
+    curr_q1, curr_q2 = self.critic(z, action_batch[:, -1])
     curr_q1, curr_q2 = curr_q1.squeeze(), curr_q2.squeeze()
 
     critic_loss = F.mse_loss(curr_q1, target_q) + F.mse_loss(curr_q2, target_q)
@@ -311,8 +314,8 @@ class Trainer(object):
     q1, q2 = self.critic(z, action)
 
     actor_loss = -torch.mean(torch.min(q1, q2) - self.alpha * log_pi)
-    if is_expert_batch.sum():
-      actor_loss += 0.1 * F.mse_loss(action[is_expert_batch], action_batch[is_expert_batch])
+    # if is_expert_batch.sum():
+    #   actor_loss += 0.1 * F.mse_loss(action[is_expert_batch], action_batch[is_expert_batch])
 
     self.actor_optimizer.zero_grad()
     actor_loss.backward(retain_graph=False)
@@ -332,7 +335,7 @@ class Trainer(object):
     return td_error, (actor_loss.item(), critic_loss.item(), alpha_loss.item(), entropy.item())
 
   def processLatentBatch(self, batch):
-    obs_batch, action_batch, reward_batch, done_batch, is_expert_batch = batch
+    obs_batch, action_batch, reward_batch, done_batch, _ = batch
 
     obs_batch = (obs_batch[0].to(self.device), obs_batch[1].to(self.device))
     action_batch = action_batch.to(self.device)
