@@ -82,73 +82,114 @@ class ReplayBuffer(object):
     Returns:
       (list[int], list[numpy.array], list[numpy.array], list[double], list[double]) : (Index, Observation, Action, Reward, Weight)
     '''
+    # (index_batch,
+    #  vision_batch,
+    #  force_batch,
+    #  proprio_batch,
+    #  next_vision_batch,
+    #  next_force_batch,
+    #  next_proprio_batch,
+    #  action_batch,
+    #  reward_batch,
+    #  done_batch,
+    #  is_expert_batch,
+    #  weight_batch
+    # ) = [list() for _ in range(12)]
     (index_batch,
      vision_batch,
      force_batch,
      proprio_batch,
-     next_vision_batch,
-     next_force_batch,
-     next_proprio_batch,
      action_batch,
      reward_batch,
      done_batch,
      is_expert_batch,
-     weight_batch
-    ) = [list() for _ in range(12)]
+    ) = [list() for _ in range(8)]
 
     for _ in range(self.config.batch_size):
+      # (vision,
+      #  force,
+      #  proprio,
+      #  vision_,
+      #  force_,
+      #  proprio_,
+      #  action,
+      #  reward,
+      #  done,
+      # ) = [list() for _ in range(9)]
+      
+      (vision,
+       force,
+       proprio,
+       action,
+       reward,
+       done,
+      ) = [list() for _ in range(6)]
+
       eps_id, eps_history, eps_prob = self.sampleEps(uniform=True)
-      eps_step, step_prob = self.sampleStep(eps_history, uniform=True)
+      eps_step = npr.choice(len(eps_history.vision_history) - self.config.seq_len - 1)
+      index_batch.append([eps_id, eps_step])
 
-      force = eps_history.force_history[eps_step].reshape(self.config.force_history, self.config.force_dim)
-      force_ = eps_history.force_history[eps_step+1].reshape(self.config.force_history, self.config.force_dim)
+      for s in range(self.config.seq_len+1):
+        step = eps_step + s
 
-      proprio = eps_history.proprio_history[eps_step].reshape(1, self.config.proprio_dim)
-      proprio_ = eps_history.proprio_history[eps_step+1].reshape(1, self.config.proprio_dim)
-
-      vision, vision_, = self.crop(
-        eps_history.vision_history[eps_step],
-        eps_history.vision_history[eps_step+1],
-      )
-      action = eps_history.action_history[eps_step+1]
+        vision.append(self.centerCrop(eps_history.vision_history[step], out=self.config.vision_size))
+        
+        force.append(eps_history.force_history[step][-1])
+       
+        proprio.append(eps_history.proprio_history[step])
+        
+        if s > 0:
+          action.append(eps_history.action_history[step])
+          reward.append(eps_history.reward_history[step])
+          done.append(eps_history.done_history[step])
 
       index_batch.append([eps_id, eps_step])
       vision_batch.append(vision)
       force_batch.append(force)
       proprio_batch.append(proprio)
-      next_vision_batch.append(vision_)
-      next_force_batch.append(force_)
-      next_proprio_batch.append(proprio_)
+      # next_vision_batch.append(vision_)
+      # next_force_batch.append(force_)
+      # next_proprio_batch.append(proprio_)
       action_batch.append(action)
-      reward_batch.append(eps_history.reward_history[eps_step+1])
-      done_batch.append(eps_history.done_history[eps_step+1])
+      reward_batch.append(reward)
+      done_batch.append(done)
       is_expert_batch.append(eps_history.is_expert)
 
-      training_step = ray.get(shared_storage.getInfo.remote('training_step'))
-      weight_batch.append((1 / (self.total_samples * eps_prob * step_prob)) ** self.config.getPerBeta(training_step))
+      # training_step = ray.get(shared_storage.getInfo.remote('training_step'))
+      # weight_batch.append((1 / (self.total_samples * eps_prob * 1)) ** self.config.getPerBeta(training_step))
 
     vision_batch = torch.tensor(np.stack(vision_batch)).float()
     force_batch = torch.tensor(np.stack(force_batch)).float()
     proprio_batch = torch.tensor(np.stack(proprio_batch)).float()
-    next_vision_batch = torch.tensor(np.stack(next_vision_batch)).float()
-    next_force_batch = torch.tensor(np.stack(next_force_batch)).float()
-    next_proprio_batch = torch.tensor(np.stack(next_proprio_batch)).float()
+    # next_vision_batch = torch.tensor(np.stack(next_vision_batch)).float()
+    # next_force_batch = torch.tensor(np.stack(next_force_batch)).float()
+    # next_proprio_batch = torch.tensor(np.stack(next_proprio_batch)).float()
     action_batch = torch.tensor(np.stack(action_batch)).float()
     reward_batch = torch.tensor(reward_batch).float()
     done_batch = torch.tensor(done_batch).float()
     is_expert_batch = torch.tensor(is_expert_batch).long()
-    weight_batch = torch.tensor(weight_batch).float()
+    # weight_batch = torch.tensor(weight_batch).float()
 
+    # return (
+    #   index_batch,
+    #   (
+    #     (vision_batch, force_batch, proprio_batch),
+    #     # (next_vision_batch, next_force_batch, next_proprio_batch),
+    #     action_batch,
+    #     reward_batch,
+    #     done_batch,
+    #     is_expert_batch,
+    #     # weight_batch
+    #   )
+    # )
     return (
       index_batch,
       (
         (vision_batch, force_batch, proprio_batch),
-        (next_vision_batch, next_force_batch, next_proprio_batch),
         action_batch,
         reward_batch,
         done_batch,
         is_expert_batch,
-        weight_batch
       )
     )
 
@@ -172,7 +213,7 @@ class ReplayBuffer(object):
      is_expert_batch
     ) = [list() for _ in range(8)]
 
-    for i in range(self.config.batch_size):
+    for _ in range(self.config.batch_size):
       (vision,
        force,
        proprio,

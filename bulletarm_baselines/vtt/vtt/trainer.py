@@ -157,7 +157,8 @@ class Trainer(object):
       self.pre_training_step += 1
 
     # Train policy
-    next_batch = replay_buffer.sampleLatent.remote(shared_storage)
+    # next_batch = replay_buffer.sampleLatent.remote(shared_storage)
+    next_batch = replay_buffer.sample.remote(shared_storage)
     while self.training_step < self.config.training_steps and \
           not ray.get(shared_storage.getInfo.remote('terminate')):
 
@@ -169,12 +170,13 @@ class Trainer(object):
       self.data_generator.stepEnvsAsync(shared_storage, replay_buffer, logger)
 
       idx_batch, batch = ray.get(next_batch)
-      next_batch = replay_buffer.sampleLatent.remote(shared_storage)
+      # next_batch = replay_buffer.sampleLatent.remote(shared_storage)
+      next_batch = replay_buffer.sample.remote(shared_storage)
 
       #latent_loss = self.updateLatent(batch, logger)
       #self.updateLatentAlign(batch)
-      priorities, loss = self.updateSLAC(batch)
-      replay_buffer.updatePriorities.remote(priorities.cpu(), idx_batch)
+      _, loss = self.updateSLAC(batch)
+      # replay_buffer.updatePriorities.remote(priorities.cpu(), idx_batch)
       print('training step:', self.training_step)
       self.training_step += 1
 
