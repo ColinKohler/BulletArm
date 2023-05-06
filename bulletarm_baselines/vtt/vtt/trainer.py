@@ -34,7 +34,7 @@ class Trainer(object):
     self.alpha_optimizer = torch.optim.Adam([self.log_alpha], lr=self.config.actor_lr_init)
 
     # Initialize actor, critic, and latent models
-    self.latent = LatentModel([4, 64, 64], [5])
+    self.latent = LatentModel([4, self.config.vision_size, self.config.vision_size], [self.config.action_dim])
     self.latent.train()
     self.latent.to(self.device)
 
@@ -120,7 +120,8 @@ class Trainer(object):
   def continuousUpdateWeights(self, replay_buffer, shared_storage, logger):
     '''
     Continuously sample batches from the replay buffer and perform weight updates.
-    This continuous until the desired number of training steps has been reached.
+    This continues until the desired number of training steps has been reached. 
+    Pre training also happens here.
 
     Args:
       replay_buffer (ray.worker): Replay buffer worker containing data samples.
@@ -133,7 +134,7 @@ class Trainer(object):
     next_batch = replay_buffer.sampleLatent.remote(shared_storage)
     while self.pre_training_step < self.config.pretraining_steps and \
       not ray.get(shared_storage.getInfo.remote('terminate')):
-      idx_batch, batch = ray.get(next_batch)
+      batch = ray.get(next_batch)[1]
 
       next_batch = replay_buffer.sampleLatent.remote(shared_storage)
 
@@ -169,7 +170,7 @@ class Trainer(object):
 
       self.data_generator.stepEnvsAsync(shared_storage, replay_buffer, logger)
 
-      idx_batch, batch = ray.get(next_batch)
+      batch = ray.get(next_batch)[1]
       # next_batch = replay_buffer.sampleLatent.remote(shared_storage)
       next_batch = replay_buffer.sample.remote(shared_storage)
 

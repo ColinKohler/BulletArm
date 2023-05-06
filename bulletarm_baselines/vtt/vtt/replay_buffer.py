@@ -105,7 +105,7 @@ class ReplayBuffer(object):
      is_expert_batch,
     ) = [list() for _ in range(8)]
 
-    for _ in range(self.config.batch_size):
+    for _ in range(self.config.batch_size_SAC):
       # (vision,
       #  force,
       #  proprio,
@@ -213,7 +213,7 @@ class ReplayBuffer(object):
      is_expert_batch
     ) = [list() for _ in range(8)]
 
-    for _ in range(self.config.batch_size):
+    for _ in range(self.config.batch_size_latent):
       (vision,
        force,
        proprio,
