@@ -6,7 +6,7 @@ class Config(object):
   Base task config.
   '''
 
-  def __init__(self, vision_size=64, num_sensors=1, encoder='vision+force+proprio', num_gpus=1):
+  def __init__(self, vision_size=64, encoder='vtt', num_gpus=1):
     # Env
     self.obs_type = ['vision', 'force', 'proprio']
     self.vision_size = vision_size
@@ -16,7 +16,6 @@ class Config(object):
     self.force_history = 64
     self.max_force = 100
     self.proprio_dim = 5
-    self.num_sensors = num_sensors
     self.seq_len = 8
 
     self.action_sequence = 'pxyzr'
@@ -33,7 +32,7 @@ class Config(object):
 
     # Model
     self.z_dim = 64
-    self.encoder = encoder.split('+')
+    self.encoder = encoder
 
     # Training
     self.root_path = 'data'

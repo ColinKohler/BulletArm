@@ -82,19 +82,6 @@ class ReplayBuffer(object):
     Returns:
       (list[int], list[numpy.array], list[numpy.array], list[double], list[double]) : (Index, Observation, Action, Reward, Weight)
     '''
-    # (index_batch,
-    #  vision_batch,
-    #  force_batch,
-    #  proprio_batch,
-    #  next_vision_batch,
-    #  next_force_batch,
-    #  next_proprio_batch,
-    #  action_batch,
-    #  reward_batch,
-    #  done_batch,
-    #  is_expert_batch,
-    #  weight_batch
-    # ) = [list() for _ in range(12)]
     (index_batch,
      vision_batch,
      force_batch,
@@ -106,17 +93,6 @@ class ReplayBuffer(object):
     ) = [list() for _ in range(8)]
 
     for _ in range(self.config.batch_size_SAC):
-      # (vision,
-      #  force,
-      #  proprio,
-      #  vision_,
-      #  force_,
-      #  proprio_,
-      #  action,
-      #  reward,
-      #  done,
-      # ) = [list() for _ in range(9)]
-      
       (vision,
        force,
        proprio,
@@ -133,11 +109,8 @@ class ReplayBuffer(object):
         step = eps_step + s
 
         vision.append(self.centerCrop(eps_history.vision_history[step], out=self.config.vision_size))
-        
         force.append(eps_history.force_history[step][-1])
-       
         proprio.append(eps_history.proprio_history[step])
-        
         if s > 0:
           action.append(eps_history.action_history[step])
           reward.append(eps_history.reward_history[step])
@@ -147,9 +120,6 @@ class ReplayBuffer(object):
       vision_batch.append(vision)
       force_batch.append(force)
       proprio_batch.append(proprio)
-      # next_vision_batch.append(vision_)
-      # next_force_batch.append(force_)
-      # next_proprio_batch.append(proprio_)
       action_batch.append(action)
       reward_batch.append(reward)
       done_batch.append(done)
@@ -161,27 +131,12 @@ class ReplayBuffer(object):
     vision_batch = torch.tensor(np.stack(vision_batch)).float()
     force_batch = torch.tensor(np.stack(force_batch)).float()
     proprio_batch = torch.tensor(np.stack(proprio_batch)).float()
-    # next_vision_batch = torch.tensor(np.stack(next_vision_batch)).float()
-    # next_force_batch = torch.tensor(np.stack(next_force_batch)).float()
-    # next_proprio_batch = torch.tensor(np.stack(next_proprio_batch)).float()
     action_batch = torch.tensor(np.stack(action_batch)).float()
     reward_batch = torch.tensor(reward_batch).float()
     done_batch = torch.tensor(done_batch).float()
     is_expert_batch = torch.tensor(is_expert_batch).long()
     # weight_batch = torch.tensor(weight_batch).float()
 
-    # return (
-    #   index_batch,
-    #   (
-    #     (vision_batch, force_batch, proprio_batch),
-    #     # (next_vision_batch, next_force_batch, next_proprio_batch),
-    #     action_batch,
-    #     reward_batch,
-    #     done_batch,
-    #     is_expert_batch,
-    #     # weight_batch
-    #   )
-    # )
     return (
       index_batch,
       (

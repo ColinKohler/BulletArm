@@ -120,7 +120,7 @@ class Trainer(object):
   def continuousUpdateWeights(self, replay_buffer, shared_storage, logger):
     '''
     Continuously sample batches from the replay buffer and perform weight updates.
-    This continues until the desired number of training steps has been reached. 
+    This continues until the desired number of training steps has been reached.
     Pre training also happens here.
 
     Args:
@@ -154,11 +154,9 @@ class Trainer(object):
         }
       )
 
-      print('pre training step:', self.pre_training_step)
       self.pre_training_step += 1
 
     # Train policy
-    # next_batch = replay_buffer.sampleLatent.remote(shared_storage)
     next_batch = replay_buffer.sample.remote(shared_storage)
     while self.training_step < self.config.training_steps and \
           not ray.get(shared_storage.getInfo.remote('terminate')):
@@ -171,14 +169,12 @@ class Trainer(object):
       self.data_generator.stepEnvsAsync(shared_storage, replay_buffer, logger)
 
       batch = ray.get(next_batch)[1]
-      # next_batch = replay_buffer.sampleLatent.remote(shared_storage)
       next_batch = replay_buffer.sample.remote(shared_storage)
 
-      #latent_loss = self.updateLatent(batch, logger)
-      #self.updateLatentAlign(batch)
+      latent_loss = self.updateLatent(batch, logger)
+      self.updateLatentAlign(batch)
       _, loss = self.updateSLAC(batch)
       # replay_buffer.updatePriorities.remote(priorities.cpu(), idx_batch)
-      print('training step:', self.training_step)
       self.training_step += 1
 
       self.data_generator.stepEnvsWait(shared_storage, replay_buffer, logger)
@@ -238,7 +234,7 @@ class Trainer(object):
       )
 
   def updateLatent(self, batch, logger):
-    obs_batch, action_batch, reward_batch, done_batch = self.processLatentBatch(batch)
+    obs_batch, action_batch, reward_batch, done_batch = self.processBatch(batch)
 
     loss_kld, loss_image, loss_reward, align_loss, contact_loss = self.latent.calculate_loss(obs_batch[0], obs_batch[1], action_batch,
                                                                                              reward_batch, done_batch, self.config.max_force)
@@ -260,7 +256,7 @@ class Trainer(object):
     return loss_kld.item() + loss_reward.item() + loss_image.item() + align_loss.item() + contact_loss.item()
 
   def updateLatentAlign(self, batch):
-    obs_batch, action_batch, reward_batch, done_batch = self.processLatentBatch(batch)
+    obs_batch, action_batch, reward_batch, done_batch = self.processBatch(batch)
 
     align_loss = self.latent.calculate_alignment_loss(obs_batch[0], obs_batch[1])
 
@@ -280,7 +276,7 @@ class Trainer(object):
     Returns:
       (numpy.array, double) : (Priorities, Batch Loss)
     '''
-    obs_batch, action_batch, reward_batch, done_batch = self.processLatentBatch(batch)
+    obs_batch, action_batch, reward_batch, done_batch = self.processBatch(batch)
 
     # Calculate latent representation
     with torch.no_grad():
@@ -296,7 +292,6 @@ class Trainer(object):
       next_log_pi, next_q1, next_q2 = next_log_pi.squeeze(), next_q1.squeeze(), next_q2.squeeze()
 
       next_q = torch.min(next_q1, next_q2) - self.alpha * next_log_pi
-      # target_q = reward_batch + (done_batch ^ 1) * self.config.discount * next_q
       target_q = reward_batch[:, -1] + (1 - done_batch[:, -1]) * self.config.discount * next_q
 
     # curr_q1, curr_q2 = self.critic(z, action_batch)
@@ -317,8 +312,6 @@ class Trainer(object):
     q1, q2 = self.critic(z, action)
 
     actor_loss = -torch.mean(torch.min(q1, q2) - self.alpha * log_pi)
-    # if is_expert_batch.sum():
-    #   actor_loss += 0.1 * F.mse_loss(action[is_expert_batch], action_batch[is_expert_batch])
 
     self.actor_optimizer.zero_grad()
     actor_loss.backward(retain_graph=False)
@@ -337,7 +330,7 @@ class Trainer(object):
 
     return td_error, (actor_loss.item(), critic_loss.item(), alpha_loss.item(), entropy.item())
 
-  def processLatentBatch(self, batch):
+  def processBatch(self, batch):
     obs_batch, action_batch, reward_batch, done_batch, _ = batch
 
     obs_batch = (obs_batch[0].to(self.device), obs_batch[1].to(self.device))

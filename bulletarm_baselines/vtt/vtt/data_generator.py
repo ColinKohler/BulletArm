@@ -136,16 +136,6 @@ class DataGenerator(object):
     obs_ = list(obs_)
 
     for i, eps_history in enumerate(self.current_episodes):
-      # eps_history.logStep(
-      #   obs_[0][i],
-      #   obs_[1][i],
-      #   obs_[2][i],
-      #   self.action_idxs[i].squeeze().numpy(),
-      #   self.values[i].item(),
-      #   rewards[i],
-      #   dones[i],
-      #   self.config.max_force
-      # )
       eps_history.logStep(
         obs_[0][i],
         obs_[1][i],
