@@ -42,7 +42,7 @@ def run(task, robot, plot_obs, render):
     while not done:
       action = env.getNextAction()
       obs, reward, done = env.step(action)
-      max_force = 100
+      max_force = 150
       norm_force = np.clip(obs[1], -max_force, max_force) / max_force
       if plot_obs:
         fig, ax = plt.subplots(nrows=1, ncols=2)

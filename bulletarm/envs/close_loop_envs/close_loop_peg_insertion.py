@@ -18,11 +18,11 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     self.peg_hole_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0.03]
     self.prev_ee_pos = deque(maxlen=5)
     self.prev_ee_rot = deque(maxlen=5)
-    self.robot.max_torque = [50.0] * 7
+    self.robot.max_torque = [500.0] * 7
 
   def resetPegHole(self):
     self.peg_hole_rz = np.random.random_sample() * 2*np.pi - np.pi if self.random_orientation else 0
-    self.peg_hole_pos = self._getValidPositions(0.2, 0, [], 1)[0]
+    self.peg_hole_pos = self._getValidPositions(0.10, 0, [], 1)[0]
     self.peg_hole_pos.append(0.03)
     self.peg_hole.reset(self.peg_hole_pos, pb.getQuaternionFromEuler((-np.pi * 0.5, 0, self.peg_hole_rz)))
 
@@ -48,7 +48,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
       rot=[pb.getQuaternionFromEuler((-np.pi * 0.5, 0, 0))],
       scale=1.50, wait=False
     )[0]
-    pb.changeDynamics(self.peg.object_id, -1, 1, lateralFriction=50.0, rollingFriction=0.0003, spinningFriction=0.3)
+    pb.changeDynamics(self.peg.object_id, -1, 1, lateralFriction=50.0, rollingFriction=0.0003, spinningFriction=50.0)
     pb.changeDynamics(self.peg.object_id, 0, 1, lateralFriction=0.3, rollingFriction=0.0003, spinningFriction=0.3)
     #pb.changeDynamics(self.peg_hole.id, 0, 1, lateralFriction=0.3, rollingFriction=0.0003, spinningFriction=0.3)
 
@@ -83,8 +83,8 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
 
     end_effector_pos = self.robot._getEndEffectorPosition()
 
-    return np.allclose(peg_pos[:2], end_effector_pos[:2], atol=1e-2) and \
-           np.allclose(peg_rot[:2], [-np.pi * 0.5, 0.], atol=1e-1)
+    return np.allclose(peg_pos[:2], end_effector_pos[:2], atol=2e-2) and \
+           np.allclose(peg_rot[:2], [-np.pi * 0.5, 0.], atol=2e-1)
 
   def _endEffectorStuck(self):
     return len(self.prev_ee_pos) == self.stuck_steps and \
