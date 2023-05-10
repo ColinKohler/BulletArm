@@ -22,7 +22,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
 
   def resetPegHole(self):
     self.peg_hole_rz = np.random.random_sample() * 2*np.pi - np.pi if self.random_orientation else 0
-    self.peg_hole_pos = self._getValidPositions(0.2, 0, [], 1)[0]
+    self.peg_hole_pos = self._getValidPositions(0.20, 0, [], 1)[0]
     self.peg_hole_pos.append(0.03)
     self.peg_hole.reset(self.peg_hole_pos, pb.getQuaternionFromEuler((-np.pi * 0.5, 0, self.peg_hole_rz)))
 
@@ -39,6 +39,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
 
   def reset(self):
     self.resetPybulletWorkspace()
+    self.robot.force_limit = None
     self.robot.moveTo([self.workspace[0].mean(), self.workspace[1].mean(), 0.3], transformations.quaternion_from_euler(0, 0, 0), dynamic=False)
 
     self.resetPegHole()

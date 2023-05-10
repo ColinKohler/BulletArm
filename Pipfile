@@ -25,6 +25,7 @@ dill = "*"
 torch = "*"
 tensorboard = "*"
 e2cnn = "*"
+escnn = "*"
 
 [requires]
 python_version = "3.8"
