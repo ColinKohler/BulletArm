@@ -39,6 +39,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
 
   def reset(self):
     self.resetPybulletWorkspace()
+    self.robot.force_limit = None
     self.robot.moveTo([self.workspace[0].mean(), self.workspace[1].mean(), 0.3], transformations.quaternion_from_euler(0, 0, 0), dynamic=False)
 
     self.resetPegHole()

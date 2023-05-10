@@ -28,7 +28,11 @@ class MultiPlotter(object):
       for fp in f:
         if os.path.exists(fp):
           with open(fp, 'rb') as f:
-            runs.append(pickle.load(f))
+            try:
+              runs.append(pickle.load(f))
+            except:
+              print('Error loading log: {}'.format(fp))
+              continue
         else:
           print('No log found at {}'.format(fp))
       logs[n] = runs
@@ -42,7 +46,7 @@ class MultiPlotter(object):
     Args:
     '''
     fig, ax = plt.subplots(figsize=(8,6), dpi=80)
-    ax.set_title('{} - Learning Curve'.format(title), fontsize=18, weight='bold')
+    ax.set_title('{}'.format(title), fontsize=18, weight='bold')
     ax.set_xlabel('Episodes', fontsize=14, weight='bold')
     ax.set_ylabel('Avg. Reward', fontsize=14, weight='bold')
 
@@ -82,9 +86,9 @@ class MultiPlotter(object):
     '''
 
     fig, ax = plt.subplots(figsize=(8,6), dpi=80)
-    ax.set_title('{} - Eval Curve'.format(title), fontsize=18, weight='bold')
+    ax.set_title('{}'.format(title), fontsize=18, weight='bold')
     ax.set_xlabel('Training Steps', fontsize=14, weight='bold')
-    ax.set_ylabel('Avg. Reward', fontsize=14, weight='bold')
+    ax.set_ylabel('Success Rate (%)', fontsize=14, weight='bold')
 
     for log_name, log in self.logs.items():
       sr = list()
