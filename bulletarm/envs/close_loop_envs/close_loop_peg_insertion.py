@@ -18,17 +18,17 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     self.peg_hole_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0.03]
     self.prev_ee_pos = deque(maxlen=5)
     self.prev_ee_rot = deque(maxlen=5)
-    self.robot.max_torque = [500.0] * 7
+    self.robot.max_torque = [50.0] * 7
 
   def resetPegHole(self):
     self.peg_hole_rz = np.random.random_sample() * 2*np.pi - np.pi if self.random_orientation else 0
     self.peg_hole_pos = self._getValidPositions(0.10, 0, [], 1)[0]
     self.peg_hole_pos.append(0.03)
-    self.peg_hole.reset(self.peg_hole_pos, pb.getQuaternionFromEuler((-np.pi * 0.5, 0, self.peg_hole_rz)))
+    self.peg_hole.reset(self.peg_hole_pos, pb.getQuaternionFromEuler((0, 0, self.peg_hole_rz)))
 
   def initialize(self):
     super().initialize()
-    self.peg_hole.initialize(pos=self.peg_hole_pos, rot=pb.getQuaternionFromEuler((-np.pi * 0.5, 0, self.peg_hole_rz)))
+    self.peg_hole.initialize(pos=self.peg_hole_pos, rot=pb.getQuaternionFromEuler((0, 0, self.peg_hole_rz)))
 
   def step(self, action):
     obs, reward, done = super().step(action)
@@ -47,9 +47,9 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
       constants.SQUARE_PEG,
       pos=[[self.workspace[0].mean(), self.workspace[1].mean(), 0.33]],
       rot=[pb.getQuaternionFromEuler((-np.pi * 0.5, 0, 0))],
-      scale=1.50, wait=False
+      scale=1.15, wait=False
     )[0]
-    pb.changeDynamics(self.peg.object_id, -1, 1, lateralFriction=50.0, rollingFriction=0.0003, spinningFriction=50.0)
+    pb.changeDynamics(self.peg.object_id, -1, 1, lateralFriction=50.0, rollingFriction=0.0003, spinningFriction=0.3)
     pb.changeDynamics(self.peg.object_id, 0, 1, lateralFriction=0.3, rollingFriction=0.0003, spinningFriction=0.3)
     #pb.changeDynamics(self.peg_hole.id, 0, 1, lateralFriction=0.3, rollingFriction=0.0003, spinningFriction=0.3)
 
@@ -69,12 +69,12 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     hole_pos, hole_rot = self.peg_hole.getHolePose()
     peg_pos = self.peg.getPosition()
 
-    return np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < 0.13
+    return np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < 0.10
 
   def _getReward(self):
     hole_pos, hole_rot = self.peg_hole.getHolePose()
     peg_pos = self.peg.getPosition()
-    success_reward = 1 if np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < 0.13 else 0
+    success_reward = 1 if np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < 0.10 else 0
 
     return success_reward
 

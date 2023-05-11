@@ -15,8 +15,8 @@ class CloseLoopPegInsertionPlanner(CloseLoopPlanner):
   def getNextActionToCurrentTarget(self):
     peg_to_ee = self.env.peg.getPosition() - self.env.robot._getEndEffectorPosition()
     target = copy.copy(self.current_target[0])
-    target[0] -= peg_to_ee[0] - 5e-4
-    target[1] -= peg_to_ee[1] - 5e-4
+    #target[0] -= peg_to_ee[0] - 5e-4
+    #target[1] -= peg_to_ee[1] - 5e-4
     x, y, z, r = self.getActionByGoalPose(target, self.current_target[1])
 
     primitive = constants.PICK_PRIMATIVE
@@ -32,7 +32,8 @@ class CloseLoopPegInsertionPlanner(CloseLoopPlanner):
   def setNewTarget(self):
     peg_pos, peg_rot = self.env.peg_hole.getHolePose()
 
-    hole_z_offset = 0.1440
+    #hole_z_offset = 0.1440
+    hole_z_offset = 0.1
 
     drag_pos_1 = copy.copy(peg_pos)
     drag_pos_1[2] += hole_z_offset + 0.01
