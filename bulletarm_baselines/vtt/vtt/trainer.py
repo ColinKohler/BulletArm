@@ -34,21 +34,38 @@ class Trainer(object):
     self.alpha_optimizer = torch.optim.Adam([self.log_alpha], lr=self.config.actor_lr_init)
 
     # Initialize actor, critic, and latent models
-    self.latent = LatentModel([4, self.config.vision_size, self.config.vision_size], [self.config.action_dim])
+    self.latent = LatentModel(
+      [self.config.vision_channels, self.config.vision_size, self.config.vision_size],
+      [self.config.action_dim],
+      encoder=self.config.encoder
+    )
     self.latent.train()
     self.latent.to(self.device)
 
-    self.actor = GaussianPolicy([self.config.action_dim], self.config.seq_len, 288)
+    self.actor = GaussianPolicy(
+      [self.config.action_dim],
+      self.config.seq_len,
+      self.config.z_dim
+    )
     self.actor.train()
     self.actor.to(self.device)
 
-    self.critic = TwinnedQNetwork([self.config.action_dim], 32, 256)
+    self.critic = TwinnedQNetwork(
+      [self.config.action_dim],
+      self.config.z_dim_1,
+      self.config.z_dim_2
+    )
     self.critic.train()
     self.critic.to(self.device)
 
-    self.critic_target = TwinnedQNetwork([self.config.action_dim], 32, 256)
+    self.critic_target = TwinnedQNetwork(
+      [self.config.action_dim],
+      self.config.z_dim_1,
+      self.config.z_dim_2
+    )
     self.critic_target.train()
     self.critic_target.to(self.device)
+    torch_utils.softUpdate(self.critic_target, self.critic, 1.0)
     for param in self.critic_target.parameters():
       param.requires_grad = False
 
@@ -70,15 +87,25 @@ class Trainer(object):
                                                                    self.config.lr_decay)
 
     if initial_checkpoint['optimizer_state'] is not None:
-      self.actor_optimizer.load_state_dict(
+    self.latent_optimizer.load_state_dict(
         copy.deepcopy(initial_checkpoint['optimizer_state'][0])
       )
-      self.critic_optimizer.load_state_dict(
+      self.actor_optimizer.load_state_dict(
         copy.deepcopy(initial_checkpoint['optimizer_state'][1])
+      )
+      self.critic_optimizer.load_state_dict(
+        copy.deepcopy(initial_checkpoint['optimizer_state'][2])
       )
 
     # Initialize data generator
-    self.agent = Agent(self.config, self.device, latent=self.latent, actor=self.actor, critic=self.critic)
+    self.agent = Agent(
+      self.config,
+      self.device,
+      self.config.num_data_gen_envs,
+      latent=self.latent,
+      actor=self.actor,
+      critic=self.critic
+    )
     self.data_generator = DataGenerator(self.agent, self.config, self.config.seed)
 
     # Set random number generator seed
@@ -155,6 +182,7 @@ class Trainer(object):
       )
 
       self.pre_training_step += 1
+    self.saveWeights(shared_storage)
 
     # Train policy
     next_batch = replay_buffer.sample.remote(shared_storage)
@@ -173,14 +201,14 @@ class Trainer(object):
 
       latent_loss = self.updateLatent(batch, logger)
       self.updateLatentAlign(batch)
-      _, loss = self.updateSLAC(batch)
+      _, loss = self.updateLAC(batch)
       # replay_buffer.updatePriorities.remote(priorities.cpu(), idx_batch)
       self.training_step += 1
 
       self.data_generator.stepEnvsWait(shared_storage, replay_buffer, logger)
 
       # Update target critic towards current critic
-      self.softTargetUpdate()
+      torch_utils.softUpdate(self.critic_target, self.critic, self.config.tau)
 
       # Update LRs
       if self.training_step > 0 and self.training_step % self.config.lr_decay_interval == 0:
@@ -189,21 +217,7 @@ class Trainer(object):
 
       # Save to shared storage
       if self.training_step % self.config.checkpoint_interval == 0:
-        latent_weights = torch_utils.dictToCpu(self.latent.state_dict())
-        actor_weights = torch_utils.dictToCpu(self.actor.state_dict())
-        critic_weights = torch_utils.dictToCpu(self.critic.state_dict())
-        latent_optimizer_state = torch_utils.dictToCpu(self.latent_optimizer.state_dict())
-        actor_optimizer_state = torch_utils.dictToCpu(self.actor_optimizer.state_dict())
-        critic_optimizer_state = torch_utils.dictToCpu(self.critic_optimizer.state_dict())
-
-        shared_storage.setInfo.remote(
-          {
-            'weights' : copy.deepcopy((latent_weights, actor_weights, critic_weights)),
-            'optimizer_state' : (copy.deepcopy(latent_optimizer_state),
-                                 copy.deepcopy(actor_optimizer_state),
-                                 copy.deepcopy(critic_optimizer_state))
-          }
-        )
+        self.saveWeights(shared_storage)
 
         if self.config.save_model:
           #shared_storage.saveReplayBuffer.remote(replay_buffer.getBuffer.remote())
@@ -235,25 +249,31 @@ class Trainer(object):
 
   def updateLatent(self, batch, logger):
     obs_batch, action_batch, reward_batch, done_batch = self.processBatch(batch)
-
-    loss_kld, loss_image, loss_reward, align_loss, contact_loss = self.latent.calculate_loss(obs_batch[0], obs_batch[1], action_batch,
-                                                                                             reward_batch, done_batch, self.config.max_force)
+    loss = self.latent.calculate_loss(
+      obs_batch[0],
+      obs_batch[1],
+      action_batch,
+      reward_batch,
+      done_batch,
+      self.config.max_force
+    )
+    loss_kld, loss_image, loss_reward, align_loss, contact_loss = loss
 
     self.latent_optimizer.zero_grad()
-    (loss_kld + loss_image + loss_reward + align_loss + contact_loss).backward()
+    latent_loss = loss_kld + loss_image + loss_reward + align_loss + contact_loss
+    latent_loss.backward()
     self.latent_optimizer.step()
 
     logger.logTrainingStep.remote(
-        {
-          'KLD Loss' : loss_kld.item(),
-          'Reconstruction Loss' : loss_image.item(),
-          'Action conditioned Loss' : loss_reward.item(),
-          'Latent Alignment Loss' : align_loss.item(),
-          'Contact Loss' : contact_loss.item(),
-        }
-      )
-
-    return loss_kld.item() + loss_reward.item() + loss_image.item() + align_loss.item() + contact_loss.item()
+      {
+        'KLD Loss' : loss_kld.item(),
+        'Reconstruction Loss' : loss_image.item(),
+        'Action conditioned Loss' : loss_reward.item(),
+        'Latent Alignment Loss' : align_loss.item(),
+        'Contact Loss' : contact_loss.item(),
+      }
+    )
+    return latent_loss.item()
 
   def updateLatentAlign(self, batch):
     obs_batch, action_batch, reward_batch, done_batch = self.processBatch(batch)
@@ -266,7 +286,7 @@ class Trainer(object):
 
     return align_loss.item()
 
-  def updateSLAC(self, batch):
+  def updateSAC(self, batch):
     '''
     Perform one training step.
 
@@ -294,7 +314,6 @@ class Trainer(object):
       next_q = torch.min(next_q1, next_q2) - self.alpha * next_log_pi
       target_q = reward_batch[:, -1] + (1 - done_batch[:, -1]) * self.config.discount * next_q
 
-    # curr_q1, curr_q2 = self.critic(z, action_batch)
     curr_q1, curr_q2 = self.critic(z, action_batch[:, -1])
     curr_q1, curr_q2 = curr_q1.squeeze(), curr_q2.squeeze()
 
@@ -304,24 +323,25 @@ class Trainer(object):
       td_error = 0.5 * (torch.abs(curr_q1 - target_q) + torch.abs(curr_q2 - target_q))
 
     self.critic_optimizer.zero_grad()
-    critic_loss.backward(retain_graph=False)
+    critic_loss.backward()
     self.critic_optimizer.step()
 
     # Actor update
     action, log_pi = self.actor.sample(feature_action)
     q1, q2 = self.critic(z, action)
 
-    actor_loss = -torch.mean(torch.min(q1, q2) - self.alpha * log_pi)
+    #actor_loss = -torch.mean(torch.min(q1, q2) - self.alpha * log_pi)
+    actor_loss = torch.mean((self.alpha * log_pi) - torch.min(q1, q2))
 
     self.actor_optimizer.zero_grad()
-    actor_loss.backward(retain_graph=False)
+    actor_loss.backward()
     self.actor_optimizer.step()
 
     # Alpha update
     alpha_loss = -(self.log_alpha * (log_pi + self.target_entropy).detach()).mean()
 
     self.alpha_optimizer.zero_grad()
-    alpha_loss.backward(retain_graph=False)
+    alpha_loss.backward()
     self.alpha_optimizer.step()
 
     with torch.no_grad():
@@ -340,9 +360,19 @@ class Trainer(object):
 
     return obs_batch, action_batch, reward_batch, done_batch
 
-  def softTargetUpdate(self):
-    '''
-    Update the target critic model to the current critic model.
-    '''
-    for t_param, l_param in zip(self.critic_target.parameters(), self.critic.parameters()):
-      t_param.data.copy_(self.config.tau * l_param.data + (1.0 - self.config.tau) * t_param.data)
+  def saveWeights(self, shared_storage):
+    latent_weights = torch_utils.dictToCpu(self.latent.state_dict())
+    actor_weights = torch_utils.dictToCpu(self.actor.state_dict())
+    critic_weights = torch_utils.dictToCpu(self.critic.state_dict())
+    latent_optimizer_state = torch_utils.dictToCpu(self.latent_optimizer.state_dict())
+    actor_optimizer_state = torch_utils.dictToCpu(self.actor_optimizer.state_dict())
+    critic_optimizer_state = torch_utils.dictToCpu(self.critic_optimizer.state_dict())
+
+    shared_storage.setInfo.remote(
+      {
+        'weights' : copy.deepcopy((latent_weights, actor_weights, critic_weights)),
+        'optimizer_state' : (copy.deepcopy(latent_optimizer_state),
+                             copy.deepcopy(actor_optimizer_state),
+                             copy.deepcopy(critic_optimizer_state))
+      }
+    )

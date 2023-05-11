@@ -2,13 +2,14 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.distributions import Normal
-import escnn.nn as enn
 import numpy as np
 import numpy.random as npr
 import scipy.ndimage
 
-def detachGeoTensor(geo, t):
-  return enn.GeometricTensor(geo.tensor.detach(), t)
+def softUpdate(target, source, tau):
+  for t, s in zip(target.parameters(), source.parameters()):
+    t.data.mul_(1.0 - tau)
+    t.data.add_(tau * s.data)
 
 def dictToCpu(state_dict):
   cpu_dict = dict()

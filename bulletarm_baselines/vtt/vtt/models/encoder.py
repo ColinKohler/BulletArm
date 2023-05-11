@@ -6,9 +6,6 @@ from torch.nn import functional as F
 from torch.distributions import Normal
 
 class VTT(nn.Module):
-  # def __init__(self, img_size=[84], img_patch_size=14, tactile_patches=2, in_chans=3, embed_dim=384, depth=6,
-  #              num_heads=8, mlp_ratio=4., qkv_bias=False, qk_scale=None, drop_rate=0., attn_drop_rate=0.,
-  #              drop_path_rate=0., norm_layer=nn.LayerNorm, **kwargs):
   def __init__(self, img_size=[64], img_patch_size=8, tactile_patches=2, in_chans=4, embed_dim=384, depth=6,
                num_heads=8, mlp_ratio=4., qkv_bias=False, qk_scale=None, drop_rate=0., attn_drop_rate=0.,
                drop_path_rate=0., norm_layer=nn.LayerNorm, **kwargs):
@@ -221,24 +218,21 @@ class Concatenation_Encoder(nn.Module):
   """
   Concatenation
   """
-  def __init__(self, input_dim=3, tactile_dim=6, img_dim=256, tactile_latent_dim=32):
+  def __init__(self, input_dim=4, tactile_dim=6, img_dim=256, tactile_latent_dim=32):
     super(Concatenation_Encoder, self).__init__()
 
     self.img_net = nn.Sequential(
-        # (3, 84, 84) -> (42, 42, 42)
-        nn.Conv2d(input_dim, 16, 6, 2, 1),
+        # (4, 64, 64) -> (16, 32, 32)
+        nn.Conv2d(input_dim, 16, 3, 2, 1),
         nn.LeakyReLU(0.2, inplace=True),
-        # (32, 42, 42) -> (21, 21, 21)
-        nn.Conv2d(16, 32, 6, 2, 1),
+        # (16, 32, 32) -> (32, 16, 16)
+        nn.Conv2d(16, 32, 3, 2, 1),
         nn.LeakyReLU(0.2, inplace=True),
-        # (64, 21, 21) -> (128, 11, 21)
-        nn.Conv2d(32, 64, 6, 2, 1),
+        # (32, 16, 16) -> (64, 8, 8)
+        nn.Conv2d(32, 64, 3, 2, 1),
         nn.LeakyReLU(0.2, inplace=True),
-        # (128, 21, 21) -> (256, 11, 11)
-        nn.Conv2d(64, 128, 6, 2, 1),
-        nn.LeakyReLU(0.2, inplace=True),
-        # (128, 11, 11) -> (256, 6,)
-        nn.Conv2d(128, img_dim, 3, 2),
+        # (64, 8, 8) -> (256, 6,)
+        nn.Conv2d(128, img_dim, 4, 2, 1), # TODO: Fix this
         nn.LeakyReLU(0.2, inplace=True),
     )
 
@@ -271,23 +265,20 @@ class Concatenation_Encoder(nn.Module):
     return self.bottle_neck(x), self.tactile_recognize(x), self.alignment_recognize(x)
 
 class ImageEncoder(nn.Module):
-  def __init__(self, input_dim=3, img_dim=256):
+  def __init__(self, input_dim=4, img_dim=256):
     super(ImageEncoder, self).__init__()
     self.img_net = nn.Sequential(
-        # (3, 84, 84) -> (42, 42, 42)
-        nn.Conv2d(input_dim, 16, 6, 2, 1),
+        # (4, 64, 64) -> (16, 32, 32)
+        nn.Conv2d(input_dim, 16, 3, 2, 1),
         nn.LeakyReLU(0.2, inplace=True),
-        # (32, 42, 42) -> (21, 21, 21)
-        nn.Conv2d(16, 32, 6, 2, 1),
+        # (16, 32, 32) -> (32, 16, 16)
+        nn.Conv2d(16, 32, 3, 2, 1),
         nn.LeakyReLU(0.2, inplace=True),
-        # (64, 21, 21) -> (128, 11, 21)
-        nn.Conv2d(32, 64, 6, 2, 1),
+        # (32, 16, 16) -> (64, 8, 8)
+        nn.Conv2d(32, 64, 3, 2, 1),
         nn.LeakyReLU(0.2, inplace=True),
-        # (128, 21, 21) -> (256, 11, 11)
-        nn.Conv2d(64, 128, 6, 2, 1),
-        nn.LeakyReLU(0.2, inplace=True),
-        # (128, 11, 11) -> (256, 6,)
-        nn.Conv2d(128, img_dim, 3, 2),
+        # (64 8, 1) -> (256, 6,)
+        nn.Conv2d(128, img_dim, 4, 2, 1), # TODO: Fix this
         nn.LeakyReLU(0.2, inplace=True),
     )
     self.img_norm = nn.LayerNorm(img_dim)
@@ -315,7 +306,7 @@ class TactileEncoder(nn.Module):
     return tactile_x
 
 class PoE_Encoder(nn.Module):
-  def __init__(self, input_dim=3, tactile_dim=6, z_dim=288):
+  def __init__(self, input_dim=4, tactile_dim=6, z_dim=288):
     super(PoE_Encoder, self).__init__()
 
     self.z_dim = z_dim

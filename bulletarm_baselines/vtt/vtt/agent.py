@@ -14,9 +14,10 @@ class Agent(object):
     config (dict): Task config.
     device (torch.Device): Device to use for inference (cpu or gpu)
   '''
-  def __init__(self, config, device, latent=None, actor=None, critic=None, initialize_models=True):
+  def __init__(self, config, device, num_envs, latent=None, actor=None, critic=None):
     self.config = config
     self.device = device
+    self.num_envs = num_envs
 
     self.p_range = torch.tensor([0, 1])
     self.dx_range = torch.tensor([-self.config.dpos, self.config.dpos])
@@ -27,31 +28,57 @@ class Agent(object):
 
     self.resetEpisode()
 
+    if latent:
+      self.latent = latent
+    else:
+      self.latent = LatentModel(
+        [self.config.vision_channels, self.config.vision_size, self.config.vision_size],
+        [self.config.action_dim],
+        self.config.encoder
+      )
+      self.latent.to(self.device)
+      self.latent.train()
+
     if actor:
       self.actor = actor
     else:
-      self.actor = GaussianPolicy([self.config.action_dim], self.config.seq_len, 288)
+      self.actor = GaussianPolicy(
+        [self.config.action_dim],
+        self.config.seq_len,
+        self.config.z_dim
+      )
       self.actor.to(self.device)
       self.actor.train()
 
     if critic:
       self.critic = critic
     else:
-      self.critic = TwinnedQNetwork([self.config.action_dim], 32, 256)
+      self.critic = TwinnedQNetwork(
+        [self.config.action_dim],
+        self.config.z_dim_1,
+        self.config.z_dim_2
+      )
       self.critic.to(self.device)
       self.critic.train()
 
-    if latent:
-      self.latent = latent
-    else:
-      self.latent = LatentModel([1, 288], [self.config.action_dim])
-      self.latent.to(self.device)
-      self.latent.train()
-
   def resetEpisode(self):
-    self.vision_history = torch.zeros(self.config.num_data_gen_envs, self.config.seq_len, self.config.vision_channels, self.config.vision_size, self.config.vision_size).to(self.device)
-    self.force_history = torch.zeros(self.config.num_data_gen_envs, self.config.seq_len, self.config.force_dim).to(self.device)
-    self.action_history = torch.zeros(self.config.num_data_gen_envs, self.config.seq_len-1, self.config.action_dim).to(self.device)
+    self.vision_history = torch.zeros(
+      self.num_envs,
+      self.config.seq_len,
+      self.config.vision_channels,
+      self.config.vision_size,
+      self.config.vision_size
+    ).to(self.device)
+    self.force_history = torch.zeros(
+      self.num_envs,
+      self.config.seq_len,
+      self.config.force_dim
+    ).to(self.device)
+    self.action_history = torch.zeros(
+      self.num_envs,
+      self.config.seq_len - 1,
+      self.config.action_dim
+    ).to(self.device)
 
   def getAction(self, vision, force, proprio, evaluate=False):
     '''
@@ -75,8 +102,8 @@ class Agent(object):
 
     with torch.no_grad():
       z, _, _ = self.latent.encoder(self.vision_history, self.force_history)
-      z = z.view(self.config.num_data_gen_envs, -1)
-      z = torch.cat([z, self.action_history.view(self.config.num_data_gen_envs, -1)], dim=1)
+      z = z.view(self.num_envs, -1)
+      z = torch.cat([z, self.action_history.view(self.num_envs, -1)], dim=1)
       if evaluate:
         action, _ = self.actor.sample(z)
       else:

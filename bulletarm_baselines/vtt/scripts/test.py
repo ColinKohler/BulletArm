@@ -58,7 +58,7 @@ if __name__ == '__main__':
   env = env_factory.createEnvs(0, task_config.env_type, env_config, planner_config)
 
   device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-  agent = Agent(task_config, device, initialize_models=False)
+  agent = Agent(task_config, device, 1)
   agent.setWeights(checkpoint['weights'])
 
   num_success = 0

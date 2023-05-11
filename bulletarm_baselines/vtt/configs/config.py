@@ -31,7 +31,9 @@ class Config(object):
     self.drot = np.pi / self.dpos
 
     # Model
-    self.z_dim = 64
+    self.z_dim_1 = 32
+    self.z_dim_2 = 256
+    self.z_dim = self.z_dim_1 + self.z_dim_2
     self.encoder = encoder
 
     # Training
