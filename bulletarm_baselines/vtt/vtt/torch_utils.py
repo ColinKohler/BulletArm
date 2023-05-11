@@ -18,8 +18,6 @@ def dictToCpu(state_dict):
       cpu_dict[k] = v.cpu()
     elif isinstance(v, dict):
       cpu_dict[k] = dictToCpu(v)
-    elif isinstance(v, enn.EquivariantModule):
-      cpu_dict[k] = v.cpu()
     else:
       cpu_dict[k] = v
 
