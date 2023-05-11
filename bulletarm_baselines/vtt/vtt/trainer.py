@@ -87,7 +87,7 @@ class Trainer(object):
                                                                    self.config.lr_decay)
 
     if initial_checkpoint['optimizer_state'] is not None:
-    self.latent_optimizer.load_state_dict(
+      self.latent_optimizer.load_state_dict(
         copy.deepcopy(initial_checkpoint['optimizer_state'][0])
       )
       self.actor_optimizer.load_state_dict(

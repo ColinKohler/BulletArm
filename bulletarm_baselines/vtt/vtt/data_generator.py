@@ -15,11 +15,11 @@ class EvalDataGenerator(object):
 
   '''
   def __init__(self, config, seed):
-    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-    agent = Agent(config, device, self.config.num_eval_envs)
-
     self.config = config
-    self.data_generator = DataGenerator(agent, config, seed, evaluate=True)
+
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    agent = Agent(self.config, device, self.config.num_eval_envs)
+    self.data_generator = DataGenerator(agent, self.config, seed, evaluate=True)
 
   def generateEpisodes(self, num_eps, shared_storage, replay_buffer, logger):
     ''''''

@@ -31,7 +31,7 @@ if __name__ == '__main__':
     help='Path to save results & logs to while training. Defaults to current timestamp.')
   parser.add_argument('--vision_size', type=int, default=64,
     help='The size of the RGB-D image used for vision.')
-  parser.add_argument('--encoder', type=str, default='vtt',
+  parser.add_argument('--encoder', type=str, default='VTT',
     help='Type of latent encoder to use: vtt, poe, concat')
   parser.add_argument('--checkpoint', type=str, default=None,
     help='Path to the checkpoint to load.')

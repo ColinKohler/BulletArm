@@ -34,7 +34,7 @@ class Agent(object):
       self.latent = LatentModel(
         [self.config.vision_channels, self.config.vision_size, self.config.vision_size],
         [self.config.action_dim],
-        self.config.encoder
+        encoder=self.config.encoder
       )
       self.latent.to(self.device)
       self.latent.train()
