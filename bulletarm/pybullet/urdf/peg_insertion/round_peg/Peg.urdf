@@ -84,17 +84,9 @@
       </geometry>
     </collision>
   </link>
-  <joint
-    name="Insertion"
-    type="continuous">
-    <origin
-      xyz="0 0 0"
-      rpy="0 0 0" />
-    <parent
-      link="base_link" />
-    <child
-      link="Insertion" />
-    <axis
-      xyz="0 1 0" />
+  <joint name="Insertion" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="Insertion" />
   </joint>
 </robot>
