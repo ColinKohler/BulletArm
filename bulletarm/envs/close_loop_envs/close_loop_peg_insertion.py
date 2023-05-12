@@ -22,7 +22,7 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
 
   def resetPegHole(self):
     self.peg_hole_rz = np.random.random_sample() * 2*np.pi - np.pi if self.random_orientation else 0
-    self.peg_hole_pos = self._getValidPositions(0.10, 0, [], 1)[0]
+    self.peg_hole_pos = self._getValidPositions(0.20, 0, [], 1)[0]
     self.peg_hole_pos.append(0.03)
     self.peg_hole.reset(self.peg_hole_pos, pb.getQuaternionFromEuler((0, 0, self.peg_hole_rz)))
 
@@ -47,10 +47,10 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
       constants.SQUARE_PEG,
       pos=[[self.workspace[0].mean(), self.workspace[1].mean(), 0.33]],
       rot=[pb.getQuaternionFromEuler((-np.pi * 0.5, 0, 0))],
-      scale=1.15, wait=False
+      scale=1.18, wait=False
     )[0]
     pb.changeDynamics(self.peg.object_id, -1, 1, lateralFriction=50.0, rollingFriction=0.0003, spinningFriction=0.3)
-    pb.changeDynamics(self.peg.object_id, 0, 1, lateralFriction=0.3, rollingFriction=0.0003, spinningFriction=0.3)
+    pb.changeDynamics(self.peg.object_id, 0, 1, lateralFriction=0.1, rollingFriction=0.0003, spinningFriction=0.1)
     #pb.changeDynamics(self.peg_hole.id, 0, 1, lateralFriction=0.3, rollingFriction=0.0003, spinningFriction=0.3)
 
     self.robot.gripper.close()
@@ -69,12 +69,12 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     hole_pos, hole_rot = self.peg_hole.getHolePose()
     peg_pos = self.peg.getPosition()
 
-    return np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < 0.10
+    return np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < 0.12
 
   def _getReward(self):
     hole_pos, hole_rot = self.peg_hole.getHolePose()
     peg_pos = self.peg.getPosition()
-    success_reward = 1 if np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < 0.10 else 0
+    success_reward = 1 if np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < 0.12 else 0
 
     return success_reward
 
