@@ -26,6 +26,7 @@ torch = "*"
 tensorboard = "*"
 e2cnn = "*"
 escnn = "*"
+ray = "*"
 
 [requires]
 python_version = "3.8"
