@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 import numpy.random as npr
+import matplotlib.pyplot as plt
 
 from bulletarm_baselines.vtt.vtt import torch_utils
 from bulletarm_baselines.vtt.vtt.models.sac import GaussianPolicy, TwinnedQNetwork
@@ -108,6 +109,18 @@ class Agent(object):
         action, _ = self.actor.sample(z)
       else:
         action, _ = self.actor.sample(z)
+
+    # a check to see if the observations being recieved are the right ones
+    for i in range(self.config.seq_len):
+      image = self.vision_history[1][i][0:3, :, :].permute(2,1,0)
+      image = image.detach().cpu().numpy()
+      if(np.sum(image) == 0):
+        print(i)
+      else:
+        print('non zero image')
+      fig = plt.figure(figsize=(3,3))
+      plt.imshow(image)
+      fig.savefig('vision.png')
 
     self.action_history = torch.roll(self.action_history, -1, 1)
     self.action_history[:,-1] = action

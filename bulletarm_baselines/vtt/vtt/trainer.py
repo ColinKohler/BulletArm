@@ -201,8 +201,9 @@ class Trainer(object):
 
       latent_loss = self.updateLatent(batch, logger)
       self.updateLatentAlign(batch)
-      _, loss = self.updateLAC(batch)
+      _, loss = self.updateSAC(batch)
       # replay_buffer.updatePriorities.remote(priorities.cpu(), idx_batch)
+      print('training step:', self.training_step)
       self.training_step += 1
 
       self.data_generator.stepEnvsWait(shared_storage, replay_buffer, logger)

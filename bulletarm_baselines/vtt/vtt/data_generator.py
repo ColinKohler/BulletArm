@@ -150,6 +150,7 @@ class DataGenerator(object):
     done_idxs = np.nonzero(dones)[0]
     if len(done_idxs) != 0:
       new_obs_ = self.envs.reset_envs(done_idxs)
+      self.agent.resetEpisode()
 
       for i, done_idx in enumerate(done_idxs):
         if not self.eval:
