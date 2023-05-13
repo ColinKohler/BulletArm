@@ -425,7 +425,7 @@ class BaseEnv:
 
   def _getDefaultBoarderPadding(self, shape_type):
     if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK,
-                      constants.RANDOM_HOUSEHOLD, constants.BOTTLE, constants.TEST_TUBE, constants.SWAB, constants.SQUARE_PEG):
+                      constants.RANDOM_HOUSEHOLD, constants.BOTTLE, constants.TEST_TUBE, constants.SWAB, constants.SQUARE_PEG, constants.ROUND_PEG):
       padding = 0.05
     elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON, constants.BOX,
                         constants.FLAT_BLOCK, constants.OBSTRUCTION, constants.MUG, constants.PIVOTING_BLOCK):
@@ -440,7 +440,7 @@ class BaseEnv:
 
   def _getDefaultMinDistance(self, shape_type):
     if shape_type in (constants.CUBE, constants.TRIANGLE, constants.RANDOM, constants.CYLINDER, constants.RANDOM_BLOCK,
-                      constants.BOTTLE, constants.TEST_TUBE, constants.SWAB, constants.SQUARE_PEG):
+                      constants.BOTTLE, constants.TEST_TUBE, constants.SWAB, constants.SQUARE_PEG, constants.ROUND_PEG):
       min_distance = 0.2
     elif shape_type in (constants.BRICK, constants.ROOF, constants.CUP, constants.SPOON, constants.BOX,
                         constants.FLAT_BLOCK, constants.OBSTRUCTION, constants.MUG, constants.PIVOTING_BLOCK):
@@ -553,6 +553,8 @@ class BaseEnv:
         handle = pb_obj_generation.generateGraspNetObject(position, orientation, scale, model_id)
       elif shape_type == constants.SQUARE_PEG:
         handle = pb_obj_generation.generateSquarePeg(position, orientation, scale)
+      elif shape_type == constants.ROUND_PEG:
+        handle = pb_obj_generation.generateRoundPeg(position, orientation, scale)
       elif shape_type == constants.OBSTRUCTION:
         handle = pb_obj_generation.generateObstruction(position, orientation, scale)
       elif shape_type == constants.MUG:

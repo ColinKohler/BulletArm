@@ -5,6 +5,7 @@ import numpy.random as npr
 from bulletarm.pybullet.utils import constants
 from bulletarm.planners.close_loop_planner import CloseLoopPlanner
 from bulletarm.pybullet.utils import transformations
+from bulletarm.pybullet.utils import constants
 
 class CloseLoopPegInsertionPlanner(CloseLoopPlanner):
   def __init__(self, env, config):
@@ -32,8 +33,10 @@ class CloseLoopPegInsertionPlanner(CloseLoopPlanner):
   def setNewTarget(self):
     peg_pos, peg_rot = self.env.peg_hole.getHolePose()
 
-    #hole_z_offset = 0.1440
-    hole_z_offset = 0.11
+    if self.env.peg_type == constants.SQUARE_PEG:
+      hole_z_offset = 0.11
+    elif self.env.peg_type == constants.ROUND_PEG:
+      hole_z_offset = 0.14
 
     drag_pos_1 = copy.copy(peg_pos)
     drag_pos_1[2] += hole_z_offset + 0.01

@@ -8,12 +8,28 @@ from bulletarm.envs.close_loop_envs.close_loop_env import CloseLoopEnv
 from bulletarm.pybullet.utils import transformations
 import bulletarm.pybullet.utils.object_generation as pb_obj_generation
 from bulletarm.pybullet.equipment.square_peg_hole import SquarePegHole
+from bulletarm.pybullet.equipment.round_peg_hole import RoundPegHole
 from bulletarm.planners.close_loop_peg_insertion_planner import CloseLoopPegInsertionPlanner
 
 class CloseLoopPegInsertionEnv(CloseLoopEnv):
   def __init__(self, config):
     super().__init__(config)
-    self.peg_hole = SquarePegHole()
+    if 'peg_type' not in self.config.keys():
+      self.config['peg_type'] = 'square'
+    self.peg_type = self.config['peg_type']
+
+    if self.peg_type == 'round':
+      self.peg_hole = RoundPegHole()
+      self.peg_hole_rx = -np.pi * 0.5
+      self.peg_scale = 1.45
+      self.peg_type = constants.ROUND_PEG
+      self.peg_insertion_height = 0.13
+    elif self.peg_type == 'square':
+      self.peg_hole_rx = 0
+      self.peg_hole = SquarePegHole()
+      self.peg_type = constants.SQUARE_PEG
+      self.peg_scale = 1.18
+      self.peg_insertion_height = 0.12
     self.peg_hole_rz = 0
     self.peg_hole_pos = [self.workspace[0].mean(), self.workspace[1].mean(), 0.03]
     self.prev_ee_pos = deque(maxlen=5)
@@ -24,11 +40,11 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     self.peg_hole_rz = np.random.random_sample() * 2*np.pi - np.pi if self.random_orientation else 0
     self.peg_hole_pos = self._getValidPositions(0.20, 0, [], 1)[0]
     self.peg_hole_pos.append(0.03)
-    self.peg_hole.reset(self.peg_hole_pos, pb.getQuaternionFromEuler((0, 0, self.peg_hole_rz)))
+    self.peg_hole.reset(self.peg_hole_pos, pb.getQuaternionFromEuler((self.peg_hole_rx, 0, self.peg_hole_rz)))
 
   def initialize(self):
     super().initialize()
-    self.peg_hole.initialize(pos=self.peg_hole_pos, rot=pb.getQuaternionFromEuler((0, 0, self.peg_hole_rz)))
+    self.peg_hole.initialize(pos=self.peg_hole_pos, rot=pb.getQuaternionFromEuler((self.peg_hole_rx, 0, self.peg_hole_rz)))
 
   def step(self, action):
     obs, reward, done = super().step(action)
@@ -44,10 +60,10 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
 
     self.resetPegHole()
     self.peg = self._generateShapes(
-      constants.SQUARE_PEG,
+      self.peg_type,
       pos=[[self.workspace[0].mean(), self.workspace[1].mean(), 0.33]],
       rot=[pb.getQuaternionFromEuler((-np.pi * 0.5, 0, 0))],
-      scale=1.18, wait=False
+      scale=self.peg_scale, wait=False
     )[0]
     pb.changeDynamics(self.peg.object_id, -1, 1, lateralFriction=50.0, rollingFriction=0.0003, spinningFriction=0.3)
     pb.changeDynamics(self.peg.object_id, 0, 1, lateralFriction=0.1, rollingFriction=0.0003, spinningFriction=0.1)
@@ -69,12 +85,12 @@ class CloseLoopPegInsertionEnv(CloseLoopEnv):
     hole_pos, hole_rot = self.peg_hole.getHolePose()
     peg_pos = self.peg.getPosition()
 
-    return np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < 0.12
+    return np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < self.peg_insertion_height
 
   def _getReward(self):
     hole_pos, hole_rot = self.peg_hole.getHolePose()
     peg_pos = self.peg.getPosition()
-    success_reward = 1 if np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < 0.12 else 0
+    success_reward = 1 if np.allclose(hole_pos[:2], peg_pos[:2], atol=1e-2) and peg_pos[2] < self.peg_insertion_height else 0
 
     return success_reward
 

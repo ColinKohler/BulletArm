@@ -26,6 +26,7 @@ def run(task, robot, plot_obs, render):
       'view_scale' : 1.0,
       'obs_type' : ['vision', 'force', 'proprio'],
       'random_orientation': True,
+      'peg_type' : 'square'
     }
     planner_config = {'dpos': 0.025, 'drot': np.pi/16}
   else:
