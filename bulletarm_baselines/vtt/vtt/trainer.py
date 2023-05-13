@@ -69,7 +69,7 @@ class Trainer(object):
     for param in self.critic_target.parameters():
       param.requires_grad = False
 
-    self.pre_training_step = initial_checkpoint['pre_training_step']
+    self.latent_training_step = initial_checkpoint['latent_training_step']
     self.training_step = initial_checkpoint['training_step']
 
     # Initialize optimizer
@@ -159,7 +159,7 @@ class Trainer(object):
 
     # Pretrain latent model
     next_batch = replay_buffer.sampleLatent.remote(shared_storage)
-    while self.pre_training_step < self.config.pretraining_steps and \
+    while self.latent_training_step < self.config.pretraining_steps and \
       not ray.get(shared_storage.getInfo.remote('terminate')):
       batch = ray.get(next_batch)[1]
 
@@ -171,7 +171,7 @@ class Trainer(object):
        # Logger/Shared storage updates
       shared_storage.setInfo.remote(
         {
-          'pretraining_step' : self.pre_training_step,
+          'latent_step' : self.latent_step,
         }
       )
 
@@ -181,7 +181,7 @@ class Trainer(object):
         }
       )
 
-      self.pre_training_step += 1
+      self.latent_training_step += 1
     self.saveWeights(shared_storage)
 
     # Train policy
@@ -265,7 +265,7 @@ class Trainer(object):
     latent_loss.backward()
     self.latent_optimizer.step()
 
-    logger.logTrainingStep.remote(
+    logger.logLatentTrainingStep.remote(
       {
         'KLD Loss' : loss_kld.item(),
         'Reconstruction Loss' : loss_image.item(),

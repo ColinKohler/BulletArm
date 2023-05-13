@@ -32,6 +32,7 @@ class Logger(object):
     # Training
     self.num_steps = 0
     self.num_eps = 0
+    self.num_latent_training_steps = 0
     self.num_training_steps = 0
     self.training_eps_rewards = list()
     self.loss = dict()
@@ -126,6 +127,19 @@ class Logger(object):
         R = r + gamma * R
       self.eval_eps_dis_rewards[self.num_eval_intervals].append(R)
 
+  def logLatentTrainingStep(self, loss):
+    ''''''
+    self.num_latent_training_steps += 1
+    if type(loss) is list or type(loss) is tuple:
+      loss = {'loss{}'.format(i): loss[i] for i in range(loss)}
+    elif type(loss) is float:
+      loss = {'loss': loss}
+    for k, v in loss.items():
+      if k in self.loss.keys():
+        self.loss[k].append(v)
+      else:
+        self.loss[k] = [v]
+
   def logTrainingStep(self, loss):
     ''''''
     self.num_training_steps += 1
@@ -165,6 +179,7 @@ class Logger(object):
 
     self.writer.add_scalar('2.Data/1.Num_eps', self.num_eps, self.log_counter)
     self.writer.add_scalar('2.Data/2.Num_steps', self.num_steps, self.log_counter)
+    self.writer.add_scalar('2.Data/3.Latent_training_steps', self.num_latent_training_steps, self.log_counter)
     self.writer.add_scalar('2.Data/3.Training_steps', self.num_training_steps, self.log_counter)
     self.writer.add_scalar('2.Data/4.Training_steps_per_eps_step_ratio',
                            self.num_training_steps / max(1, self.num_steps),
@@ -187,6 +202,7 @@ class Logger(object):
     state = {
       'num_steps': self.num_steps,
       'num_eps': self.num_eps,
+      'num_latent_training_steps': self.num_latent_training_steps,
       'num_training_steps': self.num_training_steps,
       'training_eps_rewards': self.training_eps_rewards,
       'loss': self.loss,
@@ -311,6 +327,7 @@ class Logger(object):
 
     self.num_steps = checkpoint['logger']['num_steps']
     self.num_eps = checkpoint['logger']['num_eps']
+    self.num_latent_training_steps = checkpoint['logger']['num_latent_training_steps']
     self.num_training_steps = checkpoint['logger']['num_training_steps']
     self.training_eps_rewards = checkpoint['logger']['training_eps_rewards']
     self.loss = checkpoint['logger']['loss']
