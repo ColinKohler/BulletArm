@@ -93,6 +93,7 @@ class DataGenerator(object):
   def resetEnvs(self, is_expert=False):
     self.current_episodes = [EpisodeHistory(self.config.seq_len, is_expert) for _ in range(self.num_envs)]
     self.obs = self.envs.reset()
+
     for i, eps_history in enumerate(self.current_episodes):
       eps_history.logStep(self.obs[0][i], self.obs[1][i], self.obs[2][i], np.array([0,0,0,0,0]), 0, 0, 0, self.config.max_force)
 
@@ -150,7 +151,6 @@ class DataGenerator(object):
     done_idxs = np.nonzero(dones)[0]
     if len(done_idxs) != 0:
       new_obs_ = self.envs.reset_envs(done_idxs)
-      self.agent.resetEpisode()
 
       for i, done_idx in enumerate(done_idxs):
         if not self.eval:
