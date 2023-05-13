@@ -171,7 +171,7 @@ class Trainer(object):
        # Logger/Shared storage updates
       shared_storage.setInfo.remote(
         {
-          'latent_step' : self.latent_step,
+          'latent_step' : self.latent_training_step,
         }
       )
 
@@ -203,7 +203,6 @@ class Trainer(object):
       self.updateLatentAlign(batch)
       _, loss = self.updateSAC(batch)
       # replay_buffer.updatePriorities.remote(priorities.cpu(), idx_batch)
-      print('training step:', self.training_step)
       self.training_step += 1
 
       self.data_generator.stepEnvsWait(shared_storage, replay_buffer, logger)
