@@ -113,7 +113,7 @@ class Agent(object):
       z = z.view(self.num_envs, -1)
       z_action = torch.cat([z, self.action_history.view(self.num_envs, -1)], dim=1)
       if evaluate:
-        action, _ = self.actor(z_action)
+        action = self.actor(z_action)
       else:
         action, _ = self.actor.sample(z_action)
 
