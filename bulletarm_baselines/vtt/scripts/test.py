@@ -64,11 +64,10 @@ if __name__ == '__main__':
   num_success = 0
   pbar = tqdm.tqdm(total=args.num_eps)
   pbar.set_description('SR: 0%')
-  eps_lens = list()
   for i in range(args.num_eps):
     done = False
     obs = env.reset()
-    eps_lens.append(0)
+    agent.reset()
     while not done:
       action_idx, action, value = agent.getAction(
         obs[0].reshape(1, *obs[0].shape),
@@ -91,10 +90,8 @@ if __name__ == '__main__':
         plt.show()
 
       obs, reward, done = env.step(action.cpu().squeeze().numpy(), auto_reset=False)
-      eps_lens[-1] += 1
 
     num_success += int(reward >= 1)
     pbar.set_description('SR: {}%'.format(int((num_success / (i+1)) * 100)))
     pbar.update(1)
-  print(eps_lens)
   pbar.close()

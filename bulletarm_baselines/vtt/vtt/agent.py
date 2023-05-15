@@ -27,7 +27,7 @@ class Agent(object):
     self.dtheta_range = torch.tensor([-self.config.drot, self.config.drot])
     self.action_shape = self.config.action_dim
 
-    self.resetEpisode()
+    self.reset()
 
     if latent:
       self.latent = latent
@@ -62,24 +62,30 @@ class Agent(object):
       self.critic.to(self.device)
       self.critic.train()
 
-  def resetEpisode(self):
-    self.vision_history = torch.zeros(
-      self.num_envs,
-      self.config.seq_len,
-      self.config.vision_channels,
-      self.config.vision_size,
-      self.config.vision_size
-    ).to(self.device)
-    self.force_history = torch.zeros(
-      self.num_envs,
-      self.config.seq_len,
-      self.config.force_dim
-    ).to(self.device)
-    self.action_history = torch.zeros(
-      self.num_envs,
-      self.config.seq_len - 1,
-      self.config.action_dim
-    ).to(self.device)
+  def reset(self, reset_ids=None):
+    if reset_ids is not None:
+      for r_id in reset_ids:
+        self.vision_history[r_id] = 0
+        self.force_history[r_id] = 0
+        self.action_history[r_id] = 0
+    else:
+      self.vision_history = torch.zeros(
+        self.num_envs,
+        self.config.seq_len,
+        self.config.vision_channels,
+        self.config.vision_size,
+        self.config.vision_size
+      ).to(self.device)
+      self.force_history = torch.zeros(
+        self.num_envs,
+        self.config.seq_len,
+        self.config.force_dim
+      ).to(self.device)
+      self.action_history = torch.zeros(
+        self.num_envs,
+        self.config.seq_len - 1,
+        self.config.action_dim
+      ).to(self.device)
 
   def getAction(self, vision, force, proprio, evaluate=False):
     '''

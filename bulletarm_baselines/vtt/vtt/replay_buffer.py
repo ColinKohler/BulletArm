@@ -101,8 +101,8 @@ class ReplayBuffer(object):
        done,
       ) = [list() for _ in range(6)]
 
-      eps_id, eps_history, eps_prob = self.sampleEps(uniform=True)
-      eps_step = npr.choice(len(eps_history.vision_history) - self.config.seq_len - 1)
+      eps_id, eps_history, eps_prob = self.sampleEps(uniform=False)
+      eps_step = npr.choice(len(eps_history.vision_history) - self.config.seq_len)
       index_batch.append([eps_id, eps_step])
 
       for s in range(self.config.seq_len+1):
@@ -178,7 +178,7 @@ class ReplayBuffer(object):
       ) = [list() for _ in range(6)]
 
       eps_id, eps_history, _ = self.sampleEps(uniform=True)
-      eps_step = npr.choice(len(eps_history.vision_history) - self.config.seq_len - 1)
+      eps_step = npr.choice(len(eps_history.vision_history) - self.config.seq_len)
       index_batch.append([eps_id, eps_step])
 
       for s in range(self.config.seq_len+1):
