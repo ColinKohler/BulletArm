@@ -133,7 +133,7 @@ class DataGenerator(object):
         obs_[1][i],
         obs_[2][i],
         self.action_idxs[i].squeeze().numpy(),
-        0,
+        self.values[i].item(),
         rewards[i],
         dones[i],
         self.config.max_force
