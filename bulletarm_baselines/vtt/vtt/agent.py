@@ -113,23 +113,11 @@ class Agent(object):
       z = z.view(self.num_envs, -1)
       z_action = torch.cat([z, self.action_history.view(self.num_envs, -1)], dim=1)
       if evaluate:
-        action, _ = self.actor.sample(z_action)
+        action, _ = self.actor(z_action)
       else:
         action, _ = self.actor.sample(z_action)
 
       value = self.critic(z_, action)
-
-    # a check to see if the observations being recieved are the right ones
-    # for i in range(self.config.seq_len):
-    #   image = self.vision_history[1][i][0:3, :, :].permute(2,1,0)
-    #   image = image.detach().cpu().numpy()
-    #   if(np.sum(image) == 0):
-    #     print(i)
-    #   else:
-    #     print('non zero image')
-    #   fig = plt.figure(figsize=(3,3))
-    #   plt.imshow(image)
-    #   fig.savefig('vision.png')
 
     self.action_history = torch.roll(self.action_history, -1, 1)
     self.action_history[:,-1] = action

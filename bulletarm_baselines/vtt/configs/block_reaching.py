@@ -41,7 +41,7 @@ class BlockReachingConfig(Config):
     self.pretraining_steps = 100
     self.training_steps = 10000
     self.batch_size_latent = 32
-    self.batch_size_SAC = 32
+    self.batch_size_SAC = 64
     self.target_update_interval = 1
     self.checkpoint_interval = 100
     self.init_temp = 1e-2
@@ -50,7 +50,7 @@ class BlockReachingConfig(Config):
 
     # Eval
     self.num_eval_envs = 5
-    self.num_eval_episodes = 100
+    self.num_eval_episodes = 10
     self.eval_interval = 500
     self.num_eval_intervals = int(self.training_steps / self.eval_interval)
 
