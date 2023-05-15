@@ -109,12 +109,15 @@ class Agent(object):
 
     with torch.no_grad():
       z, _, _ = self.latent.encoder(self.vision_history, self.force_history)
+      z_ = z[:,-1].view(self.num_envs, -1)
       z = z.view(self.num_envs, -1)
-      z = torch.cat([z, self.action_history.view(self.num_envs, -1)], dim=1)
+      z_action = torch.cat([z, self.action_history.view(self.num_envs, -1)], dim=1)
       if evaluate:
-        action, _ = self.actor.sample(z)
+        action, _ = self.actor.sample(z_action)
       else:
-        action, _ = self.actor.sample(z)
+        action, _ = self.actor.sample(z_action)
+
+      value = self.critic(z_, action)
 
     # a check to see if the observations being recieved are the right ones
     # for i in range(self.config.seq_len):
@@ -134,7 +137,8 @@ class Agent(object):
     action = action.cpu()
     action_idx, action = self.decodeActions(*[action[:,i] for i in range(self.action_shape)])
 
-    value = 0
+    value = torch.min(torch.hstack((value[0], value[1])), dim=1)[0]
+
     return action_idx, action, value
 
   def decodeActions(self, unscaled_p, unscaled_dx, unscaled_dy, unscaled_dz, unscaled_dtheta):

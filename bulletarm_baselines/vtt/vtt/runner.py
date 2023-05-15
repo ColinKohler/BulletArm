@@ -130,7 +130,6 @@ class Runner(object):
 
         # Eval
         if info['run_eval_interval']:
-          # print('run eval')
           if info['generating_eval_eps']:
             self.shared_storage_worker.setInfo.remote('pause_training', True)
           while(ray.get(self.shared_storage_worker.getInfo.remote('generating_eval_eps'))):

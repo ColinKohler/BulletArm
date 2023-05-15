@@ -190,15 +190,20 @@ class Trainer(object):
           not ray.get(shared_storage.getInfo.remote('terminate')):
 
       # Pause training if we need to wait for eval interval to end
-      if ray.get(shared_storage.getInfo.remote('pause_training')):
-        time.sleep(0.5)
-        continue
+      while ray.get(shared_storage.getInfo.remote('pause_training')):
+        time.sleep(0.1)
 
+      self.latent.eval()
+      self.actor.eval()
+      self.critic.eval()
       self.data_generator.stepEnvsAsync(shared_storage, replay_buffer, logger)
 
       batch = ray.get(next_batch)[1]
       next_batch = replay_buffer.sample.remote(shared_storage)
 
+      self.latent.train()
+      self.actor.train()
+      self.critic.train()
       latent_loss = self.updateLatent(batch, logger)
       self.updateLatentAlign(batch)
       _, loss = self.updateSAC(batch)
