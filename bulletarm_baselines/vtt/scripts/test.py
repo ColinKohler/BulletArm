@@ -10,8 +10,8 @@ import numpy.random as npr
 import matplotlib
 import matplotlib.pyplot as plt
 
-from bulletarm_baselines.vtt.agent import Agent
-from bulletarm_baselines.vtt import torch_utils
+from bulletarm_baselines.vtt.vtt.agent import Agent
+from bulletarm_baselines.vtt.vtt import torch_utils
 from scripts.train import task_configs
 from bulletarm import env_factory
 
@@ -23,12 +23,10 @@ if __name__ == '__main__':
     help='Path to the checkpoint to load.')
   parser.add_argument('--num_eps', type=int, default=100,
     help='Number of episodes to test on.')
-  parser.add_argument('--num_sensors', type=int, default=2,
-    help='Number of sensors to use when rendering the heightmap')
   parser.add_argument('--vision_size', type=int, default=64,
     help='The size of the RGB-D image used for vision.')
-  parser.add_argument('--encoder', type=str, default='fusion',
-    help='Type of latent encoder to use')
+  parser.add_argument('--encoder', type=str, default='VTT',
+    help='Type of latent encoder to use: VTT, POE, CONCAT')
   parser.add_argument('--num_gpus', type=int, default=1,
     help='Number of GPUs to use for training.')
   parser.add_argument('--render', action='store_true', default=False,
@@ -37,13 +35,7 @@ if __name__ == '__main__':
     help='Render the simulation while evaluating.')
   args = parser.parse_args()
 
-  task_config = task_configs[args.task](
-    vision_size=args.vision_size,
-    args.num_sensors,
-    args.encoder,
-    args.num_gpus,
-    results_path=args.checkpoint
-  )
+  task_config = task_configs[args.task](args.vision_size, args.encoder, args.num_gpus, results_path=args.checkpoint)
   checkpoint_path = os.path.join(task_config.results_path,
                                  'model.checkpoint')
   if os.path.exists(checkpoint_path):
