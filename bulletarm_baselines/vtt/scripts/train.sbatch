@@ -18,7 +18,7 @@
 
 echo "node: $SLURM_NODELIST"
 if [ $# -eq 3 ]; then
-  python -u scripts/train.py $1 --vision_size=$2 --encoder=l3
+  python -u scripts/train.py $1 --vision_size=$2 --encoder=$3
 elif [ $# -eq 4 ]; then
   python -u scripts/train.py $1 --vision_size=$2 --encoder=$3 --results_path=$4
 else
