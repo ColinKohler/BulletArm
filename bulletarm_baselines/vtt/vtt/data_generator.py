@@ -41,20 +41,10 @@ class EvalDataGenerator(object):
 
     # Write log before moving onto the next eval interval (w/o this log for current interval may not get written)
     logger.writeLog.remote()
-    prev_reward = ray.get(shared_storage.getInfo.remote('best_model_reward'))
     logger_state = ray.get(logger.getSaveState.remote())
-    current_reward = np.mean(logger_state['eval_eps_rewards'][-1])
-    if current_reward >= prev_reward:
-      weights = self.data_generator.agent.getWeights()
-      shared_storage.setInfo.remote(
-        {
-          'best_model_reward' : current_reward,
-          'best_weights' : (torch_utils.dictToCpu(weights[0]),
-                            torch_utils.dictToCpu(weights[1]))
-        }
-      )
     if logger_state['num_eval_intervals'] < self.config.num_eval_intervals:
       logger.logEvalInterval.remote()
+    shared_storage.setInfo.remote('generating_eval_eps', False)
 
 class DataGenerator(object):
   '''
@@ -93,6 +83,7 @@ class DataGenerator(object):
   def resetEnvs(self, is_expert=False):
     self.current_episodes = [EpisodeHistory(self.config.seq_len, is_expert) for _ in range(self.num_envs)]
     self.obs = self.envs.reset()
+    self.agent.reset()
 
     for i, eps_history in enumerate(self.current_episodes):
       eps_history.logStep(self.obs[0][i], self.obs[1][i], self.obs[2][i], np.array([0,0,0,0,0]), 0, 0, 0, self.config.max_force)
@@ -142,7 +133,7 @@ class DataGenerator(object):
         obs_[1][i],
         obs_[2][i],
         self.action_idxs[i].squeeze().numpy(),
-        0,
+        self.values[i].item(),
         rewards[i],
         dones[i],
         self.config.max_force
@@ -150,6 +141,7 @@ class DataGenerator(object):
 
     done_idxs = np.nonzero(dones)[0]
     if len(done_idxs) != 0:
+      self.agent.reset(done_idxs)
       new_obs_ = self.envs.reset_envs(done_idxs)
 
       for i, done_idx in enumerate(done_idxs):

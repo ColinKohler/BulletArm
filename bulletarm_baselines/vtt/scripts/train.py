@@ -32,7 +32,7 @@ if __name__ == '__main__':
   parser.add_argument('--vision_size', type=int, default=64,
     help='The size of the RGB-D image used for vision.')
   parser.add_argument('--encoder', type=str, default='VTT',
-    help='Type of latent encoder to use: vtt, poe, concat')
+    help='Type of latent encoder to use: VTT, POE, CONCAT')
   parser.add_argument('--checkpoint', type=str, default=None,
     help='Path to the checkpoint to load.')
   parser.add_argument('--buffer', type=str, default=None,
