@@ -277,8 +277,11 @@ class ImageEncoder(nn.Module):
         # (32, 16, 16) -> (64, 8, 8)
         nn.Conv2d(32, 64, 3, 2, 1),
         nn.LeakyReLU(0.2, inplace=True),
-        # (64 8, 1) -> (256, 6,)
-        nn.Conv2d(128, img_dim, 4, 2, 1), # TODO: Fix this
+        # (64 8, 8) -> (128, 4, 4)
+        nn.Conv2d(64, 128, 3, 2, 1), # TODO: Fix this
+        nn.LeakyReLU(0.2, inplace=True),
+        # (128, 4, 4) -> (256, 1,)
+        nn.Conv2d(128, img_dim, 4, 2),
         nn.LeakyReLU(0.2, inplace=True),
     )
     self.img_norm = nn.LayerNorm(img_dim)
