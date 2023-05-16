@@ -63,7 +63,7 @@ if __name__ == '__main__':
     while not done:
       action_idx, action, value = agent.getAction(
         obs[0].reshape(1, *obs[0].shape),
-        obs[1],
+        obs[1].reshape(1, *obs[1].shape),
         obs[2],
         evaluate=True
       )

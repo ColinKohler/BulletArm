@@ -41,7 +41,7 @@ class BlockReachingConfig(Config):
     self.pretraining_steps = 10000
     self.training_steps = 25000
     self.batch_size_latent = 32
-    self.batch_size_SAC = 64
+    self.batch_size_SAC = 256
     self.target_update_interval = 1
     self.checkpoint_interval = 100
     self.init_temp = 1e-2
