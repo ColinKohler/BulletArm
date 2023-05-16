@@ -218,6 +218,86 @@ class ReplayBuffer(object):
         is_expert_batch
         )
     )
+  
+  def misalignSampleLatent(self, shared_storage):
+    '''
+    Sample a sequence of batches from the replay buffer for latent model training.
+
+    Args:
+      shared_storage (ray.Worker): Shared storage worker.
+
+    Returns:
+      (list[int], list[numpy.array], list[numpy.array], list[double], list[double]) : (Index, Observation, Action, Reward)
+    '''
+    (index_batch,
+     vision_batch,
+     force_batch,
+     proprio_batch,
+     action_batch,
+     reward_batch,
+     done_batch,
+     is_expert_batch
+    ) = [list() for _ in range(8)]
+
+    for _ in range(self.config.batch_size_latent):
+      (vision,
+       force,
+       proprio,
+       action,
+       reward,
+       done,
+      ) = [list() for _ in range(6)]
+
+      #  Sample two different episodes for vision and force to obtain misaligned data
+      eps_id_vision, eps_history_vision, _ = self.sampleEps(uniform=True)
+      eps_id_force, eps_history_force, _ = self.sampleEps(uniform=True)
+      if eps_id_vision == eps_id_force:
+        eps_id_vision, eps_history_vision, _ = self.sampleEps(uniform=True)
+        eps_id_force, eps_history_force, _ = self.sampleEps(uniform=True)
+
+      eps_step_vision = npr.choice(len(eps_history_vision.vision_history) - self.config.seq_len)
+      eps_step_force = npr.choice(len(eps_history_force.vision_history) - self.config.seq_len)
+
+      index_batch.append([eps_id_vision, eps_step_vision])
+
+      for s in range(self.config.seq_len+1):
+        step_vision = eps_step_vision + s
+        step_force = eps_step_force + s
+
+        vision.append(self.centerCrop(eps_history_vision.vision_history[step_vision], out=self.config.vision_size))
+        force.append(eps_history_force.force_history[step_force][-1])
+        proprio.append(eps_history_vision.proprio_history[step_vision])
+        if s > 0:
+          action.append(eps_history_vision.action_history[step_vision])
+          reward.append(eps_history_vision.reward_history[step_vision])
+          done.append(eps_history_vision.done_history[step_vision])
+
+      vision_batch.append(vision)
+      force_batch.append(force)
+      proprio_batch.append(proprio)
+      action_batch.append(action)
+      reward_batch.append(reward)
+      done_batch.append(done)
+      is_expert_batch.append(eps_history_vision.is_expert)
+
+    vision_batch = torch.tensor(np.array(vision_batch)).float()
+    force_batch = torch.tensor(np.array(force_batch)).float()
+    proprio_batch = torch.tensor(np.array(proprio_batch)).float()
+    action_batch = torch.tensor(np.array(action_batch)).float()
+    reward_batch = torch.tensor(np.array(reward_batch)).float()
+    done_batch = torch.tensor(np.array(done_batch)).float()
+    is_expert_batch = torch.tensor(np.array(is_expert_batch)).long()
+
+    return (
+        index_batch,
+        (
+        (vision_batch, force_batch, proprio_batch),
+        action_batch,
+        reward_batch,
+        done_batch,
+        is_expert_batch
+        )
+    )
 
   def sampleEps(self, uniform=False):
     '''

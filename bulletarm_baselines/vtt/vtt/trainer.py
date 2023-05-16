@@ -159,14 +159,16 @@ class Trainer(object):
 
     # Pretrain latent model
     next_batch = replay_buffer.sampleLatent.remote(shared_storage)
+    next_batch_latent = replay_buffer.misalignSampleLatent.remote(shared_storage)
     while self.latent_training_step < self.config.pretraining_steps and \
       not ray.get(shared_storage.getInfo.remote('terminate')):
       batch = ray.get(next_batch)[1]
+      batch_latent = ray.get(next_batch_latent)[1]
 
       next_batch = replay_buffer.sampleLatent.remote(shared_storage)
-
+      next_batch_latent = replay_buffer.misalignSampleLatent.remote(shared_storage)
       latent_loss = self.updateLatent(batch, logger)
-      self.updateLatentAlign(batch)
+      self.updateLatentAlign(batch_latent)
 
        # Logger/Shared storage updates
       shared_storage.setInfo.remote(
@@ -181,6 +183,7 @@ class Trainer(object):
         }
       )
 
+      print('Pretraining latent model: {}'.format(self.latent_training_step))
       self.latent_training_step += 1
     self.saveWeights(shared_storage)
 
