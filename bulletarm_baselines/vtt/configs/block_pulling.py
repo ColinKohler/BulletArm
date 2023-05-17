@@ -38,18 +38,19 @@ class BlockPullingConfig(Config):
                                        'block_pulling',
                                        datetime.datetime.now().strftime('%Y-%m-%d--%H-%M-%S'))
     self.save_model = True
+    self.pretraining_steps = 10000
     self.training_steps = 25000
-    self.batch_size = 64
+    self.batch_size_latent = 32
+    self.batch_size_SAC = 64
     self.target_update_interval = 1
     self.checkpoint_interval = 100
     self.init_temp = 1e-2
-    self.tau = 1e-2
+    self.tau = 5e-3
     self.discount = 0.99
-    self.deterministic = True
 
      # Eval
     self.num_eval_envs = 5
-    self.num_eval_episodes = 100
+    self.num_eval_episodes = 10
     self.eval_interval = 500
     self.num_eval_intervals = int(self.training_steps / self.eval_interval)
 

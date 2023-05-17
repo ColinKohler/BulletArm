@@ -201,7 +201,7 @@ class Trainer(object):
       self.critic.eval()
       self.data_generator.stepEnvsAsync(shared_storage, replay_buffer, logger)
 
-      batch = ray.get(next_batch)[1]
+      idx_batch, batch = ray.get(next_batch)
       next_batch = replay_buffer.sample.remote(shared_storage)
 
       self.latent.train()
@@ -209,8 +209,8 @@ class Trainer(object):
       self.critic.train()
       latent_loss = self.updateLatent(batch, logger)
       self.updateLatentAlign(batch)
-      _, loss = self.updateSAC(batch)
-      # replay_buffer.updatePriorities.remote(priorities.cpu(), idx_batch)
+      priorities, loss = self.updateSAC(batch)
+      replay_buffer.updatePriorities.remote(priorities.cpu(), idx_batch)
       self.training_step += 1
 
       self.data_generator.stepEnvsWait(shared_storage, replay_buffer, logger)

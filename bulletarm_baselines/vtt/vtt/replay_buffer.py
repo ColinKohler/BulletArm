@@ -102,7 +102,8 @@ class ReplayBuffer(object):
       ) = [list() for _ in range(6)]
 
       eps_id, eps_history, eps_prob = self.sampleEps(uniform=False)
-      eps_step = npr.choice(len(eps_history.vision_history) - self.config.seq_len)
+      eps_step, step_prob = self.sampleStep(eps_history, uniform=False)
+      #eps_step = npr.choice(len(eps_history.vision_history) - self.config.seq_len)
       index_batch.append([eps_id, eps_step])
 
       for s in range(self.config.seq_len+1):
@@ -116,7 +117,6 @@ class ReplayBuffer(object):
           reward.append(eps_history.reward_history[step])
           done.append(eps_history.done_history[step])
 
-      index_batch.append([eps_id, eps_step])
       vision_batch.append(vision)
       force_batch.append(force)
       proprio_batch.append(proprio)
@@ -333,7 +333,7 @@ class ReplayBuffer(object):
       step_idx = npr.choice(len(eps_history.done_history[:-1]))
       step_prob = 1.0
     else:
-      step_probs = eps_history.priorities[:-1] / sum(eps_history.priorities[:-1])
+      step_probs = eps_history.priorities[:-self.config.seq_len] / sum(eps_history.priorities[:-self.config.seq_len])
       step_idx = npr.choice(len(step_probs), p=step_probs)
       step_prob = step_probs[step_idx]
 
