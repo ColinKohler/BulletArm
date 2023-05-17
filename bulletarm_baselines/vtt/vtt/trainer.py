@@ -218,9 +218,9 @@ class Trainer(object):
       torch_utils.softUpdate(self.critic_target, self.critic, self.config.tau)
 
       # Update LRs
-      if self.training_step > 0 and self.training_step % self.config.lr_decay_interval == 0:
-        self.actor_scheduler.step()
-        self.critic_scheduler.step()
+      #if self.training_step > 0 and self.training_step % self.config.lr_decay_interval == 0:
+      #  self.actor_scheduler.step()
+      #  self.critic_scheduler.step()
 
       # Save to shared storage
       if self.training_step % self.config.checkpoint_interval == 0:
