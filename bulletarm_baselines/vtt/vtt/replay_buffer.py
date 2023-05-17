@@ -251,7 +251,7 @@ class ReplayBuffer(object):
       #  Sample two different episodes for vision and force to obtain misaligned data
       eps_id_vision, eps_history_vision, _ = self.sampleEps(uniform=True)
       eps_id_force, eps_history_force, _ = self.sampleEps(uniform=True)
-      if eps_id_vision == eps_id_force:
+      while eps_id_vision == eps_id_force:
         eps_id_vision, eps_history_vision, _ = self.sampleEps(uniform=True)
         eps_id_force, eps_history_force, _ = self.sampleEps(uniform=True)
 
