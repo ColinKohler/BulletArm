@@ -39,7 +39,7 @@ class BlockPullingConfig(Config):
                                        datetime.datetime.now().strftime('%Y-%m-%d--%H-%M-%S'))
     self.save_model = True
     self.pretraining_steps = 10000
-    self.training_steps = 25000
+    self.training_steps = 35000
     self.batch_size_latent = 32
     self.batch_size_SAC = 64
     self.target_update_interval = 1
@@ -55,8 +55,9 @@ class BlockPullingConfig(Config):
     self.num_eval_intervals = int(self.training_steps / self.eval_interval)
 
     # LR schedule
-    self.actor_lr_init = 1e-3
-    self.critic_lr_init = 1e-3
+    self.latent_lr_init =1e-4
+    self.actor_lr_init = 3e-4
+    self.critic_lr_init = 3e-4
     self.lr_decay = 0.95
     self.lr_decay_interval = 500
 
@@ -91,7 +92,6 @@ class BlockPullingConfig(Config):
       'workspace_check' : 'point',
       'reward_type' : self.reward_type,
       'view_type' : self.view_type,
-      'num_sensors' : 1,
       'obs_type' : self.obs_type,
       'render': render
     }

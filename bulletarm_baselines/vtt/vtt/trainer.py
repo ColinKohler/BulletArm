@@ -183,7 +183,6 @@ class Trainer(object):
         }
       )
 
-      print('Pretraining latent model: {}'.format(self.latent_training_step))
       self.latent_training_step += 1
     self.saveWeights(shared_storage)
 
