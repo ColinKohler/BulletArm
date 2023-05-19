@@ -112,9 +112,9 @@ class ReplayBuffer(object):
       for s in range(self.config.seq_len+1):
         step = eps_step + s
 
-        vision = eps_history.vision_history[step]
-        cropped_vision = vision[:,random_crop[0]:random_crop[0] + self.config.vision_size, random_crop[1]:random_crop[1] + self.config.vision_size]
-        vision.append(cropped_vision)
+        v = eps_history.vision_history[step]
+        cropped_v = v[:,random_crop[0]:random_crop[0] + self.config.vision_size, random_crop[1]:random_crop[1] + self.config.vision_size]
+        vision.append(cropped_v)
         force.append(eps_history.force_history[step][-1])
         proprio.append(eps_history.proprio_history[step])
         if s > 0:
@@ -192,9 +192,9 @@ class ReplayBuffer(object):
       for s in range(self.config.seq_len+1):
         step = eps_step + s
 
-        vision = eps_history.vision_history[step]
-        cropped_vision = vision[:,random_crop[0]:random_crop[0] + self.config.vision_size, random_crop[1]:random_crop[1] + self.config.vision_size]
-        vision.append(cropped_vision)
+        v = eps_history.vision_history[step]
+        cropped_v = v[:,random_crop[0]:random_crop[0] + self.config.vision_size, random_crop[1]:random_crop[1] + self.config.vision_size]
+        vision.append(cropped_v)
         force.append(eps_history.force_history[step][-1])
         proprio.append(eps_history.proprio_history[step])
         if s > 0:
@@ -276,9 +276,9 @@ class ReplayBuffer(object):
         step_vision = eps_step_vision + s
         step_force = eps_step_force + s
 
-        vision = eps_history.vision_history[step]
-        cropped_vision = vision[:,random_crop[0]:random_crop[0] + self.config.vision_size, random_crop[1]:random_crop[1] + self.config.vision_size]
-        vision.append(cropped_vision)
+        v = eps_history.vision_history[step]
+        cropped_v = v[:,random_crop[0]:random_crop[0] + self.config.vision_size, random_crop[1]:random_crop[1] + self.config.vision_size]
+        vision.append(cropped_v)
         force.append(eps_history_force.force_history[step_force][-1])
         proprio.append(eps_history_vision.proprio_history[step_vision])
         if s > 0:
