@@ -178,7 +178,7 @@ class EpisodeHistory(object):
   Class containing the history of an episode.
   '''
   def __init__(self, seq_len, is_expert=False):
-    self.vision_history = [np.zeros((4, 64, 64))] * (seq_len - 1)
+    self.vision_history = [np.zeros((4, 76, 76))] * (seq_len - 1)
     self.force_history = [np.zeros((64, 6))] * (seq_len - 1)
     self.proprio_history = [np.zeros(5)] * (seq_len - 1)
     self.action_history = [np.zeros(5)]  * (seq_len - 1)

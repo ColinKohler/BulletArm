@@ -73,8 +73,8 @@ class Agent(object):
         self.num_envs,
         self.config.seq_len,
         self.config.vision_channels,
-        self.config.vision_size,
-        self.config.vision_size
+        self.config.obs_size,
+        self.config.obs_size
       ).to(self.device)
       self.force_history = torch.zeros(
         self.num_envs,
@@ -97,18 +97,29 @@ class Agent(object):
     Returns:
       (numpy.array, double) : (Action, Q-Value)
     '''
+    self.obs_history = torch.zeros(self.num_envs,
+        self.config.seq_len,
+        self.config.vision_channels,
+        self.config.vision_size,
+        self.config.vision_size
+      ).to(self.device)
+    self.vision_history = torch.roll(self.vision_history, -1, 1)
     vision = torch.Tensor(vision.astype(np.float32)).view(vision.shape[0], vision.shape[1], vision.shape[2], vision.shape[3]).to(self.device)
-    vision = torch_utils.centerCrop(vision, out=self.config.vision_size)
+    self.vision_history[:,-1] = vision
+    for i in range(self.num_envs):
+      self.obs_history[i] = torch_utils.centerCrop(self.vision_history[i])
+    # vision = torch.Tensor(vision.astype(np.float32)).view(vision.shape[0], vision.shape[1], vision.shape[2], vision.shape[3]).to(self.device)
+    # vision = torch_utils.centerCrop(vision, out=self.config.vision_size)
     force = torch.Tensor(torch_utils.normalizeForce(force[:, -1, :], self.config.max_force)).view(vision.shape[0], self.config.force_dim).to(self.device)
     proprio = torch.Tensor(proprio).view(vision.shape[0], self.config.proprio_dim).to(self.device)
 
-    self.vision_history = torch.roll(self.vision_history, -1, 1)
-    self.vision_history[:,-1] = vision
+    # self.vision_history = torch.roll(self.vision_history, -1, 1)
+    # self.vision_history[:,-1] = vision
     self.force_history = torch.roll(self.force_history, -1, 1)
     self.force_history[:,-1] = force
 
     with torch.no_grad():
-      z, _, _ = self.latent.encoder(self.vision_history, self.force_history)
+      z, _, _ = self.latent.encoder(self.obs_history, self.force_history)
       z_ = z[:,-1].view(self.num_envs, -1)
       z = z.view(self.num_envs, -1)
       z_action = torch.cat([z, self.action_history.view(self.num_envs, -1)], dim=1)

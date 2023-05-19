@@ -129,7 +129,7 @@ class Runner(object):
         hours = divmod(time.time()-start, 3600)[0]
         if hours > 7:
           self.trainer_worker.saveWeights(self.shared_storage_worker)
-          self.shared_storage.saveReplayBuffer.remote(replay_buffer.getBuffer.remote())
+          self.shared_storage.saveReplayBuffer.remote(self.replay_buffer_worker.getBuffer.remote())
           self.shared_storage.saveCheckpoint.remote()
           self.logger_worker.exportData.remote()
 
