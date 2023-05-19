@@ -276,7 +276,7 @@ class ReplayBuffer(object):
         step_vision = eps_step_vision + s
         step_force = eps_step_force + s
 
-        v = eps_history.vision_history[step]
+        v = eps_history_vision.vision_history[step]
         cropped_v = v[:,random_crop[0]:random_crop[0] + self.config.vision_size, random_crop[1]:random_crop[1] + self.config.vision_size]
         vision.append(cropped_v)
         force.append(eps_history_force.force_history[step_force][-1])
