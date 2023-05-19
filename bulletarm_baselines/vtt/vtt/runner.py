@@ -5,7 +5,8 @@ import copy
 import ray
 import torch
 import numpy.random as npr
-
+import pickle
+import time
 from bulletarm_baselines.vtt.vtt.trainer import Trainer
 from bulletarm_baselines.vtt.vtt.replay_buffer import ReplayBuffer
 from bulletarm_baselines.vtt.vtt.data_generator import DataGenerator, EvalDataGenerator
@@ -64,7 +65,7 @@ class Runner(object):
                                    'replay_buffer.pkl')
     self.load(checkpoint_path=checkpoint,
               replay_buffer_path=replay_buffer)
-
+    
     # Workers
     self.logger_worker = None
     self.data_gen_workers = None
@@ -125,7 +126,6 @@ class Runner(object):
     info = ray.get(self.shared_storage_worker.getInfo.remote(keys))
     try:
       while info['training_step'] < self.config.training_steps or info['generating_eval_eps'] or info['run_eval_interval']:
-        # print('inside the first while')
         info = ray.get(self.shared_storage_worker.getInfo.remote(keys))
 
         # Eval
