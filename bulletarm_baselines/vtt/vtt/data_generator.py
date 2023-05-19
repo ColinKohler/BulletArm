@@ -37,7 +37,6 @@ class EvalDataGenerator(object):
       self.data_generator.stepEnvsAsync(shared_storage, replay_buffer, logger)
       complete_eps = self.data_generator.stepEnvsWait(shared_storage, replay_buffer, logger)
       gen_eps += complete_eps
-    shared_storage.setInfo.remote('generating_eval_eps', False)
 
     # Write log before moving onto the next eval interval (w/o this log for current interval may not get written)
     logger.writeLog.remote()

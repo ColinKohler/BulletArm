@@ -123,9 +123,13 @@ class Runner(object):
       'generating_eval_eps'
     ]
 
+    start_time = time.time()
+    timeout_soon = 7.9 * 60 * 60
     info = ray.get(self.shared_storage_worker.getInfo.remote(keys))
     try:
       while info['training_step'] < self.config.training_steps or info['generating_eval_eps'] or info['run_eval_interval']:
+        # if time.time() - start_time > timeout_soon:
+        #   self.logger_worker.exportData.remote()
         info = ray.get(self.shared_storage_worker.getInfo.remote(keys))
 
         # Eval

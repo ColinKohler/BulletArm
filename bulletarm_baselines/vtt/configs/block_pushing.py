@@ -38,8 +38,8 @@ class BlockPushingConfig(Config):
                                        'block_pushing',
                                        datetime.datetime.now().strftime('%Y-%m-%d--%H-%M-%S'))
     self.save_model = True
-    self.pretraining_steps = 12000
-    self.training_steps = 25000
+    self.pretraining_steps = 10000
+    self.training_steps = 35000
     self.batch_size_latent = 32
     self.batch_size_SAC = 64
     self.target_update_interval = 1
@@ -47,7 +47,6 @@ class BlockPushingConfig(Config):
     self.init_temp = 1e-2
     self.tau = 5e-3
     self.discount = 0.99
-    # self.deterministic = True
 
      # Eval
     self.num_eval_envs = 5

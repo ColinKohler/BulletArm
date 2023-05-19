@@ -71,9 +71,7 @@ class Trainer(object):
       param.requires_grad = False
 
     self.latent_training_step = initial_checkpoint['latent_training_step']
-    print(self.latent_training_step)
     self.training_step = initial_checkpoint['training_step']
-    print(self.training_step)
 
     # Initialize optimizer
     self.latent_optimizer = torch.optim.Adam(self.latent.parameters(),
