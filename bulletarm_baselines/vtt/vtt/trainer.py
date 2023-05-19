@@ -7,7 +7,6 @@ import torch.nn.functional as F
 import numpy as np
 import numpy.random as npr
 
-import time
 from bulletarm_baselines.vtt.vtt.agent import Agent
 from bulletarm_baselines.vtt.vtt.data_generator import DataGenerator, EvalDataGenerator
 from bulletarm_baselines.vtt.vtt.models.sac import TwinnedQNetwork, GaussianPolicy
@@ -27,8 +26,7 @@ class Trainer(object):
   def __init__(self, initial_checkpoint, config):
     self.config = config
     self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-    
-    self.start = time.time()
+
     self.alpha = self.config.init_temp
     self.target_entropy = -self.config.action_dim
     self.log_alpha = torch.tensor(np.log(self.alpha), requires_grad=True, device=self.device)
@@ -183,7 +181,7 @@ class Trainer(object):
           '3.Loss/4.Latent_lr' : self.latent_optimizer.param_groups[0]['lr'],
         }
       )
-  
+
       self.latent_training_step += 1
     self.saveWeights(shared_storage)
 
@@ -213,11 +211,6 @@ class Trainer(object):
       replay_buffer.updatePriorities.remote(priorities.cpu(), idx_batch)
       self.training_step += 1
 
-      hours = divmod(time.time()-self.start, 3600)[0]
-      if hours > 7:
-        print("Crossed 7 hour mark - Terminating. Please rerun by loading buffer and checkpoint")
-        ray.shutdown()
-
       self.data_generator.stepEnvsWait(shared_storage, replay_buffer, logger)
 
       # Update target critic towards current critic
@@ -233,7 +226,6 @@ class Trainer(object):
         self.saveWeights(shared_storage)
 
         if self.config.save_model:
-          print("inside trainer sav func")
           shared_storage.saveReplayBuffer.remote(replay_buffer.getBuffer.remote())
           shared_storage.saveCheckpoint.remote()
 
@@ -376,7 +368,6 @@ class Trainer(object):
     return obs_batch, action_batch, reward_batch, done_batch
 
   def saveWeights(self, shared_storage):
-    print("saving optm")
     latent_weights = torch_utils.dictToCpu(self.latent.state_dict())
     actor_weights = torch_utils.dictToCpu(self.actor.state_dict())
     critic_weights = torch_utils.dictToCpu(self.critic.state_dict())

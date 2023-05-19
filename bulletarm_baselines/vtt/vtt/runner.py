@@ -6,7 +6,6 @@ import ray
 import torch
 import numpy.random as npr
 import pickle
-import time
 from bulletarm_baselines.vtt.vtt.trainer import Trainer
 from bulletarm_baselines.vtt.vtt.replay_buffer import ReplayBuffer
 from bulletarm_baselines.vtt.vtt.data_generator import DataGenerator, EvalDataGenerator
@@ -65,7 +64,7 @@ class Runner(object):
                                    'replay_buffer.pkl')
     self.load(checkpoint_path=checkpoint,
               replay_buffer_path=replay_buffer)
-    
+
     # Workers
     self.logger_worker = None
     self.data_gen_workers = None
@@ -123,13 +122,20 @@ class Runner(object):
       'generating_eval_eps'
     ]
 
-    start_time = time.time()
-    timeout_soon = 7.9 * 60 * 60
+    start = time.time()
     info = ray.get(self.shared_storage_worker.getInfo.remote(keys))
     try:
       while info['training_step'] < self.config.training_steps or info['generating_eval_eps'] or info['run_eval_interval']:
-        # if time.time() - start_time > timeout_soon:
-        #   self.logger_worker.exportData.remote()
+        hours = divmod(time.time()-start, 3600)[0]
+        if hours > 7:
+          self.trainer_worker.saveWeights(self.shared_storage_worker)
+          self.shared_storage.saveReplayBuffer.remote(replay_buffer.getBuffer.remote())
+          self.shared_storage.saveCheckpoint.remote()
+          self.logger_worker.exportData.remote()
+
+          print("Crossed 7 hour mark - Terminating. Please rerun by loading buffer and checkpoint")
+          ray.shutdown()
+
         info = ray.get(self.shared_storage_worker.getInfo.remote(keys))
 
         # Eval

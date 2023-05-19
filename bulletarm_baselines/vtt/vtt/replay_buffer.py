@@ -106,10 +106,15 @@ class ReplayBuffer(object):
       #eps_step = npr.choice(len(eps_history.vision_history) - self.config.seq_len)
       index_batch.append([eps_id, eps_step])
 
+      crop_max = self.config.obs_size - self.config.vision_size + 1
+      random_crop = [np.random.randint(0, crop_max), np.random.randint(0, crop_max)]
+
       for s in range(self.config.seq_len+1):
         step = eps_step + s
 
-        vision.append(self.centerCrop(eps_history.vision_history[step], out=self.config.vision_size))
+        vision = eps_history.vision_history[step]
+        cropped_vision = vision[:,random_crop[0]:random_crop[0] + self.config.vision_size, random_crop[1]:random_crop[1] + self.config.vision_size]
+        vision.append(cropped_vision)
         force.append(eps_history.force_history[step][-1])
         proprio.append(eps_history.proprio_history[step])
         if s > 0:
@@ -181,10 +186,15 @@ class ReplayBuffer(object):
       eps_step = npr.choice(len(eps_history.vision_history) - self.config.seq_len)
       index_batch.append([eps_id, eps_step])
 
+      crop_max = self.config.obs_size - self.config.vision_size + 1
+      random_crop = [np.random.randint(0, crop_max), np.random.randint(0, crop_max)]
+
       for s in range(self.config.seq_len+1):
         step = eps_step + s
 
-        vision.append(self.centerCrop(eps_history.vision_history[step], out=self.config.vision_size))
+        vision = eps_history.vision_history[step]
+        cropped_vision = vision[:,random_crop[0]:random_crop[0] + self.config.vision_size, random_crop[1]:random_crop[1] + self.config.vision_size]
+        vision.append(cropped_vision)
         force.append(eps_history.force_history[step][-1])
         proprio.append(eps_history.proprio_history[step])
         if s > 0:
@@ -218,7 +228,7 @@ class ReplayBuffer(object):
         is_expert_batch
         )
     )
-  
+
   def misalignSampleLatent(self, shared_storage):
     '''
     Sample a sequence of batches from the replay buffer for latent model training.
@@ -257,14 +267,18 @@ class ReplayBuffer(object):
 
       eps_step_vision = npr.choice(len(eps_history_vision.vision_history) - self.config.seq_len)
       eps_step_force = npr.choice(len(eps_history_force.vision_history) - self.config.seq_len)
-
       index_batch.append([eps_id_vision, eps_step_vision])
+
+      crop_max = self.config.obs_size - self.config.vision_size + 1
+      random_crop = [np.random.randint(0, crop_max), np.random.randint(0, crop_max)]
 
       for s in range(self.config.seq_len+1):
         step_vision = eps_step_vision + s
         step_force = eps_step_force + s
 
-        vision.append(self.centerCrop(eps_history_vision.vision_history[step_vision], out=self.config.vision_size))
+        vision = eps_history.vision_history[step]
+        cropped_vision = vision[:,random_crop[0]:random_crop[0] + self.config.vision_size, random_crop[1]:random_crop[1] + self.config.vision_size]
+        vision.append(cropped_vision)
         force.append(eps_history_force.force_history[step_force][-1])
         proprio.append(eps_history_vision.proprio_history[step_vision])
         if s > 0:
