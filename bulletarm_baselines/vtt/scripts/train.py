@@ -37,10 +37,12 @@ if __name__ == '__main__':
     help='Path to the checkpoint to load.')
   parser.add_argument('--buffer', type=str, default=None,
     help='Path to the replay buffer to load.')
+  parser.add_argument('--log_file', type=str, default=None,
+    help='Path to the log_file to load.')
   args = parser.parse_args()
 
   task_config = task_configs[args.task](args.vision_size, args.encoder, args.num_gpus, results_path=args.results_path)
-  runner = Runner(task_config, checkpoint=args.checkpoint, replay_buffer=args.buffer)
+  runner = Runner(task_config, checkpoint=args.checkpoint, replay_buffer=args.buffer, log_file=args.log_file)
 
   runner.train()
   ray.shutdown()

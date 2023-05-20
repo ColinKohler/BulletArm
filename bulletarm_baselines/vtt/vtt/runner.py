@@ -22,7 +22,7 @@ class Runner(object):
     checkpoint (str): Path to checkpoint to load after initialization. Defaults to None.
     replay_buffer (dict): Path to replay buffer to load after initialization. Defaults to None.
   '''
-  def __init__(self, config, checkpoint=None, replay_buffer=None):
+  def __init__(self, config, checkpoint=None, replay_buffer=None, log_file=None):
     self.config = config
 
     # Set random seeds
@@ -62,6 +62,13 @@ class Runner(object):
       replay_buffer = os.path.join(self.config.domain_path,
                                    replay_buffer,
                                    'replay_buffer.pkl')
+    if log_file:
+      self.log_file = os.path.join(self.config.domain_path,
+                                   log_file,
+                                   'log_data.pkl')
+    else:
+      self.log_file = None
+
     self.load(checkpoint_path=checkpoint,
               replay_buffer_path=replay_buffer)
 
@@ -81,7 +88,8 @@ class Runner(object):
       self.config.results_path,
       self.config.__dict__,
       checkpoint_interval=self.config.checkpoint_interval,
-      num_eval_eps=self.config.num_eval_episodes
+      num_eval_eps=self.config.num_eval_episodes,
+      log_file=self.log_file
     )
     self.training_worker = Trainer.options(num_cpus=0, num_gpus=1).remote(self.checkpoint, self.config)
 
@@ -127,13 +135,13 @@ class Runner(object):
     try:
       while info['training_step'] < self.config.training_steps or info['generating_eval_eps'] or info['run_eval_interval']:
         hours = divmod(time.time()-start, 3600)[0]
-        if hours > 7:
-          self.trainer_worker.saveWeights(self.shared_storage_worker)
-          self.shared_storage.saveReplayBuffer.remote(self.replay_buffer_worker.getBuffer.remote())
-          self.shared_storage.saveCheckpoint.remote()
-          self.logger_worker.exportData.remote()
+        if self.config.cluster and hours > 7:
+          # Ray.get ensures we wait for these methods to return before shuttting down ray
+          ray.get(self.trainer_worker.saveWeights(self.shared_storage_worker))
+          ray.get(self.shared_storage.saveReplayBuffer.remote(self.replay_buffer_worker.getBuffer.remote()))
+          ray.get(self.shared_storage.saveCheckpoint.remote())
+          ray.get(self.logger_worker.exportData.remote())
 
-          print("Crossed 7 hour mark - Terminating. Please rerun by loading buffer and checkpoint")
           ray.shutdown()
 
         info = ray.get(self.shared_storage_worker.getInfo.remote(keys))

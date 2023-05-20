@@ -22,5 +22,5 @@ if [ $# -eq 3 ]; then
 elif [ $# -eq 4 ]; then
   python -u scripts/train.py $1 --vision_size=$2 --encoder=$3 --results_path=$4
 else
-  python -u scripts/train.py $1 --vision_size=$2 --encoder=$3 --results_path=$4 --checkpoint=$5 --buffer=$6
+  python -u scripts/train.py $1 --vision_size=$2 --encoder=$3 --results_path=$4 --checkpoint=$5 --buffer=$6 --log_file=$7
 fi

@@ -22,7 +22,7 @@ class Logger(object):
     num_eval_eps (int): Number of episodes in a evaluation iteration
     hyperparameters (dict): Hyperparameters to log. Defaults to None
   '''
-  def __init__(self, results_path, hyperparameters, checkpoint_interval=500, num_eval_eps=100):
+  def __init__(self, results_path, hyperparameters, checkpoint_interval=500, num_eval_eps=100, log_file=None):
     self.results_path = results_path
     self.writer = SummaryWriter(results_path)
     self.checkpoint_interval = checkpoint_interval
@@ -46,6 +46,8 @@ class Logger(object):
     self.eval_eps_lens = [list()]
     self.num_eval_eps = num_eval_eps
 
+    if log_file:
+      self.loadSaveState(log_file)
 
     # sub folders for saving the models and checkpoint
     self.models_dir = os.path.join(self.results_path, 'models')
@@ -214,6 +216,22 @@ class Logger(object):
     }
     return state
 
+  def loadSaveState(self, state_fp):
+    with open(state_fp, 'rb') as f:
+      data = pickle.load(f)
+
+      self.num_steps = data['num_steps']
+      self.num_eps = data['num_eps']
+      self.num_latent_training_steps = data['num_latent_training_steps']
+      self.num_training_steps = data['num_training_steps']
+      self.training_eps_rewards = data['training_eps_rewards']
+      self.loss = data['loss']
+      self.num_eval_intervals = data['num_eval_intervals']
+      self.eval_eps_rewards = data['eval_eps_rewards']
+      self.eval_eps_dis_rewards = data['eval_eps_dis_rewards']
+      self.eval_mean_values = data['eval_mean_values']
+      self.eval_eps_lens = data['eval_eps_lens']
+
   def exportData(self):
     '''
     Export log data as a pickle
@@ -365,6 +383,6 @@ class RayLogger(Logger):
     num_eval_eps (int): Number of episodes in a evaluation iteration
     hyperparameters (dict): Hyperparameters to log. Defaults to None
   '''
-  def __init__(self, results_path, hyperparameters, checkpoint_interval=500, num_eval_eps=100):
-    super().__init__(results_path, hyperparameters, checkpoint_interval=checkpoint_interval, num_eval_eps=num_eval_eps)
+  def __init__(self, results_path, hyperparameters, checkpoint_interval=500, num_eval_eps=100, log_file=None):
+    super().__init__(results_path, hyperparameters, checkpoint_interval=checkpoint_interval, num_eval_eps=num_eval_eps, log_file=log_file)
 

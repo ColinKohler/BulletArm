@@ -11,7 +11,7 @@ train() {
   if [ $j -eq 1 ]; then
     ret_val=$(sbatch --parsable -J ${env}_${results_path}_${i}_${j} scripts/train.sbatch $env $vision_size $encoder ${results_path}_${i}_${j})
   else
-    ret_val=$(sbatch --parsable -J ${env}_${results_path}_${i}_${j} --dependency=afterany:${ret_val} scripts/train.sbatch $env $vision_size $encoder ${results_path}_${i}_${j} ${results_path}_${i}_${j-1} ${results_path}_${i}_${j-1})
+    ret_val=$(sbatch --parsable -J ${env}_${results_path}_${i}_${j} --dependency=afterany:${ret_val} scripts/train.sbatch $env $vision_size $encoder ${results_path}_${i}_${j} ${results_path}_${i}_$((j-1)) ${results_path}_${i}_$((j-1)) ${results_path}_${i}_$((j-1)))
   fi
 }
 
