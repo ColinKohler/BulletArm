@@ -55,11 +55,11 @@ class Runner(object):
 
     # Load checkpoint/replay buffer
     if checkpoint:
-      checkpoint = os.path.join(self.config.root_path,
+      checkpoint = os.path.join(self.config.domain_path,
                                 checkpoint,
                                 'model.checkpoint')
     if replay_buffer:
-      replay_buffer = os.path.join(self.config.root_path,
+      replay_buffer = os.path.join(self.config.domain_path,
                                    replay_buffer,
                                    'replay_buffer.pkl')
     self.load(checkpoint_path=checkpoint,
