@@ -37,8 +37,8 @@ class Config(object):
     self.encoder = encoder
 
     # Training
-    self.cluster = True
-    self.root_path = '/home/wang.dian/scrtach/colin/vtt/'
+    self.cluster = False
+    self.root_path = '/home/colin/hdd/workspace/BulletArm/bulletarm_baselines/vtt/'
     self.num_gpus = num_gpus
     self.pre_training_steps = 1000
     self.gen_data_on_gpu = False

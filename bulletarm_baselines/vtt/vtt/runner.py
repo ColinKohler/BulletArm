@@ -137,7 +137,7 @@ class Runner(object):
         hours = divmod(time.time()-start, 3600)[0]
         if self.config.cluster and hours > 7:
           # Ray.get ensures we wait for these methods to return before shuttting down ray
-          ray.get(self.trainer_worker.saveWeights(self.shared_storage_worker))
+          ray.get(self.training_worker.saveWeights(self.shared_storage_worker))
           ray.get(self.shared_storage.saveReplayBuffer.remote(self.replay_buffer_worker.getBuffer.remote()))
           ray.get(self.shared_storage.saveCheckpoint.remote())
           ray.get(self.logger_worker.exportData.remote())
