@@ -95,6 +95,16 @@ class Trainer(object):
       self.critic_optimizer.load_state_dict(
         copy.deepcopy(initial_checkpoint['optimizer_state'][2])
       )
+    if initial_checkpoint['weights'] is not None:
+      self.latent.load_state_dict(
+        copy.deepcopy(initial_checkpoint['weights'][0])
+      )
+      self.actor.load_state_dict(
+        copy.deepcopy(initial_checkpoint['weights'][1])
+      )
+      self.critic.load_state_dict(
+        copy.deepcopy(initial_checkpoint['weights'][2])
+      )
 
     # Initialize data generator
     self.agent = Agent(

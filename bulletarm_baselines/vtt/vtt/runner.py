@@ -38,14 +38,12 @@ class Runner(object):
 
     # Initialize checkpoint and replay buffer
     self.checkpoint = {
-      'best_weights' : None,
       'weights' : None,
       'optimizer_state' : None,
       'training_step' : 0,
       'latent_training_step' : 0,
       'num_eps' : 0,
       'num_steps' : 0,
-      'best_model_reward' : 0,
       'run_eval_interval' : False,
       'generating_eval_eps' : False,
       'pause_training' : False,
@@ -135,14 +133,23 @@ class Runner(object):
     try:
       while info['training_step'] < self.config.training_steps or info['generating_eval_eps'] or info['run_eval_interval']:
         hours = divmod(time.time()-start, 3600)[0]
-        if self.config.cluster and hours > 7:
+        if self.config.cluster and hours > 1:
+          # Before saving pause training and wait for any running evaluations to end
+          self.shared_storage_worker.setInfo.remote('terminate', True)
+          if info['generating_eval_eps']:
+            while(ray.get(self.shared_storage_worker.getInfo.remote('generating_eval_eps'))):
+              time.sleep(0.1)
+
           # Ray.get ensures we wait for these methods to return before shuttting down ray
-          ray.get(self.training_worker.saveWeights(self.shared_storage_worker))
-          ray.get(self.shared_storage.saveReplayBuffer.remote(self.replay_buffer_worker.getBuffer.remote()))
-          ray.get(self.shared_storage.saveCheckpoint.remote())
+          ray.get(self.training_worker.saveWeights.remote(self.shared_storage_worker))
+          ray.get(self.shared_storage_worker.saveReplayBuffer.remote(self.replay_buffer_worker.getBuffer.remote()))
+          ray.get(self.shared_storage_worker.saveCheckpoint.remote())
           ray.get(self.logger_worker.exportData.remote())
 
+          # Sleep before terminating to ensure everything gets saved properly
+          time.sleep(5*60)
           ray.shutdown()
+          return
 
         info = ray.get(self.shared_storage_worker.getInfo.remote(keys))
 
@@ -163,7 +170,9 @@ class Runner(object):
       pass
 
     if self.config.save_model:
-      self.shared_storage_worker.setInfo.remote(copy.copy(self.replay_buffer))
+      self.training_worker.saveWeights.remote(self.shared_storage_worker)
+      self.shared_storage_worker.saveReplayBuffer.remote(copy.copy(self.replay_buffer))
+      self.shared_storage_worker.saveCheckpoint.remote()
       self.logger_worker.exportData.remote()
     self.terminateWorkers()
 
@@ -189,8 +198,11 @@ class Runner(object):
     '''
     if checkpoint_path:
       if os.path.exists(checkpoint_path):
-        self.checkpoint = torch.load(checkpoint_path)
         print('Loading checkpoint from {}'.format(checkpoint_path))
+        self.checkpoint = torch.load(checkpoint_path)
+        self.checkpoint['generating_eval_eps'] = False
+        self.checkpoint['pause_training'] = False
+        self.checkpoint['terminate'] = False
       else:
         print('Checkpoint not found at {}'.format(checkpoint_path))
 
