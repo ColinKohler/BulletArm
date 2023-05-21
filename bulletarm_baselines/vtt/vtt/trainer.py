@@ -264,6 +264,8 @@ class Trainer(object):
         }
       )
 
+    self.saveWeights(shared_storage)
+
   def updateLatent(self, batch, logger):
     obs_batch, action_batch, reward_batch, done_batch = self.processBatch(batch)
     loss = self.latent.calculate_loss(
