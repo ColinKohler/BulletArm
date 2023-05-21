@@ -39,7 +39,7 @@ class BlockPullingConfig(Config):
                                        'block_pulling',
                                        datetime.datetime.now().strftime('%Y-%m-%d--%H-%M-%S'))
     self.save_model = True
-    self.pretraining_steps = 10
+    self.pretraining_steps = 10000
     self.training_steps = 35000
     self.batch_size_latent = 32
     self.batch_size_SAC = 64

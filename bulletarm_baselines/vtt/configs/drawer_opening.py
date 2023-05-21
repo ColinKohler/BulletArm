@@ -29,6 +29,7 @@ class DrawerOpeningConfig(Config):
     self.num_expert_episodes = 50
 
     # Training
+    self.domain_path = os.path.join(self.root_path, 'drawer_opening')
     if results_path:
       self.results_path = os.path.join(self.root_path,
                                        'drawer_opening',

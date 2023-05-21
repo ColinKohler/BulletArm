@@ -29,6 +29,7 @@ class BlockReachingConfig(Config):
     self.num_expert_episodes = 50
 
     # Training
+    self.domain_path = os.path.join(self.root_path, 'block_reaching')
     if results_path:
       self.results_path = os.path.join(self.root_path,
                                        'block_reaching',

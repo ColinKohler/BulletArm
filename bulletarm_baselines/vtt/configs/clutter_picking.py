@@ -29,6 +29,7 @@ class ClutterPickingConfig(Config):
     self.num_expert_episodes = 200
 
     # Training
+    self.domain_path = os.path.join(self.root_path, 'clutter_picking')
     if results_path:
       self.results_path = os.path.join(self.root_path,
                                        'clutter_picking',

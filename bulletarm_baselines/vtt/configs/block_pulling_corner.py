@@ -29,6 +29,8 @@ class BlockPullingCornerConfig(Config):
     self.num_expert_episodes = 50
 
     # Training
+    self.domain_path = os.path.join(self.root_path, 'block_pulling_corner')
+    self.domain_path = 'block_pulling_corner'
     if results_path:
       self.results_path = os.path.join(self.root_path,
                                        'block_pulling_corner',
