@@ -24,7 +24,7 @@ class Runner(object):
   '''
   def __init__(self, config, checkpoint=None, replay_buffer=None, log_file=None):
     self.config = config
-    self.timeout = 7
+    self.timeout = 1
 
     # Set random seeds
     if self.config.seed:
