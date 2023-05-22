@@ -24,7 +24,7 @@ class Runner(object):
   '''
   def __init__(self, config, checkpoint=None, replay_buffer=None, log_file=None):
     self.config = config
-    self.timeout = 1
+    self.timeout = 7
 
     # Set random seeds
     if self.config.seed:
@@ -137,7 +137,7 @@ class Runner(object):
 
         # Timeout for cluster runs
         hours = divmod(time.time()-start, 3600)[0]
-        if self.config.cluster and hours > self.timeout:
+        if self.config.cluster and hours >= self.timeout:
           print('timeout started')
           # Before saving pause training and wait for any running evaluations to end
           self.shared_storage_worker.setInfo.remote('terminate', True)
@@ -165,8 +165,8 @@ class Runner(object):
             self.shared_storage_worker.setInfo.remote('pause_training', True)
           while(ray.get(self.shared_storage_worker.getInfo.remote('generating_eval_eps'))):
             time.sleep(0.1)
+          self.shared_storage_worker.setInfo.remote('pause_training', False)
           if self.config.cluster and hours < self.timeout:
-            self.shared_storage_worker.setInfo.remote('pause_training', False)
             self.eval_worker.generateEpisodes.remote(self.config.num_eval_episodes, self.shared_storage_worker, self.replay_buffer_worker, self.logger_worker)
 
         # Logging
