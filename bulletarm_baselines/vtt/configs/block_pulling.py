@@ -51,7 +51,7 @@ class BlockPullingConfig(Config):
 
      # Eval
     self.num_eval_envs = 5
-    self.num_eval_episodes = 50
+    self.num_eval_episodes = 10
     self.eval_interval = 500
     self.num_eval_intervals = int(self.training_steps / self.eval_interval)
 

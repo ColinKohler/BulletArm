@@ -106,10 +106,11 @@ class Runner(object):
     self.shared_storage_worker.setInfo.remote('terminate', False)
 
     # Blocking call to generate expert data
-    if self.config.num_expert_episodes > 0:
-      self.training_worker.generateExpertData.remote(self.replay_buffer_worker, self.shared_storage_worker, self.logger_worker)
-    else:
-      self.training_worker.generateData.remote(self.config.num_data_gen_envs, self.replay_buffer_worker, self.shared_storage_worker, self.logger_worker)
+    if self.checkpoint['num_eps'] == 0:
+      if self.config.num_expert_episodes > 0:
+        self.training_worker.generateExpertData.remote(self.replay_buffer_worker, self.shared_storage_worker, self.logger_worker)
+      else:
+        self.training_worker.generateData.remote(self.config.num_data_gen_envs, self.replay_buffer_worker, self.shared_storage_worker, self.logger_worker)
 
     # Start training
     self.training_worker.continuousUpdateWeights.remote(self.replay_buffer_worker, self.shared_storage_worker, self.logger_worker)

@@ -35,7 +35,10 @@ class Plotter(object):
     for n, fp in zip(names, filepaths):
       if os.path.exists(fp):
         with open(fp, 'rb') as f:
-          logs[n] = pickle.load(f)
+          try:
+            logs[n] = pickle.load(f)
+          except:
+            print('Error loading: {}'.format(fp))
       else:
         print('No log found at {}'.format(fp))
 

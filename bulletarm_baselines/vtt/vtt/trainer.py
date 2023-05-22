@@ -188,7 +188,7 @@ class Trainer(object):
        # Logger/Shared storage updates
       shared_storage.setInfo.remote(
         {
-          'latent_step' : self.latent_training_step,
+          'latent_training_step' : self.latent_training_step,
         }
       )
 
