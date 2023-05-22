@@ -30,7 +30,6 @@ class BlockPullingCornerConfig(Config):
 
     # Training
     self.domain_path = os.path.join(self.root_path, 'block_pulling_corner')
-    self.domain_path = 'block_pulling_corner'
     if results_path:
       self.results_path = os.path.join(self.root_path,
                                        'block_pulling_corner',
@@ -52,7 +51,7 @@ class BlockPullingCornerConfig(Config):
 
     # Eval
     self.num_eval_envs = 5
-    self.num_eval_episodes = 10
+    self.num_eval_episodes = 50
     self.eval_interval = 500
     self.num_eval_intervals = int(self.training_steps / self.eval_interval)
 
