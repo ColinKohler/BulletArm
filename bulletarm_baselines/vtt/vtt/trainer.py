@@ -95,6 +95,10 @@ class Trainer(object):
       self.critic_optimizer.load_state_dict(
         copy.deepcopy(initial_checkpoint['optimizer_state'][2])
       )
+      self.alpha_optimizer.load_state_dict(
+        copy.deepcopy(initial_checkpoint['optimizer_state'][3])
+      )
+
     if initial_checkpoint['weights'] is not None:
       self.latent.load_state_dict(
         copy.deepcopy(initial_checkpoint['weights'][0])
@@ -105,6 +109,8 @@ class Trainer(object):
       self.critic.load_state_dict(
         copy.deepcopy(initial_checkpoint['weights'][2])
       )
+      torch_utils.softUpdate(self.critic_target, self.critic, 1.0)
+      self.alpha = copy.deepcopy(initial_checkpoint['weights'][3]))
 
     # Initialize data generator
     self.agent = Agent(
@@ -386,12 +392,14 @@ class Trainer(object):
     latent_optimizer_state = torch_utils.dictToCpu(self.latent_optimizer.state_dict())
     actor_optimizer_state = torch_utils.dictToCpu(self.actor_optimizer.state_dict())
     critic_optimizer_state = torch_utils.dictToCpu(self.critic_optimizer.state_dict())
+    alpha_optimizer_state = torch_utils.dictToCpu(self.alpha_optimizer.state_dict())
 
     shared_storage.setInfo.remote(
       {
-        'weights' : copy.deepcopy((latent_weights, actor_weights, critic_weights)),
+        'weights' : copy.deepcopy((latent_weights, actor_weights, critic_weights, self.alpha)),
         'optimizer_state' : (copy.deepcopy(latent_optimizer_state),
                              copy.deepcopy(actor_optimizer_state),
-                             copy.deepcopy(critic_optimizer_state))
+                             copy.deepcopy(critic_optimizer_state),
+                             copy.deepcopy(alpha_optimizer_state))
       }
     )
