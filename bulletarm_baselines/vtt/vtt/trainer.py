@@ -27,9 +27,9 @@ class Trainer(object):
     self.config = config
     self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
-    self.alpha = self.config.init_temp
+    self.alpha = torch.tensor(self.config.init_temp, requires_grad=False, device=self.device)
     self.target_entropy = -self.config.action_dim
-    self.log_alpha = torch.tensor(np.log(self.alpha), requires_grad=True, device=self.device)
+    self.log_alpha = torch.tensor(np.log(self.config.init_temp), requires_grad=True, device=self.device)
     self.alpha_optimizer = torch.optim.Adam([self.log_alpha], lr=self.config.actor_lr_init)
 
     # Initialize actor, critic, and latent models
@@ -389,6 +389,7 @@ class Trainer(object):
     latent_weights = torch_utils.dictToCpu(self.latent.state_dict())
     actor_weights = torch_utils.dictToCpu(self.actor.state_dict())
     critic_weights = torch_utils.dictToCpu(self.critic.state_dict())
+    alpha_weight = self.alpha.cpu()
 
     latent_optimizer_state = torch_utils.dictToCpu(self.latent_optimizer.state_dict())
     actor_optimizer_state = torch_utils.dictToCpu(self.actor_optimizer.state_dict())
@@ -397,7 +398,7 @@ class Trainer(object):
 
     shared_storage.setInfo.remote(
       {
-        'weights' : copy.deepcopy((latent_weights, actor_weights, critic_weights, self.alpha.cpu())),
+        'weights' : copy.deepcopy((latent_weights, actor_weights, critic_weights, alpha_weight)),
         'optimizer_state' : (copy.deepcopy(latent_optimizer_state),
                              copy.deepcopy(actor_optimizer_state),
                              copy.deepcopy(critic_optimizer_state),
