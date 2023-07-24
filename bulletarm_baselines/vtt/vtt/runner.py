@@ -150,7 +150,7 @@ class Runner(object):
           # Ray.get ensures we wait for these methods to return before shuttting down ray
           print('saving')
           ray.get(self.training_worker.saveWeights.remote(self.shared_storage_worker))
-          ray.get(self.shared_storage_worker.saveReplayBuffer.remote(self.replay_buffer_worker.getBuffer.remote()))
+          ray.get(self.shared_storage_worker.saveReplayBuffer.remote(ray.get(self.replay_buffer_worker.getBuffer.remote())))
           ray.get(self.shared_storage_worker.saveCheckpoint.remote())
           ray.get(self.logger_worker.exportData.remote())
 
