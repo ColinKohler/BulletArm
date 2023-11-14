@@ -1,4 +1,3 @@
-attrdict
 GitPython
 numpy>=1.19.5
 pybullet>=2.7.1

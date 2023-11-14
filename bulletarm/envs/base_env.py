@@ -925,7 +925,7 @@ class BaseEnv:
 
     primitive_idx, x_idx, y_idx, z_idx, rot_idx = map(lambda a: self.action_sequence.find(a),
                                                       ['p', 'x', 'y', 'z', 'r'])
-    action = np.zeros(len(self.action_sequence), dtype=np.float)
+    action = np.zeros(len(self.action_sequence), dtype=float)
     if primitive_idx != -1:
       action[primitive_idx] = primitive
     if x_idx != -1:
