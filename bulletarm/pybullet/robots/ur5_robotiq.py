@@ -4,7 +4,6 @@ import math
 import numpy as np
 import numpy.random as npr
 from collections import deque, namedtuple
-from attrdict import AttrDict
 from threading import Thread
 
 import pybullet as pb
@@ -61,7 +60,7 @@ class UR5_Robotiq(RobotBase):
       "robotiq_85_right_finger_tip_joint"
     ]
     self.robotiq_mimic_multiplier = [1, 1, 1, 1, -1, -1]
-    self.robotiq_joints = AttrDict()
+    self.robotiq_joints = {}
 
   def initialize(self):
     ''''''
